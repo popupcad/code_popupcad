@@ -1,0 +1,35 @@
+# -*- coding: utf-8 -*-
+"""
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
+"""
+
+from .multivalueoperation2 import MultiValueOperation2
+from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operationoutput import OperationOutput
+
+class AutoWeb3(MultiValueOperation2):
+    name = 'Web'
+    valuenames = ['Outer Buffer','Support Gap']
+    defaults = [0.,0.]
+    
+    def generate(self,design):
+        import popupcad
+        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+
+        if self.keepout_type == self.keepout_types.laser_keepout:
+            keepout = popupcad.algorithms.keepout.laserkeepout(ls1)
+        elif self.keepout_type == self.keepout_types.mill_keepout:
+            keepout = popupcad.algorithms.keepout.millkeepout(ls1)
+        elif self.keepout_type == self.keepout_types.mill_flip_keepout:
+            keepout = popupcad.algorithms.keepout.millflipkeepout(ls1)
+
+        sheet, outer_web,inner_elements,buffered_keepout = popupcad.algorithms.web.generate_web(ls1,keepout,design.layerdef(),(self.values[0]+self.values[1])*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
+
+        a = OperationOutput(outer_web,'Web',self)
+        b = OperationOutput(sheet,'Sheet',self)
+        c = OperationOutput(inner_elements,'Inner Scrap',self)
+        d = OperationOutput(buffered_keepout,'Removed Material',self)
+        self.output = [a,b,c,d]
+

@@ -1,0 +1,9 @@
+download and install python
+download and install pip install script
+qt
+pyside binaries
+gfortran dmg
+cmake
+geos
+pip install pyqtgraph, cx_freeze
+disable security for apps.

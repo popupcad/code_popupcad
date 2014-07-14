@@ -1,0 +1,1 @@
+python build_windows.py bdist_msi
