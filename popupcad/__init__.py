@@ -68,7 +68,7 @@ lastsketchdir = sketchdir
 lastimportdir = importdir
 lastshapedir = shapedir
 
-subdirectories = [designdir,importdir,exportdir,scriptdir,sketchdir,shapedir,backupdir]
+subdirectories = [popupcad_home_path,designdir,importdir,exportdir,scriptdir,sketchdir,shapedir,backupdir]
 for path in subdirectories:
     if not os.path.isdir(path):
         os.mkdir(path)
