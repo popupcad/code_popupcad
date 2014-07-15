@@ -15,67 +15,69 @@ class WidgetCommon(object):
         else:
             window.hide()
 
-    def buildActions(self,actions,name='toolbar',area=qc.Qt.ToolBarArea.TopToolBarArea,size=48,style=qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon,addtoolbar= True,addmenu = True):
-        if addmenu:
-            menu= self.menuBar().addMenu(name)
-        if addtoolbar:
-            toolbar= qg.QToolBar(name,self)
-            toolbar.setIconSize(qc.QSize(size,size))
-            toolbar.setToolButtonStyle(style)
-            self.addToolBar(area,toolbar)
-
+    def buildToolbar(self,actions,name='toolbar',area=qc.Qt.ToolBarArea.TopToolBarArea,size=48,style=qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon):
+        toolbar= qg.QToolBar(name)
+        toolbar.setIconSize(qc.QSize(size,size))
+        toolbar.setToolButtonStyle(style)
         for actiondata in actions:
+            self.addToolbarItem(toolbar,actiondata)
+        toolbar.setParent(self)
+        self.addToolBar(area,toolbar)
+            
+    def buildMenu(self,actions,name):
+        menu= self.menuBar().addMenu(name)
+        for actiondata in actions:
+            self.addMenuItem(menu,actiondata)
+
+    def addToolbarItem(self,toolbar,actiondata):
+        if actiondata == None:
+            toolbar.addSeparator()
+        else:
+            if actiondata.has_key('submenu'):
+                submenu = self.buildSubmenu(actiondata)
+                tb = qg.QToolButton()
+                try:
+                    tb.setIcon(actiondata['kwargs']['icon'])
+                except KeyError:
+                    pass
+
+                try:
+                    tb.setText(actiondata['text'])
+                except KeyError:
+                    pass
+
+                tb.setMenu(submenu)
+                tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
+                tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+                toolbar.addWidget(tb)
+                
+            else:
+                action = self.buildaction(**actiondata)
+                toolbar.addAction(action)
+
+    def addMenuItem(self, menu,actiondata):
             if actiondata == None:
-                if addtoolbar:
-                    toolbar.addSeparator()
-                if addmenu:
-                    menu.addSeparator()
+                menu.addSeparator()
             else:
                 if actiondata.has_key('submenu'):
-                    subactions = actiondata.pop('submenu')
-                    actions = [self.buildaction(item) for item in subactions]
-                    submenu = qg.QMenu(actiondata['text'])
-                    for action in actions:
-                        submenu.addAction(action)
-                    if addtoolbar:
-                        tb = qg.QToolButton()
-                        try:
-                            tb.setIcon(actiondata['kwargs']['icon'])
-                        except KeyError:
-                            pass
-
-                        try:
-                            tb.setText(actiondata['text'])
-                        except KeyError:
-                            pass
-
-                        tb.setMenu(submenu)
-#                        tb.setPopupMode(tb.ToolButtonPopupMode.MenuButtonPopup)
-                        tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
-                        tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-                        toolbar.addWidget(tb)
-                    if addmenu:
-                        menu.addMenu(submenu)
-                    
+                    submenu = self.buildSubmenu(actiondata)
+                    menu.addMenu(submenu)
                 else:
-                    action = self.buildaction(actiondata)
-                    
-                    if addtoolbar:
-                        toolbar.addAction(action)
-                    if addmenu:
-                        menu.addAction(action)   
+                    action = self.buildaction(**actiondata)
+                    menu.addAction(action)                      
 
-    def buildaction(self,actiondata):
-        kwargs = actiondata['kwargs']
-        text= actiondata['text']
-        action = qg.QAction(text,self,**kwargs)
-
-        try:
-            prepmethod = actiondata['prepmethod']
-            prepmethod(action)
-        except KeyError:
-            pass
+    def buildSubmenu(self,actiondata):
+        subactions = actiondata.pop('submenu')
+        actions = [self.buildaction(**item) for item in subactions]
+        submenu = qg.QMenu(actiondata['text'])
+        for action in actions:
+            submenu.addAction(action)
+        return submenu
         
+    def buildaction(self,text = '',kwargs = {},prepmethod = None):
+        action = qg.QAction(text,self,**kwargs)
+        if prepmethod!=None:
+            prepmethod(action)
         return action
         
     @staticmethod

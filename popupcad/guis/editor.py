@@ -15,7 +15,6 @@ import imp
 from popupcad.widgets.errorlog import ErrorLog
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
-#from popupcad.graphics3d.qglwidget import GLObjectViewer
 from popupcad.graphics3d.GLMeshItem import GLObjectViewer
 from popupcad.supportfiles import Icon
 import popupcad.filetypes as filetypes
@@ -199,11 +198,14 @@ class Editor(qg.QMainWindow,WidgetCommon):
         self.manufacturingactions.append({'text':'Identify Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyBodies)}})
         self.manufacturingactions.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyRigidBodies)}})
 
-        self.buildActions(self.fileactions,name='File',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea,addtoolbar= False)
-        self.buildActions(self.projectactions,name='Project',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea,addtoolbar= False)
-        self.buildActions(self.operationactions,name='Operations',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
-        self.buildActions(self.manufacturingactions,name='Manufacturing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
-        self.buildActions(self.viewactions,name='View',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea,addtoolbar= False)
+        self.toolbar_operations = self.buildToolbar(self.operationactions,name='Operations',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
+        self.toolbar_manufacturing = self.buildToolbar(self.manufacturingactions,name='Manufacturing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
+
+        self.menu_file = self.buildMenu(self.fileactions,name='File')
+        self.menu_project= self.buildMenu(self.projectactions,name='Project')
+        self.menu_operations = self.buildMenu(self.operationactions,name='Operations')
+        self.menu_manufacturing = self.buildMenu(self.manufacturingactions,name='Manufacturing')
+        self.menu_view = self.buildMenu(self.viewactions,name='View')
 
     @loggable
     def newoperation(self,operationclass):
@@ -368,7 +370,6 @@ class Editor(qg.QMainWindow,WidgetCommon):
             lines = dict([(layer,[]) for layer in self.design.layerdef().layers])
             self.view_3d.view.update_object(self.design.layerdef().zvalue,tris,lines,selectedlayers)
 
-        
     @loggable
     def exportLayerSVG(self):
         import os

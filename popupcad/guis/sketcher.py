@@ -279,11 +279,14 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraintactions.append({'text':'PointLine','kwargs':{'triggered':lambda:self.add_constraint(constraints.PointLine),'icon':Icon('pointline')}})
         self.constraintactions.append({'text':'Update','kwargs':{'triggered':self.refreshconstraints,'icon':Icon('refresh')}})
 
-        self.buildActions(self.fileactions,name='File',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea,addtoolbar = False)
-        self.buildActions(self.editactions,name='Edit',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea,addtoolbar = False)
-        self.buildActions(self.drawingactions,name='Drawing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
-        self.buildActions(self.constraintactions,name='Constraints',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
-        self.buildActions(self.viewactions,name='View',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea,addtoolbar = False)
+        self.menu_file = self.buildMenu(self.fileactions,name='File')
+        self.menu_edit = self.buildMenu(self.editactions,name='Edit')
+        self.menu_drawing = self.buildMenu(self.drawingactions,name='Drawing')
+        self.menu_constraints = self.buildMenu(self.constraintactions,name='Constraints')
+        self.menu_view = self.buildMenu(self.viewactions,name='View')
+
+        self.toolbar_drawing = self.buildToolbar(self.drawingactions,name='Drawing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
+        self.toolbar_constraints = self.buildToolbar(self.constraintactions,name='Constraints',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
 
     def keyPressEvent(self,event):
         if event.key() == qc.Qt.Key_Delete:
