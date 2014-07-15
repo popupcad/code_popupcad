@@ -11,7 +11,6 @@ import sys
 import os
     
 if __name__ == "__main__":
-
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(popupcad.supportfiles.Icon('popupcad'))
     mw = popupcad.guis.editor.Editor()

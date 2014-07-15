@@ -24,6 +24,7 @@ from popupcad.widgets.listeditor import ListSelector
 import glob
 from popupcad.widgets.widgetcommon import WidgetCommon
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,DirectedDraggableTreeWidget
+from popupcad.plugins.manufacturingplugin import ManufacturingPlugin
 
 class Editor(qg.QMainWindow,WidgetCommon):
     '''
@@ -115,6 +116,8 @@ class Editor(qg.QMainWindow,WidgetCommon):
 #        self.resize(1024,576)
 #        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
 #        self.move(dxy)
+        ManufacturingPlugin(self,self.design)
+
     def autosave(self):
         import os
         import glob
@@ -183,20 +186,14 @@ class Editor(qg.QMainWindow,WidgetCommon):
         self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.LocateOperation)}})
         self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.PlaceOperation7)}})
 
-        supportactions= []
-        supportactions.append({'text':'Sheet','kwargs':{'icon':Icon('outersheet'),'triggered':lambda:self.newoperation(popupcad.manufacturing.OuterSheet2)}})
-        supportactions.append({'text':'&Web','kwargs':{'icon':Icon('outerweb'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_U,'triggered':lambda:self.newoperation(popupcad.manufacturing.AutoWeb3)}})
-        supportactions.append({'text':'S&upport','kwargs':{'icon':Icon('autosupport'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_W,'triggered':lambda:self.newoperation(popupcad.manufacturing.SupportCandidate3)}})
-        supportactions.append({'text':'Custom Support','kwargs':{'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_W,'triggered':lambda:self.newoperation(popupcad.manufacturing.CustomSupport3)}})
-
         self.manufacturingactions= []        
-        self.manufacturingactions.append({'text':'Keep-outs','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:self.newoperation(popupcad.manufacturing.KeepOut2)}})
-        self.manufacturingactions.append({'text':'Supports','submenu':supportactions,'kwargs':{'icon':Icon('outerweb')}})
-        self.manufacturingactions.append({'text':'Tool Clearance','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.ToolClearance2)}})
-        self.manufacturingactions.append({'text':'Cuts','kwargs':{'icon':Icon('firstpass'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_1,'triggered':lambda:self.newoperation(popupcad.manufacturing.CutOperation2)}})
-        self.manufacturingactions.append({'text':'Removability','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.Removability)}})
-        self.manufacturingactions.append({'text':'Identify Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyBodies)}})
-        self.manufacturingactions.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyRigidBodies)}})
+#        self.manufacturingactions.append({'text':'Keep-outs','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:self.newoperation(popupcad.manufacturing.KeepOut2)}})
+#        self.manufacturingactions.append({'text':'Supports','submenu':supportactions,'kwargs':{'icon':Icon('outerweb')}})
+#        self.manufacturingactions.append({'text':'Tool Clearance','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.ToolClearance2)}})
+#        self.manufacturingactions.append({'text':'Cuts','kwargs':{'icon':Icon('firstpass'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_1,'triggered':lambda:self.newoperation(popupcad.manufacturing.CutOperation2)}})
+#        self.manufacturingactions.append({'text':'Removability','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.Removability)}})
+#        self.manufacturingactions.append({'text':'Identify Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyBodies)}})
+#        self.manufacturingactions.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyRigidBodies)}})
 
         self.toolbar_operations = self.buildToolbar(self.operationactions,name='Operations',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
         self.toolbar_manufacturing = self.buildToolbar(self.manufacturingactions,name='Manufacturing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
@@ -206,7 +203,7 @@ class Editor(qg.QMainWindow,WidgetCommon):
         self.menu_operations = self.buildMenu(self.operationactions,name='Operations')
         self.menu_manufacturing = self.buildMenu(self.manufacturingactions,name='Manufacturing')
         self.menu_view = self.buildMenu(self.viewactions,name='View')
-
+        
     @loggable
     def newoperation(self,operationclass):
         operationclass.new(self,self.design,self.operationeditor.currentRow(),self.operationadded)

@@ -23,11 +23,13 @@ class WidgetCommon(object):
             self.addToolbarItem(toolbar,actiondata)
         toolbar.setParent(self)
         self.addToolBar(area,toolbar)
+        return toolbar
             
     def buildMenu(self,actions,name):
         menu= self.menuBar().addMenu(name)
         for actiondata in actions:
             self.addMenuItem(menu,actiondata)
+        return menu
 
     def addToolbarItem(self,toolbar,actiondata):
         if actiondata == None:
@@ -55,7 +57,7 @@ class WidgetCommon(object):
                 action = self.buildaction(**actiondata)
                 toolbar.addAction(action)
 
-    def addMenuItem(self, menu,actiondata):
+    def addMenuItem(self,menu,actiondata):
             if actiondata == None:
                 menu.addSeparator()
             else:
