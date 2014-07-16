@@ -7,3 +7,4 @@ Created on Tue Jul 15 16:05:16 2014
 
 class Plugin(object):
     def __init__(self, widget, design):
+        pass

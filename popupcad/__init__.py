@@ -48,7 +48,7 @@ url = 'http://www.popupcad.com'
 #uuid.uuid4()
 windows_uuid = '{875b89db-f819-48bf-9be4-ec93f57f29c2}'
 
-popupcad_dirname = 'popupCAD'
+popupcad_dirname = 'popupCAD_files'
 popupcad_home_path = os.path.normpath(os.path.join(user_home_dir,popupcad_dirname))
 
 backup_timeout = 1000*60*5
