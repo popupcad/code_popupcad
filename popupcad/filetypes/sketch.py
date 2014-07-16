@@ -8,12 +8,12 @@ import os
 from popupcad.constraints import ConstraintSystem
 import popupcad
 #import PySide.QtGui as qg
-from .genericfile import GenericFile
+from .genericfile import popupCADFile
 
-class Sketch(GenericFile):
+class Sketch(popupCADFile):
     filetypes = {'sketch':'Sketch File'}
     defaultfiletype = 'sketch'
-    filters,filterstring,selectedfilter = GenericFile.buildfilters(filetypes,defaultfiletype)
+    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
     @classmethod
     def lastdir(cls):
         return popupcad.lastsketchdir
@@ -35,22 +35,11 @@ class Sketch(GenericFile):
         new.constraintsystem = self.constraintsystem.copy()
         if identical:
             new.id = self.id
-        try:
-            new.dirname = self.dirname
-        except AttributeError:
-            pass
 
-        try:
-            if identical:
-                new.set_basename(self.get_basename())
-            else:
-                new.set_basename(new.genbasename())
-        except AttributeError:
-            pass
-
+        self.copy_file_params(new,identical)
 
         return new
-        
+
     def addoperationgeometries(self,polygons):
         self.operationgeometry.extend(polygons)
 

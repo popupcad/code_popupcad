@@ -12,7 +12,6 @@ import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.enum import enum
-from popupcad.filetypes.genericfile import GenericFile
 from popupcad.geometry.genericshapebase import GenericShapeBase
     
 class GenericShape(GenericShapeBase):

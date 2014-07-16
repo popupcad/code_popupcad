@@ -31,6 +31,11 @@ class GenericFile(object):
             self._basename = self.genbasename()
             return self._basename
 
+    def copy(self,identical = True):
+        new = type(self)()
+        self.copy_file_params(new,identical)
+        return new
+
     @classmethod
     def lastdir(cls):
         return cls._lastdir
@@ -38,6 +43,39 @@ class GenericFile(object):
     @classmethod
     def setlastdir(cls,directory):
         cls._lastdir = directory
+
+    @classmethod
+    def get_parent_program_name(self):
+        return None
+        
+    @classmethod
+    def get_parent_program_version(self):
+        return None
+
+    def copy_file_params(self,new,identical):
+        try:
+            new.dirname = self.dirname
+        except AttributeError:
+            pass
+
+        try:
+            if identical:
+                new.set_basename(self.get_basename())
+            else:
+                new.set_basename(new.genbasename())
+        except AttributeError:
+            pass
+        
+        try:
+            new.parent_program_name = self.parent_program_name
+        except AttributeError:
+            pass
+        try:
+            new.parent_program_version = self.parent_program_version
+        except AttributeError:
+            pass
+
+        return new
 
     def genbasename(self):
         basename = str(self.id)+'.'+self.defaultfiletype
@@ -129,6 +167,9 @@ class GenericFile(object):
             
     def save(self,parent = None,savemethod = None,**savemethodkwargs):
         try:
+            
+            self.parent_program_name = self.get_parent_program_name()
+            self.parent_program_version = self.get_parent_program_version()
             if savemethod == None:
                 return self.save_yaml(self.filename())
             else:
@@ -158,10 +199,14 @@ class GenericFile(object):
         else:
             self.updatefilename(filename,selectedfilter)
 
+            self.parent_program_name = self.get_parent_program_name()
+            self.parent_program_version = self.get_parent_program_version()
+
             if savemethod == None:
                 return self.save_yaml(self.filename())
             else:
                 return savemethod(self.filename(),**savemethodkwargs)
+
     def filename(self):
         import os
         return os.path.normpath(os.path.join(self.dirname,self.get_basename()))              
@@ -176,4 +221,12 @@ class GenericFile(object):
 
     def __repr__(self):
         return str(self)
-            
+
+class popupCADFile(GenericFile):
+    @classmethod
+    def get_parent_program_name(self):
+        return popupcad.program_name
+    @classmethod
+    def get_parent_program_version(self):
+        return popupcad.version
+    
