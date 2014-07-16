@@ -59,7 +59,7 @@ if sys.platform == "win32":
     packages.append("scipy.integrate.lsoda")
     packages.append("scipy.sparse.csgraph._validation")
     packages.append("OpenGL.platform.win32")
-    packages.append("matplotlib.backends")
+#    packages.append("matplotlib.backends")
     packages.append("sympy.assumptions.handlers")
     packages.append("numpy")
     packages.append("scipy")    
