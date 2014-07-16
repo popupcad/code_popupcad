@@ -4,10 +4,9 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import popupcad
+import glob, os
 import sys
 from cx_Freeze import setup, Executable
-import glob, os
 
 def include_entire_directory(source_dir,dest_dir):
     m = len(source_dir)
@@ -20,6 +19,7 @@ def include_entire_directory(source_dir,dest_dir):
     return include
     
 iconfile = os.path.normpath(os.path.join(popupcad.supportfiledir,'printapede.ico'))
+
 
 packages = []
 packages.append('popupcad')
@@ -42,7 +42,7 @@ packages.append("OpenGL.platform.win32")
 packages.append("sympy.assumptions.handlers")
 packages.append("numpy")
 packages.append("scipy")
-     
+
 basedir = os.path.dirname(sys.executable)
 
 include_files = []
@@ -53,54 +53,33 @@ include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/n
 include_files.append(('LICENSE.txt','LICENSE.txt'))
 include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
 include_files.extend(include_entire_directory('licenses','licenses'))
-#include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/LICENSE.txt')),os.path.normpath(os.path.join('licenses','numpy','README.txt'))))
-#include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/scipy/LICENSE.txt')),os.path.normpath(os.path.join('licenses','scipy','README.txt'))))
 
-zip_includes = include_entire_directory(os.path.normpath(os.path.join(basedir,"Lib\\site-packages\\OpenGL")),"OpenGL")
-
+     
+base = None
+toinclude = []
 includes = []
-includes.append("zmq")
-includes.append("zmq.utils.garbage")
-includes.append("zmq.backend.cython")
-
+#packages = []
+files = []
 excludes = []
+toinclude = []
+zipinclude2 = []
 
-msi_data = {}
-#
-#shortcut_table = [
-#    ("DesktopShortcut",        # Shortcut
-#     "DesktopFolder",          # Directory_
-#     "DTI Playlist",           # Name
-#     "TARGETDIR",              # Component_
-#     "[TARGETDIR]playlist.exe",# Target
-#     None,                     # Arguments
-#     None,                     # Description
-#     None,                     # Hotkey
-#     None,                     # Icon
-#     None,                     # IconIndex
-#     None,                     # ShowCmd
-#     'TARGETDIR'               # WkDir
-#     )
-#    ]
+elif sys.platform == 'darwin':
+    import site
+    sites = site.getsitepackages()
+    basedir = sites[0]
+    userdir = '~/Documents'
 
-build_exe_options = {"include_msvcr":True,"include_files":include_files,"zip_includes": zip_includes,'packages':packages,'includes':includes,'excludes':excludes,'icon':iconfile }
-
-bdist_msi_options = {
-    'upgrade_code': popupcad.windows_uuid,
-#    'add_to_path': False,
-#    'initial_target_dir': r'[ProgramFilesFolder]\%s\%s' % (company_name, product_name),
-#    'data': msi_data    
-#	"Shortcut": shortcut_table,
-
-    }
+bdist_dmg_options = {}
+base = None
 
 setup_options = {}
-setup_options['build_exe']=build_exe_options
-setup_options['bdist_msi']=bdist_msi_options
-
-base = None
-if sys.platform == "win32":
-    base = "Win32GUI"
+#setup_options['build_exe']=build_exe_options
+#setup_options['bdist_msi']=bdist_msi_options
+setup_options['bdist_dmg']=bdist_dmg_options
+#base = None
+#if sys.platform == "win32":
+#    base = "Win32GUI"
 
 setup_arguments = {}
 setup_arguments['name'] = popupcad.program_name
@@ -111,4 +90,4 @@ setup_arguments['description'] = popupcad.description
 setup_arguments['executables'] = [Executable("popupcad.py", base=base,shortcutName=popupcad.program_name,shortcutDir="ProgramMenuFolder")]
 setup_arguments['options'] = setup_options
 
-setup(**setup_arguments)        
+setup(**setup_arguments)      
