@@ -11,7 +11,7 @@ from popupcad.geometry.genericshapebase import GenericShapeBase
 from popupcad.geometry.genericshapebase import NotSimple,ShapeInvalid
 import popupcad
 import PySide.QtGui as qg
-from popupcad.filetypes.genericfile import GenericFile
+from popupcad.filetypes.genericfile import popupCADFile
 import shapely.geometry as sg
 import popupcad.geometry.customshapely as cs
 
@@ -26,10 +26,10 @@ class Face(object):
 class Component(object):
     pass
 
-class Assembly(GenericFile):
+class Assembly(popupCADFile):
     filetypes = {'yaml':'Yaml File'}
     defaultfiletype = 'yaml'
-    filters,filterstring,selectedfilter = GenericFile.buildfilters(filetypes,defaultfiletype)
+    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
     @classmethod
     def lastdir(cls):

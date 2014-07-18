@@ -5,14 +5,14 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad
-from popupcad.filetypes.genericfile import GenericFile
+from popupcad.filetypes.genericfile import GenericFile,popupCADFile
 import popupcad.algorithms.acyclicdirectedgraph
 import os 
 class NoOperation(Exception):
     def __init__(self):
         Exception.__init__(self,'No Parent Operation')
         
-class Design(GenericFile):
+class Design(popupCADFile):
     filetypes = {'cad':'CAD Design'}
     defaultfiletype = 'cad'
     filters,filterstring,selectedfilter = GenericFile.buildfilters(filetypes,defaultfiletype)
@@ -79,19 +79,7 @@ class Design(GenericFile):
         for key,value in self.subdesigns.items():
             new.subdesigns[key]=value.copy(identical = True)
 
-        try:
-            new.dirname = self.dirname
-        except AttributeError:
-            pass
-
-        try:
-            if identical:
-                new.set_basename(self.get_basename())
-            else:
-                new.set_basename(new.genbasename())
-        except AttributeError:
-            pass
-
+        self.copy_file_params(new,identical)
 
         return new    
         

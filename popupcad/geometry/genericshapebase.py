@@ -13,7 +13,7 @@ import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.enum import enum
-from popupcad.filetypes.genericfile import GenericFile
+from popupcad.filetypes.genericfile import popupCADFile
 import popupcad
 
 class ShapeInvalid(Exception):
@@ -22,10 +22,10 @@ class ShapeInvalid(Exception):
 class NotSimple(Exception):
     pass
     
-class GenericShapeBase(GenericFile):
+class GenericShapeBase(popupCADFile):
     filetypes = {'shape':'Shape File'}
     defaultfiletype = 'shape'
-    filters,filterstring,selectedfilter = GenericFile.buildfilters(filetypes,defaultfiletype)
+    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
     display = ['construction','exterior','interiors']
     editable = ['construction']
@@ -56,6 +56,9 @@ class GenericShapeBase(GenericFile):
         new = type(self)(exterior,interiors,self.construction)
         if identical:
             new.id = self.id
+
+        self.copy_file_params(new,identical)
+        
         return new
 
     def exteriorpoints(self):
