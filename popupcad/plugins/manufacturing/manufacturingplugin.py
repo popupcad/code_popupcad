@@ -12,6 +12,7 @@ import PySide.QtGui as qg
 from popupcad.filetypes.plugin import Plugin
 
 class ManufacturingPlugin(Plugin):
+    
     def __init__(self, editor, design):
         supportactions= []
         supportactions.append({'text':'Sheet','kwargs':{'icon':Icon('outersheet'),'triggered':lambda:editor.newoperation(popupcad.manufacturing.OuterSheet2)}})
@@ -27,6 +28,7 @@ class ManufacturingPlugin(Plugin):
         manufacturingactions.append({'text':'Removability','kwargs':{'triggered':lambda:editor.newoperation(popupcad.manufacturing.Removability)}})
         manufacturingactions.append({'text':'Identify Bodies','kwargs':{'triggered':lambda:editor.newoperation(popupcad.manufacturing.IdentifyBodies)}})
         manufacturingactions.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:editor.newoperation(popupcad.manufacturing.IdentifyRigidBodies)}})
+
         for item in manufacturingactions:
-            editor.addMenuItem(editor.menu_manufacturing,item)
-            editor.addToolbarItem(editor.toolbar_manufacturing,item)
+            editor.addMenuItem(editor.menu_manufacturing,item.copy())
+            editor.addToolbarItem(editor.toolbar_manufacturing,item.copy())
