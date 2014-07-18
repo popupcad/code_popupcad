@@ -5,4 +5,4 @@ Created on Tue Jul 15 17:26:23 2014
 @author: danaukes
 """
 
-from . import manufacturing
+from . import manufacturingplugin

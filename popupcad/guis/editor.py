@@ -24,7 +24,7 @@ from popupcad.widgets.listeditor import ListSelector
 import glob
 from popupcad.widgets.widgetcommon import WidgetCommon
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,DirectedDraggableTreeWidget
-from popupcad.plugins.manufacturingplugin import ManufacturingPlugin
+from popupcad.plugins.manufacturing.manufacturingplugin import ManufacturingPlugin
 
 class Editor(qg.QMainWindow,WidgetCommon):
     '''
