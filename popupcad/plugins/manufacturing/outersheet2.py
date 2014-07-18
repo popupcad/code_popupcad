@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 from popupcad.filetypes.operation import Operation
 
 class OuterSheet2(MultiValueOperation2):

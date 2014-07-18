@@ -83,6 +83,7 @@ from . import graphics3d
 from . import guis
 from . import manufacturing
 from . import materials
+from . import plugins
 from . import supportfiles
 from . import widgets
 #from . import pypoly2tri

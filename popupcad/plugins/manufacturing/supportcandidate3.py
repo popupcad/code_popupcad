@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 
-from .multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 from popupcad.filetypes.operation import Operation
 
 class SupportCandidate3(MultiValueOperation2):

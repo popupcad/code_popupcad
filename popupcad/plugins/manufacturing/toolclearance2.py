@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from .multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 from popupcad.filetypes.operation import Operation
 
 class ToolClearance2(MultiValueOperation2):
