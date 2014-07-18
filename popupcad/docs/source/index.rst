@@ -14,9 +14,12 @@ Contents:
    _static/introduction
    _static/overview
    _static/windows_setup
+   _static/mac_setup
    _static/linux_setup
-   _static/code.seas
+   _static/compiling
    _static/virtualbox
+   _static/installing_compiler   
+   _static/popupcad_git_setup
 
    modules
 

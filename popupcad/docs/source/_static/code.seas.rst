@@ -50,8 +50,5 @@ On Linux:
 
 On Windows:
 
-* Right click in the folder you want to store the code in, and select "clone repository"
- * enter `<git@code.seas.harvard.edu:code/popupcad.git>`_ as the source
- * enter your key information
 * repeat the above steps for `<git@code.seas.harvard.edu:code/pypoly2tri.git>`_
 
