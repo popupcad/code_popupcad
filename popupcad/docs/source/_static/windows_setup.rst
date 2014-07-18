@@ -42,10 +42,10 @@ Windows Source Installation
       ...Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Python27;C:\Python27\Scripts
 
 3. Get popupCAD
- * Source is available on `github <https://github.com/danb0b/popupcad>`_
+ * Source is available on `github <https://github.com/danaukes/popupcad>`_
  * I recommend installing `git extensions <https://code.google.com/p/gitextensions/>`_
   * Right click in the folder you want to store the code in, and select "clone repository"
-  * enter `<https://github.com/danb0b/popupcad.git>`_ as the source
+  * enter `<https://github.com/danaukes/popupcad.git>`_ as the source
  
 4. Install popupCAD
  * In the start menu, type "cmd" to open up a command prompt

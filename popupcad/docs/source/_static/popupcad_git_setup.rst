@@ -5,7 +5,7 @@ setup Git repository for popupCAD
 
     git config --global user.name "LastName, Firstname"
     git config --global user.email "email@address.com"
-    git clone https://github.com/danb0b/popupcad.git
+    git clone https://github.com/danaukes/popupcad.git
     cd ~/popupcad/
     git checkout master
     git pull
