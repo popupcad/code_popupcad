@@ -288,11 +288,7 @@ class Editor(qg.QMainWindow,WidgetCommon):
 
     @loggable
     def editlayers(self):
-        carbon = materials.Carbon_0_90_0
-        pyralux = materials.Pyralux
-        kapton = materials.Kapton
-        initiallist = [carbon,pyralux,kapton]
-        window = materialselection.MaterialSelection(self.design.layerdef().layers,initiallist,self)
+        window = materialselection.MaterialSelection(self.design.layerdef().layers,materials.available_materials,self)
         result = window.exec_()
         if result == window.Accepted:
             self.design.define_layers(window.layerdef)
@@ -342,11 +338,13 @@ class Editor(qg.QMainWindow,WidgetCommon):
     @loggable
     def showcurrentoutput(self,*args,**kwargs):
         ii,jj = self.operationeditor.currentIndeces()
-        operationoutput = self.design.operations[ii].output[jj]
-        selectedlayers=[item for item in self.design.layerdef().layers if item in self.layerlistwidget.selectedData()]
-        self.show2dgeometry3(operationoutput,selectedlayers)
-        self.show3dgeometry3(operationoutput,selectedlayers)
-
+        try:
+            operationoutput = self.design.operations[ii].output[jj]
+            selectedlayers=[item for item in self.design.layerdef().layers if item in self.layerlistwidget.selectedData()]
+            self.show2dgeometry3(operationoutput,selectedlayers)
+            self.show3dgeometry3(operationoutput,selectedlayers)
+        except IndexError:
+            raise
     @loggable
     def show2dgeometry3(self,operationoutput,selectedlayers,):
         display_geometry_2d = operationoutput.display_geometry_2d()

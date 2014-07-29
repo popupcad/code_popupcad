@@ -64,11 +64,8 @@ class MaterialSelection(qg.QDialog):
             
     def remove_item(self,item):
         ii=self.lw.row(item)
-        try:
-            self.layerdef.layers.pop(ii)
-            self.update_left()
-        except materials.IncompatibleMaterial as ex:
-            print(ex)
+        self.layerdef.layers.pop(ii)
+        self.update_left()
         
     def initialize_right(self,items):
         self.lw.clear()
@@ -89,12 +86,12 @@ if __name__=='__main__':
 
     app = qg.QApplication(sys.argv)
     
-    carbon = materials.Carbon_0_90_0
-    pyralux = materials.Pyralux
-    kapton = materials.Kapton
+#    carbon = materials.Carbon_0_90_0
+#    pyralux = materials.Pyralux
+#    kapton = materials.Kapton
 
-    initiallist = [carbon,pyralux,kapton]
+#    initiallist = [carbon,pyralux,kapton]
 
     
-    window = MaterialSelection([],initiallist)
+    window = MaterialSelection([],materials.available_materials)
     a=window.exec_()

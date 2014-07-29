@@ -17,8 +17,10 @@ class Material(object):
 #    editable = ['color','thickness']
     name = 'material'
     color = (0.,0.,0.,.2)
-    def __init__(self,thickness):
-        self.thickness = thickness
+    thickness = .025
+    def __init__(self,thickness = None):
+        if thickness!=None:
+            self.thickness = thickness
         self.id = id(self)
     def __str__(self):
         return self.name
@@ -28,20 +30,33 @@ class Material(object):
 class Carbon_0_90_0(Material,Rigid):
     name = 'Carbon(0-90-0)'
     color = (1.,0.,0.,.2)
-    def __init__(self,thickness = .025):
-        super(Carbon_0_90_0,self).__init__(thickness)
 
 class Pyralux(Material,Adhesive):
     name = 'Pyralux'
     color = (0,1.,0.,.2)
-    def __init__(self,thickness = .025):
-        super(Pyralux,self).__init__(thickness)
 
 class Kapton(Material):
     name = 'Kapton'
     color = (0.,0.,1.,.2)
-    def __init__(self,thickness = .025):
-        super(Kapton,self).__init__(thickness)
+
+class Cardboard(Material):
+    name = 'Cardboard'
+    color = (1.,0.,0.,.2)
+        
+class Silicone(Material):
+    name = 'Silicone'
+    color = (.75,.75,.75,.2)
+
+class Velcro(Material):
+    name = 'Velcro'
+    color = (0.,.5,.5,.2)
+
+class Dummy(Material):
+    name = 'Dummy'
+    color = (0.5,.5,.5,.2)
+
+available_materials = [Carbon_0_90_0,Pyralux,Kapton,Cardboard,Silicone,Velcro,Dummy]
+available_materials.sort()
 
 class LayerDef(object):
     def __init__(self,*args):
