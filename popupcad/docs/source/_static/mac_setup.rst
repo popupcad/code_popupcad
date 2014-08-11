@@ -8,6 +8,7 @@ Mac Setup
 #. Download and install packages
  * `<python https://www.python.org/>`_
  * `pip <http://pip.readthedocs.org/en/latest/installing.html#install-pip>`_
+  * don't forget to use sudo
  * `Qt4.8 for Mac Opensource <http://qt-project.org/downloads>`_
  * `pyside binaries <http://qt-project.org/wiki/PySide_Binaries_MacOSX>`_
  * `gfortran binaries <https://gcc.gnu.org/wiki/GFortranBinaries#MacOS>`_
@@ -17,6 +18,7 @@ Mac Setup
   #. from the terminal::
   
       cd DOWNLOAD_DIRECTORY/geos-3.x.x
+      ./configure
       sudo make install
 
 #. add the installed version of python to your path::
