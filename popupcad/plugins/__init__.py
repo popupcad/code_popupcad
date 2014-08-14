@@ -6,3 +6,4 @@ Created on Tue Jul 15 17:26:23 2014
 """
 
 from . import manufacturing
+from . import algorithms

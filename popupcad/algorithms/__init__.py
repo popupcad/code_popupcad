@@ -7,7 +7,7 @@ Please see LICENSE.txt for full license.
 
 from . import acyclicdirectedgraph
 from . import autobridge
-from . import bodydetection
+#from . import bodydetection
 from . import modify_device
 from . import keepout
 from . import removability

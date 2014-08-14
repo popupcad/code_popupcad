@@ -24,7 +24,6 @@ class IdentifyRigidBodies(MultiValueOperation2):
     defaults = []
 
     def generate(self,design):
-        import popupcad.algorithms.bodydetection as bd
         from popupcad.materials.materials import Rigid
 
         generic = design.op_from_ref(self.operation_link1).output[self.getoutputref()].generic_geometry_2d()
