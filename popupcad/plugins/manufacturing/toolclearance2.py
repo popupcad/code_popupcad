@@ -15,14 +15,15 @@ class ToolClearance2(MultiValueOperation2):
 
     def operate(self,design):
         import popupcad
+        from ..algorithms import toolclearance as toolclearance
         ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
 
         if self.keepout_type == self.keepout_types.laser_keepout:
-            toolclearance = popupcad.algorithms.toolclearance.laserclearance(ls1)
+            toolclearance = toolclearance.laserclearance(ls1)
         elif self.keepout_type == self.keepout_types.mill_keepout:
-            toolclearance = popupcad.algorithms.toolclearance.millclearance(ls1)
+            toolclearance = toolclearance.millclearance(ls1)
         elif self.keepout_type == self.keepout_types.mill_flip_keepout:
-            toolclearance = popupcad.algorithms.toolclearance.millflipclearance(ls1)
+            toolclearance = toolclearance.millflipclearance(ls1)
         else:
             raise(Exception('keepout type'))
             

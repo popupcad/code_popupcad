@@ -12,5 +12,4 @@ from . import modify_device
 from . import keepout
 from . import removability
 from . import points
-from . import toolclearance
 from . import web

@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.layer import Layer
 from popupcad.materials.laminatesheet import Laminate
-from .keepout import laserkeepout, millkeepout, millflipkeepout
+from popupcad.algorithms.keepout import laserkeepout, millkeepout, millflipkeepout
 
 def laserclearance(laminatein):
     return laserkeepout(laminatein)
