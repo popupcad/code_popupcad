@@ -19,10 +19,11 @@ from popupcad.manufacturing.nulloperation import NullOp
 
 
 class Dialog(qg.QDialog):
-    def __init__(self,design,operations,selectedopindex=None,outputref = 0,selectedoutput = None,sketch = None,operation_type_index = 0):
+    def __init__(self,cls,design,operations,selectedopindex=None,outputref = 0,selectedoutput = None,sketch = None,operation_type_index = 0):
         super(Dialog,self).__init__()
         self.design = design
         self.operations = [NullOp()]+operations
+        self.cls = cls
 
         self.optree = DraggableTreeWidget()
         self.optree.linklist(self.operations)
@@ -48,7 +49,7 @@ class Dialog(qg.QDialog):
         [item.setSelected(item.customdata.id in selectedoutput) for item in outputitems]        
 
         self.operationtypeselector = qg.QComboBox()
-        self.operationtypeselector.addItems(SketchOperation2.operationtypes)
+        self.operationtypeselector.addItems(cls.operationtypes)
         self.operationtypeselector.setCurrentIndex(operation_type_index)        
 
         button1 = qg.QPushButton('Ok')
@@ -89,7 +90,7 @@ class Dialog(qg.QDialog):
 
         operation_type_index = self.operationtypeselector.currentIndex()
 
-        function = SketchOperation2.operationtypes[operation_type_index]
+        function = self.cls.operationtypes[operation_type_index]
         outputref = 0
         return sketchid, operation_link1,layer_links,function,outputref
 
@@ -146,7 +147,7 @@ class SketchOperation2(Operation):
 
     @classmethod
     def buildnewdialog(cls,design,currentop):
-        dialog = Dialog(design,design.operations)
+        dialog = Dialog(cls,design,design.operations)
         return dialog
         
     def buildeditdialog(self,design):
@@ -156,5 +157,5 @@ class SketchOperation2(Operation):
             selectedindex = design.operation_index(self.operation_link1)
         else:
             selectedindex = None
-        dialog = Dialog(design,design.prioroperations(self),selectedindex,self.outputref,self.layer_links,sketch,operation_type_index)
+        dialog = Dialog(self,design,design.prioroperations(self),selectedindex,self.outputref,self.layer_links,sketch,operation_type_index)
         return dialog
