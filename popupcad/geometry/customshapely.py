@@ -62,7 +62,8 @@ def unary_union_safe(listin):
                     newresult = result.union(item)
                     result = newresult
                 except (shapely.geos.TopologicalError,ValueError):
-                    pass
+                    raise
             return result
         except IndexError:
-            return sg.GeometryCollection()
+#            return sg.GeometryCollection()
+            raise

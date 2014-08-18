@@ -237,7 +237,7 @@ class Editor(qg.QMainWindow,WidgetCommon):
             raise
         finally:
             self.operationeditor.refresh()
-            self.showcurrentoutput()
+#            self.showcurrentoutput()
         
     @loggable
     def newfile(self):
