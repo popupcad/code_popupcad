@@ -27,9 +27,9 @@ def two_way(laminatein):
     return laminateout
 
 def modify_up(removabilityin):
-#    layers = removabilityin.layerdef.layers
-#    for layer1,layer2 in zip(layers[:-1],layers[1:]):
-#        if isinstance(layer1,mat.Adhesive) or isinstance(layer2,mat.Adhesive):
-#            removabilityin.layer_sequence[layer1] = removabilityin.layer_sequence[layer1].union(removabilityin.layer_sequence[layer2])
+    layers = removabilityin.layerdef.layers
+    for layer1,layer2 in zip(layers[:-1],layers[1:]):
+        if isinstance(layer1,mat.Adhesive) or isinstance(layer2,mat.Adhesive):
+            removabilityin.layer_sequence[layer1] = removabilityin.layer_sequence[layer1].union(removabilityin.layer_sequence[layer2])
     return removabilityin
     
