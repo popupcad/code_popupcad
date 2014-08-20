@@ -20,3 +20,6 @@ def clear_compiled():
             if filename.rfind('.pyc')!=-1:
                 os.remove(os.path.join(directory,filename))
     #            print filename
+
+if __name__=='__main__':
+    clear_compiled()
