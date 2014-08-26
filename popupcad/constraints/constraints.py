@@ -375,7 +375,7 @@ class distancey(ValueConstraint):
         else:
             temp = -1.
         if len(vertices)==1:
-            eq = vertices[0].p()[1]-self.value*temp
+            eq = vertices[0].p()[1]-self.value*temp*popupcad.internal_argument_scaling
         else:
             eq = ((vertices[1].p()[1]-vertices[0].p()[1])**2)**.5-((self.value*popupcad.internal_argument_scaling)**2)**.5
         return [eq]
