@@ -368,6 +368,15 @@ class Editor(qg.QMainWindow,WidgetCommon):
     @loggable
     def exportLayerSVG(self):
         import os
+        from popupcad.graphics2d.svg_support import OutputSelection
+
+        win = OutputSelection()
+        accepted = win.exec_()
+        if accepted:
+            scaling = win.acceptdata()
+        else:
+            return
+            
         ii,jj = self.operationeditor.currentIndeces()
         generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
         for layernum,layer in enumerate(self.design.layerdef().layers[::1]):
@@ -376,7 +385,7 @@ class Editor(qg.QMainWindow,WidgetCommon):
             scene = GraphicsScene()
             geoms = [item.outputstatic(color = (1,1,1,1)) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
-            scene.renderprocess(filename)
+            scene.renderprocess(filename,scaling)
 
     @loggable
     def highlightbody(self,ref):

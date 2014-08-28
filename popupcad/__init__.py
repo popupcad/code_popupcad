@@ -28,7 +28,6 @@ internal_argument_scaling = 1e3
 
 inkscape_mm_conversion = 1./282.22293
 coreldraw_mm_conversion = 1./264.581 
-render_mm_scaling = coreldraw_mm_conversion
 
 zoom_max = 1.
 zoom_default = .011

@@ -115,9 +115,19 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
     def screenShot(self):
         import os
         import popupcad
+        
+        from popupcad.graphics2d.svg_support import OutputSelection
+
+        win = OutputSelection()
+        accepted = win.exec_()
+        if accepted:
+            scaling = win.acceptdata()
+        else:
+            return
+            
         time = popupcad.basic_functions.return_formatted_time()
         filename = os.path.normpath(os.path.join(popupcad.exportdir,'2D_screenshot_'+time+'.svg'))
-        self.renderprocess(filename)
+        self.renderprocess(filename,scaling)
 
     def keyPressEvent(self,event):
         super(GraphicsScene,self).keyPressEvent(event)
