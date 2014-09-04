@@ -80,7 +80,7 @@ class Assembly(popupCADFile):
                         for item in b:
                             c = c.symmetric_difference(item)
                         d = cs.multiinit(c)
-                        e = cs.multiinit(*[item.buffer(bufferval,resolution = popupcad.default_buffer_resolution) for item in d])
+                        e = cs.multiinit(*[item.buffer(bufferval*popupcad.internal_argument_scaling,resolution = popupcad.default_buffer_resolution) for item in d])
                         f = [GenericShapeBase.genfromshapely(item) for item in e]
                         self.geoms.extend(f)
                     except NotSimple:
