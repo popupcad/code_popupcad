@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 15 17:26:23 2014
-
-@author: danaukes
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 import popupcad
 import types
@@ -18,9 +18,6 @@ from . import autoweb3
 from . import keepout2
 from . import outersheet2
 from . import removability
-#from . import cutop2
-#popupcad.manufacturing.AutoWeb3 = autoweb3.AutoWeb3
-#popupcad.manufacturing.autoweb3 = autoweb3
 
 popupcad.manufacturing.identifybodies  = identifybodies
 sys.modules['popupcad.manufacturing.identifybodies']  = identifybodies
