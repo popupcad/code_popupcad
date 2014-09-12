@@ -27,7 +27,7 @@ class GLObjectViewer(qg.QWidget):
         super(GLObjectViewer,self).__init__(*args,**kwargs)
         self.slider = qg.QSlider()
         self.slider.setMinimum(1)
-        self.slider.setMaximum(200)
+        self.slider.setMaximum(1000)
         self.slider.setTickInterval(1)
         layout = qg.QHBoxLayout()
         self.view = GLViewWidget(self)
