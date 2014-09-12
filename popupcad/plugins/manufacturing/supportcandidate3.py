@@ -8,6 +8,7 @@ Please see LICENSE.txt for full license.
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 from popupcad.filetypes.operation import Operation
+from .. import algorithms
 
 class SupportCandidate3(MultiValueOperation2):
     name = 'Support Candidate'
@@ -27,6 +28,6 @@ class SupportCandidate3(MultiValueOperation2):
         else:
             raise(Exception('keepout type'))
             
-        support=popupcad.plugins.algorithms.web.autosupport(ls1,keepout,design.layerdef(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
+        support=algorithms.web.autosupport(ls1,keepout,design.layerdef(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
         return support
 
