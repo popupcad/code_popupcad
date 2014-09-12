@@ -74,7 +74,6 @@ for path in subdirectories:
 
 from . import algorithms
 from . import constraints
-from . import deprecated
 from . import filetypes
 from . import geometry
 from . import graphics2d
@@ -82,7 +81,9 @@ from . import graphics3d
 from . import guis
 from . import manufacturing
 from . import materials
-from . import plugins
 from . import supportfiles
 from . import widgets
 #from . import pypoly2tri
+
+from . import plugins
+from . import deprecated

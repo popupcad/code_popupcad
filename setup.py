@@ -21,6 +21,7 @@ packages.append('popupcad.guis')
 packages.append('popupcad.manufacturing')
 packages.append('popupcad.materials')
 packages.append('popupcad.pypoly2tri')
+packages.append('popupcad.plugins')
 packages.append('popupcad.supportfiles')
 packages.append('popupcad.widgets')
 

@@ -13,7 +13,7 @@ import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.enum import enum
-from popupcad.deprecated.genericpolygon import GenericShape
+
 from .genericshapebase import GenericShapeBase
 
 class GenericLine(GenericShapeBase):
