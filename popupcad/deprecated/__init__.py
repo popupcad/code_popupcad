@@ -5,10 +5,30 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from . import genericpolygon
-
 import popupcad
 import types
 import sys
 
+from . import genericpolygon
+from . import placeop4
+from . import placeop5
+from . import placeop6
+from . import sketchoperation
+from . import cutop
+from . import customsupport2
+
+
 popupcad.geometry.genericpolygon.GenericShape = genericpolygon.GenericShape
+
+popupcad.manufacturing.placeop4  = placeop4
+sys.modules['popupcad.manufacturing.placeop4']  = placeop4
+popupcad.manufacturing.placeop5  = placeop5
+sys.modules['popupcad.manufacturing.placeop5']  = placeop5
+popupcad.manufacturing.placeop6  = placeop6
+sys.modules['popupcad.manufacturing.placeop6']  = placeop6
+popupcad.manufacturing.sketchoperation  = sketchoperation
+sys.modules['popupcad.manufacturing.sketchoperation']  = sketchoperation
+popupcad.manufacturing.cutop  = cutop
+sys.modules['popupcad.manufacturing.cutop']  = cutop
+popupcad.manufacturing.customsupport2  = customsupport2
+sys.modules['popupcad.manufacturing.customsupport2']  = customsupport2
