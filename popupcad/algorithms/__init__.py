@@ -9,4 +9,3 @@ from . import acyclicdirectedgraph
 from . import autobridge
 from . import keepout
 from . import points
-from . import web

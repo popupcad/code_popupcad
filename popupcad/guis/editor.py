@@ -187,13 +187,6 @@ class Editor(qg.QMainWindow,WidgetCommon):
         self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.PlaceOperation7)}})
 
         self.manufacturingactions= []        
-#        self.manufacturingactions.append({'text':'Keep-outs','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:self.newoperation(popupcad.manufacturing.KeepOut2)}})
-#        self.manufacturingactions.append({'text':'Supports','submenu':supportactions,'kwargs':{'icon':Icon('outerweb')}})
-#        self.manufacturingactions.append({'text':'Tool Clearance','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.ToolClearance2)}})
-#        self.manufacturingactions.append({'text':'Cuts','kwargs':{'icon':Icon('firstpass'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_1,'triggered':lambda:self.newoperation(popupcad.manufacturing.CutOperation2)}})
-#        self.manufacturingactions.append({'text':'Removability','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.Removability)}})
-#        self.manufacturingactions.append({'text':'Identify Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyBodies)}})
-#        self.manufacturingactions.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.IdentifyRigidBodies)}})
 
         self.toolbar_operations = self.buildToolbar(self.operationactions,name='Operations',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
         self.toolbar_manufacturing = self.buildToolbar(self.manufacturingactions,name='Manufacturing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)

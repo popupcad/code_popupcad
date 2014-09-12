@@ -28,7 +28,7 @@ def supportsheet(layerdef,lsin,value):
     return ls,exterior[0]
 
 def find_outer(ls,minpoint):
-    import points
+    import popupcad.algorithms.points as points
     lsouter = Laminate(ls.layerdef)
     lsinner = Laminate(ls.layerdef)
     for layer,layer_geometry in ls.layer_sequence.items():
