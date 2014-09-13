@@ -27,9 +27,7 @@ class GenericLine(GenericShapeBase):
     def pickpainterpathfunction(self):
         return self.generatelinepath
     def outputshapely(self):
-#        import shapely.geometry
         exterior_p = self.exteriorpoints()
-#        interiors_p = self.interiorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj
         
@@ -44,9 +42,7 @@ class GenericPolyline(GenericShapeBase):
     def pickpainterpathfunction(self):
         return self.generatelinepath
     def outputshapely(self):
-#        import shapely.geometry
         exterior_p = self.exteriorpoints()
-#        interiors_p = self.interiorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj        
 
@@ -65,10 +61,7 @@ class GenericPoly(GenericShapeBase):
         cdt = self.toCDT3()
         cdt.Triangulate()
         return [tri.toList() for tri in cdt.GetTriangles()]
-#        a = numpy.array([tri.toList() for tri in cdt.GetTriangles()]) /  popupcad.internal_argument_scaling
-#        return a.tolist()
     def outputshapely(self):
-#        import shapely.geometry
         exterior_p = self.exteriorpoints()
         interiors_p = self.interiorpoints()
         obj = customshapely.ShapelyPolygon(exterior_p,interiors_p)
@@ -100,9 +93,7 @@ class GenericCircle(GenericShapeBase):
     def pickpainterpathfunction(self):
         return self.generatecirclepath
     def outputshapely(self):
-#        import shapely.geometry
         exterior_p = self.exteriorpoints()
-#        interiors_p = self.interiorpoints()
         exterior = numpy.array(exterior_p)
         center = exterior[0]
         v = exterior[1]-exterior[0]
@@ -121,9 +112,7 @@ class GenericTwoPointRect(GenericShapeBase):
     def pickpainterpathfunction(self):
         return self.generaterect2pointpath
     def outputshapely(self):
-#        import shapely.geometry
         exterior_p = self.exteriorpoints()
-#        interiors_p = self.interiorpoints()
         corner1 = exterior_p[0]
         corner2 = (exterior_p[0][0],exterior_p[1][1])
         corner3 = exterior_p[1]

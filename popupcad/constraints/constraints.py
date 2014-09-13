@@ -32,10 +32,7 @@ class ConstraintSystem(object):
     def inilist(self,variables,ini):
         listout = []
         for item in variables:
-#            try:
             listout.append(ini[item])
-#            except KeyError:
-#                listout.append(ini2[item])
         return listout
         
     def deriveJ(self,objects):
@@ -88,12 +85,6 @@ class ConstraintSystem(object):
                 ini[key]=value
         return ini,vertexdict
 
-#    def getmyvertices(self):
-#        vertices = []
-#        for constraint in self.constraints:
-#            vertices.extend(constraint.getallvertices())
-#        return vertices
-
     def getpersistentobjects(self):
         vertices = []
         for constraint in self.constraints:
@@ -103,9 +94,6 @@ class ConstraintSystem(object):
     def process(self,vertices): 
         vertices += self.getpersistentobjects()
         ini,vertexdict = self.getlinks(vertices)
-#        myvertices = self.getmyvertices()
-#        ini2,vertexdict2 = self.getlinks(myvertices)
-        
         variables,qout = [],[]
         if len(self.constraints)>0:
             constraint_eqs,variables,constants,J= self.deriveJ(vertices)
@@ -124,11 +112,7 @@ class ConstraintSystem(object):
             qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
             qout = qout.x.tolist()
         for ii,variable in enumerate(variables):
-#            try:
             vertexdict[variable].setsymbol(variable,qout[ii])        
-#                vertexdict2[variable].setsymbol(variable,qout[ii])        
-#            except KeyError:
-#                vertexdict2[variable].setsymbol(variable,qout[ii])        
 
 class Constraint(object):
     name = 'Constraint'
@@ -163,7 +147,6 @@ class Constraint(object):
 
     @staticmethod    
     def _define_internals(*objects):
-#        self.objects = objects
         from popupcad.geometry.line import Line
         from popupcad.geometry.vertex import Vertex
     

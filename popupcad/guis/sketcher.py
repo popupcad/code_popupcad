@@ -12,7 +12,6 @@ from popupcad.graphics2d.interactivevertex import InteractiveVertex
 from popupcad.graphics2d.interactiveedge import InteractiveEdge
 from popupcad.graphics2d.interactive import Interactive, InteractiveLine
 from popupcad.graphics2d.static import Static,StaticLine
-#from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,ProtoRect,ProtoRect2Point
 from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,ProtoRect2Point
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
@@ -81,7 +80,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.scene.newpolygon.connect(self.undoredo.savesnapshot)
         self.scene.savesnapshot.connect(self.undoredo.savesnapshot)
         self.constraint_editor.signal_edit.connect(self.editItem)
-#        self.constraint_editor.itemdeleted.connect(self.refreshconstraints)
         self.constraint_editor.itemPressed.connect(self.showconstraint_item)
         if self.selectops:
             self.optree.currentRowChanged.connect(self.load_references)
@@ -171,14 +169,11 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.move(dxy)
         
     def showconstraint_item(self,obj1):
-#        print 'vertex_ids:',obj1.customdata.vertex_ids
         self.showprop.emit(obj1.customdata)
         self.scene.clearSelection()
         vertices = [item for item in self.scene.items() if isinstance(item,InteractiveVertex)]
         for v in vertices:
-#            print v.symbolic.id
             if v.symbolic.id in obj1.customdata.vertex_ids:
-#                print 'found:',v.symbolic.id
                 v.setSelected(True)
         pass
         edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge)]
@@ -201,21 +196,12 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.undoredo.savesnapshot()
         parents = [parent for parent in self.scene.items() if ((isinstance(parent,Interactive)))]
         interactivevertices = [item for parent in parents for item in parent.handles()]
-
-
-#        allvisiblevertices = [item for item in self.scene.items() if isinstance(item,InteractiveVertex)]
-
-        interactivevertices = [item for parent in parents for item in parent.handles()]
-
         controllinevertices = [item for parent in self.scene.controllines for item in [parent.handle1,parent.handle2]]
-        
         vertices = list(set(interactivevertices+self.scene.controlpoints + controllinevertices))
-        
         symbolicvertices = [vertex.symbolic for vertex in vertices]
         self.sketch.constraintsystem.process(symbolicvertices)
         [vertex.updatefromsymbolic() for vertex in vertices]            
         [parent.updateshape() for parent in parents]
-            
         self.constraint_editor.refresh()
 
     def createActions(self):
@@ -234,7 +220,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.editactions.append({'text':'Cut','kwargs':{'triggered':self.cut_to_clipboard,'shortcut':qg.QKeySequence.Cut}})      
         self.editactions.append({'text':'Copy','kwargs':{'triggered':self.copy_to_clipboard,'shortcut':qg.QKeySequence.Copy}})      
         self.editactions.append({'text':'Paste','kwargs':{'triggered':self.paste_from_clipboard,'shortcut':qg.QKeySequence.Paste}})      
-#        self.editactions.append({'text':'Delete','kwargs':{'triggered':self.delete_selected_items,'shortcut':qg.QKeySequence.Delete}})      
         self.editactions.append(None)      
         self.editactions.append({'text':'Group','kwargs':{'triggered':self.group,'shortcut':qc.Qt.CTRL+qc.Qt.Key_G}})      
         self.editactions.append({'text':'Unroup','kwargs':{'triggered':self.ungroup,'shortcut':qc.Qt.CTRL+qc.Qt.Key_U}})      
@@ -309,9 +294,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def paste_from_clipboard(self):
         self.undoredo.savesnapshot()
         self.scene.paste_from_clipboard()
-#    def delete_selected_items(self):
-#        self.undoredo.savesnapshot()
-#        self.scene.delete_selected_items()
     def selectlayers(self,layers):
         if self.isOperation:
             self.layerlistwidget.selectItems(layers)
@@ -367,12 +349,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         sketch = a.build_face_sketch()
         self.loadsketch(sketch)
 
-#    def solidworksimport2(self):
-#        from popupcad.filetypes.solidworksimport import Assembly
-#        a = Assembly.open()
-#        sketch = a.build_line_sketch()
-#        self.loadsketch(sketch)
-        
     def open(self):
         sketch = popupcad.filetypes.Sketch.open()
         if not sketch==None:
@@ -405,7 +381,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
     def autobridge(self):
         interactives = [item for item in self.scene.items() if isinstance(item,Interactive)]
-#        statics = [item for item in self.scene.items() if isinstance(item,Static)]
         
         handles = []
         [handles.extend(item.handles()) for item in interactives]
@@ -422,7 +397,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.showconstraint_item(item)
 
     def accept(self):
-#        print self.acceptdata()
         if self.accept_method!=None:
             self.accept_method(*self.acceptdata())
         self.close()

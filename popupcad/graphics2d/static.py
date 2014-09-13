@@ -8,15 +8,12 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from .graphicsitems import Common
-#from .graphicsitems import Poly,Path,Circle,Line,SuperLine,CommonShape
 from .graphicsitems import CommonShape
 from .modes import Modes
-#import numpy
 
 class StaticModes(Modes):
     modelist = []
     modelist.append('mode_default')
-#    modelist.append('mode_constraint')
     modelist.append('mode_render')
 
 class Static(Common):
@@ -36,17 +33,14 @@ class Static(Common):
     
     pens = {}
     pens[modes.mode_default] = basicpen      
-#    pens[modes.mode_constraint] =  basicpen
     pens[modes.mode_render] =  basicpen
 
     brushes = {}
     brushes[modes.mode_default] = basicbrush
-#    brushes[modes.mode_constraint] = basicbrush
     brushes[modes.mode_render] = basicbrush
 
     nobrushes = {}
     nobrushes[modes.mode_default] = nobrush
-#    nobrushes[modes.mode_constraint] = nobrush
     nobrushes[modes.mode_render] = nobrush
 
     z_value = 10
@@ -91,13 +85,6 @@ class Static(Common):
     def setselectable(self,test):
         self.selectable = test
 
-#    def clearmode(self):
-#        self.updatemode(self.modes.mode_default)
-#
-#    def requestedges(self):
-#        self.updatemode(self.modes.mode_constraint)
-#        pass
-
     def updateshape(self):
         super(Static,self).updateshape()
 
@@ -112,9 +99,6 @@ class Static(Common):
         if self.selectable:
             self.setFlag(self.ItemIsSelectable,True)
 
-#        if self.mode == self.modes.mode_constraint:
-#            pass
-        
     def mouseDoubleClickEvent(self,event):
         if self.selectable:
             try:
@@ -124,8 +108,6 @@ class Static(Common):
         else:
             super(Static,self).mouseDoubleClickEvent(event)
             
-
-
 class StaticPoly(Static,CommonShape,qg.QGraphicsPathItem):
     pass
 class StaticCircle(Static,CommonShape,qg.QGraphicsPathItem):

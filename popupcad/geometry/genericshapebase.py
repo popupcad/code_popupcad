@@ -138,27 +138,6 @@ class GenericShapeBase(popupCADFile):
         l = v.dot(v)**.5
         return l<cls.tolerance
 
-#    def plot(self,ax = None):
-#        import matplotlib.pyplot as plt
-#        plt.ion()
-#        
-#        if ax == None:
-#            fig = plt.figure()
-#            ax = fig.add_subplot(111)
-#            ax.hold(True)
-#        loop = [coord for coord in self.exteriorpoints()]
-#        loop = numpy.array(loop+[loop[0]])
-#        ax.fill(*loop.T,color=(0.,0.,1.,.5))
-#        ax.plot(*loop.T,color='k')
-#        loops = []
-#        [loops.append([coord for coord in interior]) for interior in self.interiorpoints()]
-#        for loop in loops:
-#            loop = numpy.array(loop+[loop[0]])
-#            ax.fill(*loop.T,color = (1.,0.,0.,.5))
-#            ax.plot(*loop.T,color = 'k')
-#        plt.show()
-#        return ax
-
     @staticmethod
     def buildvertices(exterior_p,interiors_p):
         exterior = GenericShapeBase.buildvertexlist(exterior_p)
@@ -246,14 +225,6 @@ class GenericShapeBase(popupCADFile):
         except AttributeError:
             self.update_handles()
             return self._exteriorhandles
-
-#    def get_interior_handles(self):
-#        try:
-#            return self._interiorhandles
-#        except AttributeError:
-#            self.update_handles()
-#            return self._interiorhandles
-
 
     def toCDT2(self):
         from p2t import Point,CDT

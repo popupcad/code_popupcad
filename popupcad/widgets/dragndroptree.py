@@ -82,17 +82,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
 
         m = self.model()
         m.rowsInserted.connect(self.myRowsInserted)
-        
-        
-#    def currentOperation(self):
-#        index = self.currentValidIndex(ii=-1)
-#        m = self.model()
-#        if index.parent().isValid():
-#            op = m.data(index.parent(),qc.Qt.ItemDataRole.UserRole)
-#            return op
-#        else:
-#            op = m.data(index,qc.Qt.ItemDataRole.UserRole)
-#            return op
 
     def setCurrentIndeces(self,ii,jj=0):
         m = self.model()
@@ -124,16 +113,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 jj = ii%n
             index = m.createIndex(jj,0) 
             return index
-
-#    def currentOperationOutput(self):
-#        op = self.currentOperation()
-#        ii = self.currentOperationOutputIndex()
-#        return op.output[ii]
-
-#    def currentRefs(self):
-#        op = self.currentOperation()
-#        ii = self.currentOperationOutputIndex()
-#        return op.id,ii    
 
     def currentIndeces(self,ii=-1):
         ii = self.currentRow(ii=ii)
@@ -207,7 +186,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setDropIndicatorShown(True)
         self.setDragDropMode(self.DragDropMode.NoDragDrop)
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
-#        self.doubleClicked.disconnect(self.itemDoubleClicked)
 
     def enable(self):
         self.enabled=True
@@ -215,7 +193,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setDropIndicatorShown(True)
         self.setDragDropMode(self.DragDropMode.InternalMove)
         self.setEditTriggers(self.EditTrigger.EditKeyPressed)
-#        self.doubleClicked.connect(self.itemDoubleClicked)
     
     def setnetworkgenerator(self,generator):
         pass
@@ -301,7 +278,6 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         if valid:
             for ii in rows:
                 del self.masterlist[ii]
-#                self.model().removeRow(ii,qc.QModelIndex())
         self.refresh()
     def disable(self):
         super(DirectedDraggableTreeWidget,self).disable()

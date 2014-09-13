@@ -21,24 +21,11 @@ class GraphicsView(qg.QGraphicsView):
         self.setRenderHints(qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)
         self.setDragMode(self.ScrollHandDrag)
         self.resetTransform()
-#        self.lastdrag = self.ScrollHandDrag
         self.rubberband()        
         self.scene().newpolygon.connect(self.restoredrag)
         self.scene().leavingeditmode.connect(self.restoredrag)
         self.scene().enteringeditmode.connect(self.turn_off_drag)
         self.zoomToFit()
-#    def updatescale(self,scalefactor,viewpos,scenepos,recenter):
-#        self.scale(scalefactor,scalefactor)
-#
-#        rect = self.rect()
-#        center_x = rect.x()*1.+rect.width()*1./2
-#        center_y = rect.y()*1.+rect.height()*1./2
-#        center = qc.QPointF(center_x,center_y)
-#        v_view = viewpos-center
-#        newcenter = viewpos - v_view/scalefactor
-#        newcenter_scene = self.mapToScene(qc.QPoint(newcenter.x(),newcenter.y()))
-#        if recenter:
-#            self.centerOn(newcenter_scene)
             
     def keyPressEvent(self,event):
         super(GraphicsView,self).keyPressEvent(event)
@@ -83,7 +70,6 @@ class GraphicsView(qg.QGraphicsView):
     def turn_off_drag(self):
         self.lastdrag = self.dragMode()
         self.setDragMode(qg.QGraphicsView.DragMode.NoDrag)
-#        self.scene().setIsEnabled(False)
 
     def restoredrag(self):
         self.setDragMode(self.lastdrag)
@@ -104,10 +90,10 @@ class GraphicsView(qg.QGraphicsView):
         scene = self.scene()
         for item in scene.items():
             item.resetTransform()
-        self.resetTransform() # zero out scaling
+        self.resetTransform()
         scene.setSceneRect(scene.itemsBoundingRect())
         scene_rect = scene.sceneRect()
-        self.fitInView(scene_rect, qc.Qt.KeepAspectRatio) # fit in view
+        self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)
 
         if scene_rect.width()==0 and scene_rect.height()==0:
             currentzoom = self.zoom()

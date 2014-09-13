@@ -4,7 +4,6 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-#import shapely.ops as so
 from popupcad.materials.laminatesheet import Laminate
 from popupcad.filetypes.operation import Operation
 import PySide.QtGui as qg
@@ -25,13 +24,6 @@ class Dialog(qg.QDialog):
         self.le0 = qg.QComboBox()
         self.le0.addItems(unaryoperationtypes+pairoperationtypes)
 
-#        self.unarylistwidget = qg.QListWidget()
-#        unaryitems = []
-#        for op in operationlist:
-#            unaryitems.append(ListWidgetItem(op,self.unarylistwidget))
-#        self.unarylistwidget.setSelectionBehavior(qg.QListWidget.SelectionBehavior.SelectRows)
-#        self.unarylistwidget.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
-
         self.operationlist = operationlist
 
         self.unarylistwidget = DraggableTreeWidget()
@@ -44,13 +36,6 @@ class Dialog(qg.QDialog):
         self.pairlistwidget.setSelectionMode(qg.QListWidget.SelectionMode.ExtendedSelection)
         self.pairlistwidget.selectIndeces(operationindeces2)
 
-#        self.pairlistwidget = qg.QListWidget()
-#        pairitems = []
-#        for op in operationlist:
-#            pairitems.append(ListWidgetItem(op,self.pairlistwidget))
-#        self.pairlistwidget.setSelectionBehavior(qg.QListWidget.SelectionBehavior.SelectRows)
-#        self.pairlistwidget.setSelectionMode(qg.QListWidget.SelectionMode.SingleSelection)
-        
         layout = qg.QVBoxLayout()
         layout.addWidget(self.le0)
         layout.addWidget(self.unarylistwidget)
@@ -74,27 +59,18 @@ class Dialog(qg.QDialog):
         
         self.le0.currentIndexChanged.connect(self.changelayout)
         self.changelayout()
-#        [item.setSelected(item.customdata.id in selectedunary) for item in unaryitems]        
-#        [item.setSelected(item.customdata.id in [selectedpair]) for item in pairitems]        
 
     def acceptdata(self):
         unaryparents = self.unarylistwidget.currentRefs()
         pairparents = self.pairlistwidget.currentRefs()
         function = self.le0.currentText()
         return unaryparents, pairparents, function
-#        super(Dialog,self).accept()
 
     def changelayout(self):
         if self.le0.currentText() in self.unaryoperationtypes:
-#            self.unarylistwidget.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
             self.pairlistwidget.hide()
-#            self.unarylistwidget.clearSelection()
-#            self.pairlistwidget.clearSelection()
         else:
-#            self.unarylistwidget.setSelectionMode(qg.QListWidget.SelectionMode.SingleSelection)
             self.pairlistwidget.show()
-#            self.unarylistwidget.clearSelection()
-#            self.pairlistwidget.clearSelection()
             
 class LaminateOperation(Operation):
     name = 'Laminate Op'

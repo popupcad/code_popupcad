@@ -41,7 +41,6 @@ packages.append("scipy.integrate.vode")
 packages.append("scipy.integrate.lsoda")
 packages.append("scipy.sparse.csgraph._validation")
 packages.append("OpenGL.platform.win32")
-#packages.append("matplotlib.backends")
 packages.append("sympy.assumptions.handlers")
 packages.append("numpy")
 packages.append("scipy")
@@ -56,8 +55,6 @@ include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/n
 include_files.append(('LICENSE.txt','LICENSE.txt'))
 include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
 include_files.extend(include_entire_directory('licenses','licenses'))
-#include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/LICENSE.txt')),os.path.normpath(os.path.join('licenses','numpy','README.txt'))))
-#include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/scipy/LICENSE.txt')),os.path.normpath(os.path.join('licenses','scipy','README.txt'))))
 
 zip_includes = include_entire_directory(os.path.normpath(os.path.join(basedir,"Lib\\site-packages\\OpenGL")),"OpenGL")
 

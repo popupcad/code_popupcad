@@ -191,7 +191,6 @@ class AcyclicDirectedGraph(object):
         while not (B == lastB).all():
             lastB = B
             B = B.dot(A)+B
-#            B = (B>0)*1
         return lastB
 
     def parents(self):
@@ -289,26 +288,4 @@ class AcyclicDirectedGraph(object):
         return newsequence[ii:]    
 
 if __name__=='__main__':
-#    node = Data('asdfasdfasfd')
-#    nodes = [CustomNode(Data('item '+str(item))) for item in range(10)]
-#    connections = zip(nodes[:-1],nodes[1:])
-#    network = AcyclicDirectedGraph(nodes,connections)
-##    network.addnode(node)
-##    network.addconnection(nodes[5],node)
-##    network.addconnection(node,nodes[8])
-#    network.addconnection(nodes[0],nodes[2])
-#    network.addconnection(nodes[0],nodes[5])
-#
-#    sequence = [nodes[item] for item in [5,4,3]]
-##    print sequence, network.sequencevalid(sequence)    
-#    
-#    iis = network.fixsequence(sequence)
-#    f = file('test2.yaml','w')
-#    yaml.dump(network,f)
-#    f.close()
-    f = file('test.yaml','r')
-    n = yaml.load(f)
-#    for node in n.nodes:
-#    seq = n.fixsequence([n.nodes[2]])
-    seq = n.sortedallchildrensequence(n.nodes[-1])    
-    seq = n.sortedallchildrensequence(n.nodes[0])        
+    pass

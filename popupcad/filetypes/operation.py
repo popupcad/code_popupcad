@@ -66,16 +66,3 @@ class Operation(Node,UserData,ClassTools):
             self.editdata(*dialog.acceptdata())
             editedsignal.emit(self)        
      
-#    @classmethod
-#    def new2(cls,parent,design,currentindeces,newsignal):
-#        dialog = cls.buildnewdialog(design,currentop)
-#        if dialog.exec_()==dialog.Accepted:
-#            operation = cls(*dialog.acceptdata())
-#            newsignal.emit(operation)
-#
-#    def edit2(self,parent,design,currentindeces,editedsignal):
-#        dialog = self.buildeditdialog(design)
-#        if dialog.exec_()==dialog.Accepted:
-#            self.editdata(*dialog.acceptdata())
-#            editedsignal.emit(self)        
-

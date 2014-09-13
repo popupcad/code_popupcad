@@ -12,12 +12,6 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 import pyqtgraph as pg
 
-#bgcolor = qg.QColor(100,100,255,255)
-#bgcolor = (100,100,255,255)
-
-#pg.setConfigOption('background', bgcolor)
-#pg.setConfigOption('foreground', 'w')
-
 import pyqtgraph.opengl as gl
 import numpy as np
 import numpy
@@ -45,11 +39,8 @@ class GLViewWidget(gl.GLViewWidget):
     def __init__(self,*args,**kwargs):
         super(GLViewWidget,self).__init__(*args,**kwargs)        
         self.z_zoom=10
-#        self.setBackgroundColor(bgcolor)
         self.setCameraPosition(distance=30000)
         self.setMinimumSize(300,300)
-#    def keyPressEvent(self,event):
-#        super(GLViewWidget,self).keyPressEvent(event)
             
     def clear(self):
         while len(self.items)>0:

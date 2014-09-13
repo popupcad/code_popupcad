@@ -7,7 +7,6 @@ Please see LICENSE.txt for full license.
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-#from .graphicsitems import Common,Rect2Point,CommonShape
 from .graphicsitems import Common,CommonShape
 from .interactivevertex import InteractiveVertex
 from popupcad.geometry.vertex import Vertex
@@ -73,17 +72,14 @@ class Proto(Common):
     def mousedoubleclick(self,point):
         self.finish_definition()
         self.updateshape()
-#        return None 
 
     def mouserelease(self,point):
         pass
-#        return self
 
     def mousemove(self,point):
         if not not self.temphandle:
             self.temphandle.setPos(point)
         self.updateshape()
-#        return self            
 
 class ProtoMultiPoint(Proto):
     def addhandle(self,handle):
@@ -112,7 +108,6 @@ class ProtoMultiPoint(Proto):
             self.temphandle.updatescale()
 
         self.updateshape()
-#        return self
     def mousedoubleclick(self,point):
         if len(self.generic.exterior)>2:
             self.finish_definition()
@@ -151,22 +146,18 @@ class ProtoTwoPoint(Proto):
             self.temphandle.updatescale()
             self.updateshape()
             return
-#            return self
         elif len(self.generic.exterior)==1:
             if self.addhandle(self.temphandle):
                 self.finish_definition()
                 self.updateshape()
-#                return None  
                 return
 
             else:
-#                return self
                 return
         elif len(self.generic.exterior)>=2:
             raise(Exception('should never get here'))
             self.finish_definition()
             self.updateshape()
-#            return None         
             return
         self.updateshape()
         

@@ -104,18 +104,12 @@ class Dialog(qg.QDialog):
     def acceptdata(self):
         sketchid =  self.sketch().id
         opid,outputref= self.device_index.currentRefs()[0]
-#        jj,ll = self.support_index.currentIndeces()
         layer_links = [item.customdata.id for item in self.outputlayerselector.selectedItems()]
         
         return opid,sketchid,layer_links,float(self.support_width.text()),float(self.support_out.text()),float(self.hole_radius.text()),float(self.cut_width.text()),outputref
 
 class CustomSupport3(Operation):
     name = 'Custom Support'
-
-#    attr_init = 'device_link','support_link','support_width','support_out','hole_radius','cut_width','deviceoutputref','supportoutputref'
-#    attr_init_k = tuple()
-#    attr_copy = 'id','customname'
-    
     outputtypes = enum(device = 201,supports = 202,cuts = 203)    
     
     def __init__(self,*args):
@@ -150,7 +144,6 @@ class CustomSupport3(Operation):
 
     def buildeditdialog(self,design):        
         device_index= design.operation_index(self.device_link)
-#        support_index= design.operation_index(self.support_link)
         sketch = design.sketches[self.sketch_link]
         dialog = Dialog(design,design.prioroperations(self),device_index,self.support_width,self.support_out,self.hole_radius,self.cut_width,self.deviceoutputref,sketch,self.layer_links)
         return dialog
@@ -163,12 +156,7 @@ class CustomSupport3(Operation):
             support.replacelayergeoms(layer,[operationgeom])
         
         device = design.op_from_ref(self.device_link).output[self.deviceoutputref].csg
-#        support = design.op_from_ref(self.support_link).output[self.supportoutputref].csg
         modified_device,supports,cuts = algorithms.modify_device.modify_device(device,support,self.support_width*popupcad.internal_argument_scaling,self.support_out*popupcad.internal_argument_scaling,self.hole_radius*popupcad.internal_argument_scaling,self.cut_width*popupcad.internal_argument_scaling)
-#        return supports,cuts,device
-#
-#    def generate(self,design):
-#        supports,cuts,device = self.operate(design)
         s = OperationOutput(supports,'supports',self)
         c = OperationOutput(cuts,'cuts',self)
         d = OperationOutput(modified_device,'device',self)

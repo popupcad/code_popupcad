@@ -108,8 +108,6 @@ class Assembly(popupCADFile):
         return sketch
         
     def filter_small_areas(self,area_ratio):
-#        import matplotlib.pyplot as plt
-#        plt.ion()
         areas = []
         for geom in self.geoms:
             shape = geom.outputshapely()
@@ -133,68 +131,10 @@ class Assembly(popupCADFile):
             loops.extend(geom.interiorpoints())
         return loops
         
-#    def plotloops(self,loops,ax=None):
-#        import matplotlib.pyplot as plt
-#        plt.ion()
-#        
-#        if ax==None:
-#            f = plt.figure()
-#            ax = f.add_subplot(111)
-#
-#        for loop in loops:
-#            L = numpy.array(loop+[loop[0]])
-#            ax.plot(*(L.T))
-#        plt.show()                
-
-            
 if __name__=='__main__':
     import sys
-#    import matplotlib.pyplot as plt
-#    plt.ion()
 
     app = qg.QApplication(sys.argv)
     a = Assembly.open()
     a.convert(scalefactor = 1., bufferval = None)
-#    if a!=None:
-#        f = plt.figure()
-#        ax = f.add_subplot(111)
-#        A = numpy.array(a.buildloops(a.goodgeoms))
-#        a.plotloops(a.buildloops(a.geoms))
-#        plt.axis('equal')
-#
-#        A2 = numpy.array(a.buildloops(a.badgeoms))
-#        a.plotloops(a.buildloops(a.badgeoms))
-#        plt.axis('equal')
-
-#    self = a
-#    import matplotlib.pyplot as plt
-#    plt.ion()
-#    import numpy
-#    areas = []
-#    for geom in self.geoms:
-#        shape = geom.outputshapely()
-#        areas.append(shape.area)
-#    areas = numpy.array(areas)
-#    import scipy.stats as stats
-#    
-##    l = numpy.r_[min(areas):max(areas):1j*len(areas)]
-#    dist = stats.binned_statistic(areas,range(len(areas)),statistic = 'count',bins = 100)
-#
-#    plt.hist(areas,10)
-#
-#    plt.hist(areas,100)
-##    print dist
-#
-#    dist = stats.binned_statistic([1, 2, 1, 2, 4], numpy.arange(10,15), statistic='mean',bins=3)
-#    print dist
-#
-#    numpy.histogram()    
-    
-#    f = plt.figure()
-#    ax = f.add_subplot(111)
-#    for segment in a.shared_edges:
-#        s = numpy.array(segment.exteriorpoints())
-#        ax.plot(*s.T)
-#    ax.figure.canvas.draw()        
-#                
     sys.exit(app.exec_())

@@ -37,7 +37,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         self.temp = None
         self.update()
         self.setItemIndexMethod(self.NoIndex)
-#        self.constraintsystem = constraints.ConstraintSystem()
         self.constraints_on= False
         self.controlpoints = []
         self.controllines = []
@@ -53,34 +52,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         for item in self.items():
             if not isinstance(item,Static):
                 item.setEnabled(test)
-#    def updatescenerect(self):
-#        bufferval = .2
-#        items = self.items()
-#        if len(items)>0:
-#            parents = [item for item in items if hasattr(item,'handles') ]
-#            nonparents = [item for item in items if not hasattr(item,'handles') ]
-#            handles = [handle for item in parents for handle in item.handles]
-#            positions=[geom.pos() for geom in nonparents+handles]
-#            positions = [[pos.x(),pos.y()] for pos in positions]
-#            positions = numpy.array(positions)
-#            mins = positions.min(0)
-#            maxs = positions.max(0)
-#            rect = maxs-mins
-#            bufferedrect = rect*(1.+2.*bufferval)
-#            llbuffer = mins - rect*bufferval
-#            self.setSceneRect(*(llbuffer.tolist()+bufferedrect.tolist()))
-
-#    def wheelEvent(self,event):
-#        scenepos =event.scenePos()
-#        viewpos = self.views()[0].mapFromScene(event.scenePos())
-#        viewpos = qc.QPointF(viewpos)
-#        
-#        scalefactor = 1.2
-#        recenter = True
-#        if event.delta()<0:
-#            scalefactor = 1./scalefactor
-#            recenter = False
-#        self.views()[0].updatescale(scalefactor,viewpos,scenepos,recenter)
         
     def deleteall(self):
         for item in self.items():
@@ -105,13 +76,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         else:
             return point
 
-#    def updatemouse(self):
-#        mousemode = {}
-#        mousemode[self.mode_select]=qg.QGraphicsView.DragMode.RubberBandDrag
-#        mousemode[self.mode_pan]=qg.QGraphicsView.DragMode.ScrollHandDrag
-#        mousemode[self.mode_newgeometry]=qg.QGraphicsView.DragMode.NoDrag
-#        [view.setDragMode(mousemode[self.mode]) for view in self.views()]
-            
     def screenShot(self):
         import os
         import popupcad
@@ -174,15 +138,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                         self.nextgeometry = None
         else:
             super(GraphicsScene,self).mousePressEvent(event)
-#            if self.selectedItems()==[]:
-#                for item in self.items():
-#                    try:
-#                        if not self.constraints_on:
-#                            item.reset()
-#                    except AttributeError:
-#                        pass
-#                self.leavingeditmode.emit()
-#                self.update()
             self.leavingeditmode.emit()
 
     def mouseMoveEvent(self, event):
