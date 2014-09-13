@@ -69,7 +69,7 @@ class WidgetCommon(object):
                     menu.addAction(action)                      
 
     def buildSubmenu(self,actiondata):
-        subactions = actiondata.pop('submenu')
+        subactions = actiondata['submenu']
         actions = [self.buildaction(**item) for item in subactions]
         submenu = qg.QMenu(actiondata['text'])
         for action in actions:

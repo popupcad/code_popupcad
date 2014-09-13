@@ -87,5 +87,5 @@ from . import widgets
 
 #from . import plugins
 
-import popupcad_manufacturing_plugins
+#import popupcad_manufacturing_plugins
 from . import deprecated
