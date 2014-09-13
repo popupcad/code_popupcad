@@ -31,9 +31,12 @@ packages.append('popupcad.graphics2d')
 packages.append('popupcad.graphics3d')
 packages.append('popupcad.manufacturing')
 packages.append('popupcad.materials')
-packages.append('popupcad.pypoly2tri')
 packages.append('popupcad.supportfiles')
 packages.append('popupcad.widgets')
+
+packages.append('pypoly2tri')
+packages.append('popupcad_manufacturing_plugins')
+
 packages.append("scipy.integrate.vode")
 packages.append("scipy.integrate.lsoda")
 packages.append("scipy.sparse.csgraph._validation")

@@ -86,4 +86,6 @@ from . import widgets
 #from . import pypoly2tri
 
 from . import plugins
+
+import popupcad_manufacturing_plugins
 from . import deprecated

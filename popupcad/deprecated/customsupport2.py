@@ -127,9 +127,10 @@ class CustomSupport2(Operation):
         return dialog
 
     def generate(self,design):
+        import popupcad_manufacturing_plugins
         device = design.op_from_ref(self.device_link).output[self.deviceoutputref].csg
         support = design.op_from_ref(self.support_link).output[self.supportoutputref].csg
-        modified_device,supports,cuts = popupcad.plugins.algorithms.modify_device.modify_device(device,support,self.support_width*popupcad.internal_argument_scaling,self.support_out*popupcad.internal_argument_scaling,self.hole_radius*popupcad.internal_argument_scaling,self.cut_width*popupcad.internal_argument_scaling)
+        modified_device,supports,cuts = popupcad_manufacturing_plugins.algorithms.modify_device.modify_device(device,support,self.support_width*popupcad.internal_argument_scaling,self.support_out*popupcad.internal_argument_scaling,self.hole_radius*popupcad.internal_argument_scaling,self.cut_width*popupcad.internal_argument_scaling)
 #        return supports,cuts,device
 #
 #    def generate(self,design):

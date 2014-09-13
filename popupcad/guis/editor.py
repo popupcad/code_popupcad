@@ -24,7 +24,6 @@ from popupcad.widgets.listeditor import ListSelector
 import glob
 from popupcad.widgets.widgetcommon import WidgetCommon
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,DirectedDraggableTreeWidget
-from popupcad.plugins.manufacturing.manufacturingplugin import ManufacturingPlugin
 
 class Editor(qg.QMainWindow,WidgetCommon):
     '''
@@ -116,7 +115,9 @@ class Editor(qg.QMainWindow,WidgetCommon):
 #        self.resize(1024,576)
 #        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
 #        self.move(dxy)
-        ManufacturingPlugin(self,self.design)
+        import popupcad_manufacturing_plugins
+        popupcad_manufacturing_plugins.initialize(self,self.design)
+        
 
     def autosave(self):
         import os

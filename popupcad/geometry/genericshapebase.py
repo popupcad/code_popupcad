@@ -264,7 +264,7 @@ class GenericShapeBase(popupCADFile):
         return cdt
 
     def toCDT3(self):
-        from popupcad.pypoly2tri import Point,CDT
+        from pypoly2tri import Point,CDT
         exterior = [Point(*point) for point in self.exteriorpoints()]
         interiors = [[Point(*point) for point in interior] for interior in self.interiorpoints()]
         cdt = CDT(exterior)

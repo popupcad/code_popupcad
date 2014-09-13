@@ -21,6 +21,8 @@ packages.append('popupcad.materials')
 packages.append('popupcad.supportfiles')
 packages.append('popupcad.widgets')
 
+packages.append('popupcad_manufacturing_plugins')
+
 
 def include_OpenGL():
     path_base = basedir+"Lib\\site-packages\\OpenGL"

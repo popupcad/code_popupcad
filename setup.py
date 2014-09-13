@@ -20,10 +20,12 @@ packages.append('popupcad.graphics3d')
 packages.append('popupcad.guis')
 packages.append('popupcad.manufacturing')
 packages.append('popupcad.materials')
-packages.append('popupcad.pypoly2tri')
-packages.append('popupcad.plugins')
 packages.append('popupcad.supportfiles')
 packages.append('popupcad.widgets')
+
+packages.append('pypoly2tri')
+packages.append('popupcad_manufacturing_plugins')
+
 
 package_data = {}
 package_data['popupcad'] = ['scripts/*','designs/*','import/*','supportfiles/*']
