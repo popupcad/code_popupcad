@@ -12,4 +12,4 @@ setup Git repository for popupCAD
 
 #. add popupcad directory to path::
 
-     echo "PYTHONPATH$PYTHONPATH:~/popupcad" >> ~/.bashrc
+     echo "export PYTHONPATH=\$PYTHONPATH:~/popupcad" >> ~/.bashrc
