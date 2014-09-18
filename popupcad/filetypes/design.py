@@ -156,15 +156,15 @@ class Design(popupCADFile):
             self.sketches.pop(key)
         
     def loadcontrolpoints(self,opindex,output_key):
-        from popupcad.graphics2d.interactivevertex import InteractiveVertex
-
+#        from popupcad.graphics2d.interactivevertex import InteractiveVertex
         vs = []
         try:
             controlpoints = self.operations[opindex].output[output_key].controlpoints()
-            for point in controlpoints:
-                v = InteractiveVertex(point)
-                v.updatefromsymbolic()
-                vs.append(v)
+            vs = [point.gen_interactive() for point in controlpoints]
+#            for point in controlpoints:
+#                v = InteractiveVertex(point)
+#                v.updatefromsymbolic()
+#                vs.append(v)
         except IndexError:
             pass
         except AttributeError:
@@ -172,18 +172,18 @@ class Design(popupCADFile):
         return vs
 
     def loadcontrollines(self,opindex,output_key):
-        from popupcad.graphics2d.interactivevertex import InteractiveVertex
+#        from popupcad.graphics2d.interactivevertex import InteractiveVertex
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
         
         l = []
         try:
             controllines = self.operations[opindex].output[output_key].controllines()
             for line in controllines:
-                v1 = InteractiveVertex(line.vertex1)
-                v2 = InteractiveVertex(line.vertex2)
-                v1.updatefromsymbolic()
-                v2.updatefromsymbolic()
-                v = InteractiveEdge(v1,v2)
+#                v1 = InteractiveVertex(line.vertex1)
+#                v2 = InteractiveVertex(line.vertex2)
+#                v1.updatefromsymbolic()
+#                v2.updatefromsymbolic()
+                v = InteractiveEdge(v1.gen_interactive(),v2.gen_interactive())
                 v.handleupdate()
                 l.append(v)
         except IndexError:

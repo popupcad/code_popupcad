@@ -58,8 +58,7 @@ class Proto(Common):
             self.temphandle = None
 
     def checkdist(self,point0,point1):
-        import popupcad.algorithms.points as pts
-        return not pts.twopointsthesame(point0,point1,self.minradius/self.scene().views()[0].zoom())
+        return not popupcad.algorithms.points.twopointsthesame(point0,point1,self.minradius/self.scene().views()[0].zoom())
 
     def finish_definition(self):
         scene = self.scene()
@@ -146,6 +145,7 @@ class ProtoTwoPoint(Proto):
             self.temphandle.updatescale()
             self.updateshape()
             return
+            
         elif len(self.generic.exterior)==1:
             if self.addhandle(self.temphandle):
                 self.finish_definition()

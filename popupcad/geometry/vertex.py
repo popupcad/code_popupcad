@@ -98,4 +98,11 @@ class Vertex(object):
         if identical:
             new.id = self.id
         return new            
+
+    def gen_interactive(self):
+        from popupcad.graphics2d.interactivevertex import InteractiveVertex
+        iv = InteractiveVertex(self)
+        iv.updatefromsymbolic()
+        return iv
+        
         

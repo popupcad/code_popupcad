@@ -191,20 +191,23 @@ class GenericShapeBase(popupCADFile):
         except AttributeError:
             pass
 
-        exterior = []
-        for vertex in self.exterior:
-            iv = popupcad.graphics2d.interactivevertex.InteractiveVertex(vertex)
-            iv.updatefromsymbolic()
-            exterior.append(iv)
+#        exterior = []
+#        for vertex in self.exterior:
+#            iv = popupcad.graphics2d.interactivevertex.InteractiveVertex(vertex)
+#            iv.updatefromsymbolic()
+#            exterior.append(iv)
+    
+#        interiors = []
+#        for interior in self.interiors:
+#            interior_out = []
+#            for vertex in interior:
+#                iv = popupcad.graphics2d.interactivevertex.InteractiveVertex(vertex)
+#                iv.updatefromsymbolic()
+#                interior_out.append(iv)
+#            interiors.append(interior_out)
 
-        interiors = []
-        for interior in self.interiors:
-            interior_out = []
-            for vertex in interior:
-                iv = popupcad.graphics2d.interactivevertex.InteractiveVertex(vertex)
-                iv.updatefromsymbolic()
-                interior_out.append(iv)
-            interiors.append(interior_out)
+        exterior = [vertex.gen_interactive() for vertex in self.exterior]
+        interiors = [[vertex.gen_interactive() for vertex in interior] for interior in self.interiors]
 
         handles = exterior[:]
         [handles.extend(interior) for interior in interiors]
