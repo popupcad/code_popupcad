@@ -37,7 +37,6 @@ class GraphicsView(qg.QGraphicsView):
     def updatescaleables(self):
         [item.setcustomscale(1/self.zoom()) for item in self.scene().items() if hasattr(item,'setcustomscale')]
 
-
     def wheelEvent(self,event):
         super(GraphicsView,self).wheelEvent(event)
         if event.delta()<0:
@@ -53,7 +52,6 @@ class GraphicsView(qg.QGraphicsView):
             zoom=self.zoom_min/self.zoom()
             
         self.scale(zoom,zoom)
-
 
     def mousePressEvent(self, event):
         super(GraphicsView,self).mousePressEvent(event)

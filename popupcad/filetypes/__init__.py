@@ -10,7 +10,6 @@ from .sketch import Sketch
 #from . import classtools
 #from . import design
 #from . import enum
-#from . import exceptions
 #from . import genericfile
 #from . import laminate
 #from . import layer

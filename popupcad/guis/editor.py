@@ -9,23 +9,16 @@ import sys
 import os
 import PySide.QtCore as qc
 import PySide.QtGui as qg
+import glob
+import imp
 
 import popupcad
-import imp
-from popupcad.widgets.errorlog import ErrorLog
-from popupcad.graphics2d.graphicsscene import GraphicsScene
-from popupcad.graphics2d.graphicsview import GraphicsView
-from popupcad.graphics3d.GLMeshItem import GLObjectViewer
-from popupcad.supportfiles import Icon
-import popupcad.filetypes as filetypes
-import popupcad.materials as materials
-from popupcad.widgets import materialselection
-from popupcad.widgets.listeditor import ListSelector
-import glob
-from popupcad.widgets.widgetcommon import WidgetCommon
-from popupcad.widgets.dragndroptree import DraggableTreeWidget,DirectedDraggableTreeWidget
 
-class Editor(qg.QMainWindow,WidgetCommon):
+from popupcad.filetypes.design import Design
+from popupcad.filetypes.sketch import Sketch
+from popupcad.supportfiles import Icon
+
+class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     '''
     Editor Class
 
@@ -57,23 +50,23 @@ class Editor(qg.QMainWindow,WidgetCommon):
         :raises: nothing
         """
         super(Editor,self).__init__(parent)
-        self.error_log = ErrorLog()
+        self.error_log = popupcad.widgets.errorlog.ErrorLog()
         self.safe_init(parent,**kwargs)
 
     @loggable
     def safe_init(self,parent=None,**kwargs):
-        self.sceneview = GraphicsScene()
-        self.view_2d = GraphicsView(self.sceneview)
+        self.sceneview = popupcad.graphics2d.graphicsscene.GraphicsScene()
+        self.view_2d = popupcad.graphics2d.graphicsview.GraphicsView(self.sceneview)
         self.view_2d.scrollhand()
         self.setCentralWidget(self.view_2d)
 
         self.setTabPosition(qc.Qt.AllDockWidgetAreas, qg.QTabWidget.South)
 
-#        self.operationeditor = DirectedDraggableTreeWidget()
-        self.operationeditor = DraggableTreeWidget()
+#        self.operationeditor = popupcad.widgets.dragndroptree.DirectedDraggableTreeWidget()
+        self.operationeditor = popupcad.widgets.dragndroptree.DraggableTreeWidget()
         self.operationeditor.enable()
 
-        self.layerlistwidget = ListSelector()
+        self.layerlistwidget = popupcad.widgets.listeditor.ListSelector()
 
         self.operationdock = qg.QDockWidget()
         self.operationdock.setWidget(self.operationeditor)
@@ -87,7 +80,7 @@ class Editor(qg.QMainWindow,WidgetCommon):
         self.layerlistwidgetdock.setWindowTitle('Layers')
         self.addDockWidget(qc.Qt.LeftDockWidgetArea,self.layerlistwidgetdock)
 
-        self.view_3d = GLObjectViewer(self)      
+        self.view_3d = popupcad.graphics3d.GLMeshItem.GLObjectViewer(self)      
         self.view_3d_dock = qg.QDockWidget()
         self.view_3d_dock.setWidget(self.view_3d)
         self.view_3d_dock.setAllowedAreas(qc.Qt.AllDockWidgetAreas)
@@ -238,14 +231,14 @@ class Editor(qg.QMainWindow,WidgetCommon):
         
     @loggable
     def newfile(self):
-        from popupcad.materials import LayerDef,Carbon_0_90_0,Pyralux,Kapton
-        design = filetypes.Design()
+        from popupcad.materials.materials import LayerDef,Carbon_0_90_0,Pyralux,Kapton
+        design = Design()
         design.define_layers(LayerDef(Carbon_0_90_0(),Pyralux(),Kapton(),Pyralux(),Carbon_0_90_0()))
         self.loadfile(design)
 
     @loggable
     def open(self):
-        design = popupcad.filetypes.Design.open(self)
+        design = Design.open(self)
         if not design==None:
             self.loadfile(design)
             if self.act_autoreprocesstoggle.isChecked():
@@ -254,7 +247,6 @@ class Editor(qg.QMainWindow,WidgetCommon):
     @loggable
     def open_sketcher(self):
         from .sketcher import Sketcher
-        from popupcad.filetypes.sketch import Sketch
         ii,jj = self.operationeditor.currentIndeces()
         layers = self.design.layerdef().layers
         sketcher = Sketcher(self,Sketch(),self.design,selectops = True)
@@ -285,7 +277,7 @@ class Editor(qg.QMainWindow,WidgetCommon):
 
     @loggable
     def editlayers(self):
-        window = materialselection.MaterialSelection(self.design.layerdef().layers,materials.available_materials,self)
+        window = popupcad.widgets.materialselection.MaterialSelection(self.design.layerdef().layers,popupcad.materials.materials.available_materials,self)
         result = window.exec_()
         if result == window.Accepted:
             self.design.define_layers(window.layerdef)
@@ -301,7 +293,6 @@ class Editor(qg.QMainWindow,WidgetCommon):
 
     @loggable
     def sketchlist(self):
-        from popupcad.filetypes.sketch import Sketch
         from popupcad.widgets import listmanager
         from .sketcher import Sketcher
 
@@ -321,7 +312,6 @@ class Editor(qg.QMainWindow,WidgetCommon):
 
     @loggable
     def subdesigns(self):
-        from popupcad.filetypes.design import Design
         from popupcad.widgets import listmanager
         widget = listmanager.ListManager(self.design.subdesigns)
         widget.set_layout(cleanup_method = self.design.cleanup_subdesigns,load_method = Design.open,saveas = True,copy = True,delete = True)
@@ -379,7 +369,7 @@ class Editor(qg.QMainWindow,WidgetCommon):
         for layernum,layer in enumerate(self.design.layerdef().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
             filename = os.path.normpath(os.path.join(popupcad.exportdir,basename))
-            scene = GraphicsScene()
+            scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
             geoms = [item.outputstatic(color = (1,1,1,1)) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(filename,scaling)
