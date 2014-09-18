@@ -80,7 +80,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.layerlistwidgetdock.setWindowTitle('Layers')
         self.addDockWidget(qc.Qt.LeftDockWidgetArea,self.layerlistwidgetdock)
 
-        self.view_3d = popupcad.graphics3d.GLMeshItem.GLObjectViewer(self)      
+        self.view_3d = popupcad.graphics3d.gl_viewer.GLObjectViewer(self)      
         self.view_3d_dock = qg.QDockWidget()
         self.view_3d_dock.setWidget(self.view_3d)
         self.view_3d_dock.setAllowedAreas(qc.Qt.AllDockWidgetAreas)

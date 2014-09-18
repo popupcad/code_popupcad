@@ -11,9 +11,7 @@ from PySide import QtGui
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 import pyqtgraph as pg
-
 import pyqtgraph.opengl as gl
-import numpy as np
 import numpy
 
 class GLObjectViewer(qg.QWidget):
@@ -84,18 +82,18 @@ class GLViewWidget(gl.GLViewWidget):
                 for ii in range(tri.shape[0]):
                     for jj in range(3):
                         colors[ii,jj] = color
-                m = gl.GLMeshItem(vertexes = tri,vertexColors = colors,edgeColor = (1,1,1,1))
+                m = gl.gl_viewer(vertexes = tri,vertexColors = colors,edgeColor = (1,1,1,1))
                 self.addItem(m)
 
     def add_default_item(self):
-        verts = np.empty((36, 3, 3), dtype=np.float32)
-        theta = np.linspace(0, 2*np.pi, 37)[:-1]
-        verts[:,0] = np.vstack([2*np.cos(theta), 2*np.sin(theta), [0]*36]).T
-        verts[:,1] = np.vstack([4*np.cos(theta+0.2), 4*np.sin(theta+0.2), [-1]*36]).T
-        verts[:,2] = np.vstack([4*np.cos(theta-0.2), 4*np.sin(theta-0.2), [1]*36]).T
+        verts = numpy.empty((36, 3, 3), dtype=numpy.float32)
+        theta = numpy.linspace(0, 2*numpy.pi, 37)[:-1]
+        verts[:,0] = numpy.vstack([2*numpy.cos(theta), 2*numpy.sin(theta), [0]*36]).T
+        verts[:,1] = numpy.vstack([4*numpy.cos(theta+0.2), 4*numpy.sin(theta+0.2), [-1]*36]).T
+        verts[:,2] = numpy.vstack([4*numpy.cos(theta-0.2), 4*numpy.sin(theta-0.2), [1]*36]).T
             
-        colors = np.random.random(size=(verts.shape[0], 3, 4))
-        m2 = gl.GLMeshItem(vertexes=verts, vertexColors=colors, smooth=False, shader='balloon', 
+        colors = numpy.random.random(size=(verts.shape[0], 3, 4))
+        m2 = gl.gl_viewer(vertexes=verts, vertexColors=colors, smooth=False, shader='balloon', 
                            drawEdges=True, edgeColor=(1, 1, 0, 1))
         m2.translate(-5, 5, 0)
         self.addItem(m2)
