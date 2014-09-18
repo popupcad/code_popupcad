@@ -12,4 +12,12 @@ from . import listeditor
 from . import materialselection
 #from . import objectinspector
 from . import simplescene
-
+from . import errorlog
+from . import dragndroplist
+from . import dragndroptree
+from . import listmanager
+from . import materialselection
+from . import materialselection2
+from . import propertyeditor
+from . import simplescene
+from . import widgetcommon

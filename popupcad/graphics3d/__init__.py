@@ -6,3 +6,4 @@ Please see LICENSE.txt for full license.
 """
 
 #from . import qglwidget
+from . import GLMeshItem
