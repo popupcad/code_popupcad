@@ -12,7 +12,7 @@ def build_sketchlist(design):
     from popupcad.filetypes.sketch import Sketch
     from popupcad.guis.sketcher import Sketcher
 
-    widget = ListManager(design.sketches)
+    widget = ListManager(design.sketches,name='Sketch')
     def edit_method(sketch):
         sketch.edit(None,design,selectops = True)
     def new_method(refresh_method):
@@ -27,7 +27,7 @@ def build_sketchlist(design):
 
 def build_subdesignslist(design):
     from popupcad.filetypes.design import Design
-    widget = ListManager(design.subdesigns)
+    widget = ListManager(design.subdesigns,name='Sub-Design')
     widget.set_layout(load_method = Design.open,saveas = True,copy = True)
     return widget
 
@@ -59,7 +59,7 @@ class ListItem(qg.QListWidgetItem):
             return False        
 
 class ListManager(qg.QWidget):
-    def __init__(self,items,parent = None):
+    def __init__(self,items,parent = None,name = None):
         super(ListManager,self).__init__(parent)
         
         self.items  = items
@@ -68,10 +68,18 @@ class ListManager(qg.QWidget):
         self.refresh_list()
         
         layout = qg.QHBoxLayout()
+            
         layout.addWidget(self.itemlist)
         self.layout2 = qg.QVBoxLayout()
         layout.addLayout(self.layout2)
-        self.setLayout(layout)
+
+        layout3 = qg.QVBoxLayout()
+        layout3.setContentsMargins(0,0,0,0)
+        if name!=None:
+            layout3.addWidget(qg.QLabel(name))
+        layout3.addLayout(layout)
+
+        self.setLayout(layout3)
 
         self.loadbutton = qg.QPushButton('Load...')
         self.newbutton = qg.QPushButton('New...')

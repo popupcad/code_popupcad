@@ -183,7 +183,7 @@ class Design(popupCADFile):
 #                v2 = InteractiveVertex(line.vertex2)
 #                v1.updatefromsymbolic()
 #                v2.updatefromsymbolic()
-                v = InteractiveEdge(v1.gen_interactive(),v2.gen_interactive())
+                v = InteractiveEdge(line.vertex1.gen_interactive(),line.vertex2.gen_interactive())
                 v.handleupdate()
                 l.append(v)
         except IndexError:

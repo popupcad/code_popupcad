@@ -11,6 +11,7 @@ from .graphicsitems import Common,CommonShape
 from .interactivevertex import InteractiveVertex
 from popupcad.geometry.vertex import Vertex
 from popupcad.filetypes.genericshapes import GenericPoly,GenericPolyline,GenericLine,GenericCircle,GenericTwoPointRect
+import popupcad
 
 class Proto(Common):
     z_value = 20

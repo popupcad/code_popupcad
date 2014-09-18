@@ -13,7 +13,7 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildI
 
 class Dialog(qg.QDialog):
             
-    def __init__(self,unaryoperationtypes,pairoperationtypes,operations,layerlist,index0=0,selectedop = None,selectedunary = None,selectedpair = None,selectedoutput = None,outputref = 0):
+    def __init__(self,operations,layerlist,index0=0,selectedop = None,selectedunary = None,selectedpair = None,selectedoutput = None,outputref = 0):
         super(Dialog,self).__init__()
 
         sp = qg.QSizePolicy()
@@ -28,11 +28,9 @@ class Dialog(qg.QDialog):
         if selectedoutput == None:
             selectedoutput = layerlist
 
-        self.unaryoperationtypes = unaryoperationtypes        
-        self.pairoperationtypes = pairoperationtypes
-        
-        self.le0 = qg.QComboBox()
-        self.le0.addItems(unaryoperationtypes+pairoperationtypes)
+        from popupcad.widgets.operationlist import OperationList
+        self.le0 = OperationList(LayerOp.unaryoperationtypes,LayerOp.pairoperationtypes,LayerOp.displayorder)
+
 
         self.operations = operations
         self.operationselector = DraggableTreeWidget()
@@ -42,26 +40,38 @@ class Dialog(qg.QDialog):
         self.unarylayerselector = qg.QListWidget()
         self.unarylayerselector.setSelectionBehavior(qg.QListWidget.SelectionBehavior.SelectRows)
         self.unarylayerselector.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
-#        unaryitems = self.additems(self.unarylayerselector,layerlist)            
         unaryitems = [ListWidgetItem(item,self.unarylayerselector) for item in layerlist]
 
         self.pairlayerselector = qg.QListWidget()
         self.pairlayerselector.setSelectionBehavior(qg.QListWidget.SelectionBehavior.SelectRows)
         self.pairlayerselector.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
-#        pairitems = self.additems(self.pairlayerselector,layerlist)            
         pairitems = [ListWidgetItem(item,self.pairlayerselector) for item in layerlist]
 
         self.outputlayerselector = qg.QListWidget()
         self.outputlayerselector.setSelectionBehavior(qg.QListWidget.SelectionBehavior.SelectRows)
         self.outputlayerselector.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
-#        outputitems = self.additems(self.outputlayerselector,layerlist)            
         outputitems = [ListWidgetItem(item,self.outputlayerselector) for item in layerlist]
+
+        layout2 = qg.QVBoxLayout()
+#        self.layout2.setContentsMargins(0,0,0,0)
+        layout2.addWidget(qg.QLabel('Unary Operators'))
+        layout2.addWidget(self.unarylayerselector)
+
+        layout3 = qg.QVBoxLayout()
+#        self.layout2.setContentsMargins(0,0,0,0)
+        layout3.addWidget(qg.QLabel('Binary Operators'))
+        layout3.addWidget(self.pairlayerselector)
+
+        layout4 = qg.QHBoxLayout()
+        layout4.addLayout(layout2)
+        layout4.addLayout(layout3)
 
         layout = qg.QVBoxLayout()
         layout.addWidget(self.le0)
+        layout.addWidget(qg.QLabel('Parent Operation'))
         layout.addWidget(self.operationselector)
-        layout.addWidget(self.unarylayerselector)
-        layout.addWidget(self.pairlayerselector)
+        layout.addLayout(layout4)
+        layout.addWidget(qg.QLabel('Output Layers'))
         layout.addWidget(self.outputlayerselector)
 
         button1 = qg.QPushButton('Ok')
@@ -77,9 +87,9 @@ class Dialog(qg.QDialog):
         button1.pressed.connect(self.accept)
         button2.pressed.connect(self.reject)
         
+        self.le0.unary_selected.connect(lambda:self.pairlayerselector.setEnabled(False))
+        self.le0.binary_selected.connect(lambda:self.pairlayerselector.setEnabled(True))
         self.le0.setCurrentIndex(index0)
-        self.le0.currentIndexChanged.connect(self.changelayout)
-        self.changelayout()
         
         [item.setSelected(item.customdata.id in selectedunary) for item in unaryitems]        
         [item.setSelected(item.customdata.id in selectedpair) for item in pairitems]        
@@ -94,17 +104,12 @@ class Dialog(qg.QDialog):
         
         return operation_link1,function,unary_layer_links,pair_layer_links,output_layer_links,outputref
         
-    def changelayout(self):
-        if self.le0.currentText() in self.unaryoperationtypes:
-            self.pairlayerselector.hide()
-        else:
-            self.pairlayerselector.show()
-            
 class LayerOp(Operation):
     name = 'Layer Op'
     function = None
     pairoperationtypes = ['difference','symmetric_difference']    
     unaryoperationtypes = ['union','intersection']   
+    displayorder = unaryoperationtypes + pairoperationtypes
 
     attr_init = 'operation_link1','function','unary_layer_links','pair_layer_links','output_layer_links','outputref'
     attr_init_k = tuple()
@@ -145,8 +150,9 @@ class LayerOp(Operation):
 
     @classmethod        
     def buildnewdialog(cls,design,currentop):
-        return Dialog(cls.unaryoperationtypes,cls.pairoperationtypes,design.operations,design.layerdef().layers)
+        return Dialog(design.operations,design.layerdef().layers)
 
     def buildeditdialog(self,design):
         operationindex = design.operation_index(self.operation_link1) 
-        return Dialog(self.unaryoperationtypes,self.pairoperationtypes,design.prioroperations(self),design.layerdef().layers,(self.unaryoperationtypes+self.pairoperationtypes).index(self.function),operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,self.getoutputref())
+        ii = self.displayorder.index(self.function)
+        return Dialog(design.prioroperations(self),design.layerdef().layers,ii,operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,self.getoutputref())

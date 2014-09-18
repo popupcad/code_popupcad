@@ -82,7 +82,7 @@ class GLViewWidget(gl.GLViewWidget):
                 for ii in range(tri.shape[0]):
                     for jj in range(3):
                         colors[ii,jj] = color
-                m = gl.gl_viewer(vertexes = tri,vertexColors = colors,edgeColor = (1,1,1,1))
+                m = gl.GLMeshItem(vertexes = tri,vertexColors = colors,edgeColor = (1,1,1,1))
                 self.addItem(m)
 
     def add_default_item(self):
@@ -93,7 +93,7 @@ class GLViewWidget(gl.GLViewWidget):
         verts[:,2] = numpy.vstack([4*numpy.cos(theta-0.2), 4*numpy.sin(theta-0.2), [1]*36]).T
             
         colors = numpy.random.random(size=(verts.shape[0], 3, 4))
-        m2 = gl.gl_viewer(vertexes=verts, vertexColors=colors, smooth=False, shader='balloon', 
+        m2 = gl.GLMeshItem(vertexes=verts, vertexColors=colors, smooth=False, shader='balloon', 
                            drawEdges=True, edgeColor=(1, 1, 0, 1))
         m2.translate(-5, 5, 0)
         self.addItem(m2)

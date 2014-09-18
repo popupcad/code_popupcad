@@ -308,6 +308,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         
         widget.set_layout(cleanup_method = self.design.cleanup_sketches,edit_method = edit_method,new_method = new_method,load_method = Sketch.open,saveas = True,copy = True,delete = True)
         dialog = self.builddialog(widget)        
+        dialog.setWindowTitle('Sketches')
         dialog.exec_()
 
     @loggable
@@ -316,6 +317,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         widget = listmanager.ListManager(self.design.subdesigns)
         widget.set_layout(cleanup_method = self.design.cleanup_subdesigns,load_method = Design.open,saveas = True,copy = True,delete = True)
         dialog = self.builddialog(widget)        
+        dialog.setWindowTitle('Sub-Designs')
         dialog.exec_()
 
     @loggable

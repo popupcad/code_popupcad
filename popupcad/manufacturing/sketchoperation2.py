@@ -6,6 +6,7 @@ Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
 import shapely.ops as ops
+import popupcad
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.layer import Layer
 from popupcad.filetypes import Sketch
@@ -49,8 +50,9 @@ class Dialog(qg.QDialog):
         outputitems = [ListWidgetItem(item,self.outputlayerselector) for item in design.layerdef().layers]
         [item.setSelected(item.customdata.id in selectedoutput) for item in outputitems]        
 
-        self.operationtypeselector = qg.QComboBox()
-        self.operationtypeselector.addItems(cls.operationtypes)
+        from  popupcad.widgets.operationlist import OperationList
+        self.operationtypeselector = OperationList([],cls.operationtypes,cls.operationtypes)
+#        self.operationtypeselector.addItems(cls.operationtypes)
         self.operationtypeselector.setCurrentIndex(operation_type_index)        
 
         button1 = qg.QPushButton('Ok')
@@ -62,7 +64,9 @@ class Dialog(qg.QDialog):
         layout = qg.QVBoxLayout()
         layout.addWidget(self.sketchwidget)
         layout.addWidget(self.operationtypeselector)
+        layout.addWidget(qg.QLabel('Parent Operation'))
         layout.addWidget(self.optree)
+        layout.addWidget(qg.QLabel('Select Layers'))
         layout.addWidget(self.outputlayerselector)
         layout.addLayout(buttonlayout)
         self.setLayout(layout)        

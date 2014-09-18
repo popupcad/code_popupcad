@@ -49,6 +49,7 @@ class Dialog(qg.QDialog):
         layout2.addWidget(button2)
         
         layout = qg.QVBoxLayout()
+        layout.addWidget(qg.QLabel('Parent Operation'))
         layout.addWidget(self.le1)
         layout.addLayout(layout5)
         layout.addLayout(layout6)

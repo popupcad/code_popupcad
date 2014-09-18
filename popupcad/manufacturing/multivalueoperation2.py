@@ -27,6 +27,7 @@ class Dialog(qg.QDialog):
             values = defaults[:]
 
         layout = qg.QVBoxLayout()
+        layout.addWidget(qg.QLabel('Parent Operation'))
         layout.addWidget(self.le1)
             
         self.valueboxes = []

@@ -11,19 +11,16 @@ from popupcad.filetypes.listwidgetitem import ListWidgetItem
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildItem
 
 class Dialog(qg.QDialog):
-    def __init__(self,unaryoperationtypes,pairoperationtypes,operationlist,index0,operationindeces1=None,operationindeces2 = None):
+    def __init__(self,operationlist,index0,operationindeces1=None,operationindeces2 = None):
         super(Dialog,self).__init__()
         
-        self.unaryoperationtypes = unaryoperationtypes        
-        self.pairoperationtypes = pairoperationtypes
         if operationindeces1 ==None:
             operationindeces1 = []
         if operationindeces2 ==None:
             operationindeces2 = []
         
-        self.le0 = qg.QComboBox()
-        self.le0.addItems(unaryoperationtypes+pairoperationtypes)
-
+        from popupcad.widgets.operationlist import OperationList
+        self.le0 = OperationList(LaminateOperation.unaryoperationtypes,LaminateOperation.pairoperationtypes,LaminateOperation.displayorder)
         self.operationlist = operationlist
 
         self.unarylistwidget = DraggableTreeWidget()
@@ -36,18 +33,29 @@ class Dialog(qg.QDialog):
         self.pairlistwidget.setSelectionMode(qg.QListWidget.SelectionMode.ExtendedSelection)
         self.pairlistwidget.selectIndeces(operationindeces2)
 
-        layout = qg.QVBoxLayout()
-        layout.addWidget(self.le0)
-        layout.addWidget(self.unarylistwidget)
-        layout.addWidget(self.pairlistwidget)
+        layout3 = qg.QVBoxLayout()
+        layout3.addWidget(qg.QLabel('Unary Operators'))
+        layout3.addWidget(self.unarylistwidget)
+
+        layout4 = qg.QVBoxLayout()
+        layout4.addWidget(qg.QLabel('Binary Operators'))
+        layout4.addWidget(self.pairlistwidget)
+
+        layout5 = qg.QHBoxLayout()
+        layout5.addLayout(layout3)
+        layout5.addLayout(layout4)
 
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')
-
         layout2 = qg.QHBoxLayout()
         layout2.addWidget(button1)
         layout2.addWidget(button2)
 
+        layout = qg.QVBoxLayout()
+        layout.addWidget(self.le0)
+        layout.addLayout(layout5)
+#        layout.addWidget(self.unarylistwidget)
+#        layout.addWidget(self.pairlistwidget)
         layout.addLayout(layout2)
 
         self.setLayout(layout)    
@@ -55,10 +63,9 @@ class Dialog(qg.QDialog):
         button1.pressed.connect(self.accept)
         button2.pressed.connect(self.reject)
         
+        self.le0.unary_selected.connect(lambda:self.pairlistwidget.setEnabled(False))
+        self.le0.binary_selected.connect(lambda:self.pairlistwidget.setEnabled(True))
         self.le0.setCurrentIndex(index0)
-        
-        self.le0.currentIndexChanged.connect(self.changelayout)
-        self.changelayout()
 
     def acceptdata(self):
         unaryparents = self.unarylistwidget.currentRefs()
@@ -66,16 +73,11 @@ class Dialog(qg.QDialog):
         function = self.le0.currentText()
         return unaryparents, pairparents, function
 
-    def changelayout(self):
-        if self.le0.currentText() in self.unaryoperationtypes:
-            self.pairlistwidget.hide()
-        else:
-            self.pairlistwidget.show()
-            
 class LaminateOperation(Operation):
     name = 'Laminate Op'
     unaryoperationtypes = ['union','intersection']    
-    pairoperationtypes = ['difference','symmetric_difference']    
+    pairoperationtypes = ['difference','symmetric_difference']
+    displayorder = unaryoperationtypes + pairoperationtypes
     attr_init = 'operation_links1','operation_links2','function'
     attr_init_k = tuple()
     attr_copy = 'id','customname'
@@ -105,12 +107,13 @@ class LaminateOperation(Operation):
         
     @classmethod
     def buildnewdialog(cls,design,currentop):
-        return Dialog(cls.unaryoperationtypes,cls.pairoperationtypes,design.operations,0)
+        return Dialog(design.operations,0)
 
     def buildeditdialog(self,design):
         operationindeces1 = [(design.operation_index(ref),ii) for ref,ii in self.operation_links1]
         operationindeces2 = [(design.operation_index(ref),ii) for ref,ii in self.operation_links2]
-        return Dialog(self.unaryoperationtypes,self.pairoperationtypes,design.prioroperations(self),(self.unaryoperationtypes+self.pairoperationtypes).index(self.function),operationindeces1,operationindeces2)
+        ii = self.displayorder.index(self.function)
+        return Dialog(design.prioroperations(self),ii,operationindeces1,operationindeces2)
 
     def parentrefs(self):
         if self.function in self.unaryoperationtypes:
