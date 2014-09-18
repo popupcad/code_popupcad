@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.filetypes.operation import Operation
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 
 class NullOp(Operation):
     name = 'None'

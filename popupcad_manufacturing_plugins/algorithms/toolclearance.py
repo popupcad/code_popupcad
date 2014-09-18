@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.layer import Layer
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 from popupcad.algorithms.keepout import laserkeepout, millkeepout, millflipkeepout
 
 def laserclearance(laminatein):

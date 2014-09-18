@@ -9,7 +9,7 @@ import popupcad
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.layer import Layer
 #from popupcad.geometry.customshapely import ShapelyPolygon
 import shapely.geometry as sg

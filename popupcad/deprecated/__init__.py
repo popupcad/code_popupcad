@@ -59,3 +59,8 @@ try:
     sys.modules['popupcad.plugins']  = popupcad_manufacturing_plugins
 except ImportError:
     pass
+
+popupcad.materials.laminatesheet = popupcad.filetypes.laminate
+sys.modules['popupcad.materials.laminatesheet']  = popupcad.filetypes.laminate
+popupcad.filetypes.laminate.Layer = popupcad.filetypes.layer.Layer
+

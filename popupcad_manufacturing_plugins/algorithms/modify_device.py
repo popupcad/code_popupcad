@@ -4,7 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 
 def modify_device(device,support_sketch,support_width,support_out,holes_radius,cut_width):
     '''from a user-input support sketch, modify a device to be compatible with the given support design.'''

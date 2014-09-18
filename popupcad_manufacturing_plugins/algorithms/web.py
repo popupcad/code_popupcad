@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.geometry.genericpolygon import GenericShapeBase
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 import numpy
 
 def supportsheet(layerdef,lsin,value):

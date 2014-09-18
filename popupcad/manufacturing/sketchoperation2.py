@@ -6,7 +6,8 @@ Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
 import shapely.ops as ops
-from popupcad.materials.laminatesheet import Layer,Laminate
+from popupcad.filetypes.laminate import Laminate
+from popupcad.filetypes.layer import Layer
 from popupcad.filetypes import Sketch
 import popupcad.widgets
 from popupcad.filetypes.operation import Operation

@@ -6,4 +6,3 @@ Please see LICENSE.txt for full license.
 """
 
 from .materials import *
-from . import laminatesheet

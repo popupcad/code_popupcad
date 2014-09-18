@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import shapely.ops as ops
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 import popupcad.geometry.customshapely as customshapely
 from .sketchoperation2 import SketchOperation2
 from popupcad.filetypes.operation import Operation

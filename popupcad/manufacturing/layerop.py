@@ -4,7 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation import Operation
 import PySide.QtGui as qg
 from popupcad.filetypes.listwidgetitem import ListWidgetItem

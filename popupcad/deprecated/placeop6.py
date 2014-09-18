@@ -11,7 +11,7 @@ import numpy
 import popupcad
 import popupcad.filetypes
 from popupcad.filetypes.operation import Operation
-from popupcad.materials.laminatesheet import Laminate
+from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.design import NoOperation
 from popupcad.filetypes.design import Design
 import popupcad.geometry.customshapely as customshapely

@@ -10,7 +10,8 @@ from popupcad.filetypes.operation import Operation
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 
-from popupcad.materials.laminatesheet import Layer,Laminate
+from popupcad.filetypes.laminate import Laminate
+from popupcad.filetypes.layer import Layer
 from popupcad.filetypes.validators import StrictDoubleValidator
 from popupcad.filetypes.enum import enum
 from popupcad.filetypes.operationoutput import OperationOutput
