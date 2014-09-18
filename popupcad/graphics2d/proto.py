@@ -10,7 +10,7 @@ import PySide.QtGui as qg
 from .graphicsitems import Common,CommonShape
 from .interactivevertex import InteractiveVertex
 from popupcad.geometry.vertex import Vertex
-from popupcad.geometry.genericpolygon import GenericPoly,GenericPolyline,GenericLine,GenericCircle,GenericTwoPointRect
+from popupcad.filetypes.genericshapes import GenericPoly,GenericPolyline,GenericLine,GenericCircle,GenericTwoPointRect
 
 class Proto(Common):
     z_value = 20

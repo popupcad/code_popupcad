@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.geometry.genericpolygon import GenericShapeBase
+from popupcad.filetypes.genericshapes import GenericShapeBase
 from popupcad.filetypes.laminate import Laminate
 import numpy
 

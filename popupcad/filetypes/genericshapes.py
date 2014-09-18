@@ -5,8 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from . import customshapely
-from .vertex import Vertex
+from popupcad.geometry import customshapely
+from popupcad.geometry.vertex import Vertex
 
 import shapely.geometry
 import numpy
@@ -14,10 +14,9 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.enum import enum
 
-from .genericshapebase import GenericShapeBase
+from popupcad.filetypes.genericshapebase import GenericShapeBase
 
 class GenericLine(GenericShapeBase):
-    
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveLine
         return InteractiveLine(self)
@@ -32,7 +31,6 @@ class GenericLine(GenericShapeBase):
         return obj
         
 class GenericPolyline(GenericShapeBase):
-    
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractivePath
         return InteractivePath(self)
@@ -47,7 +45,6 @@ class GenericPolyline(GenericShapeBase):
         return obj        
 
 class GenericPoly(GenericShapeBase):
-    
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractivePoly
         return InteractivePoly(self)

@@ -12,7 +12,7 @@ import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.enum import enum
-from popupcad.geometry.genericshapebase import GenericShapeBase
+from popupcad.filetypes.genericshapebase import GenericShapeBase
     
 class GenericShape(GenericShapeBase):
 
@@ -43,7 +43,7 @@ class GenericShape(GenericShapeBase):
             raise(Exception('no path defined for this type'))        
     
     def __init__(self,exterior,interiors,shapetype,construction = False,test_shapely = False):
-        from popupcad.geometry.genericshapebase import NotSimple,ShapeInvalid
+        from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid
         self.id = id(self)
         self.exterior = exterior
         self.interiors = interiors

@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 import shapely.ops as so
 import popupcad.geometry.customshapely as customshapely
-from popupcad.geometry.genericshapebase import GenericShapeBase
+from popupcad.filetypes.genericshapebase import GenericShapeBase
 import shapely.geometry as sg
 from popupcad.filetypes.layer import Layer
 import popupcad

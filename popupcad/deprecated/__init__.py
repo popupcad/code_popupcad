@@ -17,7 +17,6 @@ from . import sketchoperation
 from . import cutop
 from . import customsupport2
 
-popupcad.geometry.genericpolygon.GenericShape = genericpolygon.GenericShape
 
 popupcad.manufacturing.placeop4  = placeop4
 popupcad.manufacturing.placeop5  = placeop5
@@ -63,4 +62,11 @@ except ImportError:
 popupcad.materials.laminatesheet = popupcad.filetypes.laminate
 sys.modules['popupcad.materials.laminatesheet']  = popupcad.filetypes.laminate
 popupcad.filetypes.laminate.Layer = popupcad.filetypes.layer.Layer
+
+popupcad.geometry.genericpolygon= popupcad.filetypes.genericshapes
+sys.modules['popupcad.geometry.genericpolygon']  = popupcad.filetypes.genericshapes
+popupcad.filetypes.genericshapes.GenericShape = genericpolygon.GenericShape
+
+popupcad.geometry.genericshapebase= popupcad.filetypes.genericshapebase
+sys.modules['popupcad.geometry.genericshapebase']  = popupcad.filetypes.genericshapebase
 

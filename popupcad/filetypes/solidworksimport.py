@@ -7,8 +7,8 @@ Please see LICENSE.txt for full license.
 
 
 import numpy
-from popupcad.geometry.genericshapebase import GenericShapeBase
-from popupcad.geometry.genericshapebase import NotSimple,ShapeInvalid
+from popupcad.filetypes.genericshapebase import GenericShapeBase
+from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid
 import popupcad
 import PySide.QtGui as qg
 from popupcad.filetypes.genericfile import popupCADFile

@@ -5,8 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from . import customshapely
-from .vertex import Vertex
+from popupcad.geometry import customshapely
+from popupcad.geometry.vertex import Vertex
 
 import shapely.geometry
 import numpy
@@ -157,7 +157,7 @@ class GenericShapeBase(popupCADFile):
 
     @classmethod
     def genfromshapely(cls,obj):
-        from .genericpolygon import GenericPoly,GenericPolyline
+        from popupcad.filetypes.genericshapes import GenericPoly,GenericPolyline
         exterior_p,interiors_p = obj.genpoints_generic()
         exterior,interiors = cls.buildvertices(exterior_p,interiors_p) 
         if isinstance(obj,customshapely.ShapelyPolygon):
@@ -171,7 +171,7 @@ class GenericShapeBase(popupCADFile):
         
     @classmethod
     def gengenericpoly(cls,exterior_p,interiors_p,**kwargs):
-        from .genericpolygon import GenericPoly
+        from popupcad.filetypes.genericshapes import GenericPoly
         exterior,interiors = cls.buildvertices(exterior_p,interiors_p) 
         return GenericPoly(exterior,interiors,**kwargs)
 
