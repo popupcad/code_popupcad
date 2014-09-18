@@ -83,11 +83,7 @@ class Interactive(Common):
     def exterior(self):
         return self.generic.get_exterior_handles()
 
-#    def interiors(self):
-#        return self.generic.get_interior_handles()
     def focusOutEvent(self,event):
-#        self.reset()
-#        print 'focus out'
         super(Interactive,self).focusOutEvent
 
     def handles(self):

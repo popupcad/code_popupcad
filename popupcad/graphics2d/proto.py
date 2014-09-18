@@ -154,7 +154,7 @@ class ProtoTwoPoint(Proto):
 
             else:
                 return
-        elif len(self.generic.exterior)>=2:
+        else:
             raise(Exception('should never get here'))
             self.finish_definition()
             self.updateshape()
