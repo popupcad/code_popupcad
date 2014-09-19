@@ -4,13 +4,19 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import clear_compiled
-clear_compiled.clear_compiled()
+
+import sys
+
+if hasattr(sys, 'frozen'):
+    pass
+else:
+    import clear_compiled
+    clear_compiled.clear_compiled()
+
 
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
-import sys
 import os
 
 if __name__ == "__main__":
