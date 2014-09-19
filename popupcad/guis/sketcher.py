@@ -244,6 +244,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.drawingactions.append({'text':'rect','kwargs':{'triggered':lambda:self.addproto(ProtoRect2Point),'icon':Icon('rectangle')}})
         self.drawingactions.append({'text':'circle','kwargs':{'triggered':lambda:self.addproto(ProtoCircle),'icon':Icon('circle')}})
         self.drawingactions.append({'text':'text','kwargs':{'triggered':lambda:self.addproto(TextItem)}})
+        self.drawingactions.append({'text':'text2','kwargs':{'triggered':self.test1}})
         self.drawingactions.append(None)
         self.drawingactions.append({'text':'joinedges','kwargs':{'triggered':self.joinedges,'icon':Icon('joinedges')}})
         self.drawingactions.append({'text':'autobridge','kwargs':{'triggered':self.autobridge,'icon':Icon('autobridge')}})
@@ -474,6 +475,29 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             if isinstance(item,Grouper):
                 item.removegroupeditems()
                 item.softdelete()
+                
+    def test1(self):
+        pass
+        p = qg.QPainterPath()
+        p.addText(qc.QPointF(0,0),qg.QFont(),'hello!')
+#        self.s
+#        self.scene.
+        p2 = qg.QPainterPath()
+        
+        
+        for ii in range(p.elementCount()):
+            element = p.elementAt(ii)
+            if element.isMoveTo():
+                p2.moveTo(element.x,element.y)
+            if element.isLineTo():
+                p2.lineTo(element.x,element.y)
+            if element.isCurveTo():
+                p2.lineTo(element.x,element.y)
+                
+                
+        i = qg.QGraphicsPathItem()
+        i.setPath(p2)
+        self.scene.addItem(i)
             
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

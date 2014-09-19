@@ -24,3 +24,20 @@ class TextItem(qg.QGraphicsTextItem):
     def focusOutEvent(self, event):
         self.setTextInteractionFlags(qc.Qt.NoTextInteraction)
         super(TextItem, self).focusOutEvent(event)
+
+
+class GraphicalElement(qg.QGraphicsTextItem):
+    def __init__(self,*args,**kwargs):
+        super(TextItem,self).__init__(*args,**kwargs)        
+        self.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
+        font = qg.QFont('Arial', pointSize=100)
+        font.setStyleStrategy(font.ForceOutline)
+        self.setFont(font)
+        self.scale(1,-1)
+    def mouseDoubleClickEvent(self, event):
+        if self.textInteractionFlags() == qc.Qt.NoTextInteraction:
+            self.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
+        super(TextItem, self).mouseDoubleClickEvent(event)        
+    def focusOutEvent(self, event):
+        self.setTextInteractionFlags(qc.Qt.NoTextInteraction)
+        super(TextItem, self).focusOutEvent(event)
