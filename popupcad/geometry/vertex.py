@@ -92,7 +92,7 @@ class Vertex(object):
         return PropertyEditor(self)
         
     def copy(self,identical = True):
-        new = Vertex()
+        new = type(self)()
         new.setpos(self.getpos())
         new.static = self.static
         if identical:
@@ -111,3 +111,9 @@ class Vertex(object):
         except AttributeError:
             self.interactivevertex = self.gen_interactive()
             return self.interactivevertex
+
+class ShapeVertex(Vertex):
+    pass
+
+class TemporaryVertex(Vertex):
+    pass

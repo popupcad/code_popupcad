@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.geometry import customshapely
-from popupcad.geometry.vertex import Vertex
+from popupcad.geometry.vertex import Vertex,ShapeVertex
 
 import shapely.geometry
 import numpy
@@ -118,10 +118,6 @@ class GenericShapeBase(popupCADFile):
             if points.twopointsthesame(pt1,pt2,self.tolerance):
                 raise(Exception('points too close together'))
 
-    def upgrade(self):
-        if type(self.exterior[0])!=Vertex:
-            self.exterior,self.interiors = self.buildvertices(self.exterior,self.interiors)
-                
     @classmethod
     def condition_points(cls,exterior,interiors):
         exterior = cls.remove_redundant_points(exterior)
@@ -155,7 +151,7 @@ class GenericShapeBase(popupCADFile):
     def buildvertexlist(points):
         exterior = []
         for point in points:
-            v=Vertex()
+            v=ShapeVertex()
             v.setpos(point)
             exterior.append(v)
         return exterior

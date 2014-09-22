@@ -6,7 +6,6 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.geometry import customshapely
-from popupcad.geometry.vertex import Vertex
 
 import shapely.geometry
 import numpy

@@ -9,7 +9,6 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 from . import modes
 from .graphicsitems import Common
-#from popupcad.geometry.vertex import Vertex
 
 class InteractiveVertex(qg.QGraphicsEllipseItem,Common):
     radius = 10

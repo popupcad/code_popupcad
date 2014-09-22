@@ -197,8 +197,8 @@ class Interactive(Common):
         super(Interactive,self).mouseReleaseEvent(event)                
         
     def addvertex(self,qpoint):
-        from popupcad.geometry.vertex import Vertex
-        v = Vertex()
+        from popupcad.geometry.vertex import ShapeVertex
+        v = ShapeVertex()
         v.setpos(qpoint.toTuple())
         self.generic.addvertex_exterior(v,special = True)
         self.updatehandles()
