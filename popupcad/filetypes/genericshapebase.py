@@ -66,6 +66,11 @@ class GenericShapeBase(popupCADFile):
         
     def interiorpoints(self):
         return [[vertex.getpos() for vertex in interior] for interior in self.interiors]
+        
+    def vertices(self):
+        vertices = self.exterior[:]
+        [vertices.extend(interior) for interior in self.interiors]
+        return vertices
             
     def painterpath(self):
         exterior_p = self.exteriorpoints()
