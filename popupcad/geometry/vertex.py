@@ -105,4 +105,9 @@ class Vertex(object):
         iv.updatefromsymbolic()
         return iv
         
-        
+    def get_interactive(self):
+        try:
+            return self.interactivevertex
+        except AttributeError:
+            self.interactivevertex = self.gen_interactive()
+            return self.interactivevertex
