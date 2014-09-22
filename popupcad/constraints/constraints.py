@@ -12,6 +12,7 @@ import numpy
 import PySide.QtGui as qg
 import scipy.optimize as opt
 import popupcad
+from popupcad.filetypes.enum import enum
 
 class Variable(sympy.Symbol):
     pass
@@ -112,13 +113,20 @@ class ConstraintSystem(object):
             qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
             qout = qout.x.tolist()
         for ii,variable in enumerate(variables):
-            vertexdict[variable].setsymbol(variable,qout[ii])        
+            vertexdict[variable].setsymbol(variable,qout[ii])   
+    def cleanup(self,sketch_objects):
+        for ii in range(len(self.constraints))[::-1]:
+            if self.constraints[ii].cleanup(sketch_objects)==Constraint.CleanupFlags.Deletable:
+                self.constraints.pop(ii)
 
 class Constraint(object):
     name = 'Constraint'
     min_points = 0
     min_lines = 0
     deletable = []
+
+    CleanupFlags = enum(NotDeletable=101,Deletable=102)
+    CurrentFlags= enum(AllCurrent=201,SomeCurrent=202,NoneCurrent=203)
     
     def __init__(self,vertex_ids, segment_ids,vertices_in_lines,persistentobjects):
         self.vertex_ids = vertex_ids
@@ -235,6 +243,32 @@ class Constraint(object):
     def properties(self):
         from popupcad.widgets.propertyeditor import PropertyEditor
         return PropertyEditor(self)
+
+    def checkcurrent(self,objects):
+        flag = self.CurrentFlags.NoneCurrent
+        if len(self.persistentobjects())>0:
+            current = [item in objects for item in self.persistentobjects()]
+            if all(current):
+                flag = self.CurrentFlags.AllCurrent
+            elif any(current):
+                flag = self.CurrentFlags.SomeCurrent
+            else:
+                flag = self.CurrentFlags.NoneCurrent
+        else:
+            flag = self.CurrentFlags.AllCurrent
+        return flag
+        
+        
+    def cleanup(self,objects):
+        currentflag = self.checkcurrent(objects)
+        if currentflag == self.CurrentFlags.AllCurrent:
+            return self.CleanupFlags.NotDeletable
+        elif currentflag == self.CurrentFlags.SomeCurrent:
+            return self.CleanupFlags.Deletable
+        elif currentflag == self.CurrentFlags.NoneCurrent:
+            return self.CleanupFlags.Deletable
+
+            
         
         
 class ValueConstraint(Constraint):

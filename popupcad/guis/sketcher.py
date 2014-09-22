@@ -204,6 +204,16 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         [parent.updateshape() for parent in parents]
         self.constraint_editor.refresh()
 
+    def cleanupconstraints(self):
+        parents = [parent for parent in self.scene.items() if ((isinstance(parent,Interactive)))]
+        interactivevertices = [item for parent in parents for item in parent.handles()]
+        controllinevertices = [item for parent in self.scene.controllines for item in [parent.handle1,parent.handle2]]
+        vertices = list(set(interactivevertices+self.scene.controlpoints + controllinevertices))
+        symbolicvertices = [vertex.symbolic for vertex in vertices]
+
+        self.sketch.constraintsystem.cleanup(symbolicvertices)
+        self.constraint_editor.refresh()
+
     def createActions(self):
         self.fileactions = []
         self.fileactions.append({'text':"&New",'kwargs':{'triggered':self.newfile,'shortcut':qg.QKeySequence.New,'icon':Icon('new')}})
@@ -271,6 +281,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraintactions.append({'text':'Lines','submenu':twolineactions,'kwargs':{'icon':Icon('parallel')}})
         self.constraintactions.append({'text':'PointLine','kwargs':{'triggered':lambda:self.add_constraint(constraints.PointLine),'icon':Icon('pointline')}})
         self.constraintactions.append({'text':'Update','kwargs':{'triggered':self.refreshconstraints,'icon':Icon('refresh')}})
+        self.constraintactions.append({'text':'Cleanup','kwargs':{'triggered':self.cleanupconstraints}})
 
         self.menu_file = self.buildMenu(self.fileactions,name='File')
         self.menu_edit = self.buildMenu(self.editactions,name='Edit')
