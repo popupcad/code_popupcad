@@ -10,7 +10,6 @@ class Line(object):
         super(Line,self).__init__()
         self.vertex1 = v1
         self.vertex2 = v2
-        self.id = id(self)
 
     def vertices(self):
         return [self.vertex1,self.vertex2]  
@@ -18,14 +17,6 @@ class Line(object):
     def lines(self):
         return [self]
 
-    def __hash__(self):
-        return self.id
-
-    def __eq__(self,other):
-        if type(self)==type(other):
-            return self.id == other.id
-        return False
-        
     def p1(self):
         return self.vertex1.p()
     def p2(self):
