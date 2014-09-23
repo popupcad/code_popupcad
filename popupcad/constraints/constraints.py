@@ -111,7 +111,8 @@ class ConstraintSystem(object):
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
             qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
-            qout = qout.x.tolist()
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
+#            qout = qout.x.tolist()
         for ii,variable in enumerate(variables):
             vertexdict[variable].setsymbol(variable,qout[ii])   
     def cleanup(self,sketch_objects):
@@ -128,24 +129,20 @@ class Constraint(object):
     CleanupFlags = enum(NotDeletable=101,Deletable=102)
     CurrentFlags= enum(AllCurrent=201,SomeCurrent=202,NoneCurrent=203)
     
-    def __init__(self,vertex_ids, segment_ids,vertices_in_lines,persistentobjects):
+    def __init__(self,vertex_ids, segment_ids,persistentobjects):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
-        self._vertices_in_lines = vertices_in_lines
         self._persistentobjects = persistentobjects
         self.id = id(self)
         
     @classmethod
     def new(cls,parent,*objects):
-        vertex_ids, segment_ids, vertices_in_lines,persistentobjects = cls._define_internals(*objects)
-        m = len(vertex_ids)+len(vertices_in_lines)
-        n = len(segment_ids)
-        cls.check_objects(m,n)
-        obj = cls(vertex_ids, segment_ids,vertices_in_lines,persistentobjects)
+        vertex_ids, segment_ids,persistentobjects = cls._define_internals(*objects)
+        obj = cls(vertex_ids, segment_ids,persistentobjects)
         return obj
         
     def copy(self,identical = True):
-        new = type(self)(self.vertex_ids,self.segment_ids,self.vertices_in_lines(),self.persistentobjects())
+        new = type(self)(self.vertex_ids,self.segment_ids,self.persistentobjects())
         if identical:
             new.id = self.id
         return new
@@ -168,14 +165,12 @@ class Constraint(object):
 
         vertices_in_lines = []
         vertices_in_lines.extend([vertex for line in objects if isinstance(line,Line) for vertex in [line.vertex1,line.vertex2]])
-        vertices_in_lines_ids = [vertex.id for vertex in vertices_in_lines]
-        vertices_in_lines_ids = list(set(vertices_in_lines_ids))
 
         persistentobjects = []
         persistentobjects.extend([vertex for vertex in vertices if vertex.is_persistent()])
         persistentobjects.extend([vertex for vertex in vertices_in_lines if vertex.is_persistent()])
 
-        return vertex_ids,segment_ids, vertices_in_lines_ids,persistentobjects
+        return vertex_ids,segment_ids,persistentobjects
 
     def persistentobjects(self):
         try:
@@ -185,20 +180,7 @@ class Constraint(object):
         return self._persistentobjects
         
     def vertices_in_lines(self):
-        try:
-            self._vertices_in_lines
-        except AttributeError:
-            self._vertices_in_lines = []
-        return self._vertices_in_lines
-
-    @classmethod
-    def check_objects(cls,m,n):
-        if cls.min_lines==0 and m<cls.min_points :
-            raise(Exception('not enough points selected'))
-        if cls.min_points==0 and n<cls.min_lines :
-            raise(Exception('not enough lines selected'))
-        if m<cls.min_points and n<cls.min_lines:
-            raise(Exception('not enough objects selected'))
+        return [vertex for tuple1 in self.segment_ids for vertex in tuple1]
 
     def __str__(self):
         return self.name        
@@ -268,16 +250,12 @@ class Constraint(object):
         elif currentflag == self.CurrentFlags.NoneCurrent:
             return self.CleanupFlags.Deletable
 
-            
-        
-        
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'
     
-    def __init__(self,value,vertex_ids, segment_ids,vertices_in_lines,persistentobjects):
+    def __init__(self,value,vertex_ids, segment_ids,persistentobjects):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
-        self._vertices_in_lines = vertices_in_lines
         self.value = value
         self._persistentobjects = persistentobjects
         self.id = id(self)
@@ -286,15 +264,12 @@ class ValueConstraint(Constraint):
     def new(cls,parent,*objects):
         value,ok = cls.getValue(parent)                
         if ok:
-            vertex_ids, segment_ids, vertices_in_lines,persistentobjects = cls._define_internals(*objects)
-            m = len(vertex_ids)+len(vertices_in_lines)
-            n = len(segment_ids)
-            cls.check_objects(m,n)
-            obj = cls(value,vertex_ids, segment_ids,vertices_in_lines,persistentobjects)
+            vertex_ids, segment_ids,persistentobjects = cls._define_internals(*objects)
+            obj = cls(value,vertex_ids, segment_ids,persistentobjects)
             return obj
 
     def copy(self,identical = True):
-        new = type(self)(self.value,self.vertex_ids,self.segment_ids,self.vertices_in_lines(),self.persistentobjects())
+        new = type(self)(self.value,self.vertex_ids,self.segment_ids,self.persistentobjects())
         if identical:
             new.id = self.id
         return new

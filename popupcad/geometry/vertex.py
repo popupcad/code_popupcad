@@ -17,8 +17,10 @@ class Vertex(object):
     def __init__(self):
         self.id = id(self)
         self._pos = None
-        self.static = False        
-        self._persistent = False
+        self.setstatic(False)
+        self.set_persistent(False)
+#        self.static = False        
+#        self._persistent = False
 
     def setstatic(self,test):
         self.static = test
@@ -30,6 +32,9 @@ class Vertex(object):
             self._persistent = False
         finally:
             return self._persistent
+
+    def is_static(self):
+        return self.static
 
     def set_persistent(self,test):
         self._persistent = test
@@ -52,7 +57,7 @@ class Vertex(object):
         return False
         
     def p(self):
-        if self.static:
+        if self.is_static():
             p_x = Constant(str(self)+'_x')
             p_y = Constant(str(self)+'_y')
         else:
@@ -78,7 +83,6 @@ class Vertex(object):
             self._pos = self.__pos
             del self.__pos
             return self._pos
-        
 
     def setsymbol(self,variable,value):
         p = self.p()
@@ -95,6 +99,7 @@ class Vertex(object):
         new = type(self)()
         new.setpos(self.getpos())
         new.static = self.static
+        new._persistent = self._persistent
         if identical:
             new.id = self.id
         return new            
@@ -115,5 +120,8 @@ class Vertex(object):
 class ShapeVertex(Vertex):
     pass
 
-class TemporaryVertex(Vertex):
-    pass
+class ReferenceVertex(Vertex):
+    def __init__(self,*args,**kwargs):
+        super(ReferenceVertex,self).__init__(*args,**kwargs)
+        self.set_persistent(True)
+        self.setstatic(True)

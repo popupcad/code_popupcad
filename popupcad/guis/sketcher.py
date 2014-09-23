@@ -351,7 +351,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         return self.sketch
         
     def newfile(self):
-        sketch = popupcad.filetypes.Sketch()
+        sketch = popupcad.filetypes.sketch.Sketch()
         self.loadsketch(sketch)
         self.undoredo.restartundoqueue()
 
@@ -362,7 +362,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.loadsketch(sketch)
 
     def open(self):
-        sketch = popupcad.filetypes.Sketch.open()
+        sketch = popupcad.filetypes.sketch.Sketch.open()
         if not sketch==None:
             self.loadsketch(sketch)
 

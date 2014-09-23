@@ -38,7 +38,7 @@ class OperationOutput(UserData):
 
     @staticmethod
     def getcontrolpoints(genericgeometry):
-        from popupcad.geometry.vertex import TemporaryVertex
+        from popupcad.geometry.vertex import ReferenceVertex
         vertices = []
         for layer, geoms in genericgeometry.items():
             for geom in geoms:
@@ -47,10 +47,8 @@ class OperationOutput(UserData):
         vertices = list(set(vertices))
         controlpoints = []
         for p in vertices:
-            v = TemporaryVertex()
+            v = ReferenceVertex()
             v.setpos(p)
-            v.setstatic(True)
-            v.set_persistent(True)
             controlpoints.append(v)
         return controlpoints
     
@@ -58,7 +56,7 @@ class OperationOutput(UserData):
     def getcontrollines(genericgeometry):
         lines = []
         from popupcad.geometry.line import Line
-        from popupcad.geometry.vertex import TemporaryVertex
+        from popupcad.geometry.vertex import ReferenceVertex
         for layer, geoms in genericgeometry.items():
             for geom in geoms:
                 newlines = zip(geom.exteriorpoints(),geom.exteriorpoints()[1:]+geom.exteriorpoints()[:1])
@@ -69,14 +67,10 @@ class OperationOutput(UserData):
         lines = list(set(lines))
         controllines = []
         for p1,p2 in lines:
-            v1 = TemporaryVertex()
-            v2 = TemporaryVertex()
+            v1 = ReferenceVertex()
+            v2 = ReferenceVertex()
             v1.setpos(p1)
             v2.setpos(p2)
-            v1.setstatic(True)
-            v1.set_persistent(True)
-            v2.setstatic(True)
-            v2.set_persistent(True)
             controllines.append(Line(v1,v2))
         return controllines
             
