@@ -12,7 +12,7 @@ class Child(object):
 #    display = ['a','b','c','d','e']
     editable = ['a','b','c']
     new_attr = {'<new_string>':'','<new_float>':0.0}
-    deletable = []
+    deletable = ['*']
     attr_names_editable = True
     def __init__(self):
         self.a = range(5)
@@ -65,15 +65,9 @@ class ParentItem(object):
             delattr(self.value,key)    
         except AttributeError:
             pass
-    def child(self,ii):
-        return self.children[ii]
-    def childCount(self):
-        return len(self.children)
-    def removeChild(self,ii):
-        return self.structureparent.takeTopLevelItem(ii)
     def removeAllChildren(self):
-        for ii in range(self.childCount())[::-1]:
-            self.removeChild(ii)
+        for ii in range(len(self.children))[::-1]:
+            self.structureparent.takeTopLevelItem(ii)
     
     def setchild(self,key,value):
         if self.valuetype in self.valuekeys:
@@ -179,8 +173,6 @@ class TreeWidgetItem(qg.QTreeWidgetItem,ParentItem):
 
         if self.level<self.depthlimit:        
             self.generatechildren(self)
-#    def addChild(self,*args,**kwargs):
-#        return qg.QTreeWidgetItem.addChild(self,*args,**kwargs)
         
     def updateparent(self):
         self.dataparent.setchild(self.key,self.value)
@@ -208,6 +200,7 @@ class TreeWidgetItem(qg.QTreeWidgetItem,ParentItem):
                 return False
         else:
             return False
+            
     def is_deletable(self):
         try:
             return self.key in self.dataparent.value.deletable or '*'in self.dataparent.value.deletable
@@ -297,11 +290,7 @@ class PropertyEditor(qg.QTreeWidget):
             
             if item.is_deletable():
                 item.dataparent.removeattr(item.key)
-                m = self.model()
-                index = self.selectedIndexes()[0]
-                m.removeRow(index.row(),index.parent())
-
-        
+                item.dataparent.refresh()
 
 if __name__=='__main__':
     import sys
