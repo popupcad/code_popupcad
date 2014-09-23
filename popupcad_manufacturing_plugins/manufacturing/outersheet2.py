@@ -19,6 +19,6 @@ class OuterSheet2(MultiValueOperation2):
     def operate(self,design):
         import algorithms.web as web
         ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
-        ls,dummy = web.supportsheet(design.layerdef(),ls1,2.*self.values[0]*popupcad.internal_argument_scaling)
+        ls,dummy = web.supportsheet(design.return_layer_definition(),ls1,2.*self.values[0]*popupcad.internal_argument_scaling)
         return ls
                 

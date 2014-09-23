@@ -137,22 +137,22 @@ class LayerOp(Operation):
 
     def operate(self,design):
         if self.function in self.unaryoperationtypes:
-            selectedinputlayers = [design.layerdef().getlayer(link) for link in self.unary_layer_links]
-            selectedoutputlayers = [design.layerdef().getlayer(link) for link in self.output_layer_links]
+            selectedinputlayers = [design.return_layer_definition().getlayer(link) for link in self.unary_layer_links]
+            selectedoutputlayers = [design.return_layer_definition().getlayer(link) for link in self.output_layer_links]
             lsin=design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
             return lsin.unarylayeroperation(self.function,selectedinputlayers,selectedoutputlayers)
         elif self.function in self.pairoperationtypes:
             ls = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
-            pair1 = [design.layerdef().getlayer(link) for link in self.unary_layer_links]
-            pair2 = [design.layerdef().getlayer(link) for link in self.pair_layer_links]
-            outputlayers = [design.layerdef().getlayer(layerlink) for layerlink in self.output_layer_links]
+            pair1 = [design.return_layer_definition().getlayer(link) for link in self.unary_layer_links]
+            pair2 = [design.return_layer_definition().getlayer(link) for link in self.pair_layer_links]
+            outputlayers = [design.return_layer_definition().getlayer(layerlink) for layerlink in self.output_layer_links]
             return ls.binarylayeroperation2(self.function,pair1,pair2,outputlayers)
 
     @classmethod        
     def buildnewdialog(cls,design,currentop):
-        return Dialog(design.operations,design.layerdef().layers)
+        return Dialog(design.operations,design.return_layer_definition().layers)
 
     def buildeditdialog(self,design):
         operationindex = design.operation_index(self.operation_link1) 
         ii = self.displayorder.index(self.function)
-        return Dialog(design.prioroperations(self),design.layerdef().layers,ii,operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,self.getoutputref())
+        return Dialog(design.prioroperations(self),design.return_layer_definition().layers,ii,operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,self.getoutputref())

@@ -28,6 +28,6 @@ class SupportCandidate3(MultiValueOperation2):
         else:
             raise(Exception('keepout type'))
             
-        support=algorithms.web.autosupport(ls1,keepout,design.layerdef(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
+        support=algorithms.web.autosupport(ls1,keepout,design.return_layer_definition(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
         return support
 

@@ -70,3 +70,5 @@ popupcad.filetypes.genericshapes.GenericShape = genericpolygon.GenericShape
 popupcad.geometry.genericshapebase= popupcad.filetypes.genericshapebase
 sys.modules['popupcad.geometry.genericshapebase']  = popupcad.filetypes.genericshapebase
 
+popupcad.materials.LayerDef = popupcad.filetypes.layerdef.LayerDef
+popupcad.materials.materials.LayerDef = popupcad.filetypes.layerdef.LayerDef

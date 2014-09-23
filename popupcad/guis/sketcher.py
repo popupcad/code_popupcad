@@ -16,7 +16,7 @@ from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
 import popupcad.constraints as constraints
-from popupcad.filetypes import Sketch
+from popupcad.filetypes.sketch import Sketch
 from popupcad.widgets.listeditor import ListEditor,ListSelector
 from popupcad.supportfiles import Icon
 import numpy
@@ -39,7 +39,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         
         if selectedlayers == None:
             if design != None:
-                selectedlayers = self.design.layerdef().layers
+                selectedlayers = self.design.return_layer_definition().layers
             
         if self.design == None:
             self.operations = [NullOp()]
@@ -102,7 +102,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             self.layerlistwidget = ListSelector()
 
             if self.design !=None:
-                layers = self.design.layerdef().layers
+                layers = self.design.return_layer_definition().layers
             else:
                 layers = []
             self.layerlistwidget.linklist(layers)
@@ -463,7 +463,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 if self.design !=None:
                     try:
                         operationgeometries = self.design.operations[ii].output[jj].generic_geometry_2d()
-                        for layer in self.design.layerdef().layers:
+                        for layer in self.design.return_layer_definition().layers:
                             operationgeometry = operationgeometries[layer]
                             for item in operationgeometry:
                                 newitem = item.outputstatic(color = layer.color)

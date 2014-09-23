@@ -9,14 +9,13 @@ import shapely.ops as ops
 import popupcad
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.layer import Layer
-from popupcad.filetypes import Sketch
+from popupcad.filetypes.sketch import Sketch
 import popupcad.widgets
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.design import NoOperation
 import popupcad.geometry.customshapely as customshapely
 import popupcad.widgets.listmanager as listmanager
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
-from popupcad.filetypes.listwidgetitem import ListWidgetItem
 from popupcad.manufacturing.nulloperation import NullOp
 
 
@@ -43,11 +42,11 @@ class Dialog(qg.QDialog):
                 item.setSelected(True)
         
         if selectedoutput == None:
-            selectedoutput = [item.id for item in design.layerdef().layers]
+            selectedoutput = [item.id for item in design.return_layer_definition().layers]
         self.outputlayerselector = qg.QListWidget()
         self.outputlayerselector.setSelectionBehavior(qg.QListWidget.SelectionBehavior.SelectRows)
         self.outputlayerselector.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
-        outputitems = [ListWidgetItem(item,self.outputlayerselector) for item in design.layerdef().layers]
+        outputitems = [popupcad.filetypes.listwidgetitem.ListWidgetItem(item,self.outputlayerselector) for item in design.return_layer_definition().layers]
         [item.setSelected(item.customdata.id in selectedoutput) for item in outputitems]        
 
         from  popupcad.widgets.operationlist import OperationList
@@ -128,14 +127,14 @@ class SketchOperation2(Operation):
 
     def operate(self,design):
         operationgeom = design.sketches[self.sketchid].output_csg()
-        layers = [design.layerdef().getlayer(item) for item in self.layer_links]        
+        layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
 
         try:
             laminate1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
         except NoOperation:
-            laminate1 = Laminate(design.layerdef())
+            laminate1 = Laminate(design.return_layer_definition())
         
-        laminate2 = Laminate(design.layerdef())
+        laminate2 = Laminate(design.return_layer_definition())
         for layer in layers:
             laminate2.replacelayergeoms(layer,[operationgeom])
 

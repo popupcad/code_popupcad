@@ -18,8 +18,8 @@ class LocateOperation(SketchOperation2):
     def operate(self,design):
         sketch = design.sketches[self.sketchid]
         operationgeom = customshapely.unary_union_safe([item.outputshapely() for item in sketch.operationgeometry])
-        lsout = Laminate(design.layerdef())
-        for layer in design.layerdef().layers:
+        lsout = Laminate(design.return_layer_definition())
+        for layer in design.return_layer_definition().layers:
             lsout.replacelayergeoms(layer,customshapely.multiinit(operationgeom))
         return lsout
 

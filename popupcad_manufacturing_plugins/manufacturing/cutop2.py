@@ -150,7 +150,7 @@ class CutOperation2(Operation):
 
         firstpass = sheet.difference(keepout.difference(supported_device))
         secondpass = sheet.difference(keepout2)
-        laminate = Laminate(design.layerdef())
+        laminate = Laminate(design.return_layer_definition())
         device2= firstpass.difference(secondpass)
         error = device2.symmetric_difference(device)
         error = error.buffer(-.001)

@@ -28,13 +28,13 @@ class IdentifyRigidBodies(MultiValueOperation2):
 
         generic = design.op_from_ref(self.operation_link1).output[self.getoutputref()].generic_geometry_2d()
         
-        layerdef = design.layerdef()
+        layerdef = design.return_layer_definition()
 
         layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
         geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
 #        csg_dict = dict([(geom.id,geom.outputshapely()) for layer,geoms in generic.items() for geom in geoms])
 
-        layerdef = design.layerdef()
+        layerdef = design.return_layer_definition()
         rigid_geoms = []    
         
         connections = []
@@ -107,5 +107,5 @@ class IdentifyRigidBodies(MultiValueOperation2):
         for ii,item in enumerate(new_csgs):
             self.output.append(OperationOutput(item,'Rigid Body {0:d}'.format(ii),self))
         self.output.insert(0,self.output[0])
-        return Laminate(design.layerdef())
+        return Laminate(design.return_layer_definition())
                 

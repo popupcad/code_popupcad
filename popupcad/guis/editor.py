@@ -231,7 +231,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         
     @loggable
     def newfile(self):
-        from popupcad.materials.materials import LayerDef,Carbon_0_90_0,Pyralux,Kapton
+        from popupcad.filetypes.layerdef import LayerDef
+        from popupcad.materials.materials import Carbon_0_90_0,Pyralux,Kapton
         design = Design()
         design.define_layers(LayerDef(Carbon_0_90_0(),Pyralux(),Kapton(),Pyralux(),Carbon_0_90_0()))
         self.loadfile(design)
@@ -248,7 +249,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     def open_sketcher(self):
         from .sketcher import Sketcher
         ii,jj = self.operationeditor.currentIndeces()
-        layers = self.design.layerdef().layers
+        layers = self.design.return_layer_definition().layers
         sketcher = Sketcher(self,Sketch(),self.design,selectops = True)
         sketcher.show()
         
@@ -277,7 +278,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def editlayers(self):
-        window = popupcad.widgets.materialselection.MaterialSelection(self.design.layerdef().layers,popupcad.materials.materials.available_materials,self)
+        window = popupcad.widgets.materialselection.MaterialSelection(self.design.return_layer_definition().layers,popupcad.materials.materials.available_materials,self)
         result = window.exec_()
         if result == window.Accepted:
             self.design.define_layers(window.layerdef)
@@ -287,9 +288,9 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def editlaminate(self):
         from popupcad.widgets.propertyeditor import PropertyEditor
-        dialog = self.builddialog(PropertyEditor(self.design.layerdef().layers))
+        dialog = self.builddialog(PropertyEditor(self.design.return_layer_definition().layers))
         dialog.exec_()
-        self.design.layerdef().refreshzvalues()
+        self.design.return_layer_definition().refreshzvalues()
 
     @loggable
     def sketchlist(self):
@@ -322,14 +323,14 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def updatelayerlist(self):
-        self.layerlistwidget.linklist(self.design.layerdef().layers)
+        self.layerlistwidget.linklist(self.design.return_layer_definition().layers)
 
     @loggable
     def showcurrentoutput(self,*args,**kwargs):
         ii,jj = self.operationeditor.currentIndeces()
         try:
             operationoutput = self.design.operations[ii].output[jj]
-            selectedlayers=[item for item in self.design.layerdef().layers if item in self.layerlistwidget.selectedData()]
+            selectedlayers=[item for item in self.design.return_layer_definition().layers if item in self.layerlistwidget.selectedData()]
             self.show2dgeometry3(operationoutput,selectedlayers)
             self.show3dgeometry3(operationoutput,selectedlayers)
         except IndexError:
@@ -348,11 +349,11 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         if self.act_3don.isChecked():
             tris = operationoutput.tris()
             lines = operationoutput.lines()
-            self.view_3d.view.update_object(self.design.layerdef().zvalue,tris,lines,selectedlayers)
+            self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,lines,selectedlayers)
         else:
-            tris = dict([(layer,[]) for layer in self.design.layerdef().layers])
-            lines = dict([(layer,[]) for layer in self.design.layerdef().layers])
-            self.view_3d.view.update_object(self.design.layerdef().zvalue,tris,lines,selectedlayers)
+            tris = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
+            lines = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
+            self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,lines,selectedlayers)
 
     @loggable
     def exportLayerSVG(self):
@@ -368,7 +369,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             
         ii,jj = self.operationeditor.currentIndeces()
         generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
-        for layernum,layer in enumerate(self.design.layerdef().layers[::1]):
+        for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
             filename = os.path.normpath(os.path.join(popupcad.exportdir,basename))
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()

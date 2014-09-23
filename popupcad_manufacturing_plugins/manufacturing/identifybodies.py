@@ -34,7 +34,7 @@ class IdentifyBodies(MultiValueOperation2):
         from ..algorithms import bodydetection as bd
         
         generic = design.op_from_ref(self.operation_link1).output[self.getoutputref()].generic_geometry_2d()
-        layerdef = design.layerdef()
+        layerdef = design.return_layer_definition()
 
         layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
         geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])

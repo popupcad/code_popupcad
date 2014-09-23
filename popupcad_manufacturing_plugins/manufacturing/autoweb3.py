@@ -26,7 +26,7 @@ class AutoWeb3(MultiValueOperation2):
         elif self.keepout_type == self.keepout_types.mill_flip_keepout:
             keepout = popupcad.algorithms.keepout.millflipkeepout(ls1)
 
-        sheet, outer_web,inner_elements,buffered_keepout = algorithms.web.generate_web(ls1,keepout,design.layerdef(),(self.values[0]+self.values[1])*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
+        sheet, outer_web,inner_elements,buffered_keepout = algorithms.web.generate_web(ls1,keepout,design.return_layer_definition(),(self.values[0]+self.values[1])*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
 
         a = OperationOutput(outer_web,'Web',self)
         b = OperationOutput(sheet,'Sheet',self)

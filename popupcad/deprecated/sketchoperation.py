@@ -7,7 +7,7 @@ Please see LICENSE.txt for full license.
 import shapely.ops as ops
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.layer import Layer
-from popupcad.filetypes import Sketch
+from popupcad.filetypes.sketch import Sketch
 import popupcad.widgets
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.design import NoOperation
@@ -46,14 +46,14 @@ class SketchOperation(Operation):
 
     def operate(self,design):
         operationgeom = design.sketches[self.sketchid].output_csg()
-        layers = [design.layerdef().getlayer(item) for item in self.layer_links]        
+        layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
 
         try:
             laminate1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
         except NoOperation:
-            laminate1 = Laminate(design.layerdef())
+            laminate1 = Laminate(design.return_layer_definition())
         
-        laminate2 = Laminate(design.layerdef())
+        laminate2 = Laminate(design.return_layer_definition())
         for layer in layers:
             laminate2.replacelayergeoms(layer,[operationgeom])
 
@@ -79,7 +79,7 @@ class SketchOperation(Operation):
             seededrefop = None
         f = lambda *args:cls.addedsketch(design,newsignal,*args)
         dialog = Sketcher(parent,sketch,design,isOperation=True,selectops = True,accept_method=f)
-#        dialog = popupcad.guis.sketcher.SketcherMainWindow(parent,sketch,design.layerdef().layers,design.layerdef().layers,prioroperations,seededrefop,cls.operationtypes,0,design,True)
+#        dialog = popupcad.guis.sketcher.SketcherMainWindow(parent,sketch,design.return_layer_definition().layers,design.return_layer_definition().layers,prioroperations,seededrefop,cls.operationtypes,0,design,True)
 #        dialog.sketchaccepted.connect(f)
         dialog.show()
         dialog.activateWindow()
@@ -100,7 +100,7 @@ class SketchOperation(Operation):
         from popupcad.guis.sketcher import Sketcher
         prioroperations = design.prioroperations(self)
 
-        layers = [design.layerdef().getlayer(ref) for ref in self.layer_links]
+        layers = [design.return_layer_definition().getlayer(ref) for ref in self.layer_links]
         opindex = self.operationtypes.index(self.function)
         sketch  = design.sketches[self.sketchid]
         
@@ -113,7 +113,7 @@ class SketchOperation(Operation):
         f = lambda *args:self.editedsketch(design,editedsignal,*args)
         kk = self.operationtypes.index(self.function)
         dialog = Sketcher(parent,sketch,design,ii = ii,jj = self.outputref,kk = kk,isOperation = True,selectops = True,accept_method = f,oplimit = myindex,selectedlayers= layers)
-#        dialog= popupcad.guis.sketcher.SketcherMainWindow(parent,sketch,design.layerdef().layers,layers,prioroperations,self.operation_link1,self.operationtypes,opindex,design,True)
+#        dialog= popupcad.guis.sketcher.SketcherMainWindow(parent,sketch,design.return_layer_definition().layers,layers,prioroperations,self.operation_link1,self.operationtypes,opindex,design,True)
 #        dialog.sketchaccepted.connect(f)
         dialog.show()
         dialog.activateWindow()

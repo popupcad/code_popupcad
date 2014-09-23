@@ -38,11 +38,11 @@ class Dialog(qg.QDialog):
                 item.setSelected(True)
         
         if selectedoutput == None:
-            selectedoutput = [item.id for item in design.layerdef().layers]
+            selectedoutput = [item.id for item in design.return_layer_definition().layers]
         self.outputlayerselector = qg.QListWidget()
         self.outputlayerselector.setSelectionBehavior(qg.QListWidget.SelectionBehavior.SelectRows)
         self.outputlayerselector.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
-        outputitems = [ListWidgetItem(item,self.outputlayerselector) for item in design.layerdef().layers]
+        outputitems = [ListWidgetItem(item,self.outputlayerselector) for item in design.return_layer_definition().layers]
         [item.setSelected(item.customdata.id in selectedoutput) for item in outputitems]        
 
         self.support_width = qg.QLineEdit()
@@ -151,8 +151,8 @@ class CustomSupport3(Operation):
 
     def generate(self,design):
         operationgeom = design.sketches[self.sketch_link].output_csg()
-        layers = [design.layerdef().getlayer(item) for item in self.layer_links]        
-        support = Laminate(design.layerdef())
+        layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
+        support = Laminate(design.return_layer_definition())
         for layer in layers:
             support.replacelayergeoms(layer,[operationgeom])
         

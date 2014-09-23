@@ -206,7 +206,7 @@ class PlaceOperation4(Operation):
             scale_x = None
             scale_y = None
 
-        lsout = Laminate(design.layerdef())
+        lsout = Laminate(design.return_layer_definition())
         step = 1
         if self.flip:
             step = -1
@@ -220,7 +220,7 @@ class PlaceOperation4(Operation):
             outshift = 0
             inshift = 0
             
-        for layerout,layerin in zip(design.layerdef().layers[outshift:],subdesign.layerdef().layers[::step][inshift:]):
+        for layerout,layerin in zip(design.return_layer_definition().layers[outshift:],subdesign.return_layer_definition().layers[::step][inshift:]):
             newgeoms = []
             for geom in sketch.operationgeometry:
                 for designgeom in designgeometry.layer_sequence[layerin].geoms:

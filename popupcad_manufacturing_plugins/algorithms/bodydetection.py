@@ -68,7 +68,7 @@ def findconnectedneighborgeoms(design,geomid,generic_geometry=None,opref=None):
 def findneigborlayers(design,layer):   
     '''Find the layers above and below a given layer'''
     from popupcad.materials.materials import Adhesive
-    layers = design.layerdef().layers
+    layers = design.return_layer_definition().layers
     layerindex = layers.index(layer)
     nextneighbors = []
     if layerindex>0:

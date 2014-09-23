@@ -28,7 +28,7 @@ class Design(popupCADFile):
     def __init__(self):
         super(Design,self).__init__()
         self.operations = []
-        self._layerdef  = popupcad.materials.LayerDef()
+        self._layerdef  = popupcad.filetypes.layerdef.LayerDef()
         self.id = id(self)
         self.sketches = {}
         self.subdesigns = {}
@@ -37,13 +37,25 @@ class Design(popupCADFile):
     def define_layers(self,layerdef):
         self._layerdef = layerdef
         
-    def layerdef(self):
-        try:
-            return self._layerdef
-        except AttributeError:
+    def return_layer_definition(self):
+        a = hasattr(self,'_layerdef')
+        b = hasattr(self,'__layerdef')
+        if a:
+            pass
+        elif b:
             self._layerdef = self.__layerdef
             del self.__layerdef
-            return self._layerdef
+#            return self._layerdef
+        else:
+            pass
+        return self._layerdef
+            
+#        try:
+#            return self._layerdef
+#        except AttributeError:
+#            self._layerdef = self.__layerdef
+#            del self.__layerdef
+#            return self._layerdef
             
     def operation_index(self,operation_ref):
         try:
@@ -61,13 +73,13 @@ class Design(popupCADFile):
         return prioroperations
 
     def layer_index(self,layer_ref):
-        indeces = dict([(layer.id,ii) for ii,layer in enumerate(self.layerdef().layers)])
+        indeces = dict([(layer.id,ii) for ii,layer in enumerate(self.return_layer_definition().layers)])
         return indeces[layer_ref]
         
     def copy(self,identical = True):
         new = Design()
         new.operations = [operation.copy() for operation in self.operations]
-        new.define_layers(self.layerdef())
+        new.define_layers(self.return_layer_definition())
         if identical:
             new.id=self.id
         new.sketches = {}

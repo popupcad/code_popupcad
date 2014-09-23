@@ -8,8 +8,6 @@ from popupcad.filetypes.userdata import UserData
 import popupcad
 import numpy
 
-
-    
 class OperationOutput(UserData):
     def __init__(self,csg,name,parent = None):
         super(OperationOutput,self).__init__()

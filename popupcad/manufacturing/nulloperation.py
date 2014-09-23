@@ -21,7 +21,7 @@ class NullOp(Operation):
         self.id = id(self)
 
     def operate(self,design):
-        laminate = Laminate(design.layerdef())
+        laminate = Laminate(design.return_layer_definition())
         return laminate
         
     @classmethod

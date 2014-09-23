@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-from popupcad.filetypes import ListWidgetItem
+from popupcad.filetypes.listwidgetitem import ListWidgetItem
 
 class ListBase(qg.QListWidget):
     def __init__(self,*args,**kwargs):
