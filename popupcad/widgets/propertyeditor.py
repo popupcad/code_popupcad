@@ -13,6 +13,7 @@ class Child(object):
     editable = ['a','b','c']
     new_attr = {'<new_string>':'','<new_float>':0.0}
     deletable = []
+    attr_names_editable = True
     def __init__(self):
         self.a = range(5)
         self.b = 'text'
@@ -33,6 +34,7 @@ class Parent(object):
 #    display = ['child','tuple1','list1','x','a','dict1']
     editable = ['child','tuple1','list1','x','a','dict1']
     deletable = ['*']
+    attr_names_editable = True
     def __init__(self):
         self.child  = Child()
         self.tuple1 = (234.5,1,Child())
@@ -52,7 +54,7 @@ class ParentItem(object):
         self.valuetype = type(value)
         self.children = []
         self.level = 1
-        self.generatechildren(treewidgetparent)
+        self.generatechildren(self.structureparent)
 
     def addChild(self,item):
         self.children.append(item)
@@ -63,6 +65,15 @@ class ParentItem(object):
             delattr(self.value,key)    
         except AttributeError:
             pass
+    def child(self,ii):
+        return self.children[ii]
+    def childCount(self):
+        return len(self.children)
+    def removeChild(self,ii):
+        return self.structureparent.takeTopLevelItem(ii)
+    def removeAllChildren(self):
+        for ii in range(self.childCount())[::-1]:
+            self.removeChild(ii)
     
     def setchild(self,key,value):
         if self.valuetype in self.valuekeys:
@@ -127,7 +138,7 @@ class ParentItem(object):
             except AttributeError:
                 pass
 
-            keys = list(set(keys) - set(['hidden','editable','deletable','new_attr']))
+            keys = list(set(keys) - set(['hidden','editable','deletable','new_attr','attr_names_editable']))
            
             classkeys = []
             for key in keys:
@@ -148,11 +159,15 @@ class ParentItem(object):
             except AttributeError:
                 pass
             self.sortChildren(0,qc.Qt.SortOrder.AscendingOrder)
+    def refresh(self):
+        self.removeAllChildren()
+        self.generatechildren(self.structureparent)
         
 
 class TreeWidgetItem(qg.QTreeWidgetItem,ParentItem):
     depthlimit = 5
     def __init__(self,parent,dataparent,key,value,level):
+        self.structureparent = self
         self.dataparent = dataparent
         self.key = key
         self.value = value
@@ -172,15 +187,27 @@ class TreeWidgetItem(qg.QTreeWidgetItem,ParentItem):
 
     def parent(self):
         return qg.QTreeWidgetItem.parent(self)
-        
-    def is_editable(self):
-        try:
-            return self.key in self.dataparent.value.editable
-        except AttributeError:
-            if self.dataparent.valuetype in self.dataparent.listkeys:
-                return self.dataparent.is_editable()
-            return True
 
+    def removeAllChildren(self):
+        for ii in range(self.childCount())[::-1]:
+            self.removeChild(self.child(ii))
+        
+    def is_editable(self,column):
+        if column == 1:
+            try:
+                result = (self.key in self.dataparent.value.editable) or ('*' in self.dataparent.value.editable)
+                return result
+            except AttributeError:
+                if self.dataparent.valuetype in self.dataparent.listkeys:
+                    return self.dataparent.is_editable(column)
+                return False
+        if column == 0:
+            try:
+                return self.dataparent.value.attr_names_editable
+            except AttributeError:
+                return False
+        else:
+            return False
     def is_deletable(self):
         try:
             return self.key in self.dataparent.value.deletable or '*'in self.dataparent.value.deletable
@@ -190,9 +217,9 @@ class TreeWidgetItem(qg.QTreeWidgetItem,ParentItem):
             return False
             
     def setData(self,column,role,value):
-        if column == 1:
-            if role == qc.Qt.ItemDataRole.EditRole:
-                if self.is_editable():
+        if role == qc.Qt.ItemDataRole.EditRole:
+            if self.is_editable(column):
+                if column==1:
                     if self.valuetype==bool:
                         value = value.lower()
                         if (value=='false') or (value=='0') or (value=='f'):
@@ -203,6 +230,13 @@ class TreeWidgetItem(qg.QTreeWidgetItem,ParentItem):
                     elif self.valuetype in self.valuekeys:
                         self.value = self.valuetype(value)
                         self.updateparent()
+                if column==0:
+                    if not hasattr(self.dataparent.value,value):
+                        self.dataparent.removeattr(value)
+                        self.dataparent.removeattr(self.key)
+                        self.key = value
+                        self.updateparent()
+                    self.dataparent.refresh()
             
     def data(self,column,role):
         if column == 0:
@@ -210,7 +244,7 @@ class TreeWidgetItem(qg.QTreeWidgetItem,ParentItem):
                 return self.key
             if role == qc.Qt.ItemDataRole.EditRole:
                 return self.key
-        if column == 1:
+        elif column == 1:
             if role == qc.Qt.ItemDataRole.DisplayRole:
                 return str(self.value)
             if role == qc.Qt.ItemDataRole.EditRole:
@@ -233,7 +267,15 @@ class InsertNewWidgetItem(TreeWidgetItem):
     def setData(self,column,role,value):
         if column == 0:
             if role == qc.Qt.ItemDataRole.EditRole:
-                newtwi = TreeWidgetItem(self.parent(),self.dataparent,value,self.value,self.dataparent.level+1)
+                if type(self.value)==list:
+                    newvalue = self.value[:]
+                elif type(self.value)==tuple:
+                    newvalue = self.value[:]
+                elif type(self.value) in ParentItem.valuekeys:
+                    newvalue = self.value
+                else:
+                    newvalue = self.value.copy()
+                newtwi = TreeWidgetItem(self.parent(),self.dataparent,value,newvalue,self.dataparent.level+1)
                 self.dataparent.addChild(newtwi)
                 try:
                     self.dataparent.value.editable.append(value)
@@ -269,4 +311,4 @@ if __name__=='__main__':
     pv = PropertyEditor(parent)
 
     pv.show()
-    sys.exit(app.exec_())
+#    sys.exit(app.exec_())
