@@ -14,7 +14,8 @@ class Vertex(object):
     deletable = []
     
     roundvalue = 5
-    def __init__(self):
+    def __init__(self,position = None):
+
         self.id = id(self)
         self._pos = None
         self.setstatic(False)
@@ -24,6 +25,8 @@ class Vertex(object):
 #        self.static = False        
 #        self._persistent = False
 
+        if position !=None:
+            self.setpos(position)
     def set_construction(self,test):
         self.construction = test
     def is_construction(self):
@@ -154,13 +157,6 @@ class ShapeVertex(Vertex):
 
 class ReferenceVertex(Vertex):
     def __init__(self,*args,**kwargs):
-        if 'position' in kwargs:
-            pos = kwargs.pop('position')
-        else:
-            pos = None
-            
         super(ReferenceVertex,self).__init__(*args,**kwargs)
         self.set_persistent(True)
         self.setstatic(True)
-        if pos !=None:
-            self.setpos(pos)
