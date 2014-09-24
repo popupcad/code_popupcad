@@ -154,6 +154,13 @@ class ShapeVertex(Vertex):
 
 class ReferenceVertex(Vertex):
     def __init__(self,*args,**kwargs):
+        if 'position' in kwargs:
+            pos = kwargs.pop('position')
+        else:
+            pos = None
+            
         super(ReferenceVertex,self).__init__(*args,**kwargs)
         self.set_persistent(True)
         self.setstatic(True)
+        if pos !=None:
+            self.setpos(pos)

@@ -47,8 +47,7 @@ class OperationOutput(UserData):
         vertices = list(set(vertices))
         controlpoints = []
         for p in vertices:
-            v = ReferenceVertex()
-            v.setpos(p)
+            v = ReferenceVertex(position = p)
             controlpoints.append(v)
         return controlpoints
     
@@ -67,10 +66,8 @@ class OperationOutput(UserData):
         lines = list(set(lines))
         controllines = []
         for p1,p2 in lines:
-            v1 = ReferenceVertex()
-            v2 = ReferenceVertex()
-            v1.setpos(p1)
-            v2.setpos(p2)
+            v1 = ReferenceVertex(position = p1)
+            v2 = ReferenceVertex(position = p2)
             controllines.append(Line(v1,v2))
         return controllines
             
