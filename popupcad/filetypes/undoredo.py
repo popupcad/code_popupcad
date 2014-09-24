@@ -11,26 +11,28 @@ class UndoRedo(object):
         self.load_method = load_method
 #        self.restartundoqueue()
     def restartundoqueue(self):
-        self.undoqueue = []
-        self.redoqueue = []
-        self.savesnapshot()
+        file1 = self.get_current_method()
+        self.undoqueue=[file1.copy()]
+        self.index = 0
     def savesnapshot(self):
         file1 = self.get_current_method()
+        self.undoqueue = self.undoqueue[:self.index+1]
         self.undoqueue.append(file1.copy())
-        self.redoqueue = []
+        self.index = len(self.undoqueue) - 1
+
+    def loadindex(self,ii):
+        self.load_method(self.undoqueue[ii])
+        self.index = ii
+        
     def undo(self):
-        try:
-            sketch = self.undoqueue.pop()
-            self.redoqueue.append(self.get_current_method())
-            self.load_method(sketch)
-        except IndexError:
-            print('beginning of undo queue')
+        self.index -= 1 
+        if self.index<0:
+            self.index=0
+        self.load_method(self.undoqueue[self.index])
 
     def redo(self):
-        try:
-            sketch = self.redoqueue.pop()
-            self.undoqueue.append(self.get_current_method())
-            self.load_method(sketch)
-        except IndexError:
-            print('end of redo queue')
-        
+        self.index += 1 
+        m=len(self.undoqueue)
+        if self.index>=m:
+            self.index=m-1
+        self.load_method(self.undoqueue[self.index])
