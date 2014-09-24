@@ -53,8 +53,12 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         
         if self.selectops:
             self.optree.linklist(self.operations)
+
+
+        self.undoredo = UndoRedo(self.get_current_sketch,self.loadsketch)
         self.loadsketch(sketch)
-        
+        self.undoredo.restartundoqueue()
+
         self.createActions()        
         
         if self.selectops:
@@ -328,7 +332,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             newitem.refreshview()
 
         self.constraint_editor.linklist(self.sketch.constraintsystem.constraints)
-        self.undoredo = UndoRedo(self.get_current_sketch,self.loadsketch)
+        
 
     def buildsketch(self):
         self.sketch.cleargeometries()
@@ -352,11 +356,13 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         a = Assembly.open()
         sketch = a.build_face_sketch()
         self.loadsketch(sketch)
+        self.undoredo.restartundoqueue()
 
     def open(self):
         sketch = popupcad.filetypes.sketch.Sketch.open()
         if not sketch==None:
             self.loadsketch(sketch)
+            self.undoredo.restartundoqueue()
 
     def save(self):
         self.buildsketch()

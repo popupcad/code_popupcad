@@ -9,7 +9,7 @@ class UndoRedo(object):
     def __init__(self,get_current_method,load_method):
         self.get_current_method = get_current_method
         self.load_method = load_method
-        self.restartundoqueue()
+#        self.restartundoqueue()
     def restartundoqueue(self):
         self.undoqueue = []
         self.redoqueue = []
