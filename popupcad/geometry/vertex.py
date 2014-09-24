@@ -10,7 +10,7 @@ import sympy
 from popupcad.constraints.constraints import Variable, Constant
     
 class Vertex(object):
-    editable = ['pos','static']
+    editable = ['pos','static','construction']
     deletable = []
     
     roundvalue = 5
@@ -19,11 +19,25 @@ class Vertex(object):
         self._pos = None
         self.setstatic(False)
         self.set_persistent(False)
+        self.set_construction(True)
+#        self.construction = False
 #        self.static = False        
 #        self._persistent = False
 
+    def set_construction(self,test):
+        self.construction = test
+    def is_construction(self):
+        try:
+            return self.construction
+        except AttributeError:
+            self.construction = True
+            return self.construction
+
     def setstatic(self,test):
         self.static = test
+
+    def isValid(self):
+        return True
 
     def is_persistent(self):
         try:
@@ -109,6 +123,24 @@ class Vertex(object):
         iv = InteractiveVertex(self)
         iv.updatefromsymbolic()
         return iv
+
+    def outputinteractive(self):
+        from popupcad.graphics2d.drawingpoint import DrawingPoint
+        iv = DrawingPoint(self)
+        iv.updatefromgeneric()
+        return iv
+
+    def outputstatic(self,color):
+        from popupcad.graphics2d.drawingpoint import DrawingPoint
+        iv = DrawingPoint(self)
+        iv.makemoveable(False)
+        iv.updatefromgeneric()
+        return iv
+
+    def outputshapely(self):
+        from shapely.geometry import Point
+        p = Point(*self.getpos())
+        return p
         
     def get_interactive(self):
         try:

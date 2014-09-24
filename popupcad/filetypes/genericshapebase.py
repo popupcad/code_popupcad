@@ -49,17 +49,19 @@ class GenericShapeBase(popupCADFile):
     def copy(self,identical = True):
         exterior = [vertex.copy(identical) for vertex in self.exterior]
         interiors = [[vertex.copy(identical) for vertex in interior] for interior in self.interiors]
-        try:
-            self.construction
-        except AttributeError:
-            self.construction = False
-        new = type(self)(exterior,interiors,self.construction)
+        new = type(self)(exterior,interiors,self.is_construction())
         if identical:
             new.id = self.id
 
         self.copy_file_params(new,identical)
         
         return new
+    def is_construction(self):
+        try:
+            return self.construction
+        except AttributeError:
+            self.construction = False
+            return self.construction
 
     def exteriorpoints(self):
         return [vertex.getpos() for vertex in self.exterior]        
@@ -165,6 +167,11 @@ class GenericShapeBase(popupCADFile):
             subclass = GenericPoly
         elif isinstance(obj,customshapely.ShapelyLineString):
             subclass= GenericPolyline
+        elif isinstance(obj,customshapely.ShapelyPoint):
+            from popupcad.geometry.vertex import ShapeVertex
+            s = ShapeVertex()
+            s.setpos(exterior_p[0])
+            return s
         else:
             raise(Exception('unknown type'))
 

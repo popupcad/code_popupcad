@@ -12,6 +12,8 @@ import popupcad.constraints as constraints
 from .static import Static
 from .svg_support import SVGOutputSupport
 from .modes import Modes
+from popupcad.geometry.vertex import ShapeVertex
+from popupcad.graphics2d.drawingpoint import DrawingPoint
 from popupcad.graphics2d.interactivevertex import InteractiveVertex
 from popupcad.graphics2d.interactiveedge import InteractiveEdge
 from .text import TextItem
@@ -129,6 +131,13 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                         self.addItem(temp)
                         self.setFocusItem(temp)
                         temp.setPos(pos)
+                        self.nextgeometry = None
+                    if self.nextgeometry==DrawingPoint:
+                        temp = self.nextgeometry(ShapeVertex())
+                        self.addItem(temp)
+                        self.setFocusItem(temp)
+                        temp.setPos(pos)
+                        temp.updatescale()
                         self.nextgeometry = None
                     else:
                         self.temp = self.nextgeometry()

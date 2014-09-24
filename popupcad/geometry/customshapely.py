@@ -27,6 +27,8 @@ def multiinit(*geoms):
                 geoms2.append(ShapelyPolygon(geom.exterior,geom.interiors))
             elif isinstance(geom,sg.LineString):
                 geoms2.append(ShapelyLineString(geom))
+            elif isinstance(geom,sg.Point):
+                geoms2.append(ShapelyPoint(geom))
             else:
                 raise(Exception('unknown type: '+str(type(geom))))
                 geoms2.append(geom)
@@ -36,6 +38,11 @@ def multiinit(*geoms):
     return geoms2
 
 class ShapelyLineString(sg.LineString):
+    def genpoints_generic(self):
+        coords = [coord for coord in self.coords]
+        return coords,[]
+
+class ShapelyPoint(sg.Point):
     def genpoints_generic(self):
         coords = [coord for coord in self.coords]
         return coords,[]

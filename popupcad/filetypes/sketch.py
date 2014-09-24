@@ -60,7 +60,7 @@ class Sketch(popupCADFile):
         shapelygeoms = []
         for item in self.operationgeometry:
             try:
-                if not item.construction:
+                if not item.is_construction():
                     shapelyitem = item.outputshapely()
                     shapelygeoms.append(shapelyitem)
             except ValueError as ex:

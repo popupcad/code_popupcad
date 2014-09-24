@@ -112,7 +112,7 @@ class ConstraintSystem(object):
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
             qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
-#            qout = qout.x.tolist()
+            qout = qout.x.tolist()
         for ii,variable in enumerate(variables):
             vertexdict[variable].setsymbol(variable,qout[ii])   
     def cleanup(self,sketch_objects):
@@ -120,10 +120,35 @@ class ConstraintSystem(object):
             if self.constraints[ii].cleanup(sketch_objects)==Constraint.CleanupFlags.Deletable:
                 self.constraints.pop(ii)
 
+class ExactlyTwoPoints(object):
+    def valid(self):
+        return len(set(self.vertex_ids+self.vertices_in_lines()))==2
+    def throwvalidityerror(self):
+        raise(Exception('Need exactly two points'))
+class AtLeastTwoPoints(object):
+    def valid(self):
+        return len(set(self.vertex_ids+self.vertices_in_lines()))>=2
+    def throwvalidityerror(self):
+        raise(Exception('Need at least two points'))
+class ExactlyTwoLines(object):
+    def valid(self):
+        return len(self.segment_ids)==2
+    def throwvalidityerror(self):
+        raise(Exception('Need exactly two lines'))
+class AtLeastTwoLines(object):
+    def valid(self):
+        return len(self.segment_ids)==2
+    def throwvalidityerror(self):
+        raise(Exception('Need at least two lines'))
+class ExactlyOnePointOneLine(object):
+    def valid(self):
+        return len(self.segment_ids)==1 and len(self.vertex_ids)==1
+    def throwvalidityerror(self):
+        raise(Exception('Need one point and one line'))
+        
+
 class Constraint(object):
     name = 'Constraint'
-    min_points = 0
-    min_lines = 0
     deletable = []
 
     CleanupFlags = enum(NotDeletable=101,Deletable=102)
@@ -137,8 +162,10 @@ class Constraint(object):
         
     @classmethod
     def new(cls,parent,*objects):
-        vertex_ids, segment_ids,persistentobjects = cls._define_internals(*objects)
-        obj = cls(vertex_ids, segment_ids,persistentobjects)
+        temp = cls._define_internals(*objects)
+        obj = cls(*temp)
+        if not obj.valid():
+            obj.throwvalidityerror()
         return obj
         
     def copy(self,identical = True):
@@ -266,6 +293,8 @@ class ValueConstraint(Constraint):
         if ok:
             vertex_ids, segment_ids,persistentobjects = cls._define_internals(*objects)
             obj = cls(value,vertex_ids, segment_ids,persistentobjects)
+            if not obj.valid():
+                obj.throwvalidityerror()
             return obj
 
     def copy(self,identical = True):
@@ -283,10 +312,8 @@ class ValueConstraint(Constraint):
         if ok:
             self.value = value
 
-class horizontal(Constraint):
+class horizontal(Constraint,AtLeastTwoPoints):
     name = 'horizontal'
-    min_points = 2
-    min_lines= 1
     def equations(self,objects):
         vertices = self.getallvertices(objects)
         eqs = []
@@ -294,13 +321,10 @@ class horizontal(Constraint):
         p0 = vertex0.p()
         for vertex in vertices:
             eqs.append(vertex.p()[1] - p0[1])
-
         return eqs         
 
-class vertical(Constraint):
+class vertical(Constraint,AtLeastTwoPoints):
     name = 'vertical'
-    min_points = 2
-    min_lines= 1
     def equations(self,objects):
         vertices = self.getallvertices(objects)
         eqs = []
@@ -308,13 +332,10 @@ class vertical(Constraint):
         p0 = vertex0.p()
         for vertex in vertices:
             eqs.append(vertex.p()[0] - p0[0])
-
         return eqs
 
-class distance(ValueConstraint):
+class distance(ValueConstraint,ExactlyTwoPoints):
     name = 'distance'
-    min_points = 2
-    min_lines= 1
     def equations(self,objects):
         vertices = self.getallvertices(objects)
         p0 = vertices[0].p()
@@ -330,10 +351,8 @@ class distance(ValueConstraint):
             eq = l1 - self.value*popupcad.internal_argument_scaling
             return [eq]  
 
-class coincident(Constraint):
+class coincident(Constraint,AtLeastTwoPoints):
     name = 'coincident'
-    min_points = 2
-    min_lines= 1
     def equations(self,objects):
         vertices = self.getallvertices(objects)
         eq = []
@@ -344,10 +363,8 @@ class coincident(Constraint):
             eq.append(p[1] - p0[1])
         return eq
 
-class distancex(ValueConstraint):
+class distancex(ValueConstraint,ExactlyTwoPoints):
     name = 'distancex'
-    min_points = 1
-    min_lines= 1
     def equations(self,objects):
         vertices = self.getallvertices(objects)
         if len(vertices)==1:
@@ -356,10 +373,8 @@ class distancex(ValueConstraint):
             eq = ((vertices[1].p()[0]-vertices[0].p()[0])**2)**.5-((self.value*popupcad.internal_argument_scaling)**2)**.5
         return [eq]
 
-class distancey(ValueConstraint):
+class distancey(ValueConstraint,ExactlyTwoPoints):
     name = 'distancey'
-    min_points = 1
-    min_lines= 1
     def equations(self,objects):
         vertices = self.getallvertices(objects)
         if popupcad.flip_y:
@@ -372,10 +387,9 @@ class distancey(ValueConstraint):
             eq = ((vertices[1].p()[1]-vertices[0].p()[1])**2)**.5-((self.value*popupcad.internal_argument_scaling)**2)**.5
         return [eq]
 
-class angle(ValueConstraint):
+class angle(ValueConstraint,ExactlyTwoLines):
     name = 'angle'
     value_text = 'enter angle(in degrees)'
-    min_lines= 1
     def equations(self,objects):
         lines = self.getlines(objects)[0:2]
 
@@ -399,25 +413,21 @@ class angle(ValueConstraint):
                 eq = v2[0]*v1[1] - v2[1]*v1[0]
         return [eq]     
 
-class parallel(Constraint):
+class parallel(Constraint,AtLeastTwoLines):
     name = 'parallel'
-    min_lines= 2
-    def equations(self,objects):
-        lines = self.getlines(objects)[0:2]
-        if len(lines)<self.min_lines:
-            raise(Exception('not enough lines selected'))
-        v1 = lines[0].v()
-        v2 = lines[1].v()
-        eq = v2[0]*v1[1] - v2[1]*v1[0]
-        return [eq]      
-
-class equal(Constraint):
-    name = 'equal'
-    min_lines= 2
     def equations(self,objects):
         lines = self.getlines(objects)
-        if len(lines)<self.min_lines:
-            raise(Exception('not enough lines selected'))
+        v1 = lines.pop(0).v()
+        eq = []
+        for line in lines:
+            v2 = line.v()
+            eq.append(v2[0]*v1[1] - v2[1]*v1[0])
+        return eq
+
+class equal(Constraint,AtLeastTwoLines):
+    name = 'equal'
+    def equations(self,objects):
+        lines = self.getlines(objects)
         vs = [line.v() for line in lines]
         lengths = [v.dot(v)**.5 for v in vs]
         eqs = []
@@ -426,22 +436,16 @@ class equal(Constraint):
             eqs.append(length0 - length)
         return eqs    
         
-class perpendicular(Constraint):
+class perpendicular(Constraint,ExactlyTwoLines):
     name = 'perpendicular'
-    min_lines= 2
     def equations(self,objects):
         lines = self.getlines(objects)[0:2]
-        if len(lines)<self.min_lines:
-            raise(Exception('not enough lines selected'))
         v1 = lines[0].v()
         v2 = lines[1].v()
-        eq = v2[1]*v1[1] + v2[0]*v1[0]
-        return [eq]     
+        return [v2[1]*v1[1] + v2[0]*v1[0]]
 
-class PointLine(ValueConstraint):
+class PointLine(ValueConstraint,ExactlyOnePointOneLine):
     name = 'PointLineDistance'
-    min_points = 1
-    min_lines = 1
     def equations(self,objects):
         line = self.getlines(objects)[0]
         p1 = self.getvertices(objects)[0].p()

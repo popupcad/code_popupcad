@@ -8,6 +8,7 @@ import sys
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
+from popupcad.graphics2d.drawingpoint import DrawingPoint
 from popupcad.graphics2d.interactivevertex import InteractiveVertex
 from popupcad.graphics2d.interactiveedge import InteractiveEdge
 from popupcad.graphics2d.interactive import Interactive, InteractiveLine
@@ -194,13 +195,17 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         
     def refreshconstraints(self):
         self.undoredo.savesnapshot()
-        parents = [parent for parent in self.scene.items() if ((isinstance(parent,Interactive)))]
+        sceneitems = self.scene.items()
+        parents = [parent for parent in sceneitems if ((isinstance(parent,Interactive)))]
         interactivevertices = [item for parent in parents for item in parent.handles()]
         controllinevertices = [item for parent in self.scene.controllines for item in [parent.handle1,parent.handle2]]
         vertices = list(set(interactivevertices+self.scene.controlpoints + controllinevertices))
+        vertices2 = [vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)]
         symbolicvertices = [vertex.symbolic for vertex in vertices]
+        symbolicvertices.extend([vertex.generic for vertex in vertices2])
         self.sketch.constraintsystem.process(symbolicvertices)
         [vertex.updatefromsymbolic() for vertex in vertices]            
+        [vertex.updatefromgeneric() for vertex in vertices2]            
         [parent.updateshape() for parent in parents]
         self.constraint_editor.refresh()
 
@@ -209,7 +214,9 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         interactivevertices = [item for parent in parents for item in parent.handles()]
         controllinevertices = [item for parent in self.scene.controllines for item in [parent.handle1,parent.handle2]]
         vertices = list(set(interactivevertices+self.scene.controlpoints + controllinevertices))
+        vertices2 = [vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)]
         symbolicvertices = [vertex.symbolic for vertex in vertices]
+        symbolicvertices.extend([vertex.generic for vertex in vertices2])
 
         self.sketch.constraintsystem.cleanup(symbolicvertices)
         self.constraint_editor.refresh()
@@ -248,11 +255,12 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.viewactions.append({'text':'Screenshot','kwargs':{'triggered':self.scene.screenShot,'shortcut': qc.Qt.CTRL+qc.Qt.Key_R}})
         
         self.drawingactions = []
-        self.drawingactions.append({'text':'polyline','kwargs':{'triggered':lambda:self.addproto(ProtoPath),'icon':Icon('polyline')}})
+        self.drawingactions.append({'text':'point','kwargs':{'triggered':self.adddrawingpoint}})
         self.drawingactions.append({'text':'line','kwargs':{'triggered':lambda:self.addproto(ProtoLine),'icon':Icon('line')}})
-        self.drawingactions.append({'text':'poly','kwargs':{'triggered':lambda:self.addproto(ProtoPoly),'icon':Icon('polygon')}})
+        self.drawingactions.append({'text':'polyline','kwargs':{'triggered':lambda:self.addproto(ProtoPath),'icon':Icon('polyline')}})
         self.drawingactions.append({'text':'rect','kwargs':{'triggered':lambda:self.addproto(ProtoRect2Point),'icon':Icon('rectangle')}})
         self.drawingactions.append({'text':'circle','kwargs':{'triggered':lambda:self.addproto(ProtoCircle),'icon':Icon('circle')}})
+        self.drawingactions.append({'text':'poly','kwargs':{'triggered':lambda:self.addproto(ProtoPoly),'icon':Icon('polygon')}})
         self.drawingactions.append({'text':'text','kwargs':{'triggered':lambda:self.addproto(TextItem)}})
         self.drawingactions.append({'text':'text2','kwargs':{'triggered':self.test1}})
         self.drawingactions.append(None)
@@ -322,6 +330,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 items.append(item.selectableedges[0].symbolic())
             elif isinstance(item,StaticLine):
                 items.append(item.selectableedges[0].symbolic())
+            elif isinstance(item,DrawingPoint):
+                items.append(item.generic)
                                          
         constraint = constraintclass.new(self,*items)
         if constraint !=None:
@@ -342,6 +352,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def buildsketch(self):
         self.sketch.cleargeometries()
         geometries = [item.generic for item in self.scene.items() if isinstance(item,Interactive) if item.generic.isValid()]
+        geometries.extend([item.generic for item in self.scene.items() if isinstance(item,DrawingPoint)])
         self.sketch.addoperationgeometries(geometries)
         if self.isOperation:        
             self.layers = [self.layerlistwidget.list[item.row()] for  item in self.layerlistwidget.selectedIndexes()]
@@ -374,6 +385,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.buildsketch()
         self.sketch.saveAs()
 
+    def adddrawingpoint(self):
+        self.graphicsview.turn_off_drag()
+        self.scene.addpolygon(DrawingPoint)
+        
     def addproto(self,proto):
         self.graphicsview.turn_off_drag()
         self.scene.addpolygon(proto)
@@ -476,7 +491,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def group(self):
         from popupcad.graphics2d.grouper import Grouper
         o = Grouper()        
-        o.addchildren(self.scene.selectedItems())
+        selecteditems = self.scene.selectedItems()
+        associateditems = [vertex for item in selecteditems if hasattr(item,'handles') for vertex in item.handles()]
+        selecteditems+associateditems
+        o.addchildren(associateditems)
         self.scene.addItem(o)
         
 
@@ -484,6 +502,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         from popupcad.graphics2d.grouper import Grouper
         for item in self.scene.selectedItems():
             if isinstance(item,Grouper):
+                item.resetTransform()
+                item.setPos(0,0)
                 item.removegroupeditems()
                 item.softdelete()
                 
