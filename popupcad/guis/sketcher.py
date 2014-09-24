@@ -29,7 +29,6 @@ from popupcad.graphics2d.text import TextItem
 
 class Sketcher(qg.QMainWindow,WidgetCommon):
     showprop = qc.Signal(object)
-    
     def __init__(self,parent,sketch,design = None,ii = None,jj = 0,kk = 0,isOperation = False,selectedlayers = None,accept_method = None,selectops = False,oplimit = None):
         
         qg.QMainWindow.__init__(self,parent)
@@ -80,6 +79,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.graphicsview.zoomToFit()
         self.scene.newpolygon.connect(self.undoredo.savesnapshot)
         self.scene.savesnapshot.connect(self.undoredo.savesnapshot)
+        self.scene.itemdeleted.connect(self.cleanupconstraints)
         self.constraint_editor.signal_edit.connect(self.editItem)
         self.constraint_editor.itemPressed.connect(self.showconstraint_item)
         if self.selectops:
@@ -192,17 +192,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.undoredo.savesnapshot()
         constraint.edit()
         self.refreshconstraints()
-        
+
     def refreshconstraints(self):
         self.undoredo.savesnapshot()
-        sceneitems = self.scene.items()
-        parents = [parent for parent in sceneitems if ((isinstance(parent,Interactive)))]
-        interactivevertices = [item for parent in parents for item in parent.handles()]
-        controllinevertices = [item for parent in self.scene.controllines for item in [parent.handle1,parent.handle2]]
-        vertices = list(set(interactivevertices+self.scene.controlpoints + controllinevertices))
-        vertices2 = [vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)]
-        symbolicvertices = [vertex.symbolic for vertex in vertices]
-        symbolicvertices.extend([vertex.generic for vertex in vertices2])
+        symbolicvertices,vertices,vertices2,parents = self.scene.buildvertices()
         self.sketch.constraintsystem.process(symbolicvertices)
         [vertex.updatefromsymbolic() for vertex in vertices]            
         [vertex.updatefromgeneric() for vertex in vertices2]            
@@ -210,14 +203,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraint_editor.refresh()
 
     def cleanupconstraints(self):
-        parents = [parent for parent in self.scene.items() if ((isinstance(parent,Interactive)))]
-        interactivevertices = [item for parent in parents for item in parent.handles()]
-        controllinevertices = [item for parent in self.scene.controllines for item in [parent.handle1,parent.handle2]]
-        vertices = list(set(interactivevertices+self.scene.controlpoints + controllinevertices))
-        vertices2 = [vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)]
-        symbolicvertices = [vertex.symbolic for vertex in vertices]
-        symbolicvertices.extend([vertex.generic for vertex in vertices2])
-
+        symbolicvertices,vertices,vertices2,parents = self.scene.buildvertices()
         self.sketch.constraintsystem.cleanup(symbolicvertices)
         self.constraint_editor.refresh()
 
@@ -300,11 +286,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.toolbar_drawing = self.buildToolbar(self.drawingactions,name='Drawing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
         self.toolbar_constraints = self.buildToolbar(self.constraintactions,name='Constraints',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
 
-    def keyPressEvent(self,event):
-        if event.key() == qc.Qt.Key_Delete:
-            self.undoredo.savesnapshot()
-        super(GraphicsScene,self).keyPressEvent(event)
-        
     def cut_to_clipboard(self):
         self.undoredo.savesnapshot()
         self.scene.cut_to_clipboard()
