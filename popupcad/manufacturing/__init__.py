@@ -12,3 +12,4 @@ from .locateoperation import LocateOperation
 from .placeop7 import PlaceOperation7
 from .shiftflip2 import ShiftFlip2
 from .nulloperation import NullOp
+from . import cleanup
