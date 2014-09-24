@@ -269,13 +269,28 @@ class Constraint(object):
         
         
     def cleanup(self,objects):
-        currentflag = self.checkcurrent(objects)
-        if currentflag == self.CurrentFlags.AllCurrent:
+        self.cleanup_objects(objects)
+        if self.valid():
             return self.CleanupFlags.NotDeletable
-        elif currentflag == self.CurrentFlags.SomeCurrent:
+        else:
             return self.CleanupFlags.Deletable
-        elif currentflag == self.CurrentFlags.NoneCurrent:
-            return self.CleanupFlags.Deletable
+#        currentflag = self.checkcurrent(objects)
+#        if currentflag == self.CurrentFlags.AllCurrent:
+#            return self.CleanupFlags.NotDeletable
+#        elif currentflag == self.CurrentFlags.SomeCurrent:
+#            return self.CleanupFlags.Deletable
+#        elif currentflag == self.CurrentFlags.NoneCurrent:
+#            return self.CleanupFlags.Deletable
+
+    def cleanup_objects(self,objects):
+        current_ids = frozenset([item.id for item in objects])
+        self.vertex_ids = list(frozenset(self.vertex_ids).intersection(current_ids))
+        segment_ids = []
+        for id1, id2 in self.segment_ids:
+            if (id1 in current_ids) and (id2 in current_ids):
+                segment_ids.append((id1,id2))
+        self.segment_ids = segment_ids
+#        self.vertex_ids = list(frozenset(self.vertex_ids).intersect(current_ids))
 
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'

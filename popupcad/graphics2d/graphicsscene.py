@@ -29,6 +29,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
     enteringeditmode = qc.Signal()
     leavingeditmode = qc.Signal()
     savesnapshot = qc.Signal()
+    itemdeleted = qc.Signal()
 
     def __init__(self):
         super(GraphicsScene,self).__init__()
@@ -95,10 +96,25 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         filename = os.path.normpath(os.path.join(popupcad.exportdir,'2D_screenshot_'+time+'.svg'))
         self.renderprocess(filename,scaling)
 
+    def buildvertices(self):
+        from popupcad.graphics2d.interactive import Interactive
+        sceneitems = self.items()
+        parents = [parent for parent in sceneitems if ((isinstance(parent,Interactive)))]
+        interactivevertices = [item for parent in parents for item in parent.handles()]
+        controllinevertices = [item for parent in self.controllines for item in [parent.handle1,parent.handle2]]
+        vertices = list(set(interactivevertices+self.controlpoints + controllinevertices))
+        vertices2 = [vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)]
+        symbolicvertices = [vertex.symbolic for vertex in vertices]
+        symbolicvertices.extend([vertex.generic for vertex in vertices2])
+        return symbolicvertices,vertices,vertices2,parents
+
+
     def keyPressEvent(self,event):
-        super(GraphicsScene,self).keyPressEvent(event)
+        self.savesnapshot.emit()
         if event.key() == qc.Qt.Key_Delete:
             self.delete_selected_items()
+        self.itemdeleted.emit()
+        super(GraphicsScene,self).keyPressEvent(event)
             
     def cut_to_clipboard(self):
         self.copy_to_clipboard()
