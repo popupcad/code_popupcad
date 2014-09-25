@@ -130,8 +130,8 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         except AttributeError:
             pass            
         
-    def symbolic(self):
-        return Line(self.handle1.symbolic, self.handle2.symbolic)
+    def get_generic(self):
+        return Line(self.handle1.get_generic(), self.handle2.get_generic())
         
     def setconnection(self,connectedinteractive):
         self.connectedinteractive = connectedinteractive

@@ -124,7 +124,7 @@ class Vertex(object):
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveVertex
         iv = InteractiveVertex(self)
-        iv.updatefromsymbolic()
+        iv.updatefromgeneric()
         return iv
 
     def outputinteractive(self):
@@ -160,3 +160,13 @@ class ReferenceVertex(Vertex):
         super(ReferenceVertex,self).__init__(*args,**kwargs)
         self.set_persistent(True)
         self.setstatic(True)
+    def gen_interactive(self):
+        from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
+        iv = ReferenceInteractiveVertex(self)
+        iv.updatefromgeneric()
+        return iv
+    def gen_drawingpoint(self):
+        from popupcad.graphics2d.drawingpoint import DrawingPoint
+        iv = Drawingpoint(self)
+        iv.updatefromgeneric()
+        return iv

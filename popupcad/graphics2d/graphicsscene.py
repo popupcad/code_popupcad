@@ -104,8 +104,8 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         controllinevertices = [item for parent in self.controllines for item in [parent.handle1,parent.handle2]]
         vertices = list(set(interactivevertices+self.controlpoints + controllinevertices))
         vertices2 = [vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)]
-        symbolicvertices = [vertex.symbolic for vertex in vertices]
-        symbolicvertices.extend([vertex.generic for vertex in vertices2])
+        symbolicvertices = [vertex.get_generic() for vertex in vertices]
+        symbolicvertices.extend([vertex.get_generic() for vertex in vertices2])
         return symbolicvertices,vertices,vertices2,parents
 
 

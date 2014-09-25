@@ -178,13 +178,13 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.scene.clearSelection()
         vertices = [item for item in self.scene.items() if isinstance(item,InteractiveVertex)]
         for v in vertices:
-            if v.symbolic.id in obj1.customdata.vertex_ids:
+            if v.get_generic().id in obj1.customdata.vertex_ids:
                 v.setSelected(True)
         pass
         edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge)]
         for edge in edges:
             a = [edge.handle1,edge.handle2]
-            b = [item.symbolic.id for item in a]
+            b = [item.get_generic().id for item in a]
             c= set(b)
             if any([len(c.intersection(segment))==2 for segment in obj1.customdata.segment_ids]):
                 edge.setSelected(True)
@@ -201,7 +201,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.undoredo.savesnapshot()
         symbolicvertices,vertices,vertices2,parents = self.scene.buildvertices()
         self.sketch.constraintsystem.process(symbolicvertices)
-        [vertex.updatefromsymbolic() for vertex in vertices]            
+        [vertex.updatefromgeneric() for vertex in vertices]            
         [vertex.updatefromgeneric() for vertex in vertices2]            
         [parent.updateshape() for parent in parents]
         self.constraint_editor.refresh()
@@ -308,15 +308,15 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         items = []
         for item in self.scene.selectedItems():
             if isinstance(item,InteractiveVertex):
-                items.append(item.symbolic)
+                items.append(item.get_generic())
             elif isinstance(item,InteractiveEdge):
-                items.append(item.symbolic())
+                items.append(item.get_generic()())
             elif isinstance(item,InteractiveLine):
-                items.append(item.selectableedges[0].symbolic())
+                items.append(item.selectableedges[0].get_generic())
             elif isinstance(item,StaticLine):
-                items.append(item.selectableedges[0].symbolic())
+                items.append(item.selectableedges[0].get_generic())
             elif isinstance(item,DrawingPoint):
-                items.append(item.generic)
+                items.append(item.get_generic())
                                          
         constraint = constraintclass.new(self,*items)
         if constraint !=None:
@@ -458,10 +458,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             self.scene.controlpoints = []
             self.scene.controllines = []
             ii,jj = self.optree.currentIndeces()
-            
             if ii>0:
                 ii-=1
-                
                 if self.design !=None:
                     try:
                         operationgeometries = self.design.operations[ii].output[jj].generic_geometry_2d()
@@ -484,7 +482,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         o.addchildren(associateditems)
         self.scene.addItem(o)
         
-
     def ungroup(self):
         from popupcad.graphics2d.grouper import Grouper
         for item in self.scene.selectedItems():
@@ -495,13 +492,9 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 item.softdelete()
                 
     def test1(self):
-        pass
         p = qg.QPainterPath()
         p.addText(qc.QPointF(0,0),qg.QFont(),'hello!')
-#        self.s
-#        self.scene.
         p2 = qg.QPainterPath()
-        
         
         for ii in range(p.elementCount()):
             element = p.elementAt(ii)
@@ -511,8 +504,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 p2.lineTo(element.x,element.y)
             if element.isCurveTo():
                 p2.lineTo(element.x,element.y)
-                
-                
         i = qg.QGraphicsPathItem()
         i.setPath(p2)
         self.scene.addItem(i)

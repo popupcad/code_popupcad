@@ -205,7 +205,7 @@ class Interactive(Common):
         self.refreshview()        
 
     def removevertex(self,interactivevertex):
-        self.generic.removevertex(interactivevertex.symbolic)
+        self.generic.removevertex(interactivevertex.get_generic())
         self.updatehandles()
         self.refreshview()
             

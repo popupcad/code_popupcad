@@ -84,12 +84,12 @@ class Proto(Common):
 class ProtoMultiPoint(Proto):
     def addhandle(self,handle):
         if not self.generic.exterior:
-            self.generic.addvertex_exterior(handle.symbolic)
+            self.generic.addvertex_exterior(handle.get_generic())
             self.temphandle = None
         else:
             if handle.pos().toTuple() != self.generic.exterior[-1].getpos():
                 if self.checkdist(handle.pos().toTuple(),self.generic.exterior[-1].getpos()):
-                    self.generic.addvertex_exterior(handle.symbolic)
+                    self.generic.addvertex_exterior(handle.get_generic())
                     self.temphandle = None
         
     def mousepress(self,point):
@@ -117,13 +117,13 @@ class ProtoMultiPoint(Proto):
 class ProtoTwoPoint(Proto):
     def addhandle(self,handle):
         if len(self.generic.exterior)==0:
-            self.generic.addvertex_exterior(handle.symbolic)
+            self.generic.addvertex_exterior(handle.get_generic())
             self.temphandle = None
             return True
         elif len(self.generic.exterior)==1:
             if handle.pos().toTuple() != self.generic.exterior[-1].getpos():
                 if self.checkdist(handle.pos().toTuple(),self.generic.exterior[-1].getpos()):
-                    self.generic.addvertex_exterior(handle.symbolic)
+                    self.generic.addvertex_exterior(handle.get_generic())
                     self.temphandle = None
                     return True
         else:
