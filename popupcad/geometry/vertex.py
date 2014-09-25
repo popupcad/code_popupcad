@@ -114,13 +114,16 @@ class Vertex(object):
         
     def copy(self,identical = True):
         new = type(self)()
+        return self.copy_values(new,identical)
+        
+    def copy_values(self,new,identical=False):
         new.setpos(self.getpos())
         new.static = self.static
         new._persistent = self._persistent
         if identical:
             new.id = self.id
         return new            
-
+        
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveVertex
         iv = InteractiveVertex(self)
@@ -158,6 +161,17 @@ class ShapeVertex(Vertex):
     def interiorpoints(self):
         return []
 
+class DrawnPoint(Vertex):
+    def exteriorpoints(self):
+        return [self.getpos()]
+    def interiorpoints(self):
+        return []
+    def gen_interactive(self):
+        from popupcad.graphics2d.drawingpoint import DrawingPoint
+        iv = DrawingPoint(self)
+        iv.updatefromgeneric()
+        return iv
+
 class ReferenceVertex(Vertex):
     def __init__(self,*args,**kwargs):
         super(ReferenceVertex,self).__init__(*args,**kwargs)
@@ -168,8 +182,8 @@ class ReferenceVertex(Vertex):
         iv = ReferenceInteractiveVertex(self)
         iv.updatefromgeneric()
         return iv
-    def output_drawing_object(self):
-        from popupcad.graphics2d.drawingpoint import DrawingPoint
-        iv = Drawingpoint(self)
-        iv.updatefromgeneric()
-        return iv
+#    def output_drawing_object(self):
+#        from popupcad.graphics2d.drawingpoint import DrawingPoint
+#        iv = DrawingPoint(self)
+#        iv.updatefromgeneric()
+#        return iv

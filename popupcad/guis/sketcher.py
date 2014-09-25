@@ -8,9 +8,10 @@ import sys
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
-from popupcad.graphics2d.drawingpoint import DrawingPoint
-from popupcad.graphics2d.interactivevertex import InteractiveVertex
-from popupcad.graphics2d.interactiveedge import InteractiveEdge
+from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
+from popupcad.graphics2d.drawingpoint import DrawingPoint,StaticDrawingPoint
+from popupcad.graphics2d.interactivevertex import InteractiveVertex,ReferenceInteractiveVertex
+from popupcad.graphics2d.interactiveedge import InteractiveEdge,ReferenceInteractiveEdge
 from popupcad.graphics2d.interactive import Interactive, InteractiveLine
 from popupcad.graphics2d.static import Static,StaticLine
 from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,ProtoRect2Point
@@ -173,20 +174,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
         self.move(dxy)
         
-    def showconstraint_item(self,obj1):
-        self.showprop.emit(obj1.customdata)
-        self.scene.clearSelection()
-        vertices = [item for item in self.scene.items() if isinstance(item,InteractiveVertex)]
-        for v in vertices:
-            if v.get_generic().id in obj1.customdata.vertex_ids:
-                v.setSelected(True)
-        pass
-        edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge)]
-        for edge in edges:
-            c= set(edge.get_generic().vertices())
-            if any([len(c.intersection(segment))==2 for segment in obj1.customdata.segment_ids]):
-                edge.setSelected(True)
-
     def regen_id(self):
         self.sketch.regen_id()
 
@@ -291,7 +278,16 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.undoredo.savesnapshot()
         items = []
         for item in self.scene.selectedItems():
-            if isinstance(item,InteractiveVertex):
+            if isinstance(item,ReferenceInteractiveVertex):
+                generic = item.get_generic()
+                newgeneric = generic.copy_values(DrawnPoint(),False)
+                newitem = newgeneric.gen_interactive()
+                newitem.makemoveable(False)
+                self.scene.addItem(newitem)
+                items.append(newgeneric)
+            elif isinstance(item,InteractiveVertex):
+                items.append(item.get_generic())
+            if isinstance(item,ReferenceInteractiveEdge):
                 items.append(item.get_generic())
             elif isinstance(item,InteractiveEdge):
                 items.append(item.get_generic())
@@ -300,6 +296,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             elif isinstance(item,StaticLine):
                 items.append(item.selectableedges[0].get_generic())
             elif isinstance(item,DrawingPoint):
+                items.append(item.get_generic())
+            elif isinstance(item,StaticDrawingPoint):
                 items.append(item.get_generic())
                                          
         constraint = constraintclass.new(self,*items)
@@ -319,6 +317,20 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         symbolicvertices,vertices,parents = self.scene.buildvertices(self.scene.items(),self.controlpoints,self.controllines)
         self.sketch.constraintsystem.cleanup(symbolicvertices)
         self.constraint_editor.refresh()
+
+    def showconstraint_item(self,obj1):
+        self.showprop.emit(obj1.customdata)
+        self.scene.clearSelection()
+        vertices = [item for item in self.scene.items() if isinstance(item,InteractiveVertex)]
+        for v in vertices:
+            if v.get_generic().id in obj1.customdata.vertex_ids:
+                v.setSelected(True)
+        pass
+        edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge)]
+        for edge in edges:
+            c= set(edge.get_generic().vertices())
+            if any([len(c.intersection(segment))==2 for segment in obj1.customdata.segment_ids]):
+                edge.setSelected(True)
 
     def loadsketch(self,sketch):
         self.sketch = sketch.copy()

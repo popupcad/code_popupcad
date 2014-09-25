@@ -12,6 +12,7 @@ from .graphicsitems import Common
 from interactivevertexbase import InteractiveVertexBase
 
 class DrawingPoint(InteractiveVertexBase):
+    isDeletable = True
     radius = 5
     z_below = 101
     z_above = 105
