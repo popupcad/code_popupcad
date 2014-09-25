@@ -13,7 +13,7 @@ from .graphicsitems import Common
 class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
     radius = 10
     z_below = 100
-    z_above = 101
+    z_above = 105
     def __init__(self,symbol,*args,**kwargs):
         try:
             temppos = kwargs.pop('pos')

@@ -12,6 +12,9 @@ from .graphicsitems import Common
 from .interactivevertexbase import InteractiveVertexBase
 
 class InteractiveVertex(InteractiveVertexBase):
+    radius = 10
+    z_below = 100
+    z_above = 105
     def __init__(self,*args,**kwargs):
         super(InteractiveVertex,self).__init__(*args,**kwargs)
         self.connectedinteractive = None
@@ -65,4 +68,7 @@ class InteractiveVertex(InteractiveVertexBase):
                 self.removefromscene()
 
 class ReferenceInteractiveVertex(InteractiveVertex):
+    radius = 10
+    z_below = 100
+    z_above = 105
     pass

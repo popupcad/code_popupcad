@@ -13,7 +13,7 @@ from .static import Static
 from .svg_support import SVGOutputSupport
 from .modes import Modes
 from popupcad.geometry.vertex import ShapeVertex
-from popupcad.graphics2d.drawingpoint import DrawingPoint
+from popupcad.graphics2d.drawingpoint import DrawingPoint,StaticDrawingPoint
 from popupcad.graphics2d.interactivevertex import InteractiveVertex
 from popupcad.graphics2d.interactiveedge import InteractiveEdge
 from .text import TextItem
@@ -226,6 +226,8 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
     def removerefgeoms(self):
         for item in self.items():
             if isinstance(item,Static):
+                self.removeItem(item)
+            if isinstance(item,StaticDrawingPoint):
                 self.removeItem(item)
             if isinstance(item,ReferenceInteractiveVertex):
                 self.removeItem(item)

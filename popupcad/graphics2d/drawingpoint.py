@@ -12,8 +12,21 @@ from .graphicsitems import Common
 from interactivevertexbase import InteractiveVertexBase
 
 class DrawingPoint(InteractiveVertexBase):
+    radius = 5
+    z_below = 101
+    z_above = 105
     def __init__(self,*args,**kwargs):
         super(DrawingPoint,self).__init__(*args,**kwargs)
+        self.makemoveable(True)
+    def refreshview(self):
+        pass
+
+class StaticDrawingPoint(InteractiveVertexBase):
+    radius = 5
+    z_below = 100
+    z_above = 105
+    def __init__(self,*args,**kwargs):
+        super(StaticDrawingPoint,self).__init__(*args,**kwargs)
         self.makemoveable(True)
     def refreshview(self):
         pass

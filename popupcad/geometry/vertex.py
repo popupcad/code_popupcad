@@ -134,8 +134,8 @@ class Vertex(object):
         return iv
 
     def outputstatic(self,color):
-        from popupcad.graphics2d.drawingpoint import DrawingPoint
-        iv = DrawingPoint(self)
+        from popupcad.graphics2d.drawingpoint import StaticDrawingPoint
+        iv = StaticDrawingPoint(self)
         iv.makemoveable(False)
         iv.updatefromgeneric()
         return iv
