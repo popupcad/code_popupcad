@@ -96,7 +96,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         filename = os.path.normpath(os.path.join(popupcad.exportdir,'2D_screenshot_'+time+'.svg'))
         self.renderprocess(filename,scaling)
 
-    def buildvertices(self,sceneitems,controllines,controlpoints):
+    def buildvertices(self,sceneitems,controlpoints,controllines):
         from popupcad.graphics2d.interactive import Interactive
         interactives = [parent for parent in sceneitems if ((isinstance(parent,Interactive)))]
         interactivevertices = []

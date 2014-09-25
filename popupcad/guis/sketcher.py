@@ -183,7 +183,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         pass
         edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge)]
         for edge in edges:
-            c= set(edge.get_generic().vertics())
+            c= set(edge.get_generic().vertices())
             if any([len(c.intersection(segment))==2 for segment in obj1.customdata.segment_ids]):
                 edge.setSelected(True)
 
@@ -313,7 +313,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.sketch.constraintsystem.process(symbolicvertices)
         [vertex.updatefromgeneric() for vertex in vertices]            
         [parent.updateshape() for parent in parents]
-        [controlline.hanldeupdate for controlline in self.controllines]
         self.constraint_editor.refresh()
 
     def cleanupconstraints(self):
@@ -381,9 +380,17 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.scene.addpolygon(proto)
 
     def joinedges(self):
+        from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
+        from popupcad.graphics2d.interactiveedge import InteractiveEdge
+        
         selecteditems = self.scene.selectedItems()
-        symbolicvertices,vertices,parents, = self.scene.buildvertices(selecteditems,*self.gen_references2())
-        vertices2 = [vertex.getpos() for vertex in symbolicvertices]
+        genericvertices = []
+        for item in selecteditems:
+            if isinstance(item,InteractiveVertexBase):
+                genericvertices.append(item.get_generic())
+            elif isinstance(item,InteractiveEdge):
+                genericvertices.extend(item.get_generic().vertices())
+        vertices2 = [vertex.getpos() for vertex in genericvertices]
         vertices2 = numpy.array(vertices2)        
         poly = popupcad.algorithms.autobridge.joinedges(vertices2)
         self.scene.addItem(poly.outputinteractive())
@@ -393,7 +400,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         
         handles = []
         [handles.extend(item.handles()) for item in interactives]
-        handles.extend(self.scene.controlpoints)        
+        handles.extend(self.controlpoints)        
         vertices = []
         for handle in handles:
             scenepos = handle.scenePos()
