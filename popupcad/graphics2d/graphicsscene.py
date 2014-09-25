@@ -20,6 +20,8 @@ from .text import TextItem
 import time
 
 import numpy
+from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
+from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
 
 class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
     highlightbody=qc.Signal(int)
@@ -222,8 +224,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         self.views()[0].updatescaleables()
 
     def removerefgeoms(self):
-        from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
-        from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
         for item in self.items():
             if isinstance(item,Static):
                 self.removeItem(item)
@@ -232,8 +232,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
             if isinstance(item,ReferenceInteractiveEdge):
                 self.removeItem(item)
     def removecontrolpoints(self):
-        from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
-        from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
         for item in self.items():
             if isinstance(item,ReferenceInteractiveVertex):
                 self.removeItem(item)

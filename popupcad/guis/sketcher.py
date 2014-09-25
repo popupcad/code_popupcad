@@ -448,7 +448,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             return False
 
     def load_references3(self):
-        staticgeometries,controlpoints,controlllines = [],[],[]        
+        staticgeometries,controlpoints,controllines = [],[],[]        
         if self.selectops:
             ii,jj = self.optree.currentIndeces()
             if ii>0:
@@ -466,7 +466,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                     except IndexError,AttributeError:
                         pass
 
-        return staticgeometries,controlpoints,controlllines
+        return staticgeometries,controlpoints,controllines
     
     def load_references2(self):
         a,b,c = self.load_references3()
