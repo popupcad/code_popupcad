@@ -136,9 +136,6 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     def setconnection(self,connectedinteractive):
         self.connectedinteractive = connectedinteractive
 
-#    def makeinteractive(self,test):
-#        self.isInteractive = test
-        
     def makeselectable(self,test):
         self.setFlag(self.ItemIsSelectable,test)
 

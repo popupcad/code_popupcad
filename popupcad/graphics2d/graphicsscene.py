@@ -220,7 +220,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                         child.removefromscene()
                 except AttributeError:
                     pass
-                self.removecontrolpoints()
+            self.removecontrolpoints()
         self.views()[0].updatescaleables()
 
     def removerefgeoms(self):
