@@ -79,6 +79,7 @@ class CommonShape(object):
             self.selectableedges.append(item)  
     def create_selectable_edge_path(self):
         from interactiveedge import InteractiveEdge
+        from popupcad.geometry.line import ShapeLine
         self.selectableedges = []
         exterior = self.generic.exterior
         segments = zip(exterior[:-1],exterior[1:])

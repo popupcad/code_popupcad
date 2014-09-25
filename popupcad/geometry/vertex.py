@@ -153,7 +153,10 @@ class Vertex(object):
             return self.interactivevertex
 
 class ShapeVertex(Vertex):
-    pass
+    def exteriorpoints(self):
+        return [self.getpos()]
+    def interiorpoints(self):
+        return []
 
 class ReferenceVertex(Vertex):
     def __init__(self,*args,**kwargs):
