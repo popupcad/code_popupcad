@@ -26,50 +26,38 @@ class OperationOutput(UserData):
         try:
             return self._controlpoints
         except AttributeError:
-            self._controlpoints = self.getcontrolpoints(self.generic_geometry_2d())
+            self._controlpoints, self._controllines = self.getcontrols(self.generic_geometry_2d())
             return self._controlpoints
 
     def controllines(self):
         try:
             return self._controllines
         except AttributeError:
-            self._controllines = self.getcontrollines(self.generic_geometry_2d())        
+            self._controlpoints, self._controllines = self.getcontrols(self.generic_geometry_2d())
             return self._controllines
 
     @staticmethod
-    def getcontrolpoints(genericgeometry):
+    def getcontrols(genericgeometry):
+        lines = []
+        from popupcad.geometry.line import ReferenceLine
         from popupcad.geometry.vertex import ReferenceVertex
         vertices = []
         for layer, geoms in genericgeometry.items():
             for geom in geoms:
-                vertices.extend(geom.exteriorpoints())
-                [vertices.extend(interior) for interior in geom.interiorpoints()]
-        vertices = list(set(vertices))
-        controlpoints = []
-        for p in vertices:
-            v = ReferenceVertex(position = p)
-            controlpoints.append(v)
-        return controlpoints
-    
-    @staticmethod
-    def getcontrollines(genericgeometry):
-        lines = []
-        from popupcad.geometry.line import ReferenceLine
-        from popupcad.geometry.vertex import ReferenceVertex
-        for layer, geoms in genericgeometry.items():
-            for geom in geoms:
-                newlines = zip(geom.exteriorpoints(),geom.exteriorpoints()[1:]+geom.exteriorpoints()[:1])
-                lines.extend(newlines)
+                p = geom.exteriorpoints()
+                vertices.extend(p)
+                lines.extend(zip(p,p[1:]+p[:1]))
                 for interior in geom.interiorpoints():
-                    newlines = zip(interior,interior[1:]+interior[:1])
-                    lines.extend(newlines)
+                    vertices.extend(interior)
+                    lines.extend(zip(interior,interior[1:]+interior[:1]))
+
+        vertices = list(set(vertices))
+        controlpoints = [ReferenceVertex(position = p) for p in vertices]
+
         lines = list(set(lines))
-        controllines = []
-        for p1,p2 in lines:
-            v1 = ReferenceVertex(position = p1)
-            v2 = ReferenceVertex(position = p2)
-            controllines.append(ReferenceLine(v1,v2))
-        return controllines
+        lines2 = [(vertices.index(p1),vertices.index(p2)) for p1,p2 in lines]
+        controllines = [ReferenceLine(controlpoints[ii],controlpoints[jj]) for ii,jj in lines2]
+        return controlpoints, controllines
             
     def edit(self,*args,**kwargs):
         if self.parent !=None:
