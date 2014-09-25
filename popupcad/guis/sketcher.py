@@ -183,9 +183,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         pass
         edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge)]
         for edge in edges:
-            a = [edge.handle1,edge.handle2]
-            b = [item.get_generic().id for item in a]
-            c= set(b)
+            c= set(edge.get_generic().vertics())
             if any([len(c.intersection(segment))==2 for segment in obj1.customdata.segment_ids]):
                 edge.setSelected(True)
 
@@ -196,20 +194,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.undoredo.savesnapshot()
         constraint.edit()
         self.refreshconstraints()
-
-    def refreshconstraints(self):
-        self.undoredo.savesnapshot()
-        symbolicvertices,vertices,vertices2,parents = self.scene.buildvertices()
-        self.sketch.constraintsystem.process(symbolicvertices)
-        [vertex.updatefromgeneric() for vertex in vertices]            
-        [vertex.updatefromgeneric() for vertex in vertices2]            
-        [parent.updateshape() for parent in parents]
-        self.constraint_editor.refresh()
-
-    def cleanupconstraints(self):
-        symbolicvertices,vertices,vertices2,parents = self.scene.buildvertices()
-        self.sketch.constraintsystem.cleanup(symbolicvertices)
-        self.constraint_editor.refresh()
 
     def createActions(self):
         self.fileactions = []
@@ -271,7 +255,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         
 
         self.constraintactions = []
-        self.constraintactions.append({'text':'Constraints On','kwargs':{'triggered':self.scene.showvertices,'icon':Icon('showconstraints')}})
+        self.constraintactions.append({'text':'Constraints On','kwargs':{'triggered':self.showvertices,'icon':Icon('showconstraints')}})
         self.constraintactions.append(None)
         self.constraintactions.append({'text':'Horizontal','kwargs':{'triggered':lambda:self.add_constraint(constraints.horizontal),'icon':Icon('horizontal')}})
         self.constraintactions.append({'text':'Vertical','kwargs':{'triggered':lambda:self.add_constraint(constraints.vertical),'icon':Icon('vertical')}})
@@ -323,6 +307,20 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             self.sketch.constraintsystem.add_constraint(constraint)
             self.refreshconstraints()
 
+    def refreshconstraints(self):
+        self.undoredo.savesnapshot()
+        symbolicvertices,vertices,parents = self.scene.buildvertices(self.scene.items(),self.controlpoints,self.controllines)
+        self.sketch.constraintsystem.process(symbolicvertices)
+        [vertex.updatefromgeneric() for vertex in vertices]            
+        [parent.updateshape() for parent in parents]
+        [controlline.hanldeupdate for controlline in self.controllines]
+        self.constraint_editor.refresh()
+
+    def cleanupconstraints(self):
+        symbolicvertices,vertices,parents = self.scene.buildvertices(self.scene.items(),self.controlpoints,self.controllines)
+        self.sketch.constraintsystem.cleanup(symbolicvertices)
+        self.constraint_editor.refresh()
+
     def loadsketch(self,sketch):
         self.sketch = sketch.copy()
         self.scene.deleteall()
@@ -333,6 +331,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
         self.constraint_editor.linklist(self.sketch.constraintsystem.constraints)
         
+    def showvertices(self):
+        self.scene.showvertices(self.controlpoints+self.controllines)
 
     def buildsketch(self):
         self.sketch.cleargeometries()
@@ -382,13 +382,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
     def joinedges(self):
         selecteditems = self.scene.selectedItems()
-        vertices = [item for item in selecteditems if isinstance(item,InteractiveVertex)]
-        edges = [item for item in selecteditems if isinstance(item,InteractiveEdge)]
-        [vertices.extend([edge.handle1,edge.handle2]) for edge in edges]
-        vertices2=[]
-        for vertex in vertices:
-            scenepos = vertex.scenePos()
-            vertices2.append((scenepos.x(),scenepos.y()))
+        symbolicvertices,vertices,parents, = self.scene.buildvertices(selecteditems,*self.gen_references2())
+        vertices2 = [vertex.getpos() for vertex in symbolicvertices]
         vertices2 = numpy.array(vertices2)        
         poly = popupcad.algorithms.autobridge.joinedges(vertices2)
         self.scene.addItem(poly.outputinteractive())
@@ -452,27 +447,36 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         else:
             return False
 
-    def load_references(self):
+    def load_references3(self):
+        staticgeometries,controlpoints,controlllines = [],[],[]        
         if self.selectops:
-            self.scene.removerefgeoms()
-            self.scene.controlpoints = []
-            self.scene.controllines = []
             ii,jj = self.optree.currentIndeces()
             if ii>0:
                 ii-=1
                 if self.design !=None:
                     try:
                         operationgeometries = self.design.operations[ii].output[jj].generic_geometry_2d()
-                        for layer in self.design.return_layer_definition().layers:
-                            operationgeometry = operationgeometries[layer]
-                            for item in operationgeometry:
-                                newitem = item.outputstatic(color = layer.color)
-                                self.scene.addItem(newitem)        
-                    except AttributeError:
-                        pass        
-                    self.scene.controllines = self.design.loadcontrollines(ii,jj)
-                    self.scene.controlpoints= self.design.loadcontrolpoints(ii,jj)
+                        staticgeometries = [item.outputstatic(color = layer.color) for layer in self.design.return_layer_definition().layers for item in operationgeometries[layer]]
+
+                        controlpoints = self.design.operations[ii].output[jj].controlpoints()
+                        controlpoints = [point.gen_interactive() for point in controlpoints]
+
+                        controllines = self.design.operations[ii].output[jj].controllines()
+                        controllines = [line.gen_interactive() for line in controllines]
+                    except IndexError,AttributeError:
+                        pass
+
+        return staticgeometries,controlpoints,controlllines
+    
+    def load_references2(self):
+        a,b,c = self.load_references3()
+        return b,c
         
+    def load_references(self):
+        self.scene.removerefgeoms()
+        self.static_items,self.controlpoints,self.controllines = self.load_references3()
+        [self.scene.addItem(item) for item in self.static_items]
+
     def group(self):
         from popupcad.graphics2d.grouper import Grouper
         o = Grouper()        

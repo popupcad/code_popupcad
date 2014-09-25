@@ -16,7 +16,6 @@ class InteractiveVertex(InteractiveVertexBase):
         super(InteractiveVertex,self).__init__(*args,**kwargs)
         self.connectedinteractive = None
 
-
     def setconnection(self,connectedinteractive):
         self.connectedinteractive = connectedinteractive
     def hoverEnterEvent(self,event):
@@ -57,9 +56,6 @@ class InteractiveVertex(InteractiveVertexBase):
                 self.connectedinteractive.removevertex(self)
             self.removefromscene()
             
-   
-
-
     def notify(self):
         self.makemoveable(False)
         if self.connectedinteractive.mode!=None:
@@ -67,3 +63,6 @@ class InteractiveVertex(InteractiveVertexBase):
                 self.makemoveable(True)
             else:
                 self.removefromscene()
+
+class ReferenceInteractiveVertex(InteractiveVertex):
+    pass

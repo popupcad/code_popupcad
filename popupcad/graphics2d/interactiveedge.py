@@ -70,12 +70,12 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     nopen = qc.Qt.NoPen
     boundingrectbuffer = 2
     
-    def __init__(self,handle1,handle2,*args,**kwargs):
+    def __init__(self,generic,*args,**kwargs):
         qg.QGraphicsLineItem.__init__(self,*args,**kwargs)
         EdgeBase.__init__(self)
 
-        self.handle1 = handle1
-        self.handle2 = handle2
+        self.generic = generic
+
         self.setAcceptHoverEvents(True)
         self.setFlag(self.ItemIsFocusable,True)
         self.setFlag(self.ItemIsSelectable,True)
@@ -131,7 +131,7 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
             pass            
         
     def get_generic(self):
-        return Line(self.handle1.get_generic(), self.handle2.get_generic())
+        return self.generic        
         
     def setconnection(self,connectedinteractive):
         self.connectedinteractive = connectedinteractive
@@ -156,10 +156,12 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     def setLine(self,*args,**kwargs):
         super(InteractiveEdge,self).setLine(*args,**kwargs)
         self.highlightededge.setLine(*args,**kwargs)
+
     def handleupdate(self):
-        point1 = self.handle1.pos()
-        point2 = self.handle2.pos()
-        self.setLine(point1.x(),point1.y(),point2.x(),point2.y())
+        point1 = self.generic.vertex1.getpos()
+        point2 = self.generic.vertex2.getpos()
+        self.setLine(point1[0],point1[1],point2[0],point2[1])
+
     def hoverEnterEvent(self,event):
         super(InteractiveEdge,self).hoverEnterEvent(event)
         if self.connectedinteractive!=None:
@@ -184,3 +186,6 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
 #        if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_selectable_edges:
 #            self.isIn
         pass
+
+class ReferenceInteractiveEdge(InteractiveEdge):
+    pass

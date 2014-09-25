@@ -165,7 +165,7 @@ class ReferenceVertex(Vertex):
         iv = ReferenceInteractiveVertex(self)
         iv.updatefromgeneric()
         return iv
-    def gen_drawingpoint(self):
+    def output_drawing_object(self):
         from popupcad.graphics2d.drawingpoint import DrawingPoint
         iv = Drawingpoint(self)
         iv.updatefromgeneric()

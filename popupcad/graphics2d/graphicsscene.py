@@ -41,8 +41,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         self.update()
         self.setItemIndexMethod(self.NoIndex)
         self.constraints_on= False
-        self.controlpoints = []
-        self.controllines = []
         self.nextgeometry = None
     def addItem(self,item):
         super(GraphicsScene,self).addItem(item)
@@ -96,18 +94,16 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         filename = os.path.normpath(os.path.join(popupcad.exportdir,'2D_screenshot_'+time+'.svg'))
         self.renderprocess(filename,scaling)
 
-    def buildvertices(self):
+    def buildvertices(self,sceneitems,controllines,controlpoints):
         from popupcad.graphics2d.interactive import Interactive
-        sceneitems = self.items()
-        parents = [parent for parent in sceneitems if ((isinstance(parent,Interactive)))]
-        interactivevertices = [item for parent in parents for item in parent.handles()]
-        controllinevertices = [item for parent in self.controllines for item in [parent.handle1,parent.handle2]]
-        vertices = list(set(interactivevertices+self.controlpoints + controllinevertices))
-        vertices2 = [vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)]
+        interactives = [parent for parent in sceneitems if ((isinstance(parent,Interactive)))]
+        interactivevertices = []
+        [interactivevertices.extend(item.handles()) for item in interactives]
+        vertices = list(set(interactivevertices+controlpoints))
+        vertices.extend([vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)])
         symbolicvertices = [vertex.get_generic() for vertex in vertices]
-        symbolicvertices.extend([vertex.get_generic() for vertex in vertices2])
-        return symbolicvertices,vertices,vertices2,parents
-
+        [symbolicvertices.extend(controlline.get_generic().vertices()) for controlline in controllines]
+        return symbolicvertices,vertices,interactives
 
     def keyPressEvent(self,event):
         self.savesnapshot.emit()
@@ -198,7 +194,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
             pass
         self.temp = None
         
-    def showvertices(self):
+    def showvertices(self,extraobjects):
         if self.constraints_on:        
             self.constraints_on = False
         else:
@@ -212,7 +208,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                             self.addItem(child)
                 except AttributeError:
                     pass
-            for item in self.controlpoints+self.controllines:
+            for item in extraobjects:
                 if not item in self.items():
                     self.addItem(item)
         else:
@@ -222,18 +218,25 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                         child.removefromscene()
                 except AttributeError:
                     pass
-            for item in self.controlpoints+self.controllines:
-                item.removefromscene()
-                    
-        
+                self.removecontrolpoints()
         self.views()[0].updatescaleables()
 
     def removerefgeoms(self):
+        from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
+        from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
         for item in self.items():
             if isinstance(item,Static):
                 self.removeItem(item)
-            if isinstance(item,InteractiveVertex):
+            if isinstance(item,ReferenceInteractiveVertex):
                 self.removeItem(item)
-            if isinstance(item,InteractiveEdge):
+            if isinstance(item,ReferenceInteractiveEdge):
                 self.removeItem(item)
-            
+    def removecontrolpoints(self):
+        from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
+        from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
+        for item in self.items():
+            if isinstance(item,ReferenceInteractiveVertex):
+                self.removeItem(item)
+            if isinstance(item,ReferenceInteractiveEdge):
+                self.removeItem(item)
+        
