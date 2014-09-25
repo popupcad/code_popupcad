@@ -54,7 +54,7 @@ class OperationOutput(UserData):
     @staticmethod
     def getcontrollines(genericgeometry):
         lines = []
-        from popupcad.geometry.line import Line
+        from popupcad.geometry.line import ReferenceLine
         from popupcad.geometry.vertex import ReferenceVertex
         for layer, geoms in genericgeometry.items():
             for geom in geoms:
@@ -68,7 +68,7 @@ class OperationOutput(UserData):
         for p1,p2 in lines:
             v1 = ReferenceVertex(position = p1)
             v2 = ReferenceVertex(position = p2)
-            controllines.append(Line(v1,v2))
+            controllines.append(ReferenceLine(v1,v2))
         return controllines
             
     def edit(self,*args,**kwargs):

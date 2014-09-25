@@ -310,7 +310,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             if isinstance(item,InteractiveVertex):
                 items.append(item.get_generic())
             elif isinstance(item,InteractiveEdge):
-                items.append(item.get_generic()())
+                items.append(item.get_generic())
             elif isinstance(item,InteractiveLine):
                 items.append(item.selectableedges[0].get_generic())
             elif isinstance(item,StaticLine):

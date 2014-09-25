@@ -26,3 +26,15 @@ class Line(object):
     def lv(self):
         v = self.v()
         return (v.dot(v))**.5        
+
+    def output_interactive(self):
+        from popupcad.interactive.interactiveedge import InteractiveEdge
+        v = InteractiveEdge(self.vertex1.gen_interactive(),self.vertex2.gen_interactive())
+        return v
+
+class ReferenceLine(Line):
+    def output_interactive(self):
+        from popupcad.interactive.interactiveedge import ReferenceEdge
+        v = ReferenceEdge(self.vertex1.gen_interactive(),self.vertex2.gen_interactive())
+        v.handleupdate()
+        return v

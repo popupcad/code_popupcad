@@ -40,7 +40,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         self.generic = symbol
 
     def setstatic(self):
-        self.generic.setstatic(True)
+        self.get_generic().setstatic(True)
     def updatemode(self,mode):
         self.mode = getattr(self.modes,mode)
         self.setPen(self.querypen())
@@ -101,7 +101,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
             if self.changed_trigger:
                 self.changed_trigger = False
                 self.scene().savesnapshot.emit()
-            self.generic.setpos(self.pos().toTuple())
+            self.get_generic().setpos(self.pos().toTuple())
 
         return super(InteractiveVertexBase,self).itemChange(change,value)
         
@@ -110,7 +110,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         self.changed_trigger = True        
         self.updatestate(self.states.state_pressed)
 
-        self.scene().itemclicked.emit(self.generic)
+        self.scene().itemclicked.emit(self.get_generic())
 
             
     def mouseReleaseEvent(self,event):
@@ -131,14 +131,14 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
             return self.generic
 
     def updategeneric(self):
-        self.generic.setpos(self.pos().toTuple())
+        self.get_generic().setpos(self.pos().toTuple())
     
     def pos(self):
         pos= super(InteractiveVertexBase,self).pos()
         return pos
 
     def updatefromgeneric(self):
-        postuple = self.generic.getpos()
+        postuple = self.get_generic().getpos()
         pos = qc.QPointF(*postuple)
         super(InteractiveVertexBase,self).setPos(pos)
 
