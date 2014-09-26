@@ -59,9 +59,9 @@ include_files.extend(include_entire_directory('licenses','licenses'))
 zip_includes = include_entire_directory(os.path.normpath(os.path.join(basedir,"Lib\\site-packages\\OpenGL")),"OpenGL")
 
 includes = []
-includes.append("zmq")
-includes.append("zmq.utils.garbage")
-includes.append("zmq.backend.cython")
+#includes.append("zmq")
+#includes.append("zmq.utils.garbage")
+#includes.append("zmq.backend.cython")
 
 excludes = []
 

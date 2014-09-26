@@ -13,7 +13,6 @@ else:
     import clear_compiled
     clear_compiled.clear_compiled()
 
-
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
