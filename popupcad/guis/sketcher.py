@@ -227,6 +227,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.drawingactions.append(None)
         self.drawingactions.append({'text':'joinedges','kwargs':{'triggered':self.joinedges,'icon':Icon('joinedges')}})
         self.drawingactions.append({'text':'autobridge','kwargs':{'triggered':self.autobridge,'icon':Icon('autobridge')}})
+        self.drawingactions.append({'text':'get joints','kwargs':{'triggered':self.getjoints}})
 
         distanceactions = []
         distanceactions.append({'text':'Coincident','kwargs':{'triggered':lambda:self.add_constraint(constraints.coincident)}})
@@ -419,6 +420,16 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             vertices.append((scenepos.x(),scenepos.y()))
         polys = popupcad.algorithms.autobridge.autobridge(vertices)
         [self.scene.addItem(poly.outputinteractive()) for poly in polys]     
+        
+    def getjoints(self):
+        import popupcad.algorithms.getjoints as gj
+        items = []
+        for item in self.scene.items():
+            if isinstance(item,Static):
+                items.append(item.generic)
+        genericlines = gj.getjoints(items)
+        [self.scene.addItem(line) for line in genericlines]
+        
 
     def showconstraint(self,row):
         item = self.constraint_editor.item(row)

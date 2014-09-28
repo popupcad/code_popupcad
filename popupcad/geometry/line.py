@@ -43,7 +43,8 @@ class ReferenceLine(Line):
         v.handleupdate()
         return v
         
-    def output_drawing_object(self):
-        from popupcad.filteypes.genericshapes import GenericLine
-        l = GenericLine(self.vertices,[],construction = True)
-        return v
+class DrawnLine(Line):
+    def gen_interactive(self):
+        from popupcad.filetypes.genericshapes import GenericLine
+        l = GenericLine(self.vertices(),[],construction = True)
+        return l.outputinteractive()
