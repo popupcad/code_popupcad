@@ -34,18 +34,53 @@ def colinear(line1,line2,tolerance):
     b = point_on_line(line2[1],line1,tolerance)
     return a and b
     
-def point_within_line(point,line,tol):
-    if point_on_line(point,line,tol):
-        point = numpy.array(point)
-        p1 = numpy.array(line[0])
-        p2 = numpy.array(line[1])
-        v = p2 - p1
-        v2 = point - p1
-        lv = v.dot(v)
+def point_within_line(point,line,tolerance):
+    point = numpy.array(point)
+    p1 = numpy.array(line[0])
+    p2 = numpy.array(line[1])
+    v = p2 - p1
+    v2 = point - p1
+    lv = v.dot(v)**.5
+    lv2 = v2.dot(v2)**.5
+    v_dot_v2 = v.dot(v2)
+    same_orientation = v_dot_v2>0 
+    within = lv2<lv 
+    same_direction = abs(abs(v_dot_v2)-(lv*lv2))<tolerance    
+    return same_direction and same_orientation and within
+    
+def order_vertices(vertices,segment_seed,tolerance=1e-5):
+    vertices = list(set(vertices))
+#    a,b = vertices.pop(),vertices.pop()
+    ordering = list(segment_seed)
+    while vertices:
+        c = vertices.pop()
+        a = ordering[0]
+        b = ordering[-1]
+        if point_within_line(a,[c,b],1e-10):
+            ordering.insert(0,c)
+        elif point_within_line(b,[a,c],1e-10):
+            ordering.append(c)
+        else:
+            for ii,b in enumerate(ordering[1:]):
+                if point_within_line(c,[a,b],tolerance):
+                    ordering.insert(ii+1,c)
+                    break
+    return ordering
 
-        l = v.dot(v2)
-        return l>0 and l<lv
-    return False
+def segment_midpoints(segments):
+    segments = numpy.array(segments)
+    a = segments.sum(1)/2
+    return a.tolist()
+    
+def distance_of_lines(lines,point = [0,0]):
+    point = numpy.array(point)
+    lines2 = numpy.array(lines)
+    v1 = lines2[:,1,:] - lines2[:,0,:]
+    l1 = (v1**2).sum(1)**.5
+    v2 = lines2[:,0,:] - point
+    v3 = numpy.cross(v1,v2)
+    l3 = v3/l1
+    return abs(l3)
 
 def shared_edge(line1,line2,tolerance):
     if colinear(line1,line2,tolerance):
@@ -124,5 +159,17 @@ def convert_to_3d(listin):
 if __name__=='__main__':
 #    print(colinear([[0,0],[1,1]],[[.1,.1+.9e-3],[.9,.9]],1e-3))
 #    print point_within_line([2,0],[[0,0],[1,0]],1e-3)
-    print(colinear([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))
-    print(shared_edge([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))
+#    print(colinear([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))
+#    print(shared_edge([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))y
+    point = [.001,0.001]
+    line = [[-1,-1],[1,1]]
+    tol = 1e-10
+#    print  point_within_line(point,line,tol)
+
+    import random
+    points = [(random.random(),1.1) for item in range(10)]
+    a = order_vertices(points,1e-5)
+    segments = []
+    while points:
+        segments.append((points.pop(),points.pop()))
+    

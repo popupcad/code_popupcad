@@ -425,8 +425,9 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         import popupcad.algorithms.getjoints as gj
         items = []
         for item in self.scene.items():
-            if isinstance(item,Static):
+            if isinstance(item,Interactive):
                 items.append(item.generic)
+                item.removefromscene()
         genericlines = gj.getjoints(items)
         [self.scene.addItem(line) for line in genericlines]
         
