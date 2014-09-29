@@ -70,6 +70,8 @@ class Laminate(IterableLaminate):
         if not kwargs.has_key('resolution'):
             kwargs['resolution'] = popupcad.default_buffer_resolution
         return self.valueoperation('buffer',value,**kwargs) 
+    def cleanup(self,value):
+        return popupcad.algorithms.morphology.cleanup(self,value,resolution = 1)
         
     def binaryoperation(self,ls2,function):
         self = self

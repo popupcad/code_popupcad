@@ -17,7 +17,7 @@ class OuterSheet2(MultiValueOperation2):
     defaults = [0.]
 
     def operate(self,design):
-        import algorithms.web as web
+        from ..algorithms import web
         ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
         ls,dummy = web.supportsheet(design.return_layer_definition(),ls1,2.*self.values[0]*popupcad.internal_argument_scaling)
         return ls

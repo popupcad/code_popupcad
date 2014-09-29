@@ -18,7 +18,7 @@ from . import autoweb3
 from . import keepout2
 from . import outersheet2
 from . import removability
-
+from . import scrapoperation
 
 def initialize(editor,design):
     manufacturingplugin.ManufacturingPlugin(editor,design)

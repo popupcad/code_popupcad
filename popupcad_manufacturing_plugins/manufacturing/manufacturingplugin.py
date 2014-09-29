@@ -20,6 +20,7 @@ from .cutop2 import CutOperation2
 from .identifybodies import IdentifyBodies
 from .identifyrigidbodies import IdentifyRigidBodies
 from .removability import Removability
+from .scrapoperation import ScrapOperation
 
 class ManufacturingPlugin(Plugin):
     def __init__(self, editor, design):
@@ -37,6 +38,7 @@ class ManufacturingPlugin(Plugin):
         manufacturingactions.append({'text':'Removability','kwargs':{'triggered':lambda:editor.newoperation(Removability)}})
         manufacturingactions.append({'text':'Identify Bodies','kwargs':{'triggered':lambda:editor.newoperation(IdentifyBodies)}})
         manufacturingactions.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:editor.newoperation(IdentifyRigidBodies)}})
+        manufacturingactions.append({'text':'Scrap','kwargs':{'triggered':lambda:editor.newoperation(ScrapOperation)}})
 
         for item in manufacturingactions:
             editor.addMenuItem(editor.menu_manufacturing,item.copy())
