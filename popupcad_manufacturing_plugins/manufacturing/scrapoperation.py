@@ -88,9 +88,9 @@ class Dialog(qg.QDialog):
         
 class ScrapOperation(Operation):
     name = 'Scrap Operation'
-    valuenames = []
+    valuenames = ['device buffer']
     show = ['keepout']
-    defaults = []
+    defaults = [1.]
 
     attr_init = 'operation_links','values','keepout_type'
     attr_init_k = tuple()
@@ -146,7 +146,7 @@ class ScrapOperation(Operation):
 #        error = error.buffer(-.001)
 #
 
-        removable_both,removable_up,removable_down = removability.generate_removable_scrap(device,sheet,device_buffer=1*popupcad.internal_argument_scaling)
+        removable_both,removable_up,removable_down = removability.generate_removable_scrap(device,sheet,device_buffer=self.values[0]*popupcad.internal_argument_scaling)
 #        removable_both,removable_up,removable_down = removability.more_removable_mod(1*popupcad.internal_argument_scaling, device,sheet)
 
 #        up_support = (removable_up.buffer(1*popupcad.internal_argument_scaling)).difference(keepout)

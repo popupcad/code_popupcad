@@ -38,8 +38,8 @@ def generate_removable_scrap(device,sheet,tol = 1e-5,device_buffer = 0):
     removability_up = one_way_up(device)
     removability_down = one_way_down(device)
     removability_both = two_way(device)    
-    not_removable_region = removability_up.intersection(removability_down)
-    not_removable_scrap_region = not_removable_region.difference(device)
+    not_removable_region = (removability_up.cleanup(tol)).intersection(removability_down.cleanup(tol))
+    not_removable_scrap_region = not_removable_region.difference(device.cleanup(tol))
     not_removable_scrap_region = not_removable_region.cleanup(tol)
     
     if device_buffer>0:
