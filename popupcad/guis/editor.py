@@ -114,7 +114,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         except ImportError:
             print 'Manufacturing Plugin Not Found'
         
-
+        
     def autosave(self):
         import os
         import glob

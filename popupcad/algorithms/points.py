@@ -48,7 +48,7 @@ def point_within_line(point,line,tolerance):
     same_direction = abs(abs(v_dot_v2)-(lv*lv2))<tolerance    
     return same_direction and same_orientation and within
     
-def order_vertices(vertices,segment_seed,tolerance=1e-5):
+def order_vertices(vertices,segment_seed,tolerance):
     vertices = list(set(vertices))
 #    a,b = vertices.pop(),vertices.pop()
     ordering = list(segment_seed)
@@ -56,9 +56,9 @@ def order_vertices(vertices,segment_seed,tolerance=1e-5):
         c = vertices.pop()
         a = ordering[0]
         b = ordering[-1]
-        if point_within_line(a,[c,b],1e-10):
+        if point_within_line(a,[c,b],tolerance):
             ordering.insert(0,c)
-        elif point_within_line(b,[a,c],1e-10):
+        elif point_within_line(b,[a,c],tolerance):
             ordering.append(c)
         else:
             for ii,b in enumerate(ordering[1:]):

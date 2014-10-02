@@ -10,8 +10,8 @@ import popupcad.algorithms.points as points
 import numpy
 import math
 
-roundvalue = -1
-tolerance = 1*10**(-roundvalue)
+roundvalue = 3
+tolerance = 10**(-roundvalue)
 def getjoints(geoms):
     from popupcad.geometry.vertex import ShapeVertex
     from popupcad.filetypes.genericshapes import GenericLine
@@ -26,8 +26,10 @@ def getjoints(geoms):
     
     l3 = popupcad.algorithms.points.distance_of_lines(lines,[0,0])
     l4 = popupcad.algorithms.points.distance_of_lines(lines,[10*tolerance,0])
-    l5 = popupcad.algorithms.points.distance_of_lines(lines,[0,10*tolerance])
-    m=numpy.c_[l3,l4,l5]
+    l5 = popupcad.algorithms.points.distance_of_lines(lines,[10*tolerance,10*tolerance])
+    l6 = popupcad.algorithms.points.distance_of_lines(lines,[0,10*tolerance])
+    l7 = popupcad.algorithms.points.distance_of_lines(lines,[10*tolerance,20*tolerance])
+    m=numpy.c_[l3,l4,l5,l6,l7]
     m = m.round(roundvalue)
     m2 = [tuple(items) for items in m.tolist()]
     m3 = list(set(m2))
