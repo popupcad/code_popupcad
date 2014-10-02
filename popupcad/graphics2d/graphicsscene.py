@@ -16,7 +16,7 @@ from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
 from popupcad.graphics2d.drawingpoint import DrawingPoint,StaticDrawingPoint
 #from popupcad.graphics2d.interactivevertex import InteractiveVertex
 #from popupcad.graphics2d.interactiveedge import InteractiveEdge
-from .text import TextItem
+from .text import TextItem,TextParent
 import time
 
 import numpy
@@ -140,13 +140,13 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         elif self.nextgeometry!=None:
             if event.button() == qc.Qt.LeftButton:
                 if self.temp==None:
-                    if self.nextgeometry==TextItem:
+                    if self.nextgeometry==TextParent:
                         temp = self.nextgeometry()
                         self.addItem(temp)
-                        self.setFocusItem(temp)
+                        self.setFocusItem(temp.editchild)
                         temp.setPos(pos)
                         self.nextgeometry = None
-                    if self.nextgeometry==DrawingPoint:
+                    elif self.nextgeometry==DrawingPoint:
                         temp = self.nextgeometry(DrawnPoint())
                         self.addItem(temp)
                         self.setFocusItem(temp)
