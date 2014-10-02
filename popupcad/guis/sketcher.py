@@ -26,7 +26,7 @@ from popupcad.widgets.widgetcommon import WidgetCommon
 from popupcad.filetypes.undoredo import UndoRedo
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.manufacturing.nulloperation import NullOp
-from popupcad.graphics2d.text import TextItem
+from popupcad.graphics2d.text import TextParent
 
 class Sketcher(qg.QMainWindow,WidgetCommon):
     showprop = qc.Signal(object)
@@ -222,7 +222,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.drawingactions.append({'text':'rect','kwargs':{'triggered':lambda:self.addproto(ProtoRect2Point),'icon':Icon('rectangle')}})
         self.drawingactions.append({'text':'circle','kwargs':{'triggered':lambda:self.addproto(ProtoCircle),'icon':Icon('circle')}})
         self.drawingactions.append({'text':'poly','kwargs':{'triggered':lambda:self.addproto(ProtoPoly),'icon':Icon('polygon')}})
-        self.drawingactions.append({'text':'text','kwargs':{'triggered':lambda:self.addproto(TextItem)}})
+        self.drawingactions.append({'text':'text','kwargs':{'triggered':lambda:self.addproto(TextParent)}})
         self.drawingactions.append({'text':'text2','kwargs':{'triggered':self.test1}})
         self.drawingactions.append(None)
         self.drawingactions.append({'text':'joinedges','kwargs':{'triggered':self.joinedges,'icon':Icon('joinedges')}})
