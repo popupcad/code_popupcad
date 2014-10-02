@@ -8,7 +8,6 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from .graphicsitems import Common,CommonShape
-from .interactivevertex import InteractiveVertex
 from popupcad.geometry.vertex import ShapeVertex
 from popupcad.filetypes.genericshapes import GenericPoly,GenericPolyline,GenericLine,GenericCircle,GenericTwoPointRect
 import popupcad
@@ -94,7 +93,8 @@ class ProtoMultiPoint(Proto):
         
     def mousepress(self,point):
         if not self.temphandle:
-            self.temphandle = InteractiveVertex(ShapeVertex())
+            a = ShapeVertex()
+            self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.setPos(point)
             self.temphandle.updatescale()
@@ -102,7 +102,8 @@ class ProtoMultiPoint(Proto):
         else:
             self.addhandle(self.temphandle)
         if not self.temphandle:
-            self.temphandle = InteractiveVertex(ShapeVertex())
+            a = ShapeVertex()
+            self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.setPos(point)
             self.temphandle.updatescale()
@@ -133,14 +134,16 @@ class ProtoTwoPoint(Proto):
             
     def mousepress(self,point):
         if not self.temphandle:
-            self.temphandle = InteractiveVertex(ShapeVertex())
+            a = ShapeVertex()
+            self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.setPos(point)
             self.temphandle.updatescale()
             
         if len(self.generic.exterior)==0:
             self.addhandle(self.temphandle)
-            self.temphandle = InteractiveVertex(ShapeVertex())
+            a = ShapeVertex()
+            self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.setPos(point)
             self.temphandle.updatescale()

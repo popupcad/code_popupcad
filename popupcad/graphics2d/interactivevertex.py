@@ -67,6 +67,12 @@ class InteractiveVertex(InteractiveVertexBase):
             else:
                 self.removefromscene()
 
+class InteractiveShapeVertex(InteractiveVertex):
+    radius = 10
+    z_below = 100
+    z_above = 105
+
+
 class ReferenceInteractiveVertex(InteractiveVertex):
     radius = 10
     z_below = 100

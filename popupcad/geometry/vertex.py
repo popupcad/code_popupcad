@@ -160,6 +160,11 @@ class ShapeVertex(Vertex):
         return [self.getpos()]
     def interiorpoints(self):
         return []
+    def gen_interactive(self):
+        from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex
+        iv = InteractiveShapeVertex(self)
+        iv.updatefromgeneric()
+        return iv
 
 class DrawnPoint(Vertex):
     def exteriorpoints(self):
