@@ -94,18 +94,20 @@ class ProtoMultiPoint(Proto):
     def mousepress(self,point):
         if not self.temphandle:
             a = ShapeVertex()
+            a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-            self.temphandle.setPos(point)
+#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
             self.addhandle(self.temphandle)
         else:
             self.addhandle(self.temphandle)
         if not self.temphandle:
             a = ShapeVertex()
+            a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-            self.temphandle.setPos(point)
+#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
 
         self.updateshape()
@@ -135,17 +137,19 @@ class ProtoTwoPoint(Proto):
     def mousepress(self,point):
         if not self.temphandle:
             a = ShapeVertex()
+            a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-            self.temphandle.setPos(point)
+#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
             
         if len(self.generic.exterior)==0:
             self.addhandle(self.temphandle)
             a = ShapeVertex()
+            a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-            self.temphandle.setPos(point)
+#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
             self.updateshape()
             return
