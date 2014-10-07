@@ -119,7 +119,10 @@ class Vertex(object):
     def copy_values(self,new,identical=False):
         new.setpos(self.getpos())
         new.static = self.static
-        new._persistent = self._persistent
+        try:
+            new._persistent = self._persistent
+        except AttributeError:
+            new._persistent = False
         if identical:
             new.id = self.id
         return new            

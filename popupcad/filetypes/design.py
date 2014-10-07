@@ -38,25 +38,13 @@ class Design(popupCADFile):
         self._layerdef = layerdef
         
     def return_layer_definition(self):
-        a = hasattr(self,'_layerdef')
-        b = hasattr(self,'__layerdef')
-        if a:
-            pass
-        elif b:
+        try:
+            return self._layerdef
+        except AttributeError:
             self._layerdef = self.__layerdef
             del self.__layerdef
-#            return self._layerdef
-        else:
-            pass
-        return self._layerdef
-            
-#        try:
-#            return self._layerdef
-#        except AttributeError:
-#            self._layerdef = self.__layerdef
-#            del self.__layerdef
-#            return self._layerdef
-            
+            return self._layerdef
+
     def operation_index(self,operation_ref):
         try:
             indeces = dict([(op.id,ii) for ii,op in enumerate(self.operations)])
