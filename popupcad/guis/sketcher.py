@@ -283,7 +283,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 generic = item.get_generic()
                 newgeneric = generic.copy_values(DrawnPoint(),False)
                 newitem = newgeneric.gen_interactive()
-#                newitem.makemoveable(False)
                 self.scene.addItem(newitem)
                 items.append(newgeneric)
 
@@ -499,8 +498,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                     try:
                         operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
                         staticgeometries =  [item.outputstatic() for item in operationgeometries]
-#                        operationgeometries = self.design.operations[ii].output[jj].generic_geometry_2d()
-#                        staticgeometries = [item.outputstatic(color = layer.color) for layer in self.design.return_layer_definition().layers for item in operationgeometries[layer]]
 
                         controlpoints = self.design.operations[ii].output[jj].controlpoints()
                         controlpoints = [point.gen_interactive() for point in controlpoints]

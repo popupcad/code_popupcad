@@ -14,8 +14,6 @@ from .svg_support import SVGOutputSupport
 from .modes import Modes
 from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
 from popupcad.graphics2d.drawingpoint import DrawingPoint,StaticDrawingPoint
-#from popupcad.graphics2d.interactivevertex import InteractiveVertex
-#from popupcad.graphics2d.interactiveedge import InteractiveEdge
 from .text import TextItem,TextParent
 import time
 

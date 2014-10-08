@@ -51,7 +51,6 @@ class Dialog(qg.QDialog):
 
         from  popupcad.widgets.operationlist import OperationList
         self.operationtypeselector = OperationList([],cls.operationtypes,cls.operationtypes)
-#        self.operationtypeselector.addItems(cls.operationtypes)
         self.operationtypeselector.setCurrentIndex(operation_type_index)        
 
         button1 = qg.QPushButton('Ok')

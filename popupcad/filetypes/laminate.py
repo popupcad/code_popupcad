@@ -145,10 +145,3 @@ class Laminate(IterableLaminate):
             genericgeometry[layer] = genericgeoms
         return genericgeometry
         
-#    def plot(self,ax = None):
-#        generic = self.genericfromls()
-#        for layer in self.layerdef.layers:
-#            geoms = generic[layer]            
-#            ax = geoms.pop().plot()
-#            [geom.plot(ax) for geom in geoms]
-            

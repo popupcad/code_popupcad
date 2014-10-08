@@ -26,7 +26,6 @@ def point_on_line(point,line,tolerance):
     lv2 = v2.dot(v2)
     vpoint = v.dot(v2)**2 - lv*lv2
     vpoint = abs(vpoint)**(.5)
-#    print vpoint,tolerance
     return abs(vpoint)<abs(tolerance)
 
 def colinear(line1,line2,tolerance):
@@ -50,7 +49,6 @@ def point_within_line(point,line,tolerance):
     
 def order_vertices(vertices,segment_seed,tolerance):
     vertices = list(set(vertices))
-#    a,b = vertices.pop(),vertices.pop()
     ordering = list(segment_seed)
     while vertices:
         c = vertices.pop()
@@ -148,7 +146,7 @@ def calctransformfrom2lines(pointset1,pointset2,scale_x = None,scale_y = None):
     
     T = T3.dot(T2.dot(T1.dot(T0)))
     return T[0,0],T[0,1],T[1,0],T[1,1],T[0,2],T[1,2]  
-#
+
 def convert_to_3d(listin):
     a = numpy.array(listin)
     c = a.T[0]*0

@@ -233,9 +233,5 @@ if __name__ == "__main__":
     parts = sketch.operationgeometry
     realparts = [item.outputstatic() for item in parts]
     grouper.addchildren(realparts)
-#    [grouper.addchildren(item.handles) for item in realparts]
-#    [item.setParentItem.addItem(item) for item in realparts]
     
     mw.show()
-#    mw.exec_()
-#    sys.exit(app.exec_())

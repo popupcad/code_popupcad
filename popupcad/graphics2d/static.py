@@ -52,7 +52,6 @@ class Static(Common):
             self.color = kwargs.pop('color')
         except KeyError:
             pass
-#            self.color= None
 
         super(Static,self).__init__(*args,**kwargs)
 

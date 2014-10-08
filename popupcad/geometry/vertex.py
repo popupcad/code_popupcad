@@ -19,11 +19,7 @@ class Vertex(object):
         self.id = id(self)
         self._pos = None
         self.setstatic(False)
-#        self.set_persistent(False)
         self.set_construction(True)
-#        self.construction = False
-#        self.static = False        
-#        self._persistent = False
 
         if position !=None:
             self.setpos(position)
@@ -48,19 +44,8 @@ class Vertex(object):
             return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
         return False
         
-#    def is_persistent(self):
-#        try:
-#            self._persistent
-#        except AttributeError:
-#            self._persistent = False
-#        finally:
-#            return self._persistent
-
     def is_static(self):
         return self.static
-
-#    def set_persistent(self,test):
-#        self._persistent = test
 
     def __str__(self):
         return 'vertex'+str(self.id)
@@ -125,10 +110,6 @@ class Vertex(object):
     def copy_values(self,new,identical=False):
         new.setpos(self.getpos())
         new.static = self.static
-#        try:
-#            new._persistent = self._persistent
-#        except AttributeError:
-#            new._persistent = False
         if identical:
             new.id = self.id
         return new            
@@ -188,47 +169,19 @@ class ShapeVertex(Vertex):
     def segmentpoints(self):
         return []
 
-class DrawnPoint(Vertex):
-    def exteriorpoints(self):
-        return [self.getpos()]
-    def interiorpoints(self):
-        return []
+class DrawnPoint(ShapeVertex):
     def gen_interactive(self):
         from popupcad.graphics2d.drawingpoint import DrawingPoint
         iv = DrawingPoint(self)
         iv.updatefromgeneric()
         return iv
-#    def shape_is_equal(self,other):
-#        from popupcad.filetypes.genericshapebase import GenericShapeBase
-#        tolerance = GenericShapeBase.tolerance
-#        import popupcad.algorithms.points as points
-#        if type(self)==type(other):
-#            return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
-#        return False
-#    def points(self):
-#        return [self.getpos()]
-#    def segments(self):
-#        return []
-#    def segmentpoints(self):
-#        return []
 
 class ReferenceVertex(Vertex):
     def __init__(self,*args,**kwargs):
         super(ReferenceVertex,self).__init__(*args,**kwargs)
-#        self.set_persistent(True)
         self.setstatic(True)
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
         iv = ReferenceInteractiveVertex(self)
         iv.updatefromgeneric()
         return iv
-#    def output_drawing_object(self):
-#        from popupcad.graphics2d.drawingpoint import DrawingPoint
-#        iv = DrawingPoint(self)
-#        iv.updatefromgeneric()
-#        return iv
-
-#    def convert_to_drawn(self)
-##        generic = item.get_generic()
-#        newgeneric = self.copy_values(DrawnPoint(),False)
-#        return newgeneric

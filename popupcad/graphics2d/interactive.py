@@ -39,7 +39,6 @@ class Interactive(Common):
     
     brushdefinedcolor=qg.QColor.fromRgbF(1, 1, 0, .25)
     brusheditcolor = qg.QColor.fromRgbF(1, 1, 0, .25)    
-#    brushrendercolor = qg.QColor.fromRgbF(.5, .5, .5, .25)    
     brushselectioncolor = qg.QColor.fromRgbF(1, 1, 0, .25)
 
     pens = {}

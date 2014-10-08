@@ -58,13 +58,8 @@ class OperationOutput(UserData):
             all_geoms.extend(geoms)
             for geom in geoms:
                 p = geom.points()
-#                p = geom.exteriorpoints()
                 vertices.extend(p)
                 lines.extend(geom.segmentpoints())
-#                lines.extend(zip(p,p[1:]+p[:1]))
-#                for interior in geom.interiorpoints():
-#                    vertices.extend(interior)
-#                    lines.extend(zip(interior,interior[1:]+interior[:1]))
 
         for geom in all_geoms:
             is_unique = True

@@ -97,7 +97,6 @@ class ProtoMultiPoint(Proto):
             a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
             self.addhandle(self.temphandle)
         else:
@@ -107,7 +106,6 @@ class ProtoMultiPoint(Proto):
             a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
 
         self.updateshape()
@@ -140,7 +138,6 @@ class ProtoTwoPoint(Proto):
             a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
             
         if len(self.generic.exterior)==0:
@@ -149,7 +146,6 @@ class ProtoTwoPoint(Proto):
             a.setpos(point.toTuple())
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
-#            self.temphandle.setPos(point)
             self.temphandle.updatescale()
             self.updateshape()
             return

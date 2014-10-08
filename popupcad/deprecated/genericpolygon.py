@@ -53,7 +53,6 @@ class GenericShape(GenericShapeBase):
         self.exterior, self.interiors = self.condition_points(self.exterior, self.interiors )
 
         self.construction = construction
-#        self.update_handles()
         if test_shapely:
             shapely = self.outputshapely()
             if not shapely.is_simple:
@@ -180,14 +179,11 @@ class GenericShape(GenericShapeBase):
         
     def triangles3(self):
         if self.shapetype==self.shapetypes.polygon:
-#            try:
             cdt = self.toCDT3()
             cdt.Triangulate()
             return [tri.toList() for tri in cdt.GetTriangles()]
         else:
             return []
-#            except Exception as ex:
-#                print ex
             
     def lines(self):
         lines = []

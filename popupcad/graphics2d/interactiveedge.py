@@ -6,7 +6,6 @@ Please see LICENSE.txt for full license.
 """
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-#import numpy
 from popupcad.geometry.line import Line
 from . import modes
 from .graphicsitems import Common
@@ -41,7 +40,6 @@ class HighlightedEdge(qg.QGraphicsLineItem,EdgeBase):
         self.updatestate(self.states.state_neutral)
         self.setAcceptHoverEvents(False)
         self.setZValue(self.z_below)
-#        self.setBoundingRegionGranularity(3)
 
     def querypen(self):
         if self.mode == self.modes.mode_render:
@@ -90,7 +88,6 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
 
         self.setAcceptHoverEvents(True)
         self.setFlag(self.ItemIsFocusable,True)
-#        self.isInteractive=False
         self.connectedinteractive = None
         
         self.setFlag(self.ItemIsSelectable,True)
@@ -180,8 +177,6 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         if self.ItemIsSelectable==(self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge,self).mouseReleaseEvent(event)
     def notify(self):
-#        if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_selectable_edges:
-#            self.isIn
         pass
 
 class ReferenceInteractiveEdge(InteractiveEdge):

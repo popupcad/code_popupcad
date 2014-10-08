@@ -62,7 +62,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
         self.setTabPosition(qc.Qt.AllDockWidgetAreas, qg.QTabWidget.South)
 
-#        self.operationeditor = popupcad.widgets.dragndroptree.DirectedDraggableTreeWidget()
         self.operationeditor = popupcad.widgets.dragndroptree.DraggableTreeWidget()
         self.operationeditor.enable()
 
@@ -103,11 +102,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.backuptimer.setInterval(popupcad.backup_timeout)
         self.backuptimer.timeout.connect(self.autosave)
         self.backuptimer.start()
-#        self.raiseBox()
-
-#        self.resize(1024,576)
-#        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
-#        self.move(dxy)
         try:
             import popupcad_manufacturing_plugins
             popupcad_manufacturing_plugins.initialize(self,self.design)
@@ -228,7 +222,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             raise
         finally:
             self.operationeditor.refresh()
-#            self.showcurrentoutput()
         
     @loggable
     def newfile(self):
