@@ -9,7 +9,7 @@ import sympy
     
 from popupcad.constraints.constraints import Variable, Constant
     
-class Vertex(object):
+class BaseVertex(object):
     editable = ['pos','static','construction']
     deletable = []
     
@@ -88,8 +88,12 @@ class Vertex(object):
             else:
                 return self._pos
         except AttributeError:
-            self._pos = self.__pos
-            del self.__pos
+            try:
+                self._pos = self.__pos
+                del self.__pos
+            except AttributeError:
+                self._pos = self._Vertex__pos
+                del self._Vertex__pos
             return self._pos
 
     def setsymbol(self,variable,value):
@@ -113,13 +117,50 @@ class Vertex(object):
         if identical:
             new.id = self.id
         return new            
-        
+#        
+#    def gen_interactive(self):
+#        from popupcad.graphics2d.interactivevertex import InteractiveVertex
+#        iv = InteractiveVertex(self)
+#        iv.updatefromgeneric()
+#        return iv
+
+#    def get_interactive(self):
+#        try:
+#            return self.interactivevertex
+#        except AttributeError:
+#            self.interactivevertex = self.gen_interactive()
+#            return self.interactivevertex
+    def shape_is_equal(self,other):
+        from popupcad.filetypes.genericshapebase import GenericShapeBase
+        tolerance = GenericShapeBase.tolerance
+        import popupcad.algorithms.points as points
+        if type(self)==type(other):
+            return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
+        return False
+
+class ShapeVertex(BaseVertex):
     def gen_interactive(self):
-        from popupcad.graphics2d.interactivevertex import InteractiveVertex
-        iv = InteractiveVertex(self)
+        from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex
+        iv = InteractiveShapeVertex(self)
         iv.updatefromgeneric()
         return iv
 
+class DrawnPoint(ShapeVertex):
+    def exteriorpoints(self):
+        return [self.getpos()]
+    def interiorpoints(self):
+        return []
+    def gen_interactive(self):
+        from popupcad.graphics2d.drawingpoint import DrawingPoint
+        iv = DrawingPoint(self)
+        iv.updatefromgeneric()
+        return iv
+    def points(self):
+        return [self.getpos()]
+    def segments(self):
+        return []
+    def segmentpoints(self):
+        return []
     def outputinteractive(self):
         from popupcad.graphics2d.drawingpoint import DrawingPoint
         iv = DrawingPoint(self)
@@ -137,46 +178,9 @@ class Vertex(object):
         from shapely.geometry import Point
         p = Point(*self.getpos())
         return p
-        
-    def get_interactive(self):
-        try:
-            return self.interactivevertex
-        except AttributeError:
-            self.interactivevertex = self.gen_interactive()
-            return self.interactivevertex
 
-class ShapeVertex(Vertex):
-    def exteriorpoints(self):
-        return [self.getpos()]
-    def interiorpoints(self):
-        return []
-    def gen_interactive(self):
-        from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex
-        iv = InteractiveShapeVertex(self)
-        iv.updatefromgeneric()
-        return iv
-    def shape_is_equal(self,other):
-        from popupcad.filetypes.genericshapebase import GenericShapeBase
-        tolerance = GenericShapeBase.tolerance
-        import popupcad.algorithms.points as points
-        if type(self)==type(other):
-            return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
-        return False
-    def points(self):
-        return [self.getpos()]
-    def segments(self):
-        return []
-    def segmentpoints(self):
-        return []
 
-class DrawnPoint(ShapeVertex):
-    def gen_interactive(self):
-        from popupcad.graphics2d.drawingpoint import DrawingPoint
-        iv = DrawingPoint(self)
-        iv.updatefromgeneric()
-        return iv
-
-class ReferenceVertex(Vertex):
+class ReferenceVertex(BaseVertex):
     def __init__(self,*args,**kwargs):
         super(ReferenceVertex,self).__init__(*args,**kwargs)
         self.setstatic(True)

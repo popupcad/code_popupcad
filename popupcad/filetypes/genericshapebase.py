@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.geometry import customshapely
-from popupcad.geometry.vertex import Vertex,ShapeVertex
+from popupcad.geometry.vertex import ShapeVertex
 
 import shapely.geometry
 import numpy
@@ -189,8 +189,8 @@ class GenericShapeBase(popupCADFile):
         elif isinstance(obj,customshapely.ShapelyLineString):
             subclass= GenericPolyline
         elif isinstance(obj,customshapely.ShapelyPoint):
-            from popupcad.geometry.vertex import ShapeVertex
-            s = ShapeVertex()
+            from popupcad.geometry.vertex import ShapeVertex, DrawnPoint
+            s = DrawnPoint()
             s.setpos(exterior_p[0])
             return s
         else:

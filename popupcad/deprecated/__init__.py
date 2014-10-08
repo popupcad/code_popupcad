@@ -59,6 +59,10 @@ try:
 except ImportError:
     pass
 
+class Vertex(popupcad.geometry.vertex.ShapeVertex):
+    pass
+popupcad.geometry.vertex.Vertex =Vertex
+
 popupcad.materials.laminatesheet = popupcad.filetypes.laminate
 sys.modules['popupcad.materials.laminatesheet']  = popupcad.filetypes.laminate
 popupcad.filetypes.laminate.Layer = popupcad.filetypes.layer.Layer
