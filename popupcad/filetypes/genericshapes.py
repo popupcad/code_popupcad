@@ -19,37 +19,41 @@ class GenericLine(GenericShapeBase):
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveLine
         return InteractiveLine(self)
-    def outputstatic(self,color=None):
+    def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticLine
-        return StaticLine(self,color = color)
+        return StaticLine(self,*args,**kwargs)
     def pickpainterpathfunction(self):
         return self.generatelinepath
     def outputshapely(self):
         exterior_p = self.exteriorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj
+    def segments(self):
+        return self.linesegments()
         
 class GenericPolyline(GenericShapeBase):
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractivePath
         return InteractivePath(self)
-    def outputstatic(self,color=None):
+    def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticPath
-        return StaticPath(self,color = color)
+        return StaticPath(self,*args,**kwargs)
     def pickpainterpathfunction(self):
         return self.generatelinepath
     def outputshapely(self):
         exterior_p = self.exteriorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj        
+    def segments(self):
+        return self.linesegments()
 
 class GenericPoly(GenericShapeBase):
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractivePoly
         return InteractivePoly(self)
-    def outputstatic(self,color=None):
+    def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticPoly
-        return StaticPoly(self,color = color)
+        return StaticPoly(self,*args,**kwargs)
     def pickpainterpathfunction(self):
         return self.generateholeypolypath
     def triangles3(self):
@@ -78,14 +82,16 @@ class GenericPoly(GenericShapeBase):
                 return
         self.exterior.append(vertex)
         self.update_handles()
+    def segments(self):
+        return self.loopsegments()
 
 class GenericCircle(GenericShapeBase):
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveCircle
         return InteractiveCircle(self)
-    def outputstatic(self,color=None):
+    def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticCircle
-        return StaticCircle(self,color = color)
+        return StaticCircle(self,*args,**kwargs)
     def pickpainterpathfunction(self):
         return self.generatecirclepath
     def outputshapely(self):
@@ -97,14 +103,16 @@ class GenericCircle(GenericShapeBase):
         obj = shapely.geometry.Point(*center).buffer(r)
         obj = customshapely.ShapelyPolygon(obj.boundary)
         return obj
+    def segments(self):
+        return self.loopsegments()
         
 class GenericTwoPointRect(GenericShapeBase):
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveRect2Point
         return InteractiveRect2Point(self)
-    def outputstatic(self,color=None):
+    def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticRect2Point
-        return StaticRect2Point(self,color = color)
+        return StaticRect2Point(self,*args,**kwargs)
     def pickpainterpathfunction(self):
         return self.generaterect2pointpath
     def outputshapely(self):
@@ -116,3 +124,6 @@ class GenericTwoPointRect(GenericShapeBase):
         corners = [corner1,corner2,corner3,corner4]
         obj = customshapely.ShapelyPolygon(corners)
         return obj
+    def segments(self):
+        return self.loopsegments()
+        

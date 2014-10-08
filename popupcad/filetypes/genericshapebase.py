@@ -73,6 +73,27 @@ class GenericShapeBase(popupCADFile):
         vertices = self.exterior[:]
         [vertices.extend(interior) for interior in self.interiors]
         return vertices
+
+    def points(self):
+        vertices = self.vertices()
+        return [vertex.getpos() for vertex in vertices]        
+
+    def loopsegments(self):
+        points = self.exterior
+        segments = zip(points,points[1:]+points[:1])
+        for points in self.interiors:
+            segments.extend(zip(points,points[1:]+points[:1]))
+        return segments
+
+    def linesegments(self):
+        points = self.exterior
+        segments = zip(points[:-1],points[1:])
+        return segments
+        
+    def segmentpoints(self):
+        segments = self.segments()
+        segmentpoints = [(point1.getpos(),point2.getpos()) for point1,point2 in segments]
+        return segmentpoints
             
     def painterpath(self):
         exterior_p = self.exteriorpoints()
@@ -279,3 +300,17 @@ class GenericShapeBase(popupCADFile):
         path.addRect(rect)
         return path        
     
+    def shape_is_equal(self,other):
+        if type(self)==type(other):
+            if len(self.exterior)==len(other.exterior) and len(self.interiors)==len(other.interiors):
+                for point1,point2 in zip(self.exterior,other.exterior):
+                    if not point1.is_equal(point2,self.tolerance):
+                        return False
+                for interior1,interior2 in zip(self.interiors,other.interiors):
+                    if len(interior1)!=len(interior2):
+                        return False
+                    for point1,point2 in zip(interior1,interior2):
+                        if not point1.is_equal(point2,self.tolerance):
+                            return False
+                return True
+        return False

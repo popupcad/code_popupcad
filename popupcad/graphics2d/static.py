@@ -51,7 +51,8 @@ class Static(Common):
         try:
             self.color = kwargs.pop('color')
         except KeyError:
-            self.color= None
+            pass
+#            self.color= None
 
         super(Static,self).__init__(*args,**kwargs)
 
@@ -72,7 +73,7 @@ class Static(Common):
         pen = self.pens[self.mode]
         pen.setCosmetic(True)
         self.setPen(pen)
-        brush = self.brushes[self.mode]
+        brush = qg.QBrush(self.brushes[self.mode])
         try:
             brush.setColor(qg.QColor.fromRgbF(*self.color))
         except AttributeError:

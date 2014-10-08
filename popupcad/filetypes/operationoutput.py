@@ -26,30 +26,55 @@ class OperationOutput(UserData):
         try:
             return self._controlpoints
         except AttributeError:
-            self._controlpoints, self._controllines = self.getcontrols(self.generic_geometry_2d())
+            self.update_controls()
             return self._controlpoints
 
     def controllines(self):
         try:
             return self._controllines
         except AttributeError:
-            self._controlpoints, self._controllines = self.getcontrols(self.generic_geometry_2d())
+            self.update_controls()
             return self._controllines
 
+    def controlpolygons(self):
+        try:
+            return self._control_polygons
+        except AttributeError:
+            self.update_controls()
+            return self._control_polygons
+
+    def update_controls(self):
+        self._controlpoints, self._controllines,self._control_polygons = self.getcontrols(self.generic_geometry_2d())
+        
     @staticmethod
     def getcontrols(genericgeometry):
-        lines = []
         from popupcad.geometry.line import ReferenceLine
         from popupcad.geometry.vertex import ReferenceVertex
         vertices = []
+        unique_geoms = []
+        all_geoms = []
+        lines = []
         for layer, geoms in genericgeometry.items():
+            all_geoms.extend(geoms)
             for geom in geoms:
-                p = geom.exteriorpoints()
+                p = geom.points()
+#                p = geom.exteriorpoints()
                 vertices.extend(p)
-                lines.extend(zip(p,p[1:]+p[:1]))
-                for interior in geom.interiorpoints():
-                    vertices.extend(interior)
-                    lines.extend(zip(interior,interior[1:]+interior[:1]))
+                lines.extend(geom.segmentpoints())
+#                lines.extend(zip(p,p[1:]+p[:1]))
+#                for interior in geom.interiorpoints():
+#                    vertices.extend(interior)
+#                    lines.extend(zip(interior,interior[1:]+interior[:1]))
+
+        for geom in all_geoms:
+            is_unique = True
+            for geom2 in unique_geoms:
+                if geom.shape_is_equal(geom2):
+                    is_unique = False
+                    break
+            if is_unique:
+                unique_geoms.append(geom)
+            
 
         vertices = list(set(vertices))
         controlpoints = [ReferenceVertex(position = p) for p in vertices]
@@ -57,7 +82,7 @@ class OperationOutput(UserData):
         lines = list(set(lines))
         lines2 = [(vertices.index(p1),vertices.index(p2)) for p1,p2 in lines]
         controllines = [ReferenceLine(controlpoints[ii],controlpoints[jj]) for ii,jj in lines2]
-        return controlpoints, controllines
+        return controlpoints, controllines, unique_geoms
             
     def edit(self,*args,**kwargs):
         if self.parent !=None:
@@ -80,7 +105,12 @@ class OperationOutput(UserData):
         except AttributeError:
             self.alltriangles = {}
             for layer,geoms in self.generic_geometry_2d().items():
-                triangles = [tri for geom in geoms for tri in geom.triangles3()]
+                triangles = []
+                for geom in geoms:
+                    try:
+                        triangles.extend(geom.triangles3())
+                    except AttributeError:
+                        pass
                 self.alltriangles[layer] = triangles
             return self.alltriangles
 

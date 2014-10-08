@@ -86,14 +86,14 @@ class ConstraintSystem(object):
                 ini[key]=value
         return ini,vertexdict
 
-    def getpersistentobjects(self):
-        vertices = []
-        for constraint in self.constraints:
-            vertices.extend(constraint.persistentobjects())
-        return vertices
+#    def getpersistentobjects(self):
+#        vertices = []
+#        for constraint in self.constraints:
+#            vertices.extend(constraint.persistentobjects())
+#        return vertices
             
     def process(self,vertices): 
-        vertices += self.getpersistentobjects()
+#        vertices += self.getpersistentobjects()
         ini,vertexdict = self.getlinks(vertices)
         variables,qout = [],[]
         if len(self.constraints)>0:
@@ -154,10 +154,11 @@ class Constraint(object):
     CleanupFlags = enum(NotDeletable=101,Deletable=102)
     CurrentFlags= enum(AllCurrent=201,SomeCurrent=202,NoneCurrent=203)
     
-    def __init__(self,vertex_ids, segment_ids,persistentobjects):
+#    def __init__(self,vertex_ids, segment_ids,persistentobjects):
+    def __init__(self,vertex_ids, segment_ids):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
-        self._persistentobjects = persistentobjects
+#        self._persistentobjects = persistentobjects
         self.id = id(self)
         
     @classmethod
@@ -169,7 +170,8 @@ class Constraint(object):
         return obj
         
     def copy(self,identical = True):
-        new = type(self)(self.vertex_ids,self.segment_ids,self.persistentobjects())
+#        new = type(self)(self.vertex_ids,self.segment_ids,self.persistentobjects())
+        new = type(self)(self.vertex_ids,self.segment_ids)
         if identical:
             new.id = self.id
         return new
@@ -180,7 +182,7 @@ class Constraint(object):
     @staticmethod    
     def _define_internals(*objects):
         from popupcad.geometry.line import Line
-        from popupcad.geometry.vertex import Vertex
+        from popupcad.geometry.vertex import Vertex,ReferenceVertex
     
         segment_ids = [(line.vertex1.id,line.vertex2.id) for line in objects if isinstance(line,Line)]
         segment_ids = list(set(segment_ids))
@@ -193,18 +195,19 @@ class Constraint(object):
         vertices_in_lines = []
         vertices_in_lines.extend([vertex for line in objects if isinstance(line,Line) for vertex in [line.vertex1,line.vertex2]])
 
-        persistentobjects = []
-        persistentobjects.extend([vertex for vertex in vertices if vertex.is_persistent()])
-        persistentobjects.extend([vertex for vertex in vertices_in_lines if vertex.is_persistent()])
+#        persistentobjects = []
+#        persistentobjects.extend([vertex for vertex in vertices if isinstance(vertex,ReferenceVertex)])
+#        persistentobjects.extend([vertex for vertex in vertices_in_lines if isinstance(vertex,ReferenceVertex)])
 
-        return vertex_ids,segment_ids,persistentobjects
-
-    def persistentobjects(self):
-        try:
-            self._persistentobjects
-        except AttributeError:
-            self._persistentobjects = []
-        return self._persistentobjects
+#        return vertex_ids,segment_ids,persistentobjects
+        return vertex_ids,segment_ids
+#
+#    def persistentobjects(self):
+#        try:
+#            self._persistentobjects
+#        except AttributeError:
+#            self._persistentobjects = []
+#        return self._persistentobjects
         
     def vertices_in_lines(self):
         return [vertex for tuple1 in self.segment_ids for vertex in tuple1]
@@ -253,19 +256,19 @@ class Constraint(object):
         from popupcad.widgets.propertyeditor import PropertyEditor
         return PropertyEditor(self)
 
-    def checkcurrent(self,objects):
-        flag = self.CurrentFlags.NoneCurrent
-        if len(self.persistentobjects())>0:
-            current = [item in objects for item in self.persistentobjects()]
-            if all(current):
-                flag = self.CurrentFlags.AllCurrent
-            elif any(current):
-                flag = self.CurrentFlags.SomeCurrent
-            else:
-                flag = self.CurrentFlags.NoneCurrent
-        else:
-            flag = self.CurrentFlags.AllCurrent
-        return flag
+#    def checkcurrent(self,objects):
+#        flag = self.CurrentFlags.NoneCurrent
+#        if len(self.persistentobjects())>0:
+#            current = [item in objects for item in self.persistentobjects()]
+#            if all(current):
+#                flag = self.CurrentFlags.AllCurrent
+#            elif any(current):
+#                flag = self.CurrentFlags.SomeCurrent
+#            else:
+#                flag = self.CurrentFlags.NoneCurrent
+#        else:
+#            flag = self.CurrentFlags.AllCurrent
+#        return flag
         
         
     def cleanup(self,objects):
@@ -295,25 +298,29 @@ class Constraint(object):
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'
     
-    def __init__(self,value,vertex_ids, segment_ids,persistentobjects):
+#    def __init__(self,value,vertex_ids, segment_ids,persistentobjects):
+    def __init__(self,value,vertex_ids, segment_ids):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
         self.value = value
-        self._persistentobjects = persistentobjects
+#        self._persistentobjects = persistentobjects
         self.id = id(self)
 
     @classmethod
     def new(cls,parent,*objects):
         value,ok = cls.getValue(parent)                
         if ok:
-            vertex_ids, segment_ids,persistentobjects = cls._define_internals(*objects)
-            obj = cls(value,vertex_ids, segment_ids,persistentobjects)
+#            vertex_ids, segment_ids,persistentobjects = cls._define_internals(*objects)
+            vertex_ids, segment_ids = cls._define_internals(*objects)
+#            obj = cls(value,vertex_ids, segment_ids,persistentobjects)
+            obj = cls(value,vertex_ids, segment_ids)
             if not obj.valid():
                 obj.throwvalidityerror()
             return obj
 
     def copy(self,identical = True):
-        new = type(self)(self.value,self.vertex_ids,self.segment_ids,self.persistentobjects())
+#        new = type(self)(self.value,self.vertex_ids,self.segment_ids,self.persistentobjects())
+        new = type(self)(self.value,self.vertex_ids,self.segment_ids)
         if identical:
             new.id = self.id
         return new

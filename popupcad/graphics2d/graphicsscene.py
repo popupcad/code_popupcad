@@ -233,6 +233,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                 self.removeItem(item)
             if isinstance(item,ReferenceInteractiveEdge):
                 self.removeItem(item)
+
     def removecontrolpoints(self):
         for item in self.items():
             if isinstance(item,ReferenceInteractiveVertex):

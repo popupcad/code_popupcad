@@ -275,6 +275,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             self.layerlistwidget.selectItems(layers)
 
     def add_constraint(self,constraintclass):
+        from popupcad.filetypes.genericshapes import GenericLine
         self.undoredo.savesnapshot()
         items = []
         for item in self.scene.selectedItems():
@@ -282,12 +283,23 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 generic = item.get_generic()
                 newgeneric = generic.copy_values(DrawnPoint(),False)
                 newitem = newgeneric.gen_interactive()
-                newitem.makemoveable(False)
+#                newitem.makemoveable(False)
                 self.scene.addItem(newitem)
                 items.append(newgeneric)
-            elif isinstance(item,InteractiveVertex):
-                items.append(item.get_generic())
+
             if isinstance(item,ReferenceInteractiveEdge):
+                item.setSelected(False)
+                generic = item.get_generic()
+                v1 = generic.vertex1.copy_values(ShapeVertex(),False)
+                v2 = generic.vertex2.copy_values(ShapeVertex(),False)
+
+                l = GenericLine([v1,v2],[],construction = True)
+                i = l.outputinteractive()
+                self.scene.addItem(i)
+                i.setSelected(True)
+                items.append(i.selectableedges[0].get_generic())
+
+            elif isinstance(item,InteractiveVertex):
                 items.append(item.get_generic())
             elif isinstance(item,InteractiveEdge):
                 items.append(item.get_generic())
@@ -485,8 +497,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 ii-=1
                 if self.design !=None:
                     try:
-                        operationgeometries = self.design.operations[ii].output[jj].generic_geometry_2d()
-                        staticgeometries = [item.outputstatic(color = layer.color) for layer in self.design.return_layer_definition().layers for item in operationgeometries[layer]]
+                        operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
+                        staticgeometries =  [item.outputstatic() for item in operationgeometries]
+#                        operationgeometries = self.design.operations[ii].output[jj].generic_geometry_2d()
+#                        staticgeometries = [item.outputstatic(color = layer.color) for layer in self.design.return_layer_definition().layers for item in operationgeometries[layer]]
 
                         controlpoints = self.design.operations[ii].output[jj].controlpoints()
                         controlpoints = [point.gen_interactive() for point in controlpoints]
