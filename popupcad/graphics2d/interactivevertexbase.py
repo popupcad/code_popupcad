@@ -39,7 +39,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         self.setselectable(True)
         self.generic = symbol
         self.setFlag(self.ItemIsMovable,True)
-        self.setFlag(self.ItemSendsGeometryChanges,True)
+#        self.setFlag(self.ItemSendsGeometryChanges,True)
 
     def setstatic(self):
         self.get_generic().setstatic(True)
@@ -93,25 +93,34 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         self.setZValue(self.z_below)
         self.updatestate(self.states.state_neutral)
         
-    def itemChange(self,change,value):
-        if change == self.GraphicsItemChange.ItemPositionHasChanged:
-            if self.changed_trigger:
-                self.changed_trigger = False
-                self.scene().savesnapshot.emit()
-            self.get_generic().setpos(self.pos().toTuple())
-
-        return super(InteractiveVertexBase,self).itemChange(change,value)
+#    def itemChange(self,change,value):
+#        if change == self.GraphicsItemChange.ItemPositionHasChanged:
+#            if self.changed_trigger:
+#                self.changed_trigger = False
+#                self.scene().savesnapshot.emit()
+#            self.get_generic().setpos(self.pos().toTuple())
+#
+#        return super(InteractiveVertexBase,self).itemChange(change,value)
         
     def mousePressEvent(self,event):
-        super(InteractiveVertexBase,self).mousePressEvent(event)
-        self.changed_trigger = True        
+        if self.generic.is_moveable():
+            self.changed_trigger = True
         self.updatestate(self.states.state_pressed)
-
         self.scene().itemclicked.emit(self.get_generic())
+        super(InteractiveVertexBase,self).mousePressEvent(event)
+
 
     def mouseMoveEvent(self,event):
         if self.generic.is_moveable():
-            super(InteractiveVertexBase,self).mouseMoveEvent(event)
+            if self.changed_trigger:
+                self.changed_trigger = False
+                self.scene().savesnapshot.emit()
+            dp = event.scenePos() - event.lastScenePos()
+            self.generic.shift(dp.toTuple())
+            self.updatefromgeneric()
+
+#        if self.generic.is_moveable():
+#            super(InteractiveVertexBase,self).mouseMoveEvent(event)
             
     def mouseReleaseEvent(self,event):
         super(InteractiveVertexBase,self).mouseReleaseEvent(event)    
@@ -133,9 +142,9 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
     def handleupdate(self):
         self.updatefromgeneric()
     
-    def pos(self):
-        pos= super(InteractiveVertexBase,self).pos()
-        return pos
+#    def pos(self):
+#        pos= super(InteractiveVertexBase,self).pos()
+#        return pos
 
     def updatefromgeneric(self):
         postuple = self.get_generic().getpos()

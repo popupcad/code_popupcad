@@ -36,16 +36,16 @@ class InteractiveVertex(InteractiveVertexBase):
         self.setZValue(self.z_below)
         self.updatestate(self.states.state_neutral)
         
-    def itemChange(self,change,value):
-        if change == self.GraphicsItemChange.ItemPositionHasChanged:
-            if self.changed_trigger:
-                self.changed_trigger = False
-                self.scene().savesnapshot.emit()
-            self.get_generic().setpos(self.pos().toTuple())
-            try:
-                self.connectedinteractive.updateshape()
-            except AttributeError:
-                pass                
+#    def itemChange(self,change,value):
+#        if change == self.GraphicsItemChange.ItemPositionHasChanged:
+#            if self.changed_trigger:
+#                self.changed_trigger = False
+#                self.scene().savesnapshot.emit()
+#            self.get_generic().setpos(self.pos().toTuple())
+#            try:
+#                self.connectedinteractive.updateshape()
+#            except AttributeError:
+#                pass                
             
 
         return qg.QGraphicsEllipseItem.itemChange(self,change,value)
@@ -54,19 +54,26 @@ class InteractiveVertex(InteractiveVertexBase):
         if self.connectedinteractive.mode!=None:
             if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
                 super(InteractiveVertex,self).mouseMoveEvent(event)
+                try:
+                    self.connectedinteractive.updateshape()
+                except AttributeError:
+                    pass                
         
     def mousePressEvent(self,event):
-        qg.QGraphicsEllipseItem.mousePressEvent(self,event)
-        self.changed_trigger = True        
-        self.updatestate(self.states.state_pressed)
+        
+#        qg.QGraphicsEllipseItem.mousePressEvent(self,event)
+#        self.changed_trigger = True        
+#        self.updatestate(self.states.state_pressed)
 
-        self.scene().itemclicked.emit(self.get_generic())
+#        self.scene().itemclicked.emit(self.get_generic())
 
         remove = (event.modifiers() & (qc.Qt.KeyboardModifierMask.ControlModifier))!=0 and (event.modifiers() & (qc.Qt.KeyboardModifierMask.ShiftModifier))
         if remove:
             if self.connectedinteractive!=None:
                 self.connectedinteractive.removevertex(self)
             self.removefromscene()
+        else:
+            super(InteractiveVertex,self).mousePressEvent(event)
             
 #    def notify(self):
 #        self.moveable = False

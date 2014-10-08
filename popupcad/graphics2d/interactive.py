@@ -185,7 +185,8 @@ class Interactive(Common):
         super(Interactive,self).mouseMoveEvent(event)                
 
     def mousePressEvent(self,event):
-        self.changed_trigger = True
+        if self.generic.is_moveable():
+            self.changed_trigger = True
         if self.mode == self.modes.mode_edit:
             add = (event.modifiers() & qc.Qt.KeyboardModifierMask.ControlModifier)!=0
             if add:
