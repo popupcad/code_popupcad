@@ -20,6 +20,7 @@ class BaseVertex(object):
         self._pos = None
         self.setstatic(False)
         self.set_construction(True)
+        self.setmoveable(True)
 
         if position !=None:
             self.setpos(position)
@@ -35,6 +36,19 @@ class BaseVertex(object):
     def setstatic(self,test):
         self.static = test
 
+    def is_static(self):
+        return self.static
+
+    def setmoveable(self,test):
+        self.moveable = test
+
+    def is_moveable(self):
+        try:
+            return self.moveable
+        except AttributeError:
+            self.moveable = True
+            return self.moveable
+
     def isValid(self):
         return True
 
@@ -44,8 +58,6 @@ class BaseVertex(object):
             return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
         return False
         
-    def is_static(self):
-        return self.static
 
     def __str__(self):
         return 'vertex'+str(self.id)
@@ -114,6 +126,7 @@ class BaseVertex(object):
     def copy_values(self,new,identical=False):
         new.setpos(self.getpos())
         new.static = self.static
+        new.moveable = self.is_moveable()
         if identical:
             new.id = self.id
         return new            
@@ -170,7 +183,6 @@ class DrawnPoint(ShapeVertex):
     def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.drawingpoint import StaticDrawingPoint
         iv = StaticDrawingPoint(self)
-        iv.makemoveable(False)
         iv.updatefromgeneric()
         return iv
 

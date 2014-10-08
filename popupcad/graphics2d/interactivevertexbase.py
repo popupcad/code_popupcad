@@ -38,6 +38,9 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
             self.setPos(temppos)
         self.setselectable(True)
         self.generic = symbol
+        self.moveable = False
+        self.setFlag(self.ItemIsMovable,True)
+        self.setFlag(self.ItemSendsGeometryChanges,True)
 
     def setstatic(self):
         self.get_generic().setstatic(True)
@@ -78,13 +81,8 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
                 brush =  qg.QBrush(qg.QColor.fromRgbF(0,0,0, 1), qc.Qt.SolidPattern) 
         return brush
                 
-    def makemoveable(self,test):
-        self.setFlag(self.ItemIsMovable,test)
-        self.setFlag(self.ItemSendsGeometryChanges,test)
-        
     def setselectable(self,test):
         self.setFlag(self.ItemIsSelectable,test)
-        
         
     def hoverEnterEvent(self,event):
         super(InteractiveVertexBase,self).hoverEnterEvent(event)
@@ -112,6 +110,9 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
 
         self.scene().itemclicked.emit(self.get_generic())
 
+    def mouseMoveEvent(self,event):
+        if self.moveable and self.generic.is_moveable():
+            super(InteractiveVertexBase,self).mouseMoveEvent(event)
             
     def mouseReleaseEvent(self,event):
         super(InteractiveVertexBase,self).mouseReleaseEvent(event)    

@@ -173,13 +173,14 @@ class Interactive(Common):
                     pass
 
     def mouseMoveEvent(self,event):
-        if self.changed_trigger:
-            self.changed_trigger = False
-            self.scene().savesnapshot.emit()
-        dp = event.scenePos() - event.lastScenePos()
-        for item in self.handles():
-            item.setPos(item.pos()+dp)
-        self.updateshape()
+        if self.generic.is_moveable():
+            if self.changed_trigger:
+                self.changed_trigger = False
+                self.scene().savesnapshot.emit()
+            dp = event.scenePos() - event.lastScenePos()
+            for item in self.handles():
+                item.setPos(item.pos()+dp)
+            self.updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
 
     def mousePressEvent(self,event):

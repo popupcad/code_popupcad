@@ -18,7 +18,6 @@ class DrawingPoint(InteractiveVertexBase):
     z_above = 105
     def __init__(self,*args,**kwargs):
         super(DrawingPoint,self).__init__(*args,**kwargs)
-        self.makemoveable(True)
     def refreshview(self):
         pass
 
@@ -28,6 +27,5 @@ class StaticDrawingPoint(InteractiveVertexBase):
     z_above = 105
     def __init__(self,*args,**kwargs):
         super(StaticDrawingPoint,self).__init__(*args,**kwargs)
-        self.makemoveable(True)
     def refreshview(self):
         pass

@@ -282,19 +282,26 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             if isinstance(item,ReferenceInteractiveVertex):
                 generic = item.get_generic()
                 newgeneric = generic.copy_values(DrawnPoint(),False)
+                newgeneric.setmoveable(False)
                 newitem = newgeneric.gen_interactive()
                 self.scene.addItem(newitem)
                 items.append(newgeneric)
+                item.setSelected(False)
+                newitem.setSelected(True)
 
             if isinstance(item,ReferenceInteractiveEdge):
-                item.setSelected(False)
                 generic = item.get_generic()
                 v1 = generic.vertex1.copy_values(ShapeVertex(),False)
                 v2 = generic.vertex2.copy_values(ShapeVertex(),False)
+                v1.setmoveable(False)
+                v2.setmoveable(False)
 
                 l = GenericLine([v1,v2],[],construction = True)
+                l.setmoveable(False)
+
                 i = l.outputinteractive()
                 self.scene.addItem(i)
+                item.setSelected(False)
                 i.setSelected(True)
                 items.append(i.selectableedges[0].get_generic())
 

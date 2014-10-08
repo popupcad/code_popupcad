@@ -92,8 +92,6 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         
         self.setFlag(self.ItemIsSelectable,True)
         self.setFlag(self.ItemIsMovable,False)
-        self.setFlag(self.ItemSendsGeometryChanges,True)
-
 
     def querypen(self):
         if self.mode == self.modes.mode_render:
@@ -136,9 +134,6 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     def makeselectable(self,test):
         self.setFlag(self.ItemIsSelectable,test)
 
-    def makemoveable(self,test):
-        self.setFlag(self.ItemIsMovable,test)
-        self.setFlag(self.ItemSendsGeometryChanges,test)
     def updatemode(self,mode):
         super(InteractiveEdge,self).updatemode(mode)
         self.highlightededge.updatemode(mode)

@@ -42,7 +42,11 @@ class InteractiveVertex(InteractiveVertexBase):
                 self.changed_trigger = False
                 self.scene().savesnapshot.emit()
             self.get_generic().setpos(self.pos().toTuple())
-            self.connectedinteractive.updateshape()
+            try:
+                self.connectedinteractive.updateshape()
+            except AttributeError:
+                pass                
+            
 
         return qg.QGraphicsEllipseItem.itemChange(self,change,value)
         
@@ -60,10 +64,10 @@ class InteractiveVertex(InteractiveVertexBase):
             self.removefromscene()
             
     def notify(self):
-        self.makemoveable(False)
+        self.moveable = False
         if self.connectedinteractive.mode!=None:
             if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
-                self.makemoveable(True)
+                self.moveable = True
             else:
                 self.removefromscene()
 
