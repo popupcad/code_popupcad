@@ -56,8 +56,6 @@ class SuperLine(qg.QGraphicsPathItem,Common):
         self.line.setParentItem(self)
         self.setMyPen(self.basicpen)
         self.setBoundingRegionGranularity(.5)
-    def setPos(self,*args,**kwargs):
-        super(SuperLine,self).setPos(*args,**kwargs)
     def setPath(self,*args,**kwargs):
         super(SuperLine,self).setPath(*args,**kwargs)
         self.line.setPath(*args,**kwargs)

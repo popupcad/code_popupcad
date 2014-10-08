@@ -49,6 +49,11 @@ class InteractiveVertex(InteractiveVertexBase):
             
 
         return qg.QGraphicsEllipseItem.itemChange(self,change,value)
+
+    def mouseMoveEvent(self,event):
+        if self.connectedinteractive.mode!=None:
+            if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
+                super(InteractiveVertex,self).mouseMoveEvent(event)
         
     def mousePressEvent(self,event):
         qg.QGraphicsEllipseItem.mousePressEvent(self,event)
@@ -63,13 +68,13 @@ class InteractiveVertex(InteractiveVertexBase):
                 self.connectedinteractive.removevertex(self)
             self.removefromscene()
             
-    def notify(self):
-        self.moveable = False
-        if self.connectedinteractive.mode!=None:
-            if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
-                self.moveable = True
-            else:
-                self.removefromscene()
+#    def notify(self):
+#        self.moveable = False
+#        if self.connectedinteractive.mode!=None:
+#            if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
+#                self.moveable = True
+#            else:
+#                self.removefromscene()
 
 class InteractiveShapeVertex(InteractiveVertex):
     radius = 10

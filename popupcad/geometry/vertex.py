@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
    
+import numpy
 import sympy
     
 from popupcad.constraints.constraints import Variable, Constant
@@ -86,7 +87,6 @@ class BaseVertex(object):
         return sympy.Matrix([p_x,p_y,0])
 
     def setpos(self,pos):
-        import numpy
         pos = numpy.array(pos)
         pos.round(self.roundvalue)
         self._pos = tuple(pos.tolist())
@@ -150,7 +150,12 @@ class BaseVertex(object):
         if type(self)==type(other):
             return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
         return False
-
+    def shift(self,dxdy):
+        pos = numpy.array(self.getpos())
+        dxdy = numpy.array(dxdy)
+        newpos = pos+dxdy
+        self.setpos(newpos)
+        
 class ShapeVertex(BaseVertex):
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex

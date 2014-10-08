@@ -124,7 +124,6 @@ class Interactive(Common):
     def updatechildhandles(self,children):
         for child in children:
             child.handleupdate()
-        pass
 
     def updatehandles(self):
         for edge in self.selectableedges:
@@ -159,8 +158,8 @@ class Interactive(Common):
         self.refreshview()
 
     def refreshview(self):
-        for handle in self.handles():
-            handle.notify()
+#        for handle in self.handles():
+#            handle.notify()
         self.setEnabled(True)
         self.setZValue(self.z_value)        
 
@@ -171,6 +170,9 @@ class Interactive(Common):
                     handle.updatescale()
                 except AttributeError:
                     pass
+        else:
+            self.hidechildren(self.handles())
+            
 
     def mouseMoveEvent(self,event):
         if self.generic.is_moveable():
@@ -178,8 +180,7 @@ class Interactive(Common):
                 self.changed_trigger = False
                 self.scene().savesnapshot.emit()
             dp = event.scenePos() - event.lastScenePos()
-            for item in self.handles():
-                item.setPos(item.pos()+dp)
+            self.generic.shift(dp.toTuple())
             self.updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
 
@@ -196,6 +197,19 @@ class Interactive(Common):
         self.changed_trigger = False
         super(Interactive,self).mouseReleaseEvent(event)                
         
+    def mouseDoubleClickEvent(self,event):
+        super(Interactive,self).mouseDoubleClickEvent(event)
+        if self.mode == self.modes.mode_defined:
+            self.updatemode(self.modes.mode_edit)
+            self.scene().enteringeditmode.emit()               
+        elif self.mode == self.modes.mode_edit:
+            self.updatemode(self.modes.mode_defined)
+        elif self.mode == self.modes.mode_selectable_edges:
+            pass
+        else:
+            pass
+        super(Interactive,self).mouseDoubleClickEvent(event)
+
     def addvertex(self,qpoint):
         from popupcad.geometry.vertex import ShapeVertex
         v = ShapeVertex()
@@ -211,20 +225,7 @@ class Interactive(Common):
             
     def updateshape(self):
         super(Interactive,self).updateshape()
-        self.updatechildhandles(self.selectableedges)
-
-    def mouseDoubleClickEvent(self,event):
-        super(Interactive,self).mouseDoubleClickEvent(event)
-        if self.mode == self.modes.mode_defined:
-            self.updatemode(self.modes.mode_edit)
-            self.scene().enteringeditmode.emit()               
-        elif self.mode == self.modes.mode_edit:
-            self.updatemode(self.modes.mode_defined)
-        elif self.mode == self.modes.mode_selectable_edges:
-            pass
-        else:
-            pass
-        super(Interactive,self).mouseDoubleClickEvent(event)
+        self.updatechildhandles(self.handles()+self.selectableedges)
 
     def children(self):
         return self.handles()+self.selectableedges

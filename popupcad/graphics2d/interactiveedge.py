@@ -131,17 +131,12 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     def setconnection(self,connectedinteractive):
         self.connectedinteractive = connectedinteractive
 
-    def makeselectable(self,test):
-        self.setFlag(self.ItemIsSelectable,test)
-
     def updatemode(self,mode):
         super(InteractiveEdge,self).updatemode(mode)
         self.highlightededge.updatemode(mode)
     def updatestate(self,state):
         super(InteractiveEdge,self).updatestate(state)
         self.highlightededge.updatestate(state)
-    def setPos(self,*args,**kwargs):
-        super(InteractiveEdge,self).setPos(*args,**kwargs)
     def setLine(self,*args,**kwargs):
         super(InteractiveEdge,self).setLine(*args,**kwargs)
         self.highlightededge.setLine(*args,**kwargs)
@@ -171,8 +166,8 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         self.updatestate(self.states.state_hover)
         if self.ItemIsSelectable==(self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge,self).mouseReleaseEvent(event)
-    def notify(self):
-        pass
+#    def notify(self):
+#        pass
 
 class ReferenceInteractiveEdge(InteractiveEdge):
     pass

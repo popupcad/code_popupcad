@@ -327,3 +327,7 @@ class GenericShapeBase(popupCADFile):
                             return False
                 return True
         return False
+
+    def shift(self,dxdy):
+        [item.shift(dxdy) for item in self.exterior]
+        [item.shift(dxdy) for interior in self.interiors for item in interior]

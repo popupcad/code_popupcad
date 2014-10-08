@@ -38,7 +38,6 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
             self.setPos(temppos)
         self.setselectable(True)
         self.generic = symbol
-        self.moveable = False
         self.setFlag(self.ItemIsMovable,True)
         self.setFlag(self.ItemSendsGeometryChanges,True)
 
@@ -111,7 +110,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         self.scene().itemclicked.emit(self.get_generic())
 
     def mouseMoveEvent(self,event):
-        if self.moveable and self.generic.is_moveable():
+        if self.generic.is_moveable():
             super(InteractiveVertexBase,self).mouseMoveEvent(event)
             
     def mouseReleaseEvent(self,event):
@@ -119,9 +118,9 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         self.updatestate(self.states.state_hover)
         self.changed_trigger = False
 
-    def setPos(self,*args):
-        super(InteractiveVertexBase,self).setPos(*args)
-        self.updategeneric()      
+    def setPos(self,pos):
+        self.generic.setpos(pos.toTuple())
+        self.updatefromgeneric()
 
     def get_generic(self):
         try:
@@ -131,8 +130,8 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
             del self.symbolic
             return self.generic
 
-    def updategeneric(self):
-        self.get_generic().setpos(self.pos().toTuple())
+    def handleupdate(self):
+        self.updatefromgeneric()
     
     def pos(self):
         pos= super(InteractiveVertexBase,self).pos()
