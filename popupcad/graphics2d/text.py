@@ -74,6 +74,7 @@ class GenericText(object):
     def outputshapely(self):
         import popupcad.geometry.customshapely as customshapely
         import shapely.ops as so
+        self.genpath()
         objs = [customshapely.ShapelyPolygon(exterior,[]) for exterior in self.exteriors_p]
         if len(objs)>1:
             obj1 = objs.pop(0)
