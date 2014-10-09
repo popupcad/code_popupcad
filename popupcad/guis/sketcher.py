@@ -367,6 +367,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.sketch.cleargeometries()
         geometries = [item.generic for item in self.scene.items() if isinstance(item,Interactive) if item.generic.isValid()]
         geometries.extend([item.generic for item in self.scene.items() if isinstance(item,DrawingPoint)])
+        geometries.extend([item.generic for item in self.scene.items() if isinstance(item,TextParent)])
         self.sketch.addoperationgeometries(geometries)
         if self.isOperation:        
             self.layers = [self.layerlistwidget.list[item.row()] for  item in self.layerlistwidget.selectedIndexes()]

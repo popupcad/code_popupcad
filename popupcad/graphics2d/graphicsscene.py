@@ -12,9 +12,9 @@ import popupcad.constraints as constraints
 from .static import Static
 from .svg_support import SVGOutputSupport
 from .modes import Modes
-from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
+from popupcad.geometry.vertex import ShapeVertex,DrawnPoint,BaseVertex
 from popupcad.graphics2d.drawingpoint import DrawingPoint,StaticDrawingPoint
-from .text import TextItem,TextParent
+from .text import TextItem,TextParent,GenericText
 import time
 
 import numpy
@@ -139,10 +139,13 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
             if event.button() == qc.Qt.LeftButton:
                 if self.temp==None:
                     if self.nextgeometry==TextParent:
-                        temp = self.nextgeometry()
+                        textpos = BaseVertex()
+                        textpos.setpos(pos.toTuple())
+                        text = GenericText('',textpos,font='Courier',fontsize=2)
+                        temp = self.nextgeometry(text)
                         self.addItem(temp)
-                        self.setFocusItem(temp.editchild)
-                        temp.setPos(pos)
+#                        self.setFocusItem(temp.editchild)
+                        temp.editmode()
                         self.nextgeometry = None
                     elif self.nextgeometry==DrawingPoint:
                         temp = self.nextgeometry(DrawnPoint())

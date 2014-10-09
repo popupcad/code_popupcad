@@ -46,9 +46,7 @@ class InteractiveVertex(InteractiveVertexBase):
 #                self.connectedinteractive.updateshape()
 #            except AttributeError:
 #                pass                
-            
-
-        return qg.QGraphicsEllipseItem.itemChange(self,change,value)
+#        return qg.QGraphicsEllipseItem.itemChange(self,change,value)
 
     def mouseMoveEvent(self,event):
         if self.connectedinteractive.mode!=None:

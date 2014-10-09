@@ -9,105 +9,152 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 import numpy
 from popupcad.graphics2d.graphicsitems import Common
-
-class TextParent(qg.QGraphicsPathItem,Common):
-    def __init__(self,*args,**kwargs):
-        super(TextParent,self).__init__(*args,**kwargs)
-#        self.editmode = False
-        self.editchild = TextItem(self,self)
-        self.pathchild = TextPath(self)
-        self.pathchild.scale(1,-1)
-#        self.editchild.setParent(self)
-#    def focusOutEvent(self, event):
-##        self.setTextInteractionFlags(qc.Qt.NoTextInteraction)
-##        super(TextItem, self).focusOutEvent(event)
-##        s
-#        text = self.editchild.getText()
-#        self.editchild.removefromscene()
-#        a = TextPath(text,self)
-#    def mouseDoubleClickEvent(self, event):
-#        self.editchild.setParent(self)
-        
-#        if self.textInteractionFlags() == qc.Qt.NoTextInteraction:
-#            self.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
-#        super(TextItem, self).mouseDoubleClickEvent(event)        
-#    def refresh
-    def focusInEvent(self,*args,**kwargs):        
-        self.editMode()
-    def editmode(self):
-#        if self.pathchild!=None:
-#            self.pathchild.harddelete()
-#            self.pathchild=None
-        self.pathchild.removefromscene()
-        
-        self.editchild.setParentItem(self)
-        self.editchild.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
-        self.editchild.setFocus()
-    def refreshpath(self):
-        text = self.editchild.toPlainText()
-        self.pathchild.setText(text)
-        self.pathchild.setParentItem(self)
-        self.editchild.removefromscene()
-        
-
-class TextPath(qg.QGraphicsPathItem,Common):
-    def __init__(self,parent,*args,**kwargs):
-        super(TextPath,self).__init__(*args,**kwargs)
-        self.parent = parent
-#        self.setText(text)
-        
-    def setText(self,text):
+import popupcad 
+from popupcad.geometry.vertex import ShapeVertex
+class GenericText(object):
+    editable = ['*']
+    deletable = ['*']    
+    hidden = ['id']
+    
+    def __init__(self,text,pos,font = 'Arial',fontsize = 1):
+        self.text = text
+        self.pos = pos
+        self.font = font
+        self.fontsize = fontsize
+        self.exteriors = []
+        self.id  = id(self)
+    def copy(self,identical=True):
+        new = type(self)(self.text,self.pos,self.font, self.fontsize)
+        if identical:
+            new.id = self.id
+        return new
+    def isValid(self):
+        return True
+    def genpath(self):
+        text = self.text
         p = qg.QPainterPath()
-
-        font = qg.QFont('Arial', pointSize=1000)
-        p.addText(qc.QPointF(0,0),font,text)
+        
+        font = qg.QFont(self.font, pointSize=self.fontsize*popupcad.internal_argument_scaling)
+        p.addText(qc.QPointF(0,1*self.fontsize*popupcad.internal_argument_scaling),font,text)
 
         p2 = qg.QPainterPath()
+        exteriors = []     
+        exterior = None
         for ii in range(p.elementCount()):
             element = p.elementAt(ii)
             if element.isMoveTo():
-                p2.moveTo(element.x,element.y)
+                if exterior!=None:
+                    p2.lineTo(exterior[0][0],exterior[0][1])
+                    exteriors.append(exterior)
+                exterior = [(element.x,-element.y)]
+                p2.moveTo(element.x,-element.y)
             elif element.isLineTo():
-                p2.lineTo(element.x,element.y)
+                p2.lineTo(element.x,-element.y)
+                exterior.append((element.x,-element.y))
             elif element.isCurveTo():
-                p2.lineTo(element.x,element.y)
+                p2.lineTo(element.x,-element.y)
+                exterior.append((element.x,-element.y))
 
-        self.setPath(p2)
-    def mouseDoubleClickEvent(self, event):
-        self.parent.editmode()
+        if exterior!=None:
+            exteriors.append(exterior)
+        exteriors = [(numpy.array(exterior)+self.pos.getpos()).tolist() for exterior in exteriors]
+        self.exteriors_p = exteriors
+        self.exteriors = self.buildvertices(exteriors)
+        self.path = p2
+        return p2
+        
+    def buildvertices(self,exteriors_p):
+        exteriors = [[ShapeVertex(pos) for pos in exterior_p] for exterior_p in exteriors_p]
+        return exteriors
+        
+    def outputinteractive(self):
+        tp = TextParent(self)
+        return tp
+        
+    def outputshapely(self):
+        import popupcad.geometry.customshapely as customshapely
+        import shapely.ops as so
+        objs = [customshapely.ShapelyPolygon(exterior,[]) for exterior in self.exteriors_p]
+        if len(objs)>1:
+            obj1 = objs.pop(0)
+            while objs:
+                obj1 = obj1.symmetric_difference(objs.pop(0))
+        else:
+            obj1 = objs[0]
+        return obj1
+    def properties(self):
+        from popupcad.widgets.propertyeditor import PropertyEditor
+        return PropertyEditor(self)
         
 
+
+class TextParent(qg.QGraphicsPathItem,Common):
+    def __init__(self,generic,*args,**kwargs):
+        super(TextParent,self).__init__(*args,**kwargs)
+        self.generic = generic            
+        self.editchild = TextItem(generic,self)
+        self.setFlag(qg.QGraphicsItem.ItemIsMovable,True)
+        self.setFlag(qg.QGraphicsItem.ItemIsSelectable,True)
+        self.setFlag(qg.QGraphicsItem.ItemIsFocusable,True)
+        self.pen = qg.QPen(qg.QColor.fromRgbF(0,0,0,1), 1 , qc.Qt.SolidLine,qc.Qt.RoundCap,qc.Qt.RoundJoin)        
+        self.pen.setCosmetic(True)
+        self.brush = qg.QBrush(qg.QColor.fromRgbF(0,0, 0, .25), qc.Qt.SolidPattern)
+        self.setPen(self.pen)
+        self.setBrush(self.brush)
+        self.setPos(*self.generic.pos.getpos())
+        self.setFlag(self.ItemSendsGeometryChanges,True)        
+#    def focusInEvent(self,*args,**kwargs):        
+#        self.editmode()
+    def itemChange(self,change,value):
+        if change == self.GraphicsItemChange.ItemPositionHasChanged:
+            if self.changed_trigger:
+                self.changed_trigger = False
+                self.scene().savesnapshot.emit()
+            self.generic.pos.setpos(self.pos().toTuple())
+        return super(TextParent,self).itemChange(change,value)
+        
+    def editmode(self):
+        self.setPath(qg.QPainterPath())
+        self.editchild.updatefont()
+        self.editchild.setParentItem(self)
+        self.editchild.resetTransform()
+        self.editchild.scale(1,-1)
+        self.editchild.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
+        self.editchild.setFocus()
+    def finish_edit(self):
+        self.editchild.setTextInteractionFlags(qc.Qt.NoTextInteraction)
+        self.generic.text = self.editchild.toPlainText()
+        self.editchild.removefromscene()
+        self.refreshview()
+        
+    def refreshview(self):
+        self.setPath(self.generic.genpath())
+
+    def mouseDoubleClickEvent(self, event):
+        self.editmode()
+        
+    def mousePressEvent(self,event):
+        self.changed_trigger = True        
+        self.scene().itemclicked.emit(self.generic)
+        super(TextParent,self).mousePressEvent(event)      
+    def mouseReleaseEvent(self,event):       
+        if self.changed_trigger:
+            self.changed_trigger = False
+        super(TextParent,self).mouseReleaseEvent(event)      
+
+
 class TextItem(qg.QGraphicsTextItem,Common):
-    def __init__(self,parent,*args,**kwargs):
+    def __init__(self,generic,parent,*args,**kwargs):
+        self.generic = generic
         super(TextItem,self).__init__(*args,**kwargs)        
         self.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
-        font = qg.QFont('Arial', pointSize=1000)
+        self.parent = parent
+        self.setPlainText(self.generic.text)
+        self.updatefont()
+    def focusOutEvent(self, event):
+        self.parent.finish_edit()
+    def updatefont(self):
+        font = qg.QFont(self.generic.font, pointSize=self.generic.fontsize*popupcad.internal_argument_scaling)
         font.setStyleStrategy(font.ForceOutline)
         self.setFont(font)
-        self.scale(1,-1)
-        self.parent = parent
-#    def mouseDoubleClickEvent(self, event):
-#        if self.textInteractionFlags() == qc.Qt.NoTextInteraction:
-#            self.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
-#        super(TextItem, self).mouseDoubleClickEvent(event)        
-    def focusOutEvent(self, event):
-        self.setTextInteractionFlags(qc.Qt.NoTextInteraction)
-        self.parent.refreshpath()
-#        super(TextItem, self).focusOutEvent(event)
-
-
-#class GraphicalElement(qg.QGraphicsTextItem):
-#    def __init__(self,*args,**kwargs):
-#        super(TextItem,self).__init__(*args,**kwargs)        
-#        self.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
-#        font = qg.QFont('Arial', pointSize=100)
-#        font.setStyleStrategy(font.ForceOutline)
-#        self.setFont(font)
-#        self.scale(1,-1)
-#    def mouseDoubleClickEvent(self, event):
-#        if self.textInteractionFlags() == qc.Qt.NoTextInteraction:
-#            self.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
-#        super(TextItem, self).mouseDoubleClickEvent(event)        
-#    def focusOutEvent(self, event):
-#        self.setTextInteractionFlags(qc.Qt.NoTextInteraction)
-#        super(TextItem, self).focusOutEvent(event)
+        
