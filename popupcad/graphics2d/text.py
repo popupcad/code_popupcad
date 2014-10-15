@@ -40,20 +40,26 @@ class GenericText(object):
         p2 = qg.QPainterPath()
         exteriors = []     
         exterior = None
+        
         for ii in range(p.elementCount()):
             element = p.elementAt(ii)
+            if popupcad.flip_y:
+                dummy = -element.y
+            else:
+                dummy = element.y
+
             if element.isMoveTo():
                 if exterior!=None:
                     p2.lineTo(exterior[0][0],exterior[0][1])
                     exteriors.append(exterior)
-                exterior = [(element.x,-element.y)]
-                p2.moveTo(element.x,-element.y)
+                exterior = [(element.x,dummy)]
+                p2.moveTo(element.x,dummy)
             elif element.isLineTo():
-                p2.lineTo(element.x,-element.y)
-                exterior.append((element.x,-element.y))
+                p2.lineTo(element.x,dummy)
+                exterior.append((element.x,dummy))
             elif element.isCurveTo():
-                p2.lineTo(element.x,-element.y)
-                exterior.append((element.x,-element.y))
+                p2.lineTo(element.x,dummy)
+                exterior.append((element.x,dummy))
 
         if exterior!=None:
             exteriors.append(exterior)
@@ -119,7 +125,8 @@ class TextParent(qg.QGraphicsPathItem,Common):
         self.editchild.updatefont()
         self.editchild.setParentItem(self)
         self.editchild.resetTransform()
-        self.editchild.scale(1,-1)
+        if popupcad.flip_y:
+            self.editchild.scale(1,-1)
         self.editchild.setTextInteractionFlags(qc.Qt.TextEditorInteraction)
         self.editchild.setFocus()
     def finish_edit(self):

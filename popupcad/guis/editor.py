@@ -356,7 +356,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         win = OutputSelection()
         accepted = win.exec_()
         if accepted:
-            scaling = win.acceptdata()
+            scaling,center,rotation = win.acceptdata()
         else:
             return
             
@@ -368,7 +368,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
             geoms = [item.outputstatic(color = (1,1,1,1)) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
-            scene.renderprocess(filename,scaling)
+            scene.renderprocess(filename,scaling,center,rotation)
 
     @loggable
     def highlightbody(self,ref):

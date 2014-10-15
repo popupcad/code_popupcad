@@ -14,6 +14,12 @@ class OutputSelection(qg.QDialog):
         super(OutputSelection,self).__init__()
         self.Inkscape= qg.QRadioButton('Inkscape')
         self.CorelDraw= qg.QRadioButton('CorelDraw')
+        self.Center = qg.QCheckBox('Center')
+
+        self.rotation = qg.QLineEdit()
+        self.rotation.setAlignment(qc.Qt.AlignRight)
+        self.rotation.setText(str(0))
+        self.rotation.setValidator(qg.QDoubleValidator(-999.0, 999.0, 1, self.rotation))
 
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')
@@ -24,8 +30,13 @@ class OutputSelection(qg.QDialog):
         layout2 = qg.QHBoxLayout()
         layout2.addWidget(button1)
         layout2.addWidget(button2)
+        layout4 = qg.QHBoxLayout()
+        layout4.addWidget(qg.QLabel('Rotation'))
+        layout4.addWidget(self.rotation)
         layout3 = qg.QVBoxLayout()
         layout3.addLayout(layout1)
+        layout3.addWidget(self.Center)
+#        layout3.addLayout(layout4)
         layout3.addLayout(layout2)
         
         button1.pressed.connect(self.accept)
@@ -34,9 +45,9 @@ class OutputSelection(qg.QDialog):
         self.setLayout(layout3)
     def acceptdata(self):
         if self.Inkscape.isChecked():
-            return popupcad.inkscape_mm_conversion
+            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text())
         elif self.CorelDraw.isChecked():
-            return popupcad.coreldraw_mm_conversion
+            return popupcad.coreldraw_mm_conversion,self.Center.isChecked(),float(self.rotation.text())
         else:
             raise(Exception('nothing selected'))
 class SVGOutputSupport(object):
@@ -71,7 +82,7 @@ class SVGOutputSupport(object):
                 pass
         self.setBackgroundBrush(tempbrush)
 
-    def renderprocess(self,filename,scaling):
+    def renderprocess(self,filename,scaling,center = False,rotation = 0):
         state = self.saveprerenderstate()
         self.prerender()
 #        self.updatescenerect()        
@@ -89,13 +100,16 @@ class SVGOutputSupport(object):
         painter.begin(generator)
         painter.setWorldMatrixEnabled(True)
 
+        t = qg.QTransform()
         if popupcad.flip_y:
-            t = qg.QTransform()
             t.scale(1,-1)
-            s = scaling
-            t.scale(s,s)
-            t.translate(0,-self.height())
-            painter.setWorldTransform(t)
+        s = scaling
+        t.scale(s,s)
+        t.translate(0,-self.height())
+        if center:
+            t.translate(-self.width()/2,-self.height()/2)
+        t.rotate(rotation)
+        painter.setWorldTransform(t)
 
         self.render(painter)
         painter.end()
