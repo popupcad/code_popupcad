@@ -203,12 +203,32 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.editactions.append({'text':'Unroup','kwargs':{'triggered':self.ungroup,'shortcut':qc.Qt.CTRL+qc.Qt.Key_U}})      
 
         self.viewactions = []
-        self.viewactions.append({'text':'Operations','kwargs':{'triggered':lambda:self.showhide(self.optreedock)}})
-        self.viewactions.append({'text':'Constraints','kwargs':{'triggered':lambda:self.showhide(self.constraintdock)}})
-        self.viewactions.append({'text':'Properties','kwargs':{'triggered':lambda:self.showhide(self.propdock)}})
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(True)
+            self.act_view_ops= action
+        self.viewactions.append({'prepmethod':dummy,'text':'Operations','kwargs':{'triggered':lambda:self.showhide2(self.optreedock,self.act_view_ops)}})
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(True)
+            self.act_view_constraints= action
+        self.viewactions.append({'prepmethod':dummy,'text':'Constraints','kwargs':{'triggered':lambda:self.showhide2(self.constraintdock,self.act_view_constraints)}})
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(True)
+            self.act_view_properties= action
+        self.viewactions.append({'prepmethod':dummy,'text':'Properties','kwargs':{'triggered':lambda:self.showhide2(self.propdock,self.act_view_properties)}})
         if self.isOperation:
-            self.viewactions.append({'text':'Layers','kwargs':{'triggered':lambda:self.showhide(self.layerdock)}})
-            self.viewactions.append({'text':'Operation Types','kwargs':{'triggered':lambda:self.showhide(self.operationtypedock)}})
+            def dummy(action):
+                action.setCheckable(True)
+                action.setChecked(True)
+                self.act_view_layers= action
+            self.viewactions.append({'prepmethod':dummy,'text':'Layers','kwargs':{'triggered':lambda:self.showhide2(self.layerdock,self.act_view_layers)}})
+            def dummy(action):
+                action.setCheckable(True)
+                action.setChecked(True)
+                self.view_operation_types= action
+                self.viewactions.append({'text':'Operation Types','kwargs':{'triggered':lambda:self.showhide2(self.operationtypedock,self.view_operation_types)}})
         self.viewactions.append({'text':'select','kwargs':{'triggered':self.graphicsview.rubberband,'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_S,'icon':Icon('select')}})
         self.viewactions.append({'text':'pan','kwargs':{'triggered':self.graphicsview.scrollhand,'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'icon':Icon('pan')}})
         self.viewactions.append(None)
