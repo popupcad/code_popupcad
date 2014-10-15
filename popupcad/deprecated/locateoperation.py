@@ -7,13 +7,13 @@ Please see LICENSE.txt for full license.
 import shapely.ops as ops
 from popupcad.filetypes.laminate import Laminate
 import popupcad.geometry.customshapely as customshapely
-from .sketchoperation2 import SketchOperation2
+from popupcad.manufacturing.sketchoperation2 import SketchOperation2
 from popupcad.filetypes.operation import Operation
 
 
 class LocateOperation(SketchOperation2):
     name = 'LocateOperation'
-    operationtypes = ['locate','locatestretch1d']    
+    operationtypes = ['locate']    
 
     def operate(self,design):
         sketch = design.sketches[self.sketchid]

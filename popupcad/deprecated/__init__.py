@@ -16,7 +16,7 @@ from . import placeop6
 from . import sketchoperation
 from . import cutop
 from . import customsupport2
-
+from . import locateoperation
 
 popupcad.manufacturing.placeop4  = placeop4
 popupcad.manufacturing.placeop5  = placeop5
@@ -24,6 +24,7 @@ popupcad.manufacturing.placeop6  = placeop6
 popupcad.manufacturing.sketchoperation  = sketchoperation
 popupcad.manufacturing.cutop  = cutop
 popupcad.manufacturing.customsupport2  = customsupport2
+popupcad.manufacturing.locateoperation = locateoperation
 
 sys.modules['popupcad.manufacturing.placeop4']  = placeop4
 sys.modules['popupcad.manufacturing.placeop5']  = placeop5
@@ -31,6 +32,7 @@ sys.modules['popupcad.manufacturing.placeop6']  = placeop6
 sys.modules['popupcad.manufacturing.sketchoperation']  = sketchoperation
 sys.modules['popupcad.manufacturing.cutop']  = cutop
 sys.modules['popupcad.manufacturing.customsupport2']  = customsupport2
+sys.modules['popupcad.manufacturing.locateoperation']  = locateoperation
 
 try:
     import popupcad_manufacturing_plugins

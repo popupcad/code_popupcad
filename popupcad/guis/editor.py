@@ -190,7 +190,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.operationactions.append({'text':'&LayerOp','kwargs':{'icon':Icon('layerop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_L,'triggered':lambda:self.newoperation(popupcad.manufacturing.LayerOp)}})
         self.operationactions.append({'text':'&LaminateOp','kwargs':{'icon':Icon('metaop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_M,'triggered':lambda:self.newoperation(popupcad.manufacturing.LaminateOperation)}})
         self.operationactions.append({'text':'Shift/Flip','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.ShiftFlip2)}})
-        self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.LocateOperation)}})
+        self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.LocateOperation2)}})
         self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.PlaceOperation7)}})
         self.operationactions.append({'text':'Cleanup','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup.Cleanup)}})
 
