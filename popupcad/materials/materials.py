@@ -14,6 +14,7 @@ class Rigid(object):
 
 class Material(object):
     display = ['color','thickness']
+    editable = ['*']
 #    editable = ['color','thickness']
     name = 'material'
     color = (0.,0.,0.,.2)

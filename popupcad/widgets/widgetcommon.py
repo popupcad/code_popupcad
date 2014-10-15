@@ -9,8 +9,13 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 
 class WidgetCommon(object):
-    def showhide(self,window):
-        if window.isHidden():
+#    def showhide(self,window):
+#        if window.isHidden():
+#            window.show()
+#        else:
+#            window.hide()
+    def showhide2(self,window,action):
+        if action.isChecked():
             window.show()
         else:
             window.hide()

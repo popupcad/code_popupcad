@@ -147,11 +147,11 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             action.setChecked(True)
             self.act_autoreprocesstoggle = action
         self.projectactions.append({'text':'Auto Reprocess','kwargs':{},'prepmethod':dummy})
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(True)
-            self.act_3don= action
-        self.projectactions.append({'text':'3D Rendering','kwargs':{},'prepmethod':dummy})
+#        def dummy(action):
+#            action.setCheckable(True)
+#            action.setChecked(True)
+#            self.act_3don= action
+#        self.projectactions.append({'text':'3D Rendering','kwargs':{},'prepmethod':dummy})
         self.projectactions.append(None)
         self.projectactions.append({'text':'Layer Order...','kwargs':{'triggered':self.editlayers}})
         self.projectactions.append({'text':'Laminate Properties...','kwargs':{'triggered': self.editlaminate}})
@@ -159,10 +159,26 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.projectactions.append({'text':'SubDesigns...','kwargs':{'triggered' :self.subdesigns}})
 
         self.viewactions = []
-        self.viewactions.append({'text':'3D View','kwargs':{'icon':Icon('3dview'),'triggered':lambda:self.showhide(self.view_3d_dock)}})
-        self.viewactions.append({'text':'Operations','kwargs':{'icon':Icon('operations'),'triggered':lambda:self.showhide(self.operationdock)}})
-        self.viewactions.append({'text':'Layers','kwargs':{'icon':Icon('layers'),'triggered':lambda:self.showhide(self.layerlistwidgetdock)}})
-        self.viewactions.append({'text':'Error Log','kwargs':{'triggered':lambda:self.showhide(self.error_log)}})
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(True)
+            self.act_view_3d= action
+        self.viewactions.append({'prepmethod':dummy,'text':'3D View','kwargs':{'icon':Icon('3dview'),'triggered':lambda:self.showhide2(self.view_3d_dock,self.act_view_3d)}})
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(True)
+            self.act_view_ops= action
+        self.viewactions.append({'prepmethod':dummy,'text':'Operations','kwargs':{'icon':Icon('operations'),'triggered':lambda:self.showhide2(self.operationdock,self.act_view_ops)}})
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(True)
+            self.act_view_layers= action
+        self.viewactions.append({'prepmethod':dummy,'text':'Layers','kwargs':{'icon':Icon('layers'),'triggered':lambda:self.showhide2(self.layerlistwidgetdock,self.act_view_layers)}})
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(True)
+            self.act_view_errors= action
+        self.viewactions.append({'prepmethod':dummy,'text':'Error Log','kwargs':{'triggered':lambda:self.showhide2(self.error_log,self.act_view_errors)}})
         self.viewactions.append(None)
         self.viewactions.append({'text':'Zoom Fit','kwargs':{'triggered':self.view_2d.zoomToFit,'shortcut': qc.Qt.CTRL+qc.Qt.Key_F}})
         self.viewactions.append({'text':'Screenshot','kwargs':{'triggered':self.sceneview.screenShot,'shortcut': qc.Qt.CTRL+qc.Qt.Key_R}})
@@ -261,6 +277,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.operationeditor.blockSignals(True)
         self.layerlistwidget.blockSignals(True)
         self.sceneview.deleteall()      
+        self.clear3dgeometry()
         
         self.operationeditor.setnetworkgenerator(self.design.network)
         self.operationeditor.linklist(self.design.operations)
@@ -340,14 +357,17 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def show3dgeometry3(self,operationoutput,selectedlayers):
-        if self.act_3don.isChecked():
+        if self.act_view_3d.isChecked():
             tris = operationoutput.tris()
             lines = operationoutput.lines()
             self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,lines,selectedlayers)
         else:
-            tris = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
-            lines = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
-            self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,lines,selectedlayers)
+            self.clear3dgeometry()
+
+    def clear3dgeometry(self):
+        tris = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
+        lines = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
+        self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,lines,[])
 
     @loggable
     def exportLayerSVG(self):
