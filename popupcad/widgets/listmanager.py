@@ -8,11 +8,11 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 
-def build_sketchlist(design):
+def build_sketchlist(design,name='Sketch',**kwargs):
     from popupcad.filetypes.sketch import Sketch
     from popupcad.guis.sketcher import Sketcher
 
-    widget = ListManager(design.sketches,name='Sketch')
+    widget = ListManager(design.sketches,name=name)
     def edit_method(sketch):
         sketch.edit(None,design,selectops = True)
     def new_method(refresh_method):
@@ -22,13 +22,13 @@ def build_sketchlist(design):
         sketcher = Sketcher(None,Sketch(),design,accept_method = accept_method2,selectops = True)
         sketcher.show()
     
-    widget.set_layout(edit_method = edit_method,new_method = new_method,load_method = Sketch.open,saveas = True,copy = True)
+    widget.set_layout(edit_method = edit_method,new_method = new_method,load_method = Sketch.open,saveas = True,copy = True,**kwargs)
     return widget
 
-def build_subdesignslist(design):
+def build_subdesignslist(design,name='Sub-Design',**kwargs):
     from popupcad.filetypes.design import Design
-    widget = ListManager(design.subdesigns,name='Sub-Design')
-    widget.set_layout(load_method = Design.open,saveas = True,copy = True)
+    widget = ListManager(design.subdesigns,name=name)
+    widget.set_layout(load_method = Design.open,saveas = True,copy = True,**kwargs)
     return widget
 
 

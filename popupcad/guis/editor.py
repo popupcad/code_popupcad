@@ -298,19 +298,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def sketchlist(self):
         from popupcad.widgets import listmanager
-        from .sketcher import Sketcher
-
-        widget = listmanager.ListManager(self.design.sketches)
-        def edit_method(sketch):
-            sketch.edit(self,self.design,selectops = True)
-        def new_method(refresh_method):
-            def accept_method2(sketch,*args):
-                self.design.sketches[sketch.id] = sketch
-                refresh_method(sketch)
-            sketcher = Sketcher(self,Sketch(),self.design,accept_method = accept_method2,selectops = True)
-            sketcher.show()
-        
-        widget.set_layout(cleanup_method = self.design.cleanup_sketches,edit_method = edit_method,new_method = new_method,load_method = Sketch.open,saveas = True,copy = True,delete = True)
+        widget = listmanager.build_sketchlist(self.design,name=None,cleanup_method = self.design.cleanup_sketches,delete = True)
         dialog = self.builddialog(widget)        
         dialog.setWindowTitle('Sketches')
         dialog.exec_()
@@ -318,8 +306,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def subdesigns(self):
         from popupcad.widgets import listmanager
-        widget = listmanager.ListManager(self.design.subdesigns)
-        widget.set_layout(cleanup_method = self.design.cleanup_subdesigns,load_method = Design.open,saveas = True,copy = True,delete = True)
+        widget = listmanager.build_subdesignslist(self.design,name=None,cleanup_method = self.design.cleanup_subdesigns,delete = True)
         dialog = self.builddialog(widget)        
         dialog.setWindowTitle('Sub-Designs')
         dialog.exec_()

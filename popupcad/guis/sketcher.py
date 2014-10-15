@@ -30,18 +30,14 @@ from popupcad.graphics2d.text import TextParent
 
 class Sketcher(qg.QMainWindow,WidgetCommon):
     showprop = qc.Signal(object)
-    def __init__(self,parent,sketch,design = None,ii = None,jj = 0,kk = 0,isOperation = False,selectedlayers = None,accept_method = None,selectops = False,oplimit = None):
+    def __init__(self,parent,sketch,design = None,ii = None,jj = 0,kk = 0,accept_method = None,selectops = False,oplimit = None,refs = None):
         
         qg.QMainWindow.__init__(self,parent)
         self.design = design
-        self.isOperation = isOperation
         self.accept_method = accept_method
         self.selectops = selectops
-        
-        if selectedlayers == None:
-            if design != None:
-                selectedlayers = self.design.return_layer_definition().layers
-            
+                
+    
         if self.design == None:
             self.operations = [NullOp()]
         else:
@@ -69,10 +65,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 ii = 0
             self.optree.setCurrentIndeces(ii,jj)
         
-        if self.isOperation:
-            self.selectlayers(selectedlayers)
-            self.operationtypeselector.setCurrentIndex(kk)
-
         self.load_references()
 
         self.connectSignals()
@@ -91,29 +83,11 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             self.optree.currentRowChanged.connect(self.load_references)
         
     def setupLayout(self):
-        if self.isOperation:
-            self.operationtypeselector = qg.QComboBox()
-            self.operationtypeselector.addItems(['union','intersection','difference','symmetric_difference'])
-            self.operationtypedock = qg.QDockWidget()
-            self.operationtypedock.setWidget(self.operationtypeselector)
-            self.operationtypedock.setAllowedAreas(qc.Qt.AllDockWidgetAreas)
-            self.operationtypedock.setWindowTitle('Operation Types')
-
         self.constraint_editor = ListEditor()
         if self.selectops:
             self.optree = DraggableTreeWidget()
         self.propertieswindow = qg.QWidget()
         
-        if self.isOperation:
-            self.layerlistwidget = ListSelector()
-
-            if self.design !=None:
-                layers = self.design.return_layer_definition().layers
-            else:
-                layers = []
-            self.layerlistwidget.linklist(layers)
-            
-
         ok_button = qg.QPushButton('&Ok',self)
         cancel_button= qg.QPushButton('&Cancel',self)
         ok_button.clicked.connect(self.accept)
@@ -152,21 +126,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.propdock.setWindowTitle('Properties')
         self.propdock.setMinimumHeight(200)
 
-        if self.isOperation:
-            self.layerdock = qg.QDockWidget()
-            self.layerdock.setWidget(self.layerlistwidget)
-            self.layerdock.setAllowedAreas(qc.Qt.AllDockWidgetAreas)
-            self.layerdock.setWindowTitle('Layers')
-        
-            self.addDockWidget(qc.Qt.LeftDockWidgetArea,self.operationtypedock)
-
         if self.selectops:
             self.addDockWidget(qc.Qt.LeftDockWidgetArea,self.optreedock)
         self.addDockWidget(qc.Qt.RightDockWidgetArea,self.constraintdock)
         self.addDockWidget(qc.Qt.RightDockWidgetArea,self.propdock)
-
-        if self.isOperation:
-            self.addDockWidget(qc.Qt.LeftDockWidgetArea,self.layerdock)
 
         self.setCentralWidget(centralwidget)        
         self.setWindowTitle('Sketcher')
@@ -218,17 +181,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             action.setChecked(True)
             self.act_view_properties= action
         self.viewactions.append({'prepmethod':dummy,'text':'Properties','kwargs':{'triggered':lambda:self.showhide2(self.propdock,self.act_view_properties)}})
-        if self.isOperation:
-            def dummy(action):
-                action.setCheckable(True)
-                action.setChecked(True)
-                self.act_view_layers= action
-            self.viewactions.append({'prepmethod':dummy,'text':'Layers','kwargs':{'triggered':lambda:self.showhide2(self.layerdock,self.act_view_layers)}})
-            def dummy(action):
-                action.setCheckable(True)
-                action.setChecked(True)
-                self.view_operation_types= action
-                self.viewactions.append({'text':'Operation Types','kwargs':{'triggered':lambda:self.showhide2(self.operationtypedock,self.view_operation_types)}})
         self.viewactions.append({'text':'select','kwargs':{'triggered':self.graphicsview.rubberband,'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_S,'icon':Icon('select')}})
         self.viewactions.append({'text':'pan','kwargs':{'triggered':self.graphicsview.scrollhand,'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'icon':Icon('pan')}})
         self.viewactions.append(None)
@@ -290,9 +242,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def paste_from_clipboard(self):
         self.undoredo.savesnapshot()
         self.scene.paste_from_clipboard()
-    def selectlayers(self,layers):
-        if self.isOperation:
-            self.layerlistwidget.selectItems(layers)
 
     def add_constraint(self,constraintclass):
         from popupcad.filetypes.genericshapes import GenericLine
@@ -389,8 +338,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         geometries.extend([item.generic for item in self.scene.items() if isinstance(item,DrawingPoint)])
         geometries.extend([item.generic for item in self.scene.items() if isinstance(item,TextParent)])
         self.sketch.addoperationgeometries(geometries)
-        if self.isOperation:        
-            self.layers = [self.layerlistwidget.list[item.row()] for  item in self.layerlistwidget.selectedIndexes()]
 
     def get_current_sketch(self):
         self.buildsketch()
@@ -497,12 +444,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             ii -= 1
             if ii==-1:
                 ii=None
-            if self.isOperation:
-                kk = self.operationtypeselector.currentIndex()
-                layer_links = [item.id for item in self.layers]
-                return self.sketch,ii,jj,layer_links,kk
-            else:
-                return self.sketch,ii,jj
+            return self.sketch,ii,jj
         else:
             return self.sketch,
 
