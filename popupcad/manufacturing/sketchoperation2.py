@@ -50,7 +50,7 @@ class Dialog(qg.QDialog):
         [item.setSelected(item.customdata.id in selectedoutput) for item in outputitems]        
 
         from  popupcad.widgets.operationlist import OperationList
-        self.operationtypeselector = OperationList([],cls.operationtypes,cls.operationtypes)
+        self.operationtypeselector = OperationList([],cls.function_names,cls.function_names)
         self.operationtypeselector.setCurrentIndex(operation_type_index)        
 
         button1 = qg.QPushButton('Ok')
@@ -98,9 +98,9 @@ class Dialog(qg.QDialog):
         return sketchid, operation_link1,layer_links,function,outputref
 
 class SketchOperation2(Operation):
-    name = 'SketchOperation2'
+    name = 'Sketch Operation'
     operationtypes = ['union','intersection','difference','symmetric_difference']  
-
+    function_names = ['Union','Intersection','Difference','Symmetric Difference']
     def copy(self):
         new = type(self)(self.sketchid,self.operation_link1,self.layer_links,self.function,self.outputref)
         new.id = self.id
@@ -119,7 +119,9 @@ class SketchOperation2(Operation):
         self.layer_links = layer_links
         self.function = function       
         self.outputref = outputref
-        self.name = 'Sketch '+ function
+        function_name_mapping = dict(zip(self.operationtypes,self.function_names))
+
+        self.name = 'Sketch '+ function_name_mapping[function]
 
     def getoutputref(self):
         return self.outputref
