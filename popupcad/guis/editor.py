@@ -256,14 +256,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
                 self.reprocessoperations()
 
     @loggable
-    def open_sketcher(self):
-        from .sketcher import Sketcher
-        ii,jj = self.operationeditor.currentIndeces()
-        layers = self.design.return_layer_definition().layers
-        sketcher = Sketcher(self,Sketch(),self.design,selectops = True)
-        sketcher.show()
-        
-    @loggable
     def save(self):
         return self.design.save(self)
 
