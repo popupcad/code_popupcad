@@ -8,7 +8,8 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 import PySide.QtSvg as qs
 import popupcad
-
+from math import pi, sin, cos
+import numpy
 class OutputSelection(qg.QDialog):
     def __init__(self):
         super(OutputSelection,self).__init__()
@@ -36,7 +37,7 @@ class OutputSelection(qg.QDialog):
         layout3 = qg.QVBoxLayout()
         layout3.addLayout(layout1)
         layout3.addWidget(self.Center)
-#        layout3.addLayout(layout4)
+        layout3.addLayout(layout4)
         layout3.addLayout(layout2)
         
         button1.pressed.connect(self.accept)
@@ -107,7 +108,11 @@ class SVGOutputSupport(object):
         t.scale(s,s)
         t.translate(0,-self.height())
         if center:
-            t.translate(-self.width()/2,-self.height()/2)
+            v1 = numpy.array([-self.width()/2,-self.height()/2])
+            theta = -rotation*pi/180
+            R = numpy.array([[cos(theta),sin(theta)],[-sin(theta),cos(theta)]])
+            v2 = R.dot(v1)
+            t.translate(*v2)
         t.rotate(rotation)
         painter.setWorldTransform(t)
 

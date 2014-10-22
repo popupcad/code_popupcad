@@ -122,7 +122,7 @@ class ExactlyTwoLines(object):
         raise(Exception('Need exactly two lines'))
 class AtLeastTwoLines(object):
     def valid(self):
-        return len(self.segment_ids)==2
+        return len(self.segment_ids)>=2
     def throwvalidityerror(self):
         raise(Exception('Need at least two lines'))
 class ExactlyOnePointOneLine(object):
@@ -130,6 +130,11 @@ class ExactlyOnePointOneLine(object):
         return len(self.segment_ids)==1 and len(self.vertex_ids)==1
     def throwvalidityerror(self):
         raise(Exception('Need one point and one line'))
+class AtLeastOnePoint(object):
+    def valid(self):
+        return len(set(self.vertex_ids+self.vertices_in_lines()))>=1
+    def throwvalidityerror(self):
+        raise(Exception('Need at least one point'))
         
 
 class Constraint(object):
@@ -326,7 +331,7 @@ class coincident(Constraint,AtLeastTwoPoints):
             eq.append(p[1] - p0[1])
         return eq
 
-class distancex(ValueConstraint,ExactlyTwoPoints):
+class distancex(ValueConstraint,AtLeastOnePoint):
     name = 'distancex'
     def equations(self,objects):
         vertices = self.getallvertices(objects)
@@ -336,7 +341,7 @@ class distancex(ValueConstraint,ExactlyTwoPoints):
             eq = ((vertices[1].p()[0]-vertices[0].p()[0])**2)**.5-((self.value*popupcad.internal_argument_scaling)**2)**.5
         return [eq]
 
-class distancey(ValueConstraint,ExactlyTwoPoints):
+class distancey(ValueConstraint,AtLeastOnePoint):
     name = 'distancey'
     def equations(self,objects):
         vertices = self.getallvertices(objects)
