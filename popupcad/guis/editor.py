@@ -139,6 +139,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"Save &As...",'kwargs':{'icon':Icon('saveas'),'shortcut':qg.QKeySequence.SaveAs,'statusTip':"Save the document under a new name",'triggered':self.saveAs}})
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
+        self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})      
 
         self.projectactions = []
         self.projectactions.append({'text':'&Rebuild','kwargs':{'icon':Icon('refresh'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_R,'triggered':self.reprocessoperations}})
@@ -355,9 +356,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
         win = OutputSelection()
         accepted = win.exec_()
-        if accepted:
-            scaling,center,rotation = win.acceptdata()
-        else:
+        if not accepted:
             return
             
         ii,jj = self.operationeditor.currentIndeces()
@@ -368,7 +367,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
             geoms = [item.outputstatic(color = (1,1,1,1)) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
-            scene.renderprocess(filename,scaling,center,rotation)
+            scene.renderprocess(filename,*win.acceptdata())
 
     @loggable
     def highlightbody(self,ref):
@@ -384,6 +383,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             event.accept()
         else:
             event.ignore()
+        popupcad.settings.save_yaml(popupcad.settings_filename)
+
 
     def checkSafe(self):
         temp = qg.QMessageBox.warning(self, "Modified Document",
@@ -395,7 +396,10 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         elif temp== qg.QMessageBox.Cancel:
             return False
         return True            
-            
+    def preferences(self):
+        pe = popupcad.widgets.propertyeditor.PropertyEditor(popupcad.settings)
+        pe.show()
+        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(Icon('popupcad'))

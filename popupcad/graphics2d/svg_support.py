@@ -15,6 +15,7 @@ class OutputSelection(qg.QDialog):
         super(OutputSelection,self).__init__()
         self.Inkscape= qg.QRadioButton('Inkscape')
         self.CorelDraw= qg.QRadioButton('CorelDraw')
+        self.RenderDXF = qg.QRadioButton('DXF')
         self.Center = qg.QCheckBox('Center')
 
         self.rotation = qg.QLineEdit()
@@ -28,6 +29,7 @@ class OutputSelection(qg.QDialog):
         layout1 = qg.QHBoxLayout()
         layout1.addWidget(self.Inkscape)
         layout1.addWidget(self.CorelDraw)
+        layout1.addWidget(self.RenderDXF)
         layout2 = qg.QHBoxLayout()
         layout2.addWidget(button1)
         layout2.addWidget(button2)
@@ -46,9 +48,11 @@ class OutputSelection(qg.QDialog):
         self.setLayout(layout3)
     def acceptdata(self):
         if self.Inkscape.isChecked():
-            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text())
+            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),False
         elif self.CorelDraw.isChecked():
-            return popupcad.coreldraw_mm_conversion,self.Center.isChecked(),float(self.rotation.text())
+            return popupcad.coreldraw_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),False
+        elif self.RenderDXF.isChecked():
+            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),True
         else:
             raise(Exception('nothing selected'))
 class SVGOutputSupport(object):
@@ -83,7 +87,7 @@ class SVGOutputSupport(object):
                 pass
         self.setBackgroundBrush(tempbrush)
 
-    def renderprocess(self,filename,scaling,center = False,rotation = 0):
+    def renderprocess(self,filename,scaling,center = False,rotation = 0,render_dxf=False):
         state = self.saveprerenderstate()
         self.prerender()
 #        self.updatescenerect()        
@@ -121,8 +125,26 @@ class SVGOutputSupport(object):
         
         self.loadprerenderstate(*state)
         self.update()
+        if render_dxf:
+            svg_to_dxf_files(filename)
 
-        
+def svg_to_dxf_files(*files):
+    import subprocess,os
+#    inkscape_path = 'C:\Program Files (x86)\Inkscape\inkscape.exe'
+#    pstoedit_path = 'C:\Program Files\pstoedit\pstoedit.exe'
+    inkscape_path = popupcad.settings.inkscape_path
+    pstoedit_path = popupcad.settings.pstoedit_path
+
+    export_string_1 = '''"{0}"'''.format(inkscape_path) + ''' --export-area-page -P {1} "{0}"'''
+    export_string_2 = '''"{0}"'''.format(pstoedit_path) + ''' -dt -f "dxf:-polyaslines -mm" {1} "{0}"'''
+    tempfilename = 'temp.ps'
+    for input_file in files:
+        print input_file
+        output_file = input_file.replace('.svg','.dxf')
+        run1=subprocess.call(export_string_1.format(input_file,tempfilename))
+        run2=subprocess.call(export_string_2.format(output_file,tempfilename))
+#        os.remove(input_file)
+    os.remove(tempfilename)
         
 if __name__=='__main__':
     import sys

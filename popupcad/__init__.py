@@ -46,7 +46,7 @@ url = 'http://www.popupcad.com'
 #import uuid
 #uuid.uuid4()
 windows_uuid = '{875b89db-f819-48bf-9be4-ec93f57f29c2}'
-
+settings_filename = 'settings.popupcad'
 popupcad_dirname = 'popupCAD_files'
 popupcad_home_path = os.path.normpath(os.path.join(user_home_dir,popupcad_dirname))
 
@@ -71,6 +71,12 @@ subdirectories = [popupcad_home_path,designdir,importdir,exportdir,scriptdir,ske
 for path in subdirectories:
     if not os.path.isdir(path):
         os.mkdir(path)
+        
+from filetypes.programsettings import ProgramSettings
+try:
+    settings = ProgramSettings.load_yaml(settings_filename)
+except IOError:
+    settings = ProgramSettings()
 
 from . import algorithms
 from . import constraints
@@ -84,3 +90,4 @@ from . import materials
 from . import supportfiles
 from . import widgets
 from . import deprecated
+

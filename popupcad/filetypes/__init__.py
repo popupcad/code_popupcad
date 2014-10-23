@@ -18,6 +18,7 @@ from . import listwidgetitem
 from . import operation
 from . import operationoutput
 from . import plugin
+from . import programsettings
 from . import sketch
 from . import solidworksimport
 from . import undoredo
