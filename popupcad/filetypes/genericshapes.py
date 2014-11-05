@@ -84,6 +84,40 @@ class GenericPoly(GenericShapeBase):
         self.update_handles()
     def segments(self):
         return self.loopsegments()
+    def toTriangleFormat(self):
+        import shapely.geometry as sg
+        import numpy
+        vertices = []
+        segments = []
+        holes = []
+        loops = [self.exteriorpoints()]
+        ip = self.interiorpoints()
+        loops.extend(ip)
+        c = 0        
+        for loop in loops:
+            d = len(vertices)
+            vertices.extend(loop)
+            a = range(c,c+len(vertices))
+            b = zip(a,a[1:]+a[:1])
+            segments.extend(b)
+            c+=d
+            
+        for loop in ip:
+            p = sg.Polygon(loop)
+            e = p.representative_point()
+            holes.append((e.x,e.y))            
+        tri = {}
+        tri['vertices']=numpy.array(vertices)
+        tri['segments']=numpy.array(segments)
+        if len(holes)>0:
+            tri['holes']=numpy.array(holes)
+        return tri
+    def triangles4(self):
+        import triangle
+        a = self.toTriangleFormat()
+        t = triangle.triangulate(a)
+        b = t['vertices'][t['triangles']]        
+        return [tri.tolist() for tri in b]
 
 class GenericCircle(GenericShapeBase):
     def outputinteractive(self):

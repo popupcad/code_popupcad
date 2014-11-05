@@ -263,10 +263,10 @@ class GenericShapeBase(popupCADFile):
         cdt = CDT(exterior)
         [cdt.AddHole(interior) for interior in interiors]
         return cdt
-
+    
     def triangles3(self):
         return []
-            
+
     def lines(self):
         lines = []
         poly = self.exteriorpoints()

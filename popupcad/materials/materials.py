@@ -43,6 +43,11 @@ class Kapton(Material):
 class Cardboard(Material):
     name = 'Cardboard'
     color = (1.,0.,0.,.2)
+    
+class SMP(Material):
+    name = 'SMP'
+    color = (.75,1,.75,.2)
+
         
 class Silicone(Material):
     name = 'Silicone'
@@ -68,7 +73,7 @@ class Dummy(Material):
     name = 'Dummy'
     color = (0.5,.5,.5,.2)
 
-available_materials = [Carbon_0_90_0,Pyralux,Kapton,Cardboard,Silicone,Velcro,Dummy,Aluminum,Copper,FR4]
+available_materials = [Carbon_0_90_0,Pyralux,Kapton,Cardboard,Silicone,Velcro,Dummy,Aluminum,Copper,FR4,SMP]
 available_materials.sort()
 
 if __name__=='__main__':

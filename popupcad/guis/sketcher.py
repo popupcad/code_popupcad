@@ -133,9 +133,9 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
         self.setCentralWidget(centralwidget)        
         self.setWindowTitle('Sketcher')
-        self.resize(1024,576)
-        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
-        self.move(dxy)
+#        self.resize(1024,576)
+#        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
+#        self.move(dxy)
         
     def regen_id(self):
         self.sketch.regen_id()
