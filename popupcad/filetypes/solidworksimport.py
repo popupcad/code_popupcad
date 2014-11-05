@@ -39,10 +39,12 @@ class Assembly(popupCADFile):
     def setlastdir(cls,directory):
         popupcad.lastimportdir = directory
 
-    def convert(self,parent = None,scalefactor = 1. ,area_ratio =1e-3,colinear_tol = 1e-1,bufferval = 0.):
+    def convert(self,parent = None,scalefactor = 1. ,area_ratio =1e-3,colinear_tol = 1e-1,bufferval = 0.,cleanup = .01):
         ok1 = True
         ok2 = True
         ok3 = True
+        ok4 = True
+        ok5 = True
         if scalefactor == None:
             scalefactor, ok1 = qg.QInputDialog.getDouble(parent,'Scale Factor','Scale Factor',1,0,1e10)        
 
@@ -53,12 +55,15 @@ class Assembly(popupCADFile):
             colinear_tol, ok3 = qg.QInputDialog.getDouble(parent,'Colinear Tolerance','Colinear Tolerance',1e-8,0,1e10,decimals = 10)        
 
         if bufferval == None:
-            bufferval, ok3 = qg.QInputDialog.getDouble(parent,'Buffer','Buffer',0,-1e10,1e10,decimals = 10)        
+            bufferval, ok4 = qg.QInputDialog.getDouble(parent,'Buffer','Buffer',0,-1e10,1e10,decimals = 10)        
+
+        if cleanup == None:
+            cleanup, ok5 = qg.QInputDialog.getDouble(parent,'Simplify','Simplify',0.01,0,1e10,decimals = 10)        
     
-        if ok1 and ok2:
-            self._convert(scalefactor,area_ratio,colinear_tol,bufferval)
+        if ok1 and ok2 and ok3 and ok4 and ok5:
+            self._convert(scalefactor,area_ratio,colinear_tol,bufferval,cleanup)
                 
-    def _convert(self,scalefactor,area_ratio,colinear_tol,bufferval):
+    def _convert(self,scalefactor,area_ratio,colinear_tol,bufferval,cleanup):
         self.geoms = []
         T1 = numpy.array(self.transform)
         R1 = T1[0:3,0:3]
@@ -76,6 +81,8 @@ class Assembly(popupCADFile):
                         
                         a = [GenericShapeBase.gengenericpoly(loop,[],test_shapely = False) for loop in ints_c]
                         b = [item.outputshapely() for item in a]
+                        if cleanup>=0:
+                            b = [item.simplify(cleanup*popupcad.internal_argument_scaling) for item in b]
                         c = b.pop(0)
                         for item in b:
                             c = c.symmetric_difference(item)
@@ -102,7 +109,7 @@ class Assembly(popupCADFile):
         return v2.tolist()
         
     def build_face_sketch(self):
-        self.convert(scalefactor = None,bufferval = None)
+        self.convert(scalefactor = None,bufferval = None,cleanup = None)
         sketch = popupcad.filetypes.sketch.Sketch()
         sketch.addoperationgeometries(self.geoms)
         return sketch

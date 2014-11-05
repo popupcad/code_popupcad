@@ -48,6 +48,18 @@ class Silicone(Material):
     name = 'Silicone'
     color = (.75,.75,.75,.2)
 
+class Aluminum(Material,Rigid):
+    name = 'Aluminum'
+    color = (.75,.75,.75,.2)
+
+class Copper(Material,Rigid):
+    name = 'Copper'
+    color = (1.,.5,.16,.2)
+
+class FR4(Material,Rigid):
+    name = 'FR4'
+    color = (1.,.85,.36,.2)
+
 class Velcro(Material):
     name = 'Velcro'
     color = (0.,.5,.5,.2)
@@ -56,7 +68,7 @@ class Dummy(Material):
     name = 'Dummy'
     color = (0.5,.5,.5,.2)
 
-available_materials = [Carbon_0_90_0,Pyralux,Kapton,Cardboard,Silicone,Velcro,Dummy]
+available_materials = [Carbon_0_90_0,Pyralux,Kapton,Cardboard,Silicone,Velcro,Dummy,Aluminum,Copper,FR4]
 available_materials.sort()
 
 if __name__=='__main__':
