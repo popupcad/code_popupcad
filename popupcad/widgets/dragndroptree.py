@@ -204,7 +204,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
         for item in self.selectedItems():
             ii = self.indexFromItem(item)
             if isinstance(item,ChildItem):
-                indeces.append((ii.parent().row(),ii.row()))
+                indeces.append((ii.parent().row(),ii.row()+1))
             else:
                 indeces.append((ii.row(),0))
         return indeces

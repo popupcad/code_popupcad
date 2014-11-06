@@ -183,7 +183,7 @@ class Dialog(qg.QDialog):
         elif self.radiobox_custom_y.isChecked():
             transformtype_y = PlaceOperation7.transformtypes.custom
             
-        ii,jj = self.optree.currentIndeces2()[0]          
+        ii,jj = self.optree.currentIndeces2()[0]  
         subopid = self.subdesign().operations[ii].id    
         subopref = subopid,jj
         return self.sketch().id,self.subdesign().id,subopref,transformtype_x,transformtype_y,self.sb.value(),self.flip.isChecked(),float(self.scalex.text()),float(self.scaley.text())
@@ -257,11 +257,12 @@ class PlaceOperation7(Operation):
         for layerout,layerin in zip(design.return_layer_definition().layers[outshift:],subdesign.return_layer_definition().layers[::step][inshift:]):
             newgeoms = []
             for geom in sketch.operationgeometry:
-                for designgeom in designgeometry.layer_sequence[layerin].geoms:
-                    try:
-                        newgeoms.append(aff.affine_transform(designgeom,calctransformfrom2lines(locateline.exteriorpoints(),geom.exteriorpoints(),scale_x = scale_x,scale_y = scale_y)))
-                    except IndexError:
-                        pass
+                if not geom.is_construction():
+                    for designgeom in designgeometry.layer_sequence[layerin].geoms:
+                        try:
+                            newgeoms.append(aff.affine_transform(designgeom,calctransformfrom2lines(locateline.exteriorpoints(),geom.exteriorpoints(),scale_x = scale_x,scale_y = scale_y)))
+                        except IndexError:
+                            pass
             newgeoms = customshapely.unary_union_safe(newgeoms)
             newgeoms = popupcad.geometry.customshapely.multiinit(newgeoms)
             lsout.replacelayergeoms(layerout,newgeoms)
