@@ -108,6 +108,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         except ImportError:
             print 'Manufacturing Plugin Not Found'
         
+        self.resize(1024,576)
         
     def autosave(self):
         import os
@@ -162,25 +163,28 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.viewactions = []
         def dummy(action):
             action.setCheckable(True)
-            action.setChecked(True)
-            self.act_view_3d= action
+            action.setChecked(False)
+            self.act_view_3d = action
         self.viewactions.append({'prepmethod':dummy,'text':'3D View','kwargs':{'icon':Icon('3dview'),'triggered':lambda:self.showhide2(self.view_3d_dock,self.act_view_3d)}})
+
         def dummy(action):
             action.setCheckable(True)
             action.setChecked(True)
             self.act_view_ops= action
         self.viewactions.append({'prepmethod':dummy,'text':'Operations','kwargs':{'icon':Icon('operations'),'triggered':lambda:self.showhide2(self.operationdock,self.act_view_ops)}})
+
         def dummy(action):
             action.setCheckable(True)
             action.setChecked(True)
-            self.act_view_layers= action
+            self.act_view_layers = action
         self.viewactions.append({'prepmethod':dummy,'text':'Layers','kwargs':{'icon':Icon('layers'),'triggered':lambda:self.showhide2(self.layerlistwidgetdock,self.act_view_layers)}})
+
         def dummy(action):
             action.setCheckable(True)
-            action.setChecked(True)
+            action.setChecked(False)
             self.act_view_errors= action
         self.viewactions.append({'prepmethod':dummy,'text':'Error Log','kwargs':{'triggered':lambda:self.showhide2(self.error_log,self.act_view_errors)}})
-        self.viewactions.append(None)
+
         self.viewactions.append({'text':'Zoom Fit','kwargs':{'triggered':self.view_2d.zoomToFit,'shortcut': qc.Qt.CTRL+qc.Qt.Key_F}})
         self.viewactions.append({'text':'Screenshot','kwargs':{'triggered':self.sceneview.screenShot,'shortcut': qc.Qt.CTRL+qc.Qt.Key_R}})
         self.viewactions.append({'text':'3D Screenshot','kwargs':{'triggered':self.view_3d.screenshot}})
@@ -194,17 +198,18 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.LocateOperation2)}})
         self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.PlaceOperation7)}})
         self.operationactions.append({'text':'Cleanup','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup.Cleanup)}})
+#        self.operationactions.append({'text':'Simplify','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify.Simplify)}})
 
-        self.manufacturingactions= []        
+        self.menu_file = self.addMenu(self.fileactions,name='File')
+        self.menu_project= self.addMenu(self.projectactions,name='Project')
+        self.menu_view = self.addMenu(self.viewactions,name='View')
+        self.toolbar_operations,self.menu_operations = self.addToolbarMenu(self.operationactions,name='Operations')
+        
+        self.showhide2(self.view_3d_dock,self.act_view_3d)
+        self.showhide2(self.operationdock,self.act_view_ops)
+        self.showhide2(self.layerlistwidgetdock,self.act_view_layers)
+        self.showhide2(self.error_log,self.act_view_errors)
 
-        self.toolbar_operations = self.buildToolbar(self.operationactions,name='Operations',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
-        self.toolbar_manufacturing = self.buildToolbar(self.manufacturingactions,name='Manufacturing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
-
-        self.menu_file = self.buildMenu(self.fileactions,name='File')
-        self.menu_project= self.buildMenu(self.projectactions,name='Project')
-        self.menu_operations = self.buildMenu(self.operationactions,name='Operations')
-        self.menu_manufacturing = self.buildMenu(self.manufacturingactions,name='Manufacturing')
-        self.menu_view = self.buildMenu(self.viewactions,name='View')
         
     @loggable
     def newoperation(self,operationclass):

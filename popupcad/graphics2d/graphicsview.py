@@ -15,7 +15,8 @@ class GraphicsView(qg.QGraphicsView):
     scale_factor = 1.2
     def __init__(self,*args,**kwargs):
         super(GraphicsView,self).__init__(*args,**kwargs)
-        self.setMinimumWidth(400)
+#        self.setMinimumWidth(200)
+        self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
 #        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.IntersectsItemShape)
         self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.ContainsItemShape)
         self.setRenderHints(qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)
@@ -128,4 +129,7 @@ class GraphicsView(qg.QGraphicsView):
         
     def zoom(self):
         return self.transform().m11()
+
+    def sizeHint(self):
+        return qc.QSize(400,300)
         

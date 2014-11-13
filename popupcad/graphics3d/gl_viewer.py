@@ -38,7 +38,9 @@ class GLViewWidget(gl.GLViewWidget):
         super(GLViewWidget,self).__init__(*args,**kwargs)        
         self.z_zoom=10
         self.setCameraPosition(distance=30000)
-        self.setMinimumSize(300,300)
+#        self.setMinimumSize(300,300)
+        self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
+
             
     def clear(self):
         while len(self.items)>0:
@@ -97,6 +99,8 @@ class GLViewWidget(gl.GLViewWidget):
                            drawEdges=True, edgeColor=(1, 1, 0, 1))
         m2.translate(-5, 5, 0)
         self.addItem(m2)
+    def sizeHint(self):
+        return qc.QSize(400,300)
         
         
 if __name__ == '__main__':

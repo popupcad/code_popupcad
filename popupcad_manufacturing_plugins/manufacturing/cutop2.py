@@ -84,7 +84,7 @@ class Dialog(qg.QDialog):
         button2.pressed.connect(self.reject)
 
     def sizeHint(self):
-        return 400,800
+        return qc.QSize(400,800)
 
     def acceptdata(self):
         option = None

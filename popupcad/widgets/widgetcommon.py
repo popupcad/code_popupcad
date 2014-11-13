@@ -7,6 +7,7 @@ Please see LICENSE.txt for full license.
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
+import popupcad
 
 class WidgetCommon(object):
     def showhide2(self,window,action):
@@ -15,58 +16,64 @@ class WidgetCommon(object):
         else:
             window.hide()
 
-    def buildToolbar(self,actions,name='toolbar',area=qc.Qt.ToolBarArea.TopToolBarArea,size=48,style=qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon):
+    def buildToolbarMenu(self,actions,name):
         toolbar= qg.QToolBar(name)
-        toolbar.setIconSize(qc.QSize(size,size))
-        toolbar.setToolButtonStyle(style)
+
+        menu = qg.QMenu(name)
+
         for actiondata in actions:
-            self.addToolbarItem(toolbar,actiondata)
+            self.addItem(toolbar,menu,actiondata)
+        return toolbar,menu
+    
+    def addToolbarMenu(self,actions,name):
+        toolbar, menu = self.buildToolbarMenu(actions,name)            
+        toolbar.setIconSize(qc.QSize(popupcad.settings.toolbar_icon_size,popupcad.settings.toolbar_icon_size))
+        toolbar.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         toolbar.setParent(self)
-        self.addToolBar(area,toolbar)
+        self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea,toolbar)
+        self.menuBar().addMenu(menu)
+        return toolbar,menu
+        
+    def addToolbar(self,actions,name):
+        toolbar, menu = self.buildToolbarMenu(actions,name)            
+        toolbar.setIconSize(qc.QSize(popupcad.settings.toolbar_icon_size,popupcad.settings.toolbar_icon_size))
+        toolbar.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        toolbar.setParent(self)
+        self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea,toolbar)
         return toolbar
-            
-    def buildMenu(self,actions,name):
-        menu= self.menuBar().addMenu(name)
-        for actiondata in actions:
-            self.addMenuItem(menu,actiondata)
+        
+    def addMenu(self,actions,name):
+        toolbar, menu = self.buildToolbarMenu(actions,name)            
+        self.menuBar().addMenu(menu)
         return menu
 
-    def addToolbarItem(self,toolbar,actiondata):
+    def addItem(self,toolbar,menu,actiondata):
         if actiondata == None:
             toolbar.addSeparator()
+            menu.addSeparator()
+        elif actiondata.has_key('submenu'):
+            submenu = self.buildSubmenu(actiondata)
+            tb = qg.QToolButton()
+            try:
+                tb.setIcon(actiondata['kwargs']['icon'])
+            except KeyError:
+                pass
+
+            try:
+                tb.setText(actiondata['text'])
+            except KeyError:
+                pass
+
+            tb.setMenu(submenu)
+            tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
+            tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            toolbar.addWidget(tb)
+
+            menu.addMenu(submenu)
         else:
-            if actiondata.has_key('submenu'):
-                submenu = self.buildSubmenu(actiondata)
-                tb = qg.QToolButton()
-                try:
-                    tb.setIcon(actiondata['kwargs']['icon'])
-                except KeyError:
-                    pass
-
-                try:
-                    tb.setText(actiondata['text'])
-                except KeyError:
-                    pass
-
-                tb.setMenu(submenu)
-                tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
-                tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-                toolbar.addWidget(tb)
-                
-            else:
-                action = self.buildaction(**actiondata)
-                toolbar.addAction(action)
-
-    def addMenuItem(self,menu,actiondata):
-            if actiondata == None:
-                menu.addSeparator()
-            else:
-                if actiondata.has_key('submenu'):
-                    submenu = self.buildSubmenu(actiondata)
-                    menu.addMenu(submenu)
-                else:
-                    action = self.buildaction(**actiondata)
-                    menu.addAction(action)                      
+            action = self.buildaction(**actiondata)
+            toolbar.addAction(action)
+            menu.addAction(action)                      
 
     def buildSubmenu(self,actiondata):
         subactions = actiondata['submenu']

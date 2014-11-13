@@ -133,7 +133,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
         self.setCentralWidget(centralwidget)        
         self.setWindowTitle('Sketcher')
-#        self.resize(1024,576)
+        self.resize(1024,576)
 #        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
 #        self.move(dxy)
         
@@ -211,7 +211,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         twolineactions.append({'text':'Parallel','kwargs':{'triggered':lambda:self.add_constraint(constraints.parallel),'icon':Icon('parallel')}})
         twolineactions.append({'text':'Perpendicular','kwargs':{'triggered':lambda:self.add_constraint(constraints.perpendicular),'icon':Icon('perpendicular')}})
         twolineactions.append({'text':'Equal','kwargs':{'triggered':lambda:self.add_constraint(constraints.equal),'icon':Icon('equal')}})
-        
 
         self.constraintactions = []
         self.constraintactions.append({'text':'Constraints On','kwargs':{'triggered':self.showvertices,'icon':Icon('showconstraints')}})
@@ -224,14 +223,11 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraintactions.append({'text':'Update','kwargs':{'triggered':self.refreshconstraints,'icon':Icon('refresh')}})
         self.constraintactions.append({'text':'Cleanup','kwargs':{'triggered':self.cleanupconstraints}})
 
-        self.menu_file = self.buildMenu(self.fileactions,name='File')
-        self.menu_edit = self.buildMenu(self.editactions,name='Edit')
-        self.menu_drawing = self.buildMenu(self.drawingactions,name='Drawing')
-        self.menu_constraints = self.buildMenu(self.constraintactions,name='Constraints')
-        self.menu_view = self.buildMenu(self.viewactions,name='View')
-
-        self.toolbar_drawing = self.buildToolbar(self.drawingactions,name='Drawing',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
-        self.toolbar_constraints = self.buildToolbar(self.constraintactions,name='Constraints',size=36,area=qc.Qt.ToolBarArea.TopToolBarArea)
+        self.menu_file = self.addMenu(self.fileactions,name='File')
+        self.menu_edit = self.addMenu(self.editactions,name='Edit')
+        self.toolbar_drawing,self.menu_drawing = self.addToolbarMenu(self.drawingactions,name='Drawing')
+        self.toolbar_constraints,self.menu_constraints = self.addToolbarMenu(self.constraintactions,name='Constraints')
+        self.menu_view = self.addMenu(self.viewactions,name='View')
 
     def cut_to_clipboard(self):
         self.undoredo.savesnapshot()

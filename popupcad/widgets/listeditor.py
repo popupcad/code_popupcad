@@ -11,7 +11,7 @@ from popupcad.filetypes.listwidgetitem import ListWidgetItem
 class ListBase(qg.QListWidget):
     def __init__(self,*args,**kwargs):
         super(ListBase,self).__init__(*args,**kwargs)
-        self.setMaximumWidth(250)
+        self.setMinimumWidth(200)
         self.list = []
         self.setSelectionBehavior(self.SelectionBehavior.SelectRows)
 

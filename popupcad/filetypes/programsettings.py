@@ -18,6 +18,7 @@ class ProgramSettings(popupCADFile):
     def __init__(self):
         self.inkscape_path = 'C:\Program Files (x86)\Inkscape\inkscape.exe'
         self.pstoedit_path = 'C:\Program Files\pstoedit\pstoedit.exe'
+        self.toolbar_icon_size = 36
         self.id = id(self)
         
     def copy(self,identical = True):
