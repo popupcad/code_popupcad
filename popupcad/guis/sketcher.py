@@ -188,20 +188,20 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.viewactions.append({'text':'Screenshot','kwargs':{'triggered':self.scene.screenShot,'shortcut': qc.Qt.CTRL+qc.Qt.Key_R}})
         
         self.drawingactions = []
-        self.drawingactions.append({'text':'point','kwargs':{'triggered':self.adddrawingpoint}})
+        self.drawingactions.append({'text':'point','kwargs':{'triggered':self.adddrawingpoint,'icon':Icon('points')}})
         self.drawingactions.append({'text':'line','kwargs':{'triggered':lambda:self.addproto(ProtoLine),'icon':Icon('line')}})
         self.drawingactions.append({'text':'polyline','kwargs':{'triggered':lambda:self.addproto(ProtoPath),'icon':Icon('polyline')}})
         self.drawingactions.append({'text':'rect','kwargs':{'triggered':lambda:self.addproto(ProtoRect2Point),'icon':Icon('rectangle')}})
         self.drawingactions.append({'text':'circle','kwargs':{'triggered':lambda:self.addproto(ProtoCircle),'icon':Icon('circle')}})
         self.drawingactions.append({'text':'poly','kwargs':{'triggered':lambda:self.addproto(ProtoPoly),'icon':Icon('polygon')}})
-        self.drawingactions.append({'text':'text','kwargs':{'triggered':lambda:self.addproto(TextParent)}})
+        self.drawingactions.append({'text':'text','kwargs':{'triggered':lambda:self.addproto(TextParent),'icon':Icon('text')}})
         self.drawingactions.append(None)
         self.drawingactions.append({'text':'joinedges','kwargs':{'triggered':self.joinedges,'icon':Icon('joinedges')}})
         self.drawingactions.append({'text':'autobridge','kwargs':{'triggered':self.autobridge,'icon':Icon('autobridge')}})
-        self.drawingactions.append({'text':'get joints','kwargs':{'triggered':self.getjoints}})
+        self.drawingactions.append({'text':'get joints','kwargs':{'triggered':self.getjoints,'icon':Icon('getjoints2')}})
 
         distanceactions = []
-        distanceactions.append({'text':'Coincident','kwargs':{'triggered':lambda:self.add_constraint(constraints.coincident)}})
+        distanceactions.append({'text':'Coincident','kwargs':{'triggered':lambda:self.add_constraint(constraints.coincident),'icon':Icon('coincident')}})
         distanceactions.append({'text':'Distance','kwargs':{'triggered':lambda:self.add_constraint(constraints.distance),'icon':Icon('distance')}})
         distanceactions.append({'text':'DistanceX','kwargs':{'triggered':lambda:self.add_constraint(constraints.distancex),'icon':Icon('distancex')}})
         distanceactions.append({'text':'DistanceY','kwargs':{'triggered':lambda:self.add_constraint(constraints.distancey),'icon':Icon('distancey')}})
@@ -221,7 +221,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraintactions.append({'text':'Lines','submenu':twolineactions,'kwargs':{'icon':Icon('parallel')}})
         self.constraintactions.append({'text':'PointLine','kwargs':{'triggered':lambda:self.add_constraint(constraints.PointLine),'icon':Icon('pointline')}})
         self.constraintactions.append({'text':'Update','kwargs':{'triggered':self.refreshconstraints,'icon':Icon('refresh')}})
-        self.constraintactions.append({'text':'Cleanup','kwargs':{'triggered':self.cleanupconstraints}})
+        self.constraintactions.append({'text':'Cleanup','kwargs':{'triggered':self.cleanupconstraints,'icon':Icon('broom')}})
 
         self.menu_file = self.addMenu(self.fileactions,name='File')
         self.menu_edit = self.addMenu(self.editactions,name='Edit')

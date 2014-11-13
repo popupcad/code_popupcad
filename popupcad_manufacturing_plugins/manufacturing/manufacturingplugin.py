@@ -28,11 +28,11 @@ class ManufacturingPlugin(Plugin):
         scrap = []
         scrap.append({'text':'Sheet','kwargs':{'icon':Icon('outersheet'),'triggered':lambda:editor.newoperation(OuterSheet2)}})
         scrap.append({'text':'&Web','kwargs':{'icon':Icon('outerweb'),'triggered':lambda:editor.newoperation(AutoWeb3)}})
-        scrap.append({'text':'Scrap(Beta)','kwargs':{'triggered':lambda:editor.newoperation(ScrapOperation)}})
+        scrap.append({'text':'Scrap(Beta)','kwargs':{'icon':Icon('scrap'),'triggered':lambda:editor.newoperation(ScrapOperation)}})
 
         supportactions= []
         supportactions.append({'text':'S&upport','kwargs':{'icon':Icon('autosupport'),'triggered':lambda:editor.newoperation(SupportCandidate3)}})
-        supportactions.append({'text':'Custom Support','kwargs':{'triggered':lambda:editor.newoperation(CustomSupport3)}})
+        supportactions.append({'text':'Custom Support','kwargs':{'icon':Icon('customsupport'),'triggered':lambda:editor.newoperation(CustomSupport3)}})
         
         other = []
         other.append({'text':'Keep-outs','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:editor.newoperation(KeepOut2)}})
@@ -40,12 +40,12 @@ class ManufacturingPlugin(Plugin):
         other.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:editor.newoperation(IdentifyRigidBodies)}})
 
         manufacturingactions = []
-        manufacturingactions.append({'text':'Scrap','submenu':scrap})
+        manufacturingactions.append({'text':'Scrap','submenu':scrap,'kwargs':{'icon':Icon('scrap')}})
         manufacturingactions.append({'text':'Supports','submenu':supportactions,'kwargs':{'icon':Icon('outerweb')}})
 #        manufacturingactions.append({'text':'Tool Clearance','kwargs':{'triggered':lambda:editor.newoperation(ToolClearance2)}})
-        manufacturingactions.append({'text':'Removability','kwargs':{'triggered':lambda:editor.newoperation(Removability)}})
-        manufacturingactions.append({'text':'Identify Bodies','kwargs':{'triggered':lambda:editor.newoperation(IdentifyBodies)}})
-        manufacturingactions.append({'text':'Misc','submenu':other})
+        manufacturingactions.append({'text':'Removability','kwargs':{'icon':Icon('removability'),'triggered':lambda:editor.newoperation(Removability)}})
+        manufacturingactions.append({'text':'Identify Bodies','kwargs':{'icon':Icon('identifybodies'),'triggered':lambda:editor.newoperation(IdentifyBodies)}})
+        manufacturingactions.append({'text':'Misc','submenu':other,'kwargs':{'icon':Icon('dotdotdot')}})
 
 
         editor.toolbar_manufacturing,editor.menu_manufacturing = editor.addToolbarMenu(manufacturingactions,name='Manufacturing')
