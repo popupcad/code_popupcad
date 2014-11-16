@@ -76,7 +76,7 @@ class Interactive(Common):
     def updatescale(self):
         try:
             self.setcustomscale(1/self.scene().views()[0].zoom())
-        except AttributeError:
+        except IndexError,AttributeError:
             pass            
 
     def exterior(self):

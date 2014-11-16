@@ -17,6 +17,10 @@ class OutputSelection(qg.QDialog):
         self.CorelDraw= qg.QRadioButton('CorelDraw')
         self.RenderDXF = qg.QRadioButton('DXF')
         self.Center = qg.QCheckBox('Center')
+        
+        self.Inkscape.clicked.connect(self.checkradio)
+        self.CorelDraw.clicked.connect(self.checkradio)
+        self.RenderDXF.clicked.connect(self.checkradio)
 
         self.rotation = qg.QLineEdit()
         self.rotation.setAlignment(qc.Qt.AlignRight)
@@ -46,6 +50,13 @@ class OutputSelection(qg.QDialog):
         button2.pressed.connect(self.reject)
         self.Inkscape.setChecked(True)
         self.setLayout(layout3)
+    def checkradio(self):
+        if self.RenderDXF.isChecked():
+            self.rotation.setText(str(0))
+            self.rotation.setEnabled(False)
+        else:
+            self.rotation.setEnabled(True)
+            
     def acceptdata(self):
         if self.Inkscape.isChecked():
             return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),False
@@ -111,7 +122,7 @@ class SVGOutputSupport(object):
         s = scaling
         t.scale(s,s)
         t.translate(0,-self.height())
-        if center:
+        if not render_dxf and center:
             v1 = numpy.array([-self.width()/2,-self.height()/2])
             theta = -rotation*pi/180
             R = numpy.array([[cos(theta),sin(theta)],[-sin(theta),cos(theta)]])
@@ -126,24 +137,28 @@ class SVGOutputSupport(object):
         self.loadprerenderstate(*state)
         self.update()
         if render_dxf:
-            svg_to_dxf_files(filename)
+            xshift = 0
+            yshift = 0
+            if center:
+                xshift = -self.width()/2/popupcad.internal_argument_scaling
+                yshift = -self.height()/2/popupcad.internal_argument_scaling
+            svg_to_dxf_files([filename],xshift,yshift)
 
-def svg_to_dxf_files(*files):
+def svg_to_dxf_files(filenames,xshift=0,yshift=0):
     import subprocess,os
-#    inkscape_path = 'C:\Program Files (x86)\Inkscape\inkscape.exe'
-#    pstoedit_path = 'C:\Program Files\pstoedit\pstoedit.exe'
     inkscape_path = popupcad.settings.inkscape_path
     pstoedit_path = popupcad.settings.pstoedit_path
 
     export_string_1 = '''"{0}"'''.format(inkscape_path) + ''' --export-area-page -P {1} "{0}"'''
-    export_string_2 = '''"{0}"'''.format(pstoedit_path) + ''' -dt -f "dxf:-polyaslines -mm" {1} "{0}"'''
-    tempfilename = 'temp.ps'
-    for input_file in files:
+    export_string_2 = '''"{0}" -xshift {1} -yshift {2} -dt -f '''.format(pstoedit_path,xshift*72/25.4,yshift*72/25.4)+'''"dxf:-polyaslines -mm" {1} "{0}"'''
+    for input_file in filenames:
+        dirname = os.path.dirname(input_file)
+        tempfilename = os.path.join(dirname,'temp.ps')
         print input_file
         output_file = input_file.replace('.svg','.dxf')
+    
         run1=subprocess.call(export_string_1.format(input_file,tempfilename))
         run2=subprocess.call(export_string_2.format(output_file,tempfilename))
-#        os.remove(input_file)
     os.remove(tempfilename)
         
 if __name__=='__main__':
@@ -151,6 +166,4 @@ if __name__=='__main__':
     app = qg.QApplication(sys.argv)
     win  = OutputSelection()
     win.exec_()
-#    mw.show()
-#    mw.raise_()
     sys.exit(app.exec_())

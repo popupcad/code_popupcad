@@ -30,15 +30,15 @@ class Material(object):
     
 class Carbon_0_90_0(Material,Rigid):
     name = 'Carbon(0-90-0)'
-    color = (1.,0.,0.,.2)
+    color = (.2,0.2,0.2,.2)
 
 class Pyralux(Material,Adhesive):
     name = 'Pyralux'
-    color = (0,1.,0.,.2)
+    color = (175./256,81./256,81./256,.2)
 
 class Kapton(Material):
     name = 'Kapton'
-    color = (0.,0.,1.,.2)
+    color = (1.,1.,0.,.2)
 
 class Cardboard(Material):
     name = 'Cardboard'

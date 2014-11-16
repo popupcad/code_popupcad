@@ -109,6 +109,10 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             print 'Manufacturing Plugin Not Found'
         
         self.resize(1024,576)
+#        dxy = qg.QApplication.desktop().screen().rect().topRight() - self.rect().topRight() + qc.QPoint(-16,0)
+        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
+        self.move(dxy)
+        
         
     def autosave(self):
         import os
@@ -139,6 +143,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"&Save",'kwargs':{'icon':Icon('save'),'shortcut':qg.QKeySequence.Save,'statusTip':"Save the document to disk", 'triggered':self.save}})
         self.fileactions.append({'text':"Save &As...",'kwargs':{'icon':Icon('saveas'),'shortcut':qg.QKeySequence.SaveAs,'statusTip':"Save the document under a new name",'triggered':self.saveAs}})
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
+        self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
         self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})      
 
@@ -198,7 +203,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.LocateOperation2)}})
         self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.PlaceOperation7)}})
         self.operationactions.append({'text':'Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup.Cleanup)}})
-        self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify')}})
+        self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify.Simplify)}})
 
         self.menu_file = self.addMenu(self.fileactions,name='File')
         self.menu_project= self.addMenu(self.projectactions,name='Project')
@@ -371,6 +376,25 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             filename = os.path.normpath(os.path.join(popupcad.exportdir,basename))
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
             geoms = [item.outputstatic(color = (1,1,1,1)) for item in generic_geometry_2d[layer]]
+            [scene.addItem(geom) for geom in geoms]
+            scene.renderprocess(filename,*win.acceptdata())
+
+    def exportLayerSVG2(self):
+        import os
+        from popupcad.graphics2d.svg_support import OutputSelection
+
+        win = OutputSelection()
+        accepted = win.exec_()
+        if not accepted:
+            return
+            
+        ii,jj = self.operationeditor.currentIndeces()
+        generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
+        for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
+            basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
+            filename = os.path.normpath(os.path.join(popupcad.exportdir,basename))
+            scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
+            geoms = [item.outputstatic(color=layer.color) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(filename,*win.acceptdata())
 

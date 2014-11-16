@@ -12,4 +12,5 @@ from .locateoperation2 import LocateOperation2
 from .placeop7 import PlaceOperation7
 from .shiftflip2 import ShiftFlip2
 from .nulloperation import NullOp
+from .simplify import Simplify
 from . import cleanup
