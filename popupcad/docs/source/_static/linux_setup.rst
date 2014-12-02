@@ -4,7 +4,7 @@ Linux Setup
 #. Install/Update Software::
 
     sudo apt-get update
-    sudo apt-get install dkms git spyder python-pyside python-shapely python-sympy python-pip synaptic python-opengl python-networkx python-yaml python-scipy python-matplotlib python-setuptools
+    sudo apt-get install dkms git spyder python-pyside python-shapely python-sympy python-pip synaptic python-opengl python-networkx python-yaml python-scipy python-matplotlib python-setuptools cython python-dev libgeos-dev python-sphinx
     sudo pip install pyqtgraph
     sudo pip install shapely --upgrade
 #. optional: upgrad your system::

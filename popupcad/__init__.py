@@ -72,15 +72,16 @@ for path in subdirectories:
     if not os.path.isdir(path):
         os.mkdir(path)
         
-from filetypes.programsettings import ProgramSettings
-try:
-    settings = ProgramSettings.load_yaml(settings_filename)
-except IOError:
-    settings = ProgramSettings()
+
 
 from . import algorithms
 from . import constraints
 from . import filetypes
+from popupcad.filetypes.programsettings import ProgramSettings
+try:
+    settings = ProgramSettings.load_yaml(settings_filename)
+except IOError:
+    settings = ProgramSettings()
 from . import geometry
 from . import graphics2d
 from . import graphics3d
