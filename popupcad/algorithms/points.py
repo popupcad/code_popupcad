@@ -156,13 +156,13 @@ def convert_to_3d(listin):
 
 if __name__=='__main__':
 #    print(colinear([[0,0],[1,1]],[[.1,.1+.9e-3],[.9,.9]],1e-3))
-#    print point_within_line([2,0],[[0,0],[1,0]],1e-3)
+#    print(point_within_line([2,0],[[0,0],[1,0]],1e-3))
 #    print(colinear([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))
 #    print(shared_edge([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))y
     point = [.001,0.001]
     line = [[-1,-1],[1,1]]
     tol = 1e-10
-#    print  point_within_line(point,line,tol)
+#    print(point_within_line(point,line,tol))
 
     import random
     points = [(random.random(),1.1) for item in range(10)]

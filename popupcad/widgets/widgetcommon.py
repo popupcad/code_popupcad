@@ -51,7 +51,7 @@ class WidgetCommon(object):
         if actiondata == None:
             toolbar.addSeparator()
             menu.addSeparator()
-        elif actiondata.has_key('submenu'):
+        elif 'submenu' in actiondata:
             submenu = self.buildSubmenu(actiondata)
             tb = qg.QToolButton()
             try:

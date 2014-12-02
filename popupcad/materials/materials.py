@@ -74,7 +74,7 @@ class Dummy(Material):
     color = (0.5,.5,.5,.2)
 
 available_materials = [Carbon_0_90_0,Pyralux,Kapton,Cardboard,Silicone,Velcro,Dummy,Aluminum,Copper,FR4,SMP]
-available_materials.sort()
+#available_materials.sort()
 
 if __name__=='__main__':
     from popupcad.filetypes.layerdef import LayerDef

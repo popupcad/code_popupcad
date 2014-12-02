@@ -154,7 +154,7 @@ def svg_to_dxf_files(filenames,xshift=0,yshift=0):
     for input_file in filenames:
         dirname = os.path.dirname(input_file)
         tempfilename = os.path.join(dirname,'temp.ps')
-        print input_file
+        print(input_file)
         output_file = input_file.replace('.svg','.dxf')
     
         run1=subprocess.call(export_string_1.format(input_file,tempfilename))

@@ -120,7 +120,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
         return ii,jj
         
     def myItemChanged(self,current,previous):
-        print current, previous
+        print(current, previous)
         self.currentRowChanged.emit(self.currentRow(ii=-1))
         
     def currentRow(self,ii=-1):
@@ -244,10 +244,10 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         if not self.block_check:
             network = self.networkgenerator()
             if not network.subsequencecomplete(self.allData()):
-                print 'invalid'
+                print('invalid')
                 self.refresh()
             else:
-                print 'valid'
+                print('valid')
                 self.refreshmaster()
 
     def linklist(self,masterlist):
@@ -256,7 +256,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
             super(DirectedDraggableTreeWidget,self).linklist(masterlist)
 
     def refresh(self):
-        print 'refreshing'
+        print('refreshing')
         self.block_check = True
         super(DirectedDraggableTreeWidget,self).refresh()
         self.block_check=False
@@ -274,7 +274,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
             del testlist[ii]
         network = self.networkgenerator()
         valid = network.subsequencecomplete(testlist)
-        print valid
+        print(valid)
         if valid:
             for ii in rows:
                 del self.masterlist[ii]

@@ -9,7 +9,7 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 from . import modes
 from .graphicsitems import Common	
-from interactivevertexbase import InteractiveVertexBase
+from .interactivevertexbase import InteractiveVertexBase
 
 class DrawingPoint(InteractiveVertexBase):
     isDeletable = True

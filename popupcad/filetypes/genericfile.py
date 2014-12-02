@@ -105,7 +105,7 @@ class GenericFile(object):
     @classmethod
     def load_yaml(cls,filename):
         import yaml
-        with file(filename,'r') as f:
+        with open(filename,'r') as f:
             obj1 = yaml.load(f)
             return obj1
 
@@ -213,7 +213,7 @@ class GenericFile(object):
             
     def save_yaml(self,filename,identical = True):
         import yaml
-        with file(filename,'w') as f:        
+        with open(filename,'w') as f:        
             yaml.dump(self.copy(identical),f)
         return True
     def __str__(self):

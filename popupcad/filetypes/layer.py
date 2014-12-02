@@ -21,7 +21,7 @@ class Layer(object):
     def symmetric_difference(self,layer):
         return self.binaryoperation(layer,'symmetric_difference') 
     def buffer(self,value,**kwargs):
-        if not kwargs.has_key('resolution'):
+        if not 'resolution' in kwargs:
             kwargs['resolution'] = popupcad.default_buffer_resolution
         return self.valueoperation('buffer',value,**kwargs) 
 

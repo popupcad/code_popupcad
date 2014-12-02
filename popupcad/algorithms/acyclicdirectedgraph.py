@@ -128,7 +128,8 @@ class AcyclicDirectedGraph(object):
         
     def cleannodes(self):
         '''remove duplicate nodes and rebuild internal connection matrix'''
-        self.nodes = sorted(list(set(self.nodes)))
+#        self.nodes = sorted(list(set(self.nodes)))
+        self.nodes = list(set(self.nodes))
         self.buildAB()
         
     def cleanconnections(self):

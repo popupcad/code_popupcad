@@ -106,7 +106,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             import popupcad_manufacturing_plugins
             popupcad_manufacturing_plugins.initialize(self,self.design)
         except ImportError:
-            print 'Manufacturing Plugin Not Found'
+            print('Manufacturing Plugin Not Found')
         
         self.resize(1024,576)
 #        dxy = qg.QApplication.desktop().screen().rect().topRight() - self.rect().topRight() + qc.QPoint(-16,0)
@@ -404,7 +404,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         ii,jj = self.operationeditor.currentIndeces()
         generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
         bodies = bodydetection.findallconnectedneighborgeoms(self.design,ref,generic_geometry_2d)
-        print bodies
+        print(bodies)
 
     def closeEvent(self, event):
         if self.checkSafe():

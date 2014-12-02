@@ -44,8 +44,8 @@ class GLViewWidget(gl.GLViewWidget):
         self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
 #        c = pg.mkColor(120,120,200)
         c = pg.mkColor(1,1,1)
-#        print c
-        self.setBackgroundColor(c)
+#        print(c)
+#        self.setBackgroundColor(c)
             
     def clear(self):
         while len(self.items)>0:
@@ -84,7 +84,7 @@ class GLViewWidget(gl.GLViewWidget):
                 z = numpy.ones((tri.shape[0],tri.shape[1],1))*self.zvalue[layer]*self.z_zoom
                 tri = numpy.concatenate((tri,z),2)
                 color = layer.color
-#                print color
+#                print(color)
                 colors = numpy.zeros((tri.shape[0],3,4))
                 for ii in range(tri.shape[0]):
                     for jj in range(3):

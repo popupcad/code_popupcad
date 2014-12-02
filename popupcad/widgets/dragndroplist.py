@@ -40,11 +40,11 @@ class DraggableItem(qg.QListWidgetItem):
             return False   
     def clone(self,*args,**kwargs):
 #        return type(self)(self.userdata)
-        print 'cloned'
+        print('cloned')
         return super(DraggableItem,self).clone(*args,**kwargs)
     def write(self,*args,**kwargs):
 #        return type(self)(self.userdata)
-        print 'written'
+        print('written')
         return super(DraggableItem,self).write(*args,**kwargs)
         
 class DraggableDirectedItem(DraggableItem,Node):

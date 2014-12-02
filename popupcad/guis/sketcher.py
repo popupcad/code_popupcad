@@ -473,7 +473,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
                         controllines = self.design.operations[ii].output[jj].controllines()
                         controllines = [line.gen_interactive() for line in controllines]
-                    except IndexError,AttributeError:
+                    except (IndexError,AttributeError):
                         pass
 
         return staticgeometries,controlpoints,controllines

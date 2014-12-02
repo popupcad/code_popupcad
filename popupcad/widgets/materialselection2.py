@@ -7,7 +7,7 @@ Please see LICENSE.txt for full license.
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 
-from dragndroplist import DraggableListWidget,DraggableItem,UserData
+from .dragndroplist import DraggableListWidget,DraggableItem,UserData
 
 class CompositeMakeup(DraggableListWidget):
     def __init__(self):
