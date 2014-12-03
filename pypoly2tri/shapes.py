@@ -7,6 +7,7 @@ Please see LICENSE.txt for full license.
 
 
 class Point(object):
+    __hash__=object.__hash__
     def __init__(self,x=0.,y=0.):
         self.x = x
         self.y = y
@@ -14,9 +15,9 @@ class Point(object):
     def set_zero(self):
         self.x = 0.
         self.y = 0.
-    def set(self,x,y):
-        self.x = x
-        self.y = y
+#    def set_point(self,x,y):
+#        self.x = x
+#        self.y = y
     def __neg__(self):
         return Point(-self.x,-self.y)
     def __sub__(self,a):
