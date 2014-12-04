@@ -13,8 +13,8 @@ class Simplify(MultiValueOperation2):
     name = 'Simplify'
     show = []
 #    function = 'buffer'
-    valuenames = ['Buffer','Resolution']
-    defaults = [0.0001,1]
+    valuenames = ['Tolerance']
+    defaults = [0.01,1]
 
     def operate(self,design):
         ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg

@@ -105,7 +105,7 @@ class GLViewWidget(gl.GLViewWidget):
         m2.translate(-5, 5, 0)
         self.addItem(m2)
     def sizeHint(self):
-        return qc.QSize(400,300)
+        return qc.QSize(300,300)
         
         
 if __name__ == '__main__':
