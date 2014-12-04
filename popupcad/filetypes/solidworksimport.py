@@ -58,7 +58,7 @@ class Assembly(popupCADFile):
             bufferval, ok4 = qg.QInputDialog.getDouble(parent,'Buffer','Buffer',0,-1e10,1e10,decimals = 10)        
 
         if cleanup == None:
-            cleanup, ok5 = qg.QInputDialog.getDouble(parent,'Simplify','Simplify',0.01,0,1e10,decimals = 10)        
+            cleanup, ok5 = qg.QInputDialog.getDouble(parent,'Simplify','Simplify',0.0,0,1e10,decimals = 10)        
     
         if ok1 and ok2 and ok3 and ok4 and ok5:
             self._convert(scalefactor,area_ratio,colinear_tol,bufferval,cleanup)
