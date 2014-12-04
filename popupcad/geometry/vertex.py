@@ -126,7 +126,9 @@ class BaseVertex(object):
     def copy_values(self,new,identical=False):
         new.setpos(self.getpos())
         new.static = self.static
-        new.moveable = self.is_moveable()
+        new.setmoveable(self.is_moveable())
+        new.set_construction(self.is_construction())
+        
         if identical:
             new.id = self.id
         return new            

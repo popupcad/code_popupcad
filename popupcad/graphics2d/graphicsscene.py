@@ -85,12 +85,9 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
 
         win = OutputSelection()
         accepted = win.exec_()
-        if not accepted:
-            scaling,center,rotation = win.acceptdata()
-            
-        time = popupcad.basic_functions.return_formatted_time()
-        filename = os.path.normpath(os.path.join(popupcad.exportdir,'2D_screenshot_'+time+'.svg'))
-        self.renderprocess(filename,*win.acceptdata())
+        if accepted:
+            time = popupcad.basic_functions.return_formatted_time()
+            self.renderprocess('2D_screenshot_'+time+'.svg',*win.acceptdata())
 
     def buildvertices(self,sceneitems,controlpoints,controllines):
         from popupcad.graphics2d.interactive import Interactive

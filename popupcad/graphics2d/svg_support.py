@@ -10,6 +10,7 @@ import PySide.QtSvg as qs
 import popupcad
 from math import pi, sin, cos
 import numpy
+import os
 class OutputSelection(qg.QDialog):
     def __init__(self):
         super(OutputSelection,self).__init__()
@@ -29,7 +30,13 @@ class OutputSelection(qg.QDialog):
 
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')
-
+        
+        self.dirbox = qg.QLineEdit()
+        self.dirbox.setText(popupcad.exportdir)
+        self.dirbutton = qg.QPushButton('...')
+        layout0 = qg.QHBoxLayout()
+        layout0.addWidget(self.dirbox)
+        layout0.addWidget(self.dirbutton)
         layout1 = qg.QHBoxLayout()
         layout1.addWidget(self.Inkscape)
         layout1.addWidget(self.CorelDraw)
@@ -41,11 +48,13 @@ class OutputSelection(qg.QDialog):
         layout4.addWidget(qg.QLabel('Rotation'))
         layout4.addWidget(self.rotation)
         layout3 = qg.QVBoxLayout()
+        layout3.addLayout(layout0)
         layout3.addLayout(layout1)
         layout3.addWidget(self.Center)
         layout3.addLayout(layout4)
         layout3.addLayout(layout2)
         
+        self.dirbutton.pressed.connect(self.selectExport)
         button1.pressed.connect(self.accept)
         button2.pressed.connect(self.reject)
         self.Inkscape.setChecked(True)
@@ -59,13 +68,19 @@ class OutputSelection(qg.QDialog):
             
     def acceptdata(self):
         if self.Inkscape.isChecked():
-            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),False
+            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),False,self.dirbox.text()
         elif self.CorelDraw.isChecked():
-            return popupcad.coreldraw_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),False
+            return popupcad.coreldraw_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),False,self.dirbox.text()
         elif self.RenderDXF.isChecked():
-            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),True
+            return popupcad.inkscape_mm_conversion,self.Center.isChecked(),float(self.rotation.text()),True,self.dirbox.text()
         else:
             raise(Exception('nothing selected'))
+            
+    def selectExport(self):
+        directorypath= qg.QFileDialog.getExistingDirectory(self, "Select Directory",self.dirbox.text() )
+        directorypath=os.path.normpath(directorypath)
+        self.dirbox.setText(directorypath)
+        
 class SVGOutputSupport(object):
     def saveprerenderstate(self):
         tempmodes = []
@@ -98,9 +113,10 @@ class SVGOutputSupport(object):
                 pass
         self.setBackgroundBrush(tempbrush)
 
-    def renderprocess(self,filename,scaling,center = False,rotation = 0,render_dxf=False):
+    def renderprocess(self,basename,scaling,center,rotation,render_dxf,exportdir):
         state = self.saveprerenderstate()
         self.prerender()
+        filename = os.path.normpath(os.path.join(exportdir,basename))
 #        self.updatescenerect()        
         self.setSceneRect(self.itemsBoundingRect())
         generator = qs.QSvgGenerator()
