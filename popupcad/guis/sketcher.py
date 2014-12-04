@@ -138,6 +138,11 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 #        self.move(dxy)
         dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
         self.move(dxy)
+
+        if self.selectops:
+            self.optreedock.closeEvent = lambda event: self.action_uncheck(self.act_view_ops)
+        self.constraintdock.closeEvent = lambda event: self.action_uncheck(self.act_view_constraints)
+        self.propdock.closeEvent = lambda event: self.action_uncheck(self.act_view_properties)
         
         
     def regen_id(self):
@@ -216,7 +221,13 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         twolineactions.append({'text':'Equal','kwargs':{'triggered':lambda:self.add_constraint(constraints.equal),'icon':Icon('equal')}})
 
         self.constraintactions = []
-        self.constraintactions.append({'text':'Constraints On','kwargs':{'triggered':self.showvertices,'icon':Icon('showconstraints')}})
+
+        def dummy(action):
+            action.setCheckable(True)
+            action.setChecked(False)
+            self.act_view_vertices= action
+            
+        self.constraintactions.append({'prepmethod':dummy,'text':'Constraints On','kwargs':{'triggered':self.showvertices,'icon':Icon('showconstraints')}})
         self.constraintactions.append(None)
         self.constraintactions.append({'text':'Horizontal','kwargs':{'triggered':lambda:self.add_constraint(constraints.horizontal),'icon':Icon('horizontal')}})
         self.constraintactions.append({'text':'Vertical','kwargs':{'triggered':lambda:self.add_constraint(constraints.vertical),'icon':Icon('vertical')}})
@@ -329,7 +340,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraint_editor.linklist(self.sketch.constraintsystem.constraints)
         
     def showvertices(self):
-        self.scene.showvertices(self.controlpoints+self.controllines)
+        self.scene.showvertices(self.act_view_vertices.isChecked())
+        self.scene.updatevertices()
 
     def buildsketch(self):
         self.sketch.cleargeometries()
@@ -478,13 +490,13 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
         return staticgeometries,controlpoints,controllines
     
-    def load_references2(self):
-        a,b,c = self.load_references3()
-        return b,c
-        
     def load_references(self):
         self.scene.removerefgeoms()
         self.static_items,self.controlpoints,self.controllines = self.load_references3()
+
+        self.scene.update_extra_objects(self.controlpoints+self.controllines)
+        self.scene.updatevertices()
+
         [self.scene.addItem(item) for item in self.static_items]
 
     def group(self):

@@ -113,7 +113,11 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
         self.move(dxy)
         
-        
+        self.operationdock.closeEvent = lambda event: self.action_uncheck(self.act_view_ops)
+        self.layerlistwidgetdock.closeEvent = lambda event: self.action_uncheck(self.act_view_layers)
+        self.view_3d_dock.closeEvent = lambda event: self.action_uncheck(self.act_view_3d)
+        self.error_log.closeEvent = lambda event: self.action_uncheck(self.act_view_errors)
+    
     def autosave(self):
         import os
         import glob

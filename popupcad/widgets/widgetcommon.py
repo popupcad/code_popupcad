@@ -10,6 +10,9 @@ import PySide.QtGui as qg
 import popupcad
 
 class WidgetCommon(object):
+    def action_uncheck(self,action_to_uncheck):
+        action_to_uncheck.setChecked(False)
+
     def showhide2(self,window,action):
         if action.isChecked():
             window.show()
