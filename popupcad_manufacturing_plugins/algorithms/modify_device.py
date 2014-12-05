@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.laminate import Laminate
+import popupcad
 
 def modify_device(device,support_sketch,support_width,support_out,holes_radius,cut_width):
     '''from a user-input support sketch, modify a device to be compatible with the given support design.'''
@@ -16,14 +17,14 @@ def modify_device(device,support_sketch,support_width,support_out,holes_radius,c
     
     holes_1 = support_pieces.buffer(holes_radius)
     holes_2 = holes_1.unarylayeroperation('union',layers,layers)
-    holes = holes_2.difference(holes_1)
+    holes = holes_2.difference(holes_1.buffer(.00001*popupcad.internal_argument_scaling))
     device_with_holes = device.difference(holes)
     
     cut_width = support_sketch.buffer(cut_width/2)
     cuts_1 = cut_width.intersection(support_out2)
     cuts_2 = cuts_1.unarylayeroperation('union',layers,layers)
-    cuts_3 = cuts_2.difference(cuts_1)
-    cuts= cuts_3.unarylayeroperation('union',layers,layers)
+#    cuts_3 = cuts_2.difference(cuts_1)
+#    cuts= cuts_3.unarylayeroperation('union',layers,layers)
 
 #   return the support, the cuts which will remove the support from the device, and the modified device
-    return device_with_holes,support_width,cuts
+    return device_with_holes,support_width,cuts_2

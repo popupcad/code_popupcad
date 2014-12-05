@@ -149,11 +149,14 @@ class Dialog(qg.QDialog):
                 item.setSelected(True)
 
         self.loadoperations()
-        if subopref != None: 
-            id, jj = subopref
-            if subdesign!=None:
-                ii = subdesign.operation_index(id)
-                self.optree.setCurrentIndeces(ii,jj)
+        try:
+            if subopref != None: 
+                id, jj = subopref
+                if subdesign!=None:
+                    ii = subdesign.operation_index(id)
+                    self.optree.setCurrentIndeces(ii,jj)
+        except NoOperation:
+            pass
 
             
     def subdesign(self):
