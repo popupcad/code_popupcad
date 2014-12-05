@@ -55,28 +55,16 @@ class ListManager(qg.QWidget):
             layout3.addWidget(qg.QLabel(name))
         layout3.addLayout(layout)
 
-#        self.setLayout(layout3)
-#
-#        self.loadbutton = qg.QPushButton('Load...')
-#        self.newbutton = qg.QPushButton('New...')
-#        self.editbutton = qg.QPushButton('Edit...')
-##        self.insertbutton = qg.QPushButton('Insert..')
-#        self.delete_button = qg.QPushButton('Delete')
-#        self.save_button = qg.QPushButton('Save As...')
-#        self.cleanup_button = qg.QPushButton('Cleanup')
-#        self.copy_button = qg.QPushButton('Copy')
-#        
-#        self.delete_button.pressed.connect(self.remove_item)
-#        self.save_button.pressed.connect(self.save_item)
-#        self.copy_button.pressed.connect(self.copy_item)
+        self.setLayout(layout3)
 
         for widget in self.widgets():
             self.layout2.addWidget(widget)
         self.itemlist.setSelectionMode(self.itemlist.SelectionMode.SingleSelection)        
         self.itemlist.doubleClicked.connect(self.itemDoubleClicked)
-
+        self.layout2.addStretch()
+        
     def buildButtonItem(self,name,method):
-        button= qg.QPushButton('name')
+        button= qg.QPushButton(name)
         button.pressed.connect(method)
         return button
 
@@ -84,13 +72,10 @@ class ListManager(qg.QWidget):
         actions = []
         actions.append(('Save As...',self.save_item))
         actions.append(('Copy',self.copy_item))
-#        actions.append(('Delete',self.remove_item))
         widgets = [self.buildButtonItem(*action) for action in actions] 
         return widgets
         
     def itemDoubleClicked(self,index):
-#        userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
-#        self.signal_edit.emit(userdata)        
         try: 
             self.edit_item()        
         except AttributeError:
@@ -104,7 +89,6 @@ class ListManager(qg.QWidget):
     def save_item(self):
         for item in self.itemlist.selectedItems():
             item.value.saveAs()
-#        self.refresh_list()
 
     def copy_item(self):
         newitems = []
@@ -121,50 +105,6 @@ class ListManager(qg.QWidget):
             item = self.itemlist.item(ii)
             item.setSelected(item.value == lastselected)
             
-    def set_layout(self,cleanup_method = None,edit_method = None,new_method = None,load_method = None,copy = False, delete = False, saveas = False):
-        if cleanup_method != None:
-            def cleanup():
-                cleanup_method()
-                self.refresh_list()
-            self.cleanup = cleanup
-
-            self.cleanup_button.pressed.connect(cleanup)
-            self.layout2.addWidget(self.cleanup_button)
-
-        if new_method!=None:
-            def new_item(*args,**kwargs):
-                new_method(self.refresh_list)
-            self.new_item = new_item
-            
-            self.newbutton.pressed.connect(new_item)
-            self.layout2.addWidget(self.newbutton)
-
-        if edit_method!=None:
-            def edit_item(*args,**kwargs):
-                for item in self.itemlist.selectedItems():
-                    edit_method(item.value)
-            self.edit_item  = edit_item
-
-            self.editbutton.pressed.connect(edit_item)
-            self.layout2.addWidget(self.editbutton)
-
-        if load_method!=None:
-            def load_item(*args,**kwargs):
-                newitem = load_method()
-                self.items[newitem.id] = newitem
-                self.refresh_list(newitem)
-
-            self.loadbutton.pressed.connect(load_item)
-            self.layout2.addWidget(self.loadbutton)
-            
-        if saveas:
-            self.layout2.addWidget(self.save_button)
-        if copy:
-            self.layout2.addWidget(self.copy_button)
-        if delete:        
-            self.layout2.addWidget(self.delete_button)
-        self.layout2.addStretch()
-
 class Dummy(object):
     pass
 
@@ -172,67 +112,83 @@ class SketchListManager(ListManager):
     def __init__(self,design,name='Sketch',**kwargs):
         self.design = design
         super(SketchListManager,self).__init__(design.sketches,name=name)
-        
-#        self.set_layout(edit_method = edit_method,new_method = new_method,load_method = Sketch.open,saveas = True,copy = True,**kwargs)
+        self.itemlist.doubleClicked.connect(self.edit_method)
 
-    def edit_method(sketch):
+    def edit_method(self):
         for item in self.itemlist.selectedItems():
             item.value.edit(None,self.design,selectops = True)
         
-    def new_method(refresh_method):
+    def new_method(self):
+        from popupcad.guis.sketcher import Sketcher
+        from popupcad.filetypes.sketch import Sketch
         def accept_method(sketch,*args):
             self.design.sketches[sketch.id] = sketch
             self.refresh_list(sketch)
         sketcher = Sketcher(None,Sketch(),self.design,accept_method = accept_method,selectops = True)
         sketcher.show()
+    
+    def load_item(self):
+        from popupcad.filetypes.sketch import Sketch
+        newitem = Sketch.open()
+        self.items[newitem.id] = newitem
+        self.refresh_list(newitem)
 
     def widgets(self):
-        from popupcad.filetypes.sketch import Sketch
         actions = []
         actions.append(('New...',self.new_method))
         actions.append(('Edit...',self.edit_method))
-        actions.append(('Load...',Sketch.open))
+        actions.append(('Load...',self.load_item))
         widgets = [self.buildButtonItem(*action) for action in actions] 
         widgets.extend(super(SketchListManager,self).widgets())
         return widgets
 
 class AdvancedSketchListManager(SketchListManager):
-#    def __init__(self,design):
-#        super(AdvancedSketchListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_sketches,delete = True)
-#    def __init__(self,design):
-#        super(AdvancedSketchListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_sketches,delete = True)
-
+    def __init__(self,design):
+        super(AdvancedSketchListManager,self).__init__(design,name=None)        
+    def cleanup(self):
+        self.design.cleanup_sketches()
+        self.refresh_list()
     def widgets(self):
         widgets = []
-        widgets.append(self.buildButtonItem('Cleanup',self.design.cleanup_sketches))
+        widgets.append(self.buildButtonItem('Cleanup',self.cleanup))
         widgets.extend(super(AdvancedSketchListManager,self).widgets())
         widgets.append(self.buildButtonItem('Delete',self.remove_item))
         return widgets
         
 class DesignListManager(ListManager):
     def __init__(self,design,name='Sketch',**kwargs):
-#        from popupcad.filetypes.design import Design
         self.design = design
         super(DesignListManager,self).__init__(design.subdesigns,name=name)
-#        self.set_layout(load_method = Design.open,saveas = True,copy = True,**kwargs)
-    def widgets(self):
+        self.itemlist.doubleClicked.connect(self.edit_method)
+
+    def edit_method(self):
+        for item in self.itemlist.selectedItems():
+            item.value.edit(None,self.design,selectops = True)
+
+    def load_item(self):
         from popupcad.filetypes.design import Design
-        
+        newitem = Design.open()
+        self.items[newitem.id] = newitem
+        self.refresh_list(newitem)
+
+    def widgets(self):
         actions = []
-#        actions.append(('New...',self.new_method))
-#        actions.append(('Edit...',self.edit_method))
-        actions.append(('Load...',Design.open))
+        actions.append(('Load...',self.load_item))
         widgets = [self.buildButtonItem(*action) for action in actions] 
-        widgets.extend(super(SketchListManager,self).widgets())
+        widgets.extend(super(DesignListManager,self).widgets())
         return widgets
 
 class AdvancedDesignListManager(DesignListManager):
-#    def __init__(self,design):
-#        super(AdvancedDesignListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_subdesigns,delete = True)
+    def __init__(self,design):
+        super(AdvancedDesignListManager,self).__init__(design,name=None) 
+    def cleanup(self):
+        self.design.cleanup_subdesigns()
+        self.refresh_list()
+        
     def widgets(self):
         widgets = []
-        widgets.append(self.buildButtonItem('Cleanup',self.design.cleanup_subdesigns))
-        widgets.extend(super(AdvancedSketchListManager,self).widgets())
+        widgets.append(self.buildButtonItem('Cleanup',self.cleanup))
+        widgets.extend(super(AdvancedDesignListManager,self).widgets())
         widgets.append(self.buildButtonItem('Delete',self.remove_item))
         return widgets
 
@@ -241,7 +197,5 @@ if __name__=='__main__':
     app = qg.QApplication(sys.argv)
     dict1 = {'asdf':Dummy(),'xxx':Dummy()}
     lm = ListManager(dict1)
-#    lm.button_layout1()
     lm.show()
 
-#    sys.exit(app.exec_())        
