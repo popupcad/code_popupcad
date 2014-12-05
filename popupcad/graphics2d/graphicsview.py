@@ -10,7 +10,6 @@ import popupcad
 
 class GraphicsView(qg.QGraphicsView):
     zoom_max = popupcad.zoom_max
-    zoom_default = popupcad.zoom_default
     zoom_min = popupcad.zoom_min
     scale_factor = 1.2
     def __init__(self,*args,**kwargs):
@@ -108,15 +107,6 @@ class GraphicsView(qg.QGraphicsView):
         scene.setSceneRect(scene_rect)    
         self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)
 
-#        if scene_rect.width()==0 and scene_rect.height()==0:
-#            currentzoom = self.zoom()
-#            if currentzoom>self.zoom_default:
-#                dz = self.zoom_default/currentzoom
-#                self.scale(dz,dz)
-#            elif currentzoom<self.zoom_min:
-#                dz = self.zoom_min/currentzoom
-#                self.scale(dz,dz)            
-#        else:
         currentzoom = self.zoom()
         if currentzoom>self.zoom_max:
             dz = self.zoom_max/currentzoom
@@ -124,7 +114,6 @@ class GraphicsView(qg.QGraphicsView):
         elif currentzoom<self.zoom_min:
             dz = self.zoom_min/currentzoom
             self.scale(dz,dz)
-#        self.scale(1/self.scale_factor,1/self.scale_factor)
         
     def resetTransform(self):
         super(GraphicsView,self).resetTransform()

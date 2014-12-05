@@ -171,7 +171,7 @@ class Constraint(object):
         from popupcad.geometry.line import Line
         from popupcad.geometry.vertex import BaseVertex
     
-        segment_ids = [(line.vertex1.id,line.vertex2.id) for line in objects if isinstance(line,Line)]
+        segment_ids = [tuple(sorted((line.vertex1.id,line.vertex2.id))) for line in objects if isinstance(line,Line)]
         segment_ids = list(set(segment_ids))
         
         vertices = []

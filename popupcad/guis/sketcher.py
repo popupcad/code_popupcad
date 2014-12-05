@@ -10,7 +10,7 @@ import PySide.QtCore as qc
 import popupcad
 from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
 from popupcad.graphics2d.interactivevertex import InteractiveVertex,ReferenceInteractiveVertex,DrawingPoint,StaticDrawingPoint
-from popupcad.graphics2d.interactiveedge import InteractiveEdge,ReferenceInteractiveEdge
+from popupcad.graphics2d.interactiveedge import InteractiveEdge,ReferenceInteractiveEdge,EdgeBase
 from popupcad.graphics2d.interactive import Interactive, InteractiveLine
 from popupcad.graphics2d.static import Static,StaticLine
 from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,ProtoRect2Point
@@ -320,10 +320,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             if v.get_generic().id in obj1.customdata.vertex_ids:
                 v.setSelected(True)
         pass
-        edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge)]
+        edges = [item for item in self.scene.items() if isinstance(item,InteractiveEdge) or isinstance(item,ReferenceInteractiveEdge)]
         for edge in edges:
-            c= set(edge.get_generic().vertices())
-            if any([len(c.intersection(segment))==2 for segment in obj1.customdata.segment_ids]):
+            c= tuple(sorted([item.id for item in edge.generic.vertices()]))
+            if c in obj1.customdata.segment_ids:
                 edge.setSelected(True)
 
     def loadsketch(self,sketch):

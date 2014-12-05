@@ -30,7 +30,6 @@ inkscape_mm_conversion = 1./282.22293
 coreldraw_mm_conversion = 1./264.581 
 
 zoom_max = 1.
-zoom_default = .011
 zoom_min = .00011
 
 version = basic_functions.return_formatted_time(specificity = 'day',small_separator = '.',big_separator='.')
