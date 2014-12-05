@@ -110,7 +110,11 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
         self.set_nominal_size()
         self.move_center()
-        
+        self.operationdock.closeEvent = lambda event: self.action_uncheck(self.act_view_ops)
+        self.layerlistwidgetdock.closeEvent = lambda event: self.action_uncheck(self.act_view_layers)
+        self.view_3d_dock.closeEvent = lambda event: self.action_uncheck(self.act_view_3d)
+        self.error_log.closeEvent = lambda event: self.action_uncheck(self.act_view_errors)
+    
     def autosave(self):
         import os
         import glob
@@ -370,11 +374,10 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
-            filename = os.path.normpath(os.path.join(popupcad.exportdir,basename))
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
             geoms = [item.outputstatic(color = (1,1,1,1)) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
-            scene.renderprocess(filename,*win.acceptdata())
+            scene.renderprocess(basename,*win.acceptdata())
 
     def exportLayerSVG2(self):
         import os
@@ -389,11 +392,10 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
-            filename = os.path.normpath(os.path.join(popupcad.exportdir,basename))
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
             geoms = [item.outputstatic(color=layer.color) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
-            scene.renderprocess(filename,*win.acceptdata())
+            scene.renderprocess(basename,*win.acceptdata())
 
     @loggable
     def highlightbody(self,ref):

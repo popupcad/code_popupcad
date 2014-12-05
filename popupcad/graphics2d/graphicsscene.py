@@ -41,6 +41,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         self.update()
         self.setItemIndexMethod(self.NoIndex)
         self.constraints_on= False
+        self.extraobjects = []
         self.nextgeometry = None
     def addItem(self,item):
         super(GraphicsScene,self).addItem(item)
@@ -85,12 +86,9 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
 
         win = OutputSelection()
         accepted = win.exec_()
-        if not accepted:
-            scaling,center,rotation = win.acceptdata()
-            
-        time = popupcad.basic_functions.return_formatted_time()
-        filename = os.path.normpath(os.path.join(popupcad.exportdir,'2D_screenshot_'+time+'.svg'))
-        self.renderprocess(filename,*win.acceptdata())
+        if accepted:
+            time = popupcad.basic_functions.return_formatted_time()
+            self.renderprocess('2D_screenshot_'+time+'.svg',*win.acceptdata())
 
     def buildvertices(self,sceneitems,controlpoints,controllines):
         from popupcad.graphics2d.interactive import Interactive
@@ -185,6 +183,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
 
     def childfinished(self):
         self.newpolygon.emit()
+        self.updatevertices()
         self.temp=None
 
     def cancelcreate(self):
@@ -195,12 +194,17 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
             pass
         self.temp = None
         
-    def showvertices(self,extraobjects):
-        if self.constraints_on:        
-            self.constraints_on = False
-        else:
-            self.constraints_on = True
-
+    def showvertices(self,constraints_on):
+#        if self.constraints_on:        
+        self.constraints_on = constraints_on
+#        else:
+#            self.constraints_on = True
+    def update_extra_objects(self,extraobjects):
+        self.extraobjects = extraobjects
+        
+    def updatevertices(self):
+#        self.removerefgeoms()
+        self.removecontrolpoints()
         if self.constraints_on:            
             for item in self.items():
                 try:
@@ -209,7 +213,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                             self.addItem(child)
                 except AttributeError:
                     pass
-            for item in extraobjects:
+            for item in self.extraobjects:
                 if not item in self.items():
                     self.addItem(item)
         else:
@@ -219,7 +223,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                         child.removefromscene()
                 except AttributeError:
                     pass
-            self.removecontrolpoints()
+#            self.removecontrolpoints()
         self.views()[0].updatescaleables()
 
     def removerefgeoms(self):
