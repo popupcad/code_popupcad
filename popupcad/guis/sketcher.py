@@ -9,7 +9,7 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
 from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
-from popupcad.graphics2d.interactivevertex import InteractiveVertex,ReferenceInteractiveVertex,DrawingPoint,StaticDrawingPoint
+from popupcad.graphics2d.interactivevertex import InteractiveVertex,ReferenceInteractiveVertex,DrawingPoint,StaticDrawingPoint,InteractiveVertexBase
 from popupcad.graphics2d.interactiveedge import InteractiveEdge,ReferenceInteractiveEdge,EdgeBase
 from popupcad.graphics2d.interactive import Interactive, InteractiveLine
 from popupcad.graphics2d.static import Static,StaticLine
@@ -265,7 +265,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 item.setSelected(False)
                 newitem.setSelected(True)
 
-            if isinstance(item,ReferenceInteractiveEdge):
+            elif isinstance(item,ReferenceInteractiveEdge):
                 generic = item.get_generic()
                 v1 = generic.vertex1.copy_values(ShapeVertex(),False)
                 v2 = generic.vertex2.copy_values(ShapeVertex(),False)
@@ -315,7 +315,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def showconstraint_item(self,obj1):
         self.showprop.emit(obj1.customdata)
         self.scene.clearSelection()
-        vertices = [item for item in self.scene.items() if isinstance(item,InteractiveVertex)]
+        vertices = [item for item in self.scene.items() if isinstance(item,InteractiveVertexBase)]
         for v in vertices:
             if v.get_generic().id in obj1.customdata.vertex_ids:
                 v.setSelected(True)
