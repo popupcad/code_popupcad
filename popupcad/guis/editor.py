@@ -107,12 +107,9 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             popupcad_manufacturing_plugins.initialize(self,self.design)
         except ImportError:
             print('Manufacturing Plugin Not Found')
-        
-        self.resize(1024,576)
-#        dxy = qg.QApplication.desktop().screen().rect().topRight() - self.rect().topRight() + qc.QPoint(-16,0)
-        dxy = qg.QApplication.desktop().screen().rect().center() - self.rect().center()
-        self.move(dxy)
-        
+
+        self.set_nominal_size()
+        self.move_center()
         
     def autosave(self):
         import os
