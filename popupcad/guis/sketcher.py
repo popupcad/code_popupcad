@@ -9,8 +9,7 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
 from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
-from popupcad.graphics2d.drawingpoint import DrawingPoint,StaticDrawingPoint
-from popupcad.graphics2d.interactivevertex import InteractiveVertex,ReferenceInteractiveVertex
+from popupcad.graphics2d.interactivevertex import InteractiveVertex,ReferenceInteractiveVertex,DrawingPoint,StaticDrawingPoint
 from popupcad.graphics2d.interactiveedge import InteractiveEdge,ReferenceInteractiveEdge
 from popupcad.graphics2d.interactive import Interactive, InteractiveLine
 from popupcad.graphics2d.static import Static,StaticLine

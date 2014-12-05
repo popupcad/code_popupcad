@@ -90,27 +90,41 @@ class GraphicsView(qg.QGraphicsView):
         for item in scene.items():
             item.resetTransform()
         self.resetTransform()
-        scene.setSceneRect(scene.itemsBoundingRect())
-        scene_rect = scene.sceneRect()
+        scene_rect = scene.itemsBoundingRect()
+#        scene.setSceneRect()
+#        scene_rect = scene.sceneRect()
+        if scene_rect.width()==0 and scene_rect.height()==0:
+            v = popupcad.internal_argument_scaling
+            scene_rect = qc.QRect(-50*v,-50*v,100*v,100*v)
+        else:
+            w = scene_rect.width()
+            h = scene_rect.height()
+            
+            scene_rect.setLeft(scene_rect.left() - w*.1)
+            scene_rect.setRight(scene_rect.right() + w*.1)
+            scene_rect.setTop(scene_rect.top() - h*.1)
+            scene_rect.setBottom(scene_rect.bottom() + h*.1)
+
+        scene.setSceneRect(scene_rect)    
         self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)
 
-        if scene_rect.width()==0 and scene_rect.height()==0:
-            currentzoom = self.zoom()
-            if currentzoom>self.zoom_default:
-                dz = self.zoom_default/currentzoom
-                self.scale(dz,dz)
-            elif currentzoom<self.zoom_min:
-                dz = self.zoom_min/currentzoom
-                self.scale(dz,dz)            
-        else:
-            currentzoom = self.zoom()
-            if currentzoom>self.zoom_max:
-                dz = self.zoom_max/currentzoom
-                self.scale(dz,dz)
-            elif currentzoom<self.zoom_min:
-                dz = self.zoom_min/currentzoom
-                self.scale(dz,dz)
-        self.scale(1/self.scale_factor,1/self.scale_factor)
+#        if scene_rect.width()==0 and scene_rect.height()==0:
+#            currentzoom = self.zoom()
+#            if currentzoom>self.zoom_default:
+#                dz = self.zoom_default/currentzoom
+#                self.scale(dz,dz)
+#            elif currentzoom<self.zoom_min:
+#                dz = self.zoom_min/currentzoom
+#                self.scale(dz,dz)            
+#        else:
+        currentzoom = self.zoom()
+        if currentzoom>self.zoom_max:
+            dz = self.zoom_max/currentzoom
+            self.scale(dz,dz)
+        elif currentzoom<self.zoom_min:
+            dz = self.zoom_min/currentzoom
+            self.scale(dz,dz)
+#        self.scale(1/self.scale_factor,1/self.scale_factor)
         
     def resetTransform(self):
         super(GraphicsView,self).resetTransform()

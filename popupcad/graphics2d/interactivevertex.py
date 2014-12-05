@@ -92,3 +92,21 @@ class ReferenceInteractiveVertex(InteractiveVertex):
     z_below = 100
     z_above = 105
 
+class DrawingPoint(InteractiveVertexBase):
+    isDeletable = True
+    radius = 5
+    z_below = 101
+    z_above = 105
+    def __init__(self,*args,**kwargs):
+        super(DrawingPoint,self).__init__(*args,**kwargs)
+    def refreshview(self):
+        pass
+
+class StaticDrawingPoint(InteractiveVertexBase):
+    radius = 5
+    z_below = 100
+    z_above = 105
+    def __init__(self,*args,**kwargs):
+        super(StaticDrawingPoint,self).__init__(*args,**kwargs)
+    def refreshview(self):
+        pass

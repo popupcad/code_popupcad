@@ -13,7 +13,7 @@ from .static import Static
 from .svg_support import SVGOutputSupport
 from .modes import Modes
 from popupcad.geometry.vertex import ShapeVertex,DrawnPoint,BaseVertex
-from popupcad.graphics2d.drawingpoint import DrawingPoint,StaticDrawingPoint
+from popupcad.graphics2d.interactivevertex import DrawingPoint,StaticDrawingPoint
 from .text import TextItem,TextParent,GenericText
 import time
 

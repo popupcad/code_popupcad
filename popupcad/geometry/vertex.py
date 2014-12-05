@@ -171,7 +171,7 @@ class DrawnPoint(ShapeVertex):
     def interiorpoints(self):
         return []
     def gen_interactive(self):
-        from popupcad.graphics2d.drawingpoint import DrawingPoint
+        from popupcad.graphics2d.interactivevertex import DrawingPoint
         iv = DrawingPoint(self)
         iv.updatefromgeneric()
         return iv
@@ -182,13 +182,13 @@ class DrawnPoint(ShapeVertex):
     def segmentpoints(self):
         return []
     def outputinteractive(self):
-        from popupcad.graphics2d.drawingpoint import DrawingPoint
+        from popupcad.graphics2d.interactivevertex import DrawingPoint
         iv = DrawingPoint(self)
         iv.updatefromgeneric()
         return iv
 
     def outputstatic(self,*args,**kwargs):
-        from popupcad.graphics2d.drawingpoint import StaticDrawingPoint
+        from popupcad.graphics2d.interactivevertex import StaticDrawingPoint
         iv = StaticDrawingPoint(self)
         iv.updatefromgeneric()
         return iv
