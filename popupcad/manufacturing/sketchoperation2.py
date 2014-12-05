@@ -14,7 +14,7 @@ import popupcad.widgets
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.design import NoOperation
 import popupcad.geometry.customshapely as customshapely
-import popupcad.widgets.listmanager as listmanager
+from popupcad.widgets.listmanager import SketchListManager
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.manufacturing.nulloperation import NullOp
 
@@ -35,7 +35,7 @@ class Dialog(qg.QDialog):
         
         self.optree.setCurrentIndeces(selectedopindex,outputref)        
 
-        self.sketchwidget = listmanager.build_sketchlist(self.design)
+        self.sketchwidget = SketchListManager(self.design)
         for ii in range(self.sketchwidget.itemlist.count()):
             item = self.sketchwidget.itemlist.item(ii)
             if item.value==sketch:

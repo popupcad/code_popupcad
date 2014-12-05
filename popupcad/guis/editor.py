@@ -309,16 +309,16 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def sketchlist(self):
-        from popupcad.widgets import listmanager
-        widget = listmanager.build_sketchlist(self.design,name=None,cleanup_method = self.design.cleanup_sketches,delete = True)
+        from popupcad.widgets.listmanager import AdvancedSketchListManager
+        widget = AdvancedSketchListManager(self.design)
         dialog = self.builddialog(widget)        
         dialog.setWindowTitle('Sketches')
         dialog.exec_()
 
     @loggable
     def subdesigns(self):
-        from popupcad.widgets import listmanager
-        widget = listmanager.build_subdesignslist(self.design,name=None,cleanup_method = self.design.cleanup_subdesigns,delete = True)
+        from popupcad.widgets.listmanager import AdvancedDesignListManager
+        widget = AdvancedDesignListManager(self.design)
         dialog = self.builddialog(widget)        
         dialog.setWindowTitle('Sub-Designs')
         dialog.exec_()

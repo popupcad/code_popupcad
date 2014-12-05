@@ -19,7 +19,7 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.filetypes.enum import enum
 from popupcad.algorithms.points import calctransformfrom2lines    
 from popupcad.filetypes.sketch import Sketch
-import popupcad.widgets.listmanager as listmanager
+from  popupcad.widgets.listmanager import SketchListManager,DesignListManager
 
 class Dialog(qg.QDialog):
     def __init__(self,design,prioroperations,sketch = None, subdesign = None,subopref = None,transformtype_x = None,transformtype_y = None,shift = 0,flip = False,scalex = 1.,scaley = 1.):
@@ -38,11 +38,11 @@ class Dialog(qg.QDialog):
         self.prioroperations = prioroperations
         self.design = design
 
-        self.designwidget = listmanager.build_subdesignslist(design)
+        self.designwidget = DesignListManager(design)
 
         self.optree = DraggableTreeWidget()
         
-        self.sketchwidget = listmanager.build_sketchlist(design)
+        self.sketchwidget = SketchListManager(design)
 
         self.radiobox_scale_x= qg.QRadioButton('Scale X')
         self.radiobox_custom_x= qg.QRadioButton('Custom X')

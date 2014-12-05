@@ -16,7 +16,7 @@ from popupcad.filetypes.validators import StrictDoubleValidator
 from popupcad.filetypes.enum import enum
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
-import popupcad.widgets.listmanager as listmanager
+from popupcad.widgets.listmanager import SketchListManager
 from popupcad.filetypes.listwidgetitem import ListWidgetItem
 
 from .. import algorithms
@@ -31,7 +31,7 @@ class Dialog(qg.QDialog):
         self.device_index.linklist(self.operationlist)
         self.device_index.setCurrentIndeces(device_index,deviceoutputref)
         
-        self.sketchwidget = listmanager.build_sketchlist(self.design)
+        self.sketchwidget = SketchListManager(self.design)
         for ii in range(self.sketchwidget.itemlist.count()):
             item = self.sketchwidget.itemlist.item(ii)
             if item.value==sketch:

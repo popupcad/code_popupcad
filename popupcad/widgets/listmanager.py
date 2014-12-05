@@ -8,30 +8,6 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 
-def build_sketchlist(design,name='Sketch',**kwargs):
-    from popupcad.filetypes.sketch import Sketch
-    from popupcad.guis.sketcher import Sketcher
-
-    widget = ListManager(design.sketches,name=name)
-    def edit_method(sketch):
-        sketch.edit(None,design,selectops = True)
-    def new_method(refresh_method):
-        def accept_method2(sketch,*args):
-            design.sketches[sketch.id] = sketch
-            refresh_method(sketch)
-        sketcher = Sketcher(None,Sketch(),design,accept_method = accept_method2,selectops = True)
-        sketcher.show()
-    
-    widget.set_layout(edit_method = edit_method,new_method = new_method,load_method = Sketch.open,saveas = True,copy = True,**kwargs)
-    return widget
-
-def build_subdesignslist(design,name='Sub-Design',**kwargs):
-    from popupcad.filetypes.design import Design
-    widget = ListManager(design.subdesigns,name=name)
-    widget.set_layout(load_method = Design.open,saveas = True,copy = True,**kwargs)
-    return widget
-
-
 class ListItem(qg.QListWidgetItem):
     def __init__(self,value):
         super(ListItem,self).__init__(str(value))
@@ -96,6 +72,11 @@ class ListManager(qg.QWidget):
         
         self.itemlist.setSelectionMode(self.itemlist.SelectionMode.SingleSelection)        
         self.itemlist.doubleClicked.connect(self.itemDoubleClicked)
+
+    def buildButtonItem(self,name,method):
+        button= qg.QPushButton('name')
+        button.pressed.connect(method)
+        return button
 
     def itemDoubleClicked(self,index):
 #        userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
@@ -176,6 +157,39 @@ class ListManager(qg.QWidget):
 
 class Dummy(object):
     pass
+
+class SketchListManager(ListManager):
+    def __init__(self,design,name='Sketch',**kwargs):
+        from popupcad.filetypes.sketch import Sketch
+        from popupcad.guis.sketcher import Sketcher
+
+        super(SketchListManager,self).__init__(design.sketches,name=name)
+        
+        def edit_method(sketch):
+            sketch.edit(None,design,selectops = True)
+        def new_method(refresh_method):
+            def accept_method(sketch,*args):
+                design.sketches[sketch.id] = sketch
+                refresh_method(sketch)
+            sketcher = Sketcher(None,Sketch(),design,accept_method = accept_method,selectops = True)
+            sketcher.show()
+        
+        self.set_layout(edit_method = edit_method,new_method = new_method,load_method = Sketch.open,saveas = True,copy = True,**kwargs)
+
+class AdvancedSketchListManager(SketchListManager):
+    def __init__(self,design):
+        super(AdvancedSketchListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_sketches,delete = True)
+        
+class DesignListManager(ListManager):
+    def __init__(self,design,name='Sketch',**kwargs):
+        from popupcad.filetypes.design import Design
+
+        super(DesignListManager,self).__init__(design.subdesigns,name=name)
+        self.set_layout(load_method = Design.open,saveas = True,copy = True,**kwargs)
+
+class AdvancedDesignListManager(DesignListManager):
+    def __init__(self,design):
+        super(AdvancedDesignListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_subdesigns,delete = True)
 
 if __name__=='__main__':
     import sys
