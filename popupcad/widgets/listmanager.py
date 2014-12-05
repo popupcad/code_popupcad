@@ -187,6 +187,7 @@ class SketchListManager(ListManager):
         sketcher.show()
 
     def widgets(self):
+        from popupcad.filetypes.sketch import Sketch
         actions = []
         actions.append(('New...',self.new_method))
         actions.append(('Edit...',self.edit_method))
@@ -196,27 +197,44 @@ class SketchListManager(ListManager):
         return widgets
 
 class AdvancedSketchListManager(SketchListManager):
-    def __init__(self,design):
+#    def __init__(self,design):
+#        super(AdvancedSketchListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_sketches,delete = True)
+#    def __init__(self,design):
 #        super(AdvancedSketchListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_sketches,delete = True)
 
     def widgets(self):
-        actions = []
-        actions.append(('Cleanup',self.design.cleanup_sketches))
-        actions.append(('Delete',self.remove_item))
-        widgets = [self.buildButtonItem(*action) for action in actions] 
+        widgets = []
+        widgets.append(self.buildButtonItem('Cleanup',self.design.cleanup_sketches))
         widgets.extend(super(AdvancedSketchListManager,self).widgets())
+        widgets.append(self.buildButtonItem('Delete',self.remove_item))
         return widgets
         
 class DesignListManager(ListManager):
     def __init__(self,design,name='Sketch',**kwargs):
-        from popupcad.filetypes.design import Design
-
+#        from popupcad.filetypes.design import Design
+        self.design = design
         super(DesignListManager,self).__init__(design.subdesigns,name=name)
-        self.set_layout(load_method = Design.open,saveas = True,copy = True,**kwargs)
+#        self.set_layout(load_method = Design.open,saveas = True,copy = True,**kwargs)
+    def widgets(self):
+        from popupcad.filetypes.design import Design
+        
+        actions = []
+#        actions.append(('New...',self.new_method))
+#        actions.append(('Edit...',self.edit_method))
+        actions.append(('Load...',Design.open))
+        widgets = [self.buildButtonItem(*action) for action in actions] 
+        widgets.extend(super(SketchListManager,self).widgets())
+        return widgets
 
 class AdvancedDesignListManager(DesignListManager):
-    def __init__(self,design):
-        super(AdvancedDesignListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_subdesigns,delete = True)
+#    def __init__(self,design):
+#        super(AdvancedDesignListManager,self).__init__(design,name=None,cleanup_method = design.cleanup_subdesigns,delete = True)
+    def widgets(self):
+        widgets = []
+        widgets.append(self.buildButtonItem('Cleanup',self.design.cleanup_subdesigns))
+        widgets.extend(super(AdvancedSketchListManager,self).widgets())
+        widgets.append(self.buildButtonItem('Delete',self.remove_item))
+        return widgets
 
 if __name__=='__main__':
     import sys
