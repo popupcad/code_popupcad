@@ -82,10 +82,7 @@ class Design(popupCADFile):
         self.copy_file_params(new,identical)
 
         return new    
-        
-#    @classmethod
-#    def open(cls,reprocess,parent = None):
-#        return super(Design,cls).open(parent,reprocess=reprocess)
+
     def addoperation(self,operation):
         if not not self.operations:
             if operation in self.operations:
@@ -120,8 +117,22 @@ class Design(popupCADFile):
                 pass
         return dict(refs)
 
-    def reprocessoperations(self,operations = None):
+    def subdesigns_are_reprocessed(self,setvalue = None):
+        if setvalue==None:
+            try:
+                return self.subdesigns_reprocessed
+            except AttributeError:
+                self.subdesigns_reprocessed = False
+                return self.subdesigns_reprocessed
+        else:
+            self.subdesigns_reprocessed = setvalue
 
+    def reprocessoperations(self,operations = None):
+        if not self.subdesigns_are_reprocessed():
+            for subdesign in self.subdesigns.values():
+                subdesign.reprocessoperations()
+            self.subdesigns_are_reprocessed(True)
+        
         if operations == None:
             operations = self.operations
 

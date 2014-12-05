@@ -228,7 +228,7 @@ class PlaceOperation7(Operation):
         try:
             designgeometry = subdesign.operations[subdesign.operation_index(self.subopref[0])].output[self.subopref[1]].csg
         except AttributeError:
-            subdesign.reprocessoperations()
+#            subdesign.reprocessoperations()
             designgeometry = subdesign.operations[subdesign.operation_index(self.subopref[0])].output[self.subopref[1]].csg
             
         sketch = design.sketches[self.sketchid]

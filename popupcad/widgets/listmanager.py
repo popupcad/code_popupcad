@@ -168,6 +168,7 @@ class DesignListManager(ListManager):
     def load_item(self):
         from popupcad.filetypes.design import Design
         newitem = Design.open()
+        newitem.reprocessoperations()
         self.items[newitem.id] = newitem
         self.refresh_list(newitem)
 
