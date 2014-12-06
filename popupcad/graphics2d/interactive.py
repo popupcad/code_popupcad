@@ -8,7 +8,7 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from .graphicsitems import Common
-from .graphicsitems import CommonShape,BasicLine
+from .graphicsitems import CommonShape
 
 from .modes import Modes
 
@@ -249,4 +249,30 @@ class InteractiveLine(Interactive,CommonShape,qg.QGraphicsPathItem):
     brushes = Interactive.nobrushes.copy()
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
+#    def updateshape(self):
+#        self.setLine(x1,y1,x2,y2)
+#        self.update()
+#        path = self.painterpath()
+#        self.setPath(path)
+#        self.update()
+
+    def updateshape(self):
+        from math import atan2,pi,sin,cos
+        (x1,y1),(x2,y2) = self.generic.exteriorpoints()
+        dx = x2-x1
+        dy = y2-y1
+        l = ((dx)**2+(dy)**2)**.5
+        q = atan2(dy,dx)
+        d = q*180/pi
+        self.resetTransform()
+#        qg.QGraphicsLineItem.setLine(self,0,0,l,0)
+        path = qg.QPainterPath()
+        poly = qg.QPolygonF([qc.QPointF(0,0),qc.QPointF(l,0)])
+        path.addPolygon(poly)
+        self.setPath(path)
+        self.rotate(d)
+#        r = (x1**2+y1**2)**.5
+        xy = self.mapFromScene(x1,y1)
+        self.translate(xy.x(),xy.y())
+        self.update()
 
