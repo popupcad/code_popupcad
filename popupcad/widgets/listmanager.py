@@ -159,11 +159,11 @@ class DesignListManager(ListManager):
     def __init__(self,design,name='Sketch',**kwargs):
         self.design = design
         super(DesignListManager,self).__init__(design.subdesigns,name=name)
-        self.itemlist.doubleClicked.connect(self.edit_method)
+#        self.itemlist.doubleClicked.connect(self.edit_method)
 
-    def edit_method(self):
-        for item in self.itemlist.selectedItems():
-            item.value.edit(None,self.design,selectops = True)
+#    def edit_method(self):
+#        for item in self.itemlist.selectedItems():
+#            item.value.edit(None,self.design,selectops = True)
 
     def load_item(self):
         from popupcad.filetypes.design import Design

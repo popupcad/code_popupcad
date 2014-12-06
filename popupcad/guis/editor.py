@@ -62,7 +62,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
         self.setTabPosition(qc.Qt.AllDockWidgetAreas, qg.QTabWidget.South)
 
-        self.operationeditor = popupcad.widgets.dragndroptree.DraggableTreeWidget()
+        self.operationeditor = popupcad.widgets.dragndroptree.DirectedDraggableTreeWidget2()
         self.operationeditor.enable()
 
         self.layerlistwidget = popupcad.widgets.listeditor.ListSelector()
@@ -285,6 +285,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         
         self.operationeditor.setnetworkgenerator(self.design.network)
         self.operationeditor.linklist(self.design.operations)
+        self.operationeditor.setnetworkgenerator(self.design.network)
         
         self.updatelayerlist()
         self.layerlistwidget.selectAll()
