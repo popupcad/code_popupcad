@@ -62,7 +62,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
         self.setTabPosition(qc.Qt.AllDockWidgetAreas, qg.QTabWidget.South)
 
-        self.operationeditor = popupcad.widgets.dragndroptree.DirectedDraggableTreeWidget2()
+        self.operationeditor = popupcad.widgets.dragndroptree.DirectedDraggableTreeWidget()
         self.operationeditor.enable()
 
         self.layerlistwidget = popupcad.widgets.listeditor.ListSelector()
@@ -88,7 +88,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
         self.importscripts()
         
-        self.operationeditor.currentRowChanged.connect(self.showcurrentoutput) 
+        self.operationeditor.currentRowChanged.connect(self.showcurrentoutput_inner) 
         self.layerlistwidget.itemSelectionChanged.connect(self.showcurrentoutput)
         self.setWindowTitle('Editor')
         self.operationeditor.signal_edit.connect(self.editoperation) 
@@ -155,11 +155,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             action.setChecked(True)
             self.act_autoreprocesstoggle = action
         self.projectactions.append({'text':'Auto Reprocess','kwargs':{},'prepmethod':dummy})
-#        def dummy(action):
-#            action.setCheckable(True)
-#            action.setChecked(True)
-#            self.act_3don= action
-#        self.projectactions.append({'text':'3D Rendering','kwargs':{},'prepmethod':dummy})
         self.projectactions.append(None)
         self.projectactions.append({'text':'Layer Order...','kwargs':{'triggered':self.editlayers}})
         self.projectactions.append({'text':'Laminate Properties...','kwargs':{'triggered': self.editlaminate}})
@@ -329,8 +324,18 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.layerlistwidget.linklist(self.design.return_layer_definition().layers)
 
     @loggable
-    def showcurrentoutput(self,*args,**kwargs):
-        ii,jj = self.operationeditor.currentIndeces()
+    def showcurrentoutput(self):
+        selected_indeces = self.operationeditor.currentIndeces2()
+        print(selected_indeces)
+        if len(selected_indeces)>0:
+            ii,jj = selected_indeces[0]
+        else:
+            ii,jj = -1,0
+            self.operationeditor.selectIndeces([(ii,jj)])
+        self.showcurrentoutput_inner(ii,jj)
+
+    @loggable
+    def showcurrentoutput_inner(self,ii,jj):
         try:
             operationoutput = self.design.operations[ii].output[jj]
             selectedlayers=[item for item in self.design.return_layer_definition().layers if item in self.layerlistwidget.selectedData()]
@@ -338,6 +343,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             self.show3dgeometry3(operationoutput,selectedlayers)
         except IndexError:
             raise
+
     @loggable
     def show2dgeometry3(self,operationoutput,selectedlayers,):
         display_geometry_2d = operationoutput.display_geometry_2d()

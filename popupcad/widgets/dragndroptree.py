@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
@@ -9,6 +9,9 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.userdata import UserData
 from popupcad.algorithms.acyclicdirectedgraph import AcyclicDirectedGraph,Node
+
+def debugprint(*args,**kwargs):
+    pass
 
 class TreeItem(qg.QTreeWidgetItem):
     def data(self,column,role):
@@ -70,9 +73,11 @@ class ChildItem(TreeItem):
 
 class DraggableTreeWidget(qg.QTreeWidget):
     signal_edit = qc.Signal(object)
-    currentRowChanged = qc.Signal(int)
+    currentRowChanged = qc.Signal(int,int)
 
     def __init__(self,*args,**kwargs):
+        debugprint('innit')
+        
         super(DraggableTreeWidget,self).__init__(*args,**kwargs)
         self.setHeaderHidden(True)
         self.setExpandsOnDoubleClick(False)
@@ -82,8 +87,12 @@ class DraggableTreeWidget(qg.QTreeWidget):
 
         m = self.model()
         m.rowsInserted.connect(self.myRowsInserted)
+        self.emit_item_change = True
+        self.master_refreshing = False
+        self.refreshing = False
 
     def setCurrentIndeces(self,ii,jj=0):
+        debugprint('setcurrentindeces')
         m = self.model()
         parentindex = m.index(ii,0,qc.QModelIndex())
         if jj==0:
@@ -93,6 +102,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
             self.setCurrentIndex(childindex)
         
     def currentOperationOutputIndex(self):
+        debugprint('currentOperationOutputIndex')
         index = self.currentValidIndex(ii=-1)
         m = self.model()
         if index.parent().isValid():
@@ -101,6 +111,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
             return 0
             
     def currentValidIndex(self,ii = 0):
+        debugprint('currentValidIndex')
         index = self.currentIndex()
         if index.isValid():
             return index
@@ -115,15 +126,18 @@ class DraggableTreeWidget(qg.QTreeWidget):
             return index
 
     def currentIndeces(self,ii=-1):
+        debugprint('currentIndeces')
         ii = self.currentRow(ii=ii)
         jj = self.currentOperationOutputIndex()
         return ii,jj
         
     def myItemChanged(self,current,previous):
-        print(current, previous)
-        self.currentRowChanged.emit(self.currentRow(ii=-1))
+        if not (self.refreshing or self.master_refreshing):
+            debugprint('myItemChanged')
+            self.currentRowChanged.emit(*self.currentIndeces())
         
     def currentRow(self,ii=-1):
+        debugprint('currentRow')
         index = self.currentValidIndex(ii=ii)
         if index.parent().isValid():
             return index.parent().row()
@@ -131,16 +145,48 @@ class DraggableTreeWidget(qg.QTreeWidget):
             return index.row()
         
     def linklist(self,masterlist):
+        debugprint('linklist')
         self.masterlist = masterlist
         self.refresh()
 
     def refresh(self):
+        debugprint('refresh')
+        self.refreshing = True
+        
+#        index = self.currentValidIndex(-1)
+        selected_items = self.selectedItems()
+        selected_ids = []
+        for item in selected_items:
+            ii = self.indexFromItem(item)
+            if isinstance(item,ChildItem):
+                selected_ids.append((item.parent().userdata.id,ii.row()+1))
+            else:
+                selected_ids.append((item.userdata.id,0))
+#        for item in 
+#        selected_id = self.model().data(index,qc.Qt.ItemDataRole.UserRole).id
+        new_indeces = []
+        new_ids = [item.id for item in self.masterlist]
+        for a,b in selected_ids:
+            try:
+                new_indeces.append((new_ids.index(a),b))
+            except IndexError:
+                pass
+            except ValueError:
+                pass
+            
+                
+        self.emit_item_change = False
         self.clear()
+        self.emit_item_change = True
         items = [ParentItem(None,item) for item in self.masterlist]
         self.addTopLevelItems(items)
         self.expandAll()
+
+#        self.selectIndeces(new_indeces)
         
+        self.refreshing = False
     def allData(self):    
+        debugprint('allData')
         m = self.model()
         num_rows = m.rowCount()        
         
@@ -154,33 +200,61 @@ class DraggableTreeWidget(qg.QTreeWidget):
         return items
 
     def refreshmaster(self):
+        debugprint('refreshmaster')
+        
+        self.master_refreshing = True
+        newmasterlist = [item for item in self.allData()]
+        debugprint('new master list')
+
+        self.clear()
+        debugprint('cleared')
+
         while len(self.masterlist)>0:
             self.masterlist.pop()
-        [self.masterlist.append(item) for item in self.allData()]
-        return self.masterlist
+        debugprint('clearing old master list')
+        
+        [self.masterlist.append(item) for item in newmasterlist]
+        debugprint('added new items')
+
+        items = [ParentItem(None,item) for item in self.masterlist]
+        debugprint('new parent items')
+        self.addTopLevelItems(items)
+        debugprint('new top level items')
+#        self.expandAll()
+#        debugprint('expanded all')
+
+#        return self.masterlist
+        self.master_refreshing = False
 
 
     def keyPressEvent(self,event):
-        if event.key()==qc.Qt.Key_Delete:
-            self.deleteCurrent()            
-        if event.key()==qc.Qt.Key_Enter or event.key()==qc.Qt.Key_Return:
-            index = self.currentValidIndex(ii=-1)
-            userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
-            self.signal_edit.emit(userdata)   
-        else:
-            super(DraggableTreeWidget,self).keyPressEvent(event)
+        debugprint('keyPressEvent')
+        if not (self.refreshing or self.master_refreshing):
+            if event.key()==qc.Qt.Key_Delete:
+                self.deleteCurrent()            
+            if event.key()==qc.Qt.Key_Enter or event.key()==qc.Qt.Key_Return:
+                index = self.currentValidIndex(ii=-1)
+                userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
+                self.signal_edit.emit(userdata)   
+            else:
+                super(DraggableTreeWidget,self).keyPressEvent(event)
 
     def deleteCurrent(self):
+        debugprint('deleteCurrent')
         if self.enabled:
-            row = self.currentRow(ii=-1)
-            self.model().removeRow(row,qc.QModelIndex())
-            self.refreshmaster()
+            if not (self.refreshing or self.master_refreshing):
+                row = self.currentRow(ii=-1)
+                self.model().removeRow(row,qc.QModelIndex())
+                self.refreshmaster()
         
     def itemDoubleClicked(self,index):
-        userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
-        self.signal_edit.emit(userdata)   
+        debugprint('itemDoubleClicked')
+        if not (self.refreshing or self.master_refreshing):
+            userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
+            self.signal_edit.emit(userdata)   
         
     def disable(self):
+        debugprint('disable')
         self.enabled=False
         self.setDragEnabled(False)
         self.setDropIndicatorShown(True)
@@ -188,6 +262,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setEditTriggers(self.EditTrigger.NoEditTriggers)
 
     def enable(self):
+        debugprint('enable')
         self.enabled=True
         self.setDragEnabled(True)
         self.setDropIndicatorShown(True)
@@ -195,11 +270,16 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setEditTriggers(self.EditTrigger.EditKeyPressed)
     
     def setnetworkgenerator(self,generator):
+        debugprint('setnetworkgenerator')
         pass
 
     def myRowsInserted(self,*args,**kwargs):
-        self.refreshmaster()
+        debugprint('myRowsInserted')
+        if not (self.refreshing or self.master_refreshing):
+            self.refreshmaster()
+
     def currentIndeces2(self):
+        debugprint('currentIndeces2')
         indeces = []
         for item in self.selectedItems():
             ii = self.indexFromItem(item)
@@ -209,17 +289,24 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 indeces.append((ii.row(),0))
         return indeces
     def selectIndeces(self,indeces,clear = True):
+        debugprint('selectIndeces')
         if clear:
             self.clearSelection()
         for ii,jj in indeces:
-            if jj==0:
-                item = self.topLevelItem(ii)
-            else:
-                item = self.topLevelItem(ii).child(jj-1)
-            self.setItemSelected(item,True)
+            m = self.model()
+            n = m.rowCount()
+            if n>0:
+                ii = ii%n
+            
+                if jj==0:
+                    item = self.topLevelItem(ii)
+                else:
+                    item = self.topLevelItem(ii).child(jj-1)
+                self.setItemSelected(item,True)
                 
 
     def currentRefs(draggabletreewidget):
+        debugprint('currentrefs')
         '''This only works with OperationList, but I haven't made a new subclass'''
         indeces = []
         for item in draggabletreewidget.selectedItems():
@@ -261,68 +348,77 @@ class DirectedDraggableTreeWidget2(DraggableTreeWidget):
                     m.exec_()
             self.refresh()
     def disable(self):
-        super(DirectedDraggableTreeWidget,self).disable()
+        super(DirectedDraggableTreeWidget2,self).disable()
         self.blockSignals(True)
         
     def enable(self):
-        super(DirectedDraggableTreeWidget,self).enable()
+        super(DirectedDraggableTreeWidget2,self).enable()
         self.blockSignals(False)
         
     
 class DirectedDraggableTreeWidget(DraggableTreeWidget):
-    def __init__(self):
-        super(DirectedDraggableTreeWidget,self).__init__()
-        m = self.model()
-        m.rowsInserted.connect(self.myRowsInserted)
-        self.block_check = False
+#    def __init__(self):
+#        debugprint('init_p')
+#        super(DirectedDraggableTreeWidget,self).__init__()
+#        m = self.model()
+#        m.rowsInserted.connect(self.myRowsInserted)
         
     def setnetworkgenerator(self,generator):
+        debugprint('setnetworkgenerator_p')
         self.networkgenerator = generator
 
     def myRowsInserted(self,*args,**kwargs):
-        if not self.block_check:
+        if not (self.refreshing or self.master_refreshing):
+            debugprint('myrowsinserted_p')
             network = self.networkgenerator()
             if not network.subsequencecomplete(self.allData()):
-                print('invalid')
                 self.refresh()
+                raise(Exception('Item cannot be moved. This would move a parent operation below a child.'))
             else:
-                print('valid')
                 self.refreshmaster()
 
     def linklist(self,masterlist):
+        debugprint('linklist_p')
         network = self.networkgenerator()
         if network.subsequencecomplete(masterlist):
             super(DirectedDraggableTreeWidget,self).linklist(masterlist)
-
-    def refresh(self):
-        print('refreshing')
-        self.block_check = True
-        super(DirectedDraggableTreeWidget,self).refresh()
-        self.block_check=False
+        else:
+            raise(Exception('invalid sequence of operations'))
 
     def deleteCurrent(self):
-        rows = []
-        for ii in self.selectedIndexes():
-            if not ii.parent().isValid():
-                rows.append(ii.row())
-                rows.sort()
-                rows.reverse()
+        debugprint('deletecurrent_p')
+        if self.enabled:
+            rows = []
+            for ii in self.selectedIndexes():
+                if not ii.parent().isValid():
+                    rows.append(ii.row())
+                    rows.sort()
+                    rows.reverse()
+            
+            self.networkgenerator()
+            for ii in rows:    
+                children = self.masterlist[ii].allchildren()
+                if not children:
+                    del self.masterlist[ii]
+                else:
+                    m = qg.QMessageBox()
+                    m.setIcon(m.Information)
+                    m.setText(str(self.masterlist[ii])+' cannot be deleted.')
+                    s = 'This is due to the following dependent operations:\n'
+                    for child in children[:-1]:
+                        s+='{0},\n'.format(str(child))
+                    s+='{0}'.format(str(children[-1]))
+                    m.setInformativeText(s)
+                    m.exec_()
+            self.refresh()
 
-        testlist = self.masterlist[:]
-        for ii in rows:
-            del testlist[ii]
-        network = self.networkgenerator()
-        valid = network.subsequencecomplete(testlist)
-        print(valid)
-        if valid:
-            for ii in rows:
-                del self.masterlist[ii]
-        self.refresh()
     def disable(self):
+        debugprint('disable_p')
         super(DirectedDraggableTreeWidget,self).disable()
         self.blockSignals(True)
         
     def enable(self):
+        debugprint('enable_p')
         super(DirectedDraggableTreeWidget,self).enable()
         self.blockSignals(False)
         
