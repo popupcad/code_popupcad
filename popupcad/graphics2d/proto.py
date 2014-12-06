@@ -38,9 +38,7 @@ class Proto(Common):
     def painterpath(self):
         ep = self.exteriorpoints()
         ip = self.generic.interiorpoints()
-        
-        f = self.generic.pickpainterpathfunction()
-        return f(ep,ip)
+        return self.generic.gen_painterpath(ep,ip)
             
     def exteriorpoints(self):
         ep = self.generic.exteriorpoints()

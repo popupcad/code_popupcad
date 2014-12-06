@@ -106,12 +106,15 @@ class GenericShapeBase(popupCADFile):
         segments = self.segments()
         segmentpoints = [(point1.getpos(),point2.getpos()) for point1,point2 in segments]
         return segmentpoints
-            
+
     def painterpath(self):
-        exterior_p = self.exteriorpoints()
-        interiors_p = self.interiorpoints()
-        f = self.pickpainterpathfunction()
-        return f(exterior_p,interiors_p)
+        exterior = self.exteriorpoints()
+        interiors = self.interiorpoints()
+        return self.gen_painterpath(exterior,interiors)
+            
+    def gen_painterpath(self,exterior,interiors):
+        path = qg.QPainterPath()
+        return path
 
     def properties(self):
         from popupcad.widgets.propertyeditor import PropertyEditor
@@ -280,39 +283,6 @@ class GenericShapeBase(popupCADFile):
         poly = qg.QPolygonF([qc.QPointF(*(point)) for point in numpy.array(points)])
         return poly
             
-    def generatelinepath(self,exterior,interiors):
-        path = qg.QPainterPath()
-        path.addPolygon(self.generateQPolygon(exterior))
-        return path    
-
-    def generateholeypolypath(self,exterior,interiors):
-        path = qg.QPainterPath()
-        for item in [exterior]+interiors:
-            path.addPolygon(self.generateQPolygon(item))
-            path.closeSubpath()
-        return path        
-
-    def generatecirclepath(self,exterior,interiors):
-        path = qg.QPainterPath()
-        center = numpy.array(exterior[0])
-        edge = numpy.array(exterior[1])
-        v = edge- center
-        r = v.dot(v)**.5
-        point1 = center - r
-        point2 = center + r
-        point1 = qc.QPointF(*point1)
-        point2 = qc.QPointF(*point2)
-        rect = qc.QRectF(point1,point2)
-        path.addEllipse(rect)        
-        return path
-    
-    def generaterect2pointpath(self,exterior,interiors):
-        path = qg.QPainterPath()
-        points = [qc.QPointF(*point) for point in exterior]
-        rect = qc.QRectF(*points)
-        path.addRect(rect)
-        return path        
-    
     def shape_is_equal(self,other):
         if type(self)==type(other):
             if len(self.exterior)==len(other.exterior) and len(self.interiors)==len(other.interiors):

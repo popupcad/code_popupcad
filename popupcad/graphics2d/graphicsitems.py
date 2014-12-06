@@ -40,30 +40,6 @@ class Common(object):
         self.setParentItem(None)
         self.removefromscene()
 
-class BasicLine(qg.QGraphicsPathItem,Common):
-    pass
-
-class SuperLine(qg.QGraphicsPathItem,Common):
-    isDeletable = False
-    neutral_buffer = 20
-    style = qc.Qt.SolidLine
-    capstyle = qc.Qt.RoundCap
-    joinstyle = qc.Qt.RoundJoin
-    basicpen = qg.QPen(qg.QColor.fromRgbF(0,0,0,0), neutral_buffer, style, capstyle, joinstyle)             
-    def __init__(self,*args,**kwargs):
-        super(SuperLine,self).__init__(*args,**kwargs)
-        self.line= BasicLine()
-        self.line.setParentItem(self)
-        self.setMyPen(self.basicpen)
-        self.setBoundingRegionGranularity(.5)
-    def setPath(self,*args,**kwargs):
-        super(SuperLine,self).setPath(*args,**kwargs)
-        self.line.setPath(*args,**kwargs)
-    def setPen(self,pen):
-        self.line.setPen(pen)
-    def setMyPen(self,pen):
-        super(SuperLine,self).setPen(pen)
-
 class CommonShape(object):
     def create_selectable_edge_loop(self):
         from .interactiveedge import InteractiveEdge

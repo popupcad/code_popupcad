@@ -22,8 +22,10 @@ class GenericLine(GenericShapeBase):
     def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticLine
         return StaticLine(self,*args,**kwargs)
-    def pickpainterpathfunction(self):
-        return self.generatelinepath
+    def gen_painterpath(self,exterior,interiors):
+        path = qg.QPainterPath()
+        path.addPolygon(self.generateQPolygon(exterior))
+        return path    
     def outputshapely(self):
         exterior_p = self.exteriorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
@@ -38,8 +40,10 @@ class GenericPolyline(GenericShapeBase):
     def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticPath
         return StaticPath(self,*args,**kwargs)
-    def pickpainterpathfunction(self):
-        return self.generatelinepath
+    def gen_painterpath(self,exterior,interiors):
+        path = qg.QPainterPath()
+        path.addPolygon(self.generateQPolygon(exterior))
+        return path    
     def outputshapely(self):
         exterior_p = self.exteriorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
@@ -54,8 +58,12 @@ class GenericPoly(GenericShapeBase):
     def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticPoly
         return StaticPoly(self,*args,**kwargs)
-    def pickpainterpathfunction(self):
-        return self.generateholeypolypath
+    def gen_painterpath(self,exterior,interiors):
+        path = qg.QPainterPath()
+        for item in [exterior]+interiors:
+            path.addPolygon(self.generateQPolygon(item))
+            path.closeSubpath()
+        return path        
     def triangles3(self):
         import popupcad
         cdt = self.toCDT3()
@@ -126,8 +134,19 @@ class GenericCircle(GenericShapeBase):
     def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticCircle
         return StaticCircle(self,*args,**kwargs)
-    def pickpainterpathfunction(self):
-        return self.generatecirclepath
+    def gen_painterpath(self,exterior,interiors):
+        path = qg.QPainterPath()
+        center = numpy.array(exterior[0])
+        edge = numpy.array(exterior[1])
+        v = edge- center
+        r = v.dot(v)**.5
+        point1 = center - r
+        point2 = center + r
+        point1 = qc.QPointF(*point1)
+        point2 = qc.QPointF(*point2)
+        rect = qc.QRectF(point1,point2)
+        path.addEllipse(rect)        
+        return path
     def outputshapely(self):
         exterior_p = self.exteriorpoints()
         exterior = numpy.array(exterior_p)
@@ -147,8 +166,12 @@ class GenericTwoPointRect(GenericShapeBase):
     def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.static import StaticRect2Point
         return StaticRect2Point(self,*args,**kwargs)
-    def pickpainterpathfunction(self):
-        return self.generaterect2pointpath
+    def gen_painterpath(self,exterior,interiors):
+        path = qg.QPainterPath()
+        points = [qc.QPointF(*point) for point in exterior]
+        rect = qc.QRectF(*points)
+        path.addRect(rect)
+        return path        
     def outputshapely(self):
         exterior_p = self.exteriorpoints()
         corner1 = exterior_p[0]

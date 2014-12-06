@@ -8,7 +8,7 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from .graphicsitems import Common
-from .graphicsitems import SuperLine,CommonShape
+from .graphicsitems import CommonShape,BasicLine
 
 from .modes import Modes
 
@@ -240,12 +240,12 @@ class InteractiveCircle(Interactive,CommonShape,qg.QGraphicsPathItem):
 class InteractiveRect2Point(Interactive,CommonShape,qg.QGraphicsPathItem):
     pass
 
-class InteractivePath(Interactive,CommonShape,SuperLine):
+class InteractivePath(Interactive,CommonShape,qg.QGraphicsPathItem):
     brushes = Interactive.nobrushes.copy()
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
         
-class InteractiveLine(Interactive,CommonShape,SuperLine):
+class InteractiveLine(Interactive,CommonShape,qg.QGraphicsPathItem):
     brushes = Interactive.nobrushes.copy()
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
