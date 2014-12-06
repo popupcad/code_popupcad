@@ -220,8 +220,8 @@ class DraggableTreeWidget(qg.QTreeWidget):
         debugprint('new parent items')
         self.addTopLevelItems(items)
         debugprint('new top level items')
-#        self.expandAll()
-#        debugprint('expanded all')
+        self.expandAll()
+        debugprint('expanded all')
 
 #        return self.masterlist
         self.master_refreshing = False
@@ -316,53 +316,8 @@ class DraggableTreeWidget(qg.QTreeWidget):
             else:
                 indeces.append((item.userdata.id,0))
         return indeces    
-
-
-
-class DirectedDraggableTreeWidget2(DraggableTreeWidget):
-    def setnetworkgenerator(self,generator):
-        self.networkgenerator = generator
-    def deleteCurrent(self):
-        if self.enabled:
-            rows = []
-            for ii in self.selectedIndexes():
-                if not ii.parent().isValid():
-                    rows.append(ii.row())
-                    rows.sort()
-                    rows.reverse()
-            
-            self.networkgenerator()
-            for ii in rows:    
-                children = self.masterlist[ii].allchildren()
-                if not children:
-                    del self.masterlist[ii]
-                else:
-                    m = qg.QMessageBox()
-                    m.setIcon(m.Information)
-                    m.setText(str(self.masterlist[ii])+' cannot be deleted.')
-                    s = 'This is due to the following dependent operations:\n'
-                    for child in children[:-1]:
-                        s+='{0},\n'.format(str(child))
-                    s+='{0}'.format(str(children[-1]))
-                    m.setInformativeText(s)
-                    m.exec_()
-            self.refresh()
-    def disable(self):
-        super(DirectedDraggableTreeWidget2,self).disable()
-        self.blockSignals(True)
-        
-    def enable(self):
-        super(DirectedDraggableTreeWidget2,self).enable()
-        self.blockSignals(False)
-        
     
 class DirectedDraggableTreeWidget(DraggableTreeWidget):
-#    def __init__(self):
-#        debugprint('init_p')
-#        super(DirectedDraggableTreeWidget,self).__init__()
-#        m = self.model()
-#        m.rowsInserted.connect(self.myRowsInserted)
-        
     def setnetworkgenerator(self,generator):
         debugprint('setnetworkgenerator_p')
         self.networkgenerator = generator
