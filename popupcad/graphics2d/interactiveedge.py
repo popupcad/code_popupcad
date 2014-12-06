@@ -9,6 +9,8 @@ import PySide.QtGui as qg
 from popupcad.geometry.line import Line
 from . import modes
 from .graphicsitems import Common
+from math import atan2,pi,sin,cos
+import popupcad
 
 class EdgeBase(Common):
     def __init__(self):
@@ -23,6 +25,18 @@ class EdgeBase(Common):
         self.state = state
         self.setPen(self.querypen())
         self.update()     
+    def setLine(self,x1,y1,x2,y2):
+        dx = x2-x1
+        dy = y2-y1
+        l = ((dx)**2+(dy)**2)**.5
+        q = atan2(dy,dx)
+        d = q*180/pi
+        self.resetTransform()
+        qg.QGraphicsLineItem.setLine(self,0,0,l,0)
+        self.rotate(d)
+#        r = (x1**2+y1**2)**.5
+        xy = self.mapFromScene(x1,y1)
+        self.translate(xy.x(),xy.y())
 
 class HighlightedEdge(qg.QGraphicsLineItem,EdgeBase):
     isDeletable = False
@@ -53,6 +67,11 @@ class HighlightedEdge(qg.QGraphicsLineItem,EdgeBase):
                 pen =  qg.QPen(qg.QColor.fromRgbF(0,0,0, 1), self.linewidth, self.style,self.capstyle,self.joinstyle)  
         pen.setCosmetic(True)
         return pen
+    def setLine(self,x1,y1,x2,y2):
+        dx = x2-x1
+        dy = y2-y1
+        l = ((dx)**2+(dy)**2)**.5
+        qg.QGraphicsLineItem.setLine(self,0,0,l,0)
 
 
 class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
@@ -92,6 +111,10 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         
         self.setFlag(self.ItemIsSelectable,True)
         self.setFlag(self.ItemIsMovable,False)
+
+    def shape(self,*args,**kwargs):
+        return super(InteractiveEdge,self).shape(*args,**kwargs)
+        
 
     def querypen(self):
         if self.mode == self.modes.mode_render:
@@ -138,14 +161,13 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         super(InteractiveEdge,self).updatestate(state)
         self.highlightededge.updatestate(state)
     def setLine(self,*args,**kwargs):
-        super(InteractiveEdge,self).setLine(*args,**kwargs)
+        EdgeBase.setLine(self,*args,**kwargs)
         self.highlightededge.setLine(*args,**kwargs)
 
     def handleupdate(self):
         point1 = self.generic.vertex1.getpos()
         point2 = self.generic.vertex2.getpos()
         self.setLine(point1[0],point1[1],point2[0],point2[1])
-
     def hoverEnterEvent(self,event):
         super(InteractiveEdge,self).hoverEnterEvent(event)
         if self.connectedinteractive!=None:
