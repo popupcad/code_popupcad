@@ -172,7 +172,6 @@ class Interactive(Common):
                     pass
         else:
             self.hidechildren(self.handles())
-            
 
     def mouseMoveEvent(self,event):
         if self.generic.is_moveable():
@@ -180,6 +179,7 @@ class Interactive(Common):
                 self.changed_trigger = False
                 self.scene().savesnapshot.emit()
             dp = event.scenePos() - event.lastScenePos()
+            
             self.generic.shift(dp.toTuple())
             self.updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
@@ -275,4 +275,4 @@ class InteractiveLine(Interactive,CommonShape,qg.QGraphicsPathItem):
         xy = self.mapFromScene(x1,y1)
         self.translate(xy.x(),xy.y())
         self.update()
-
+        self.updatechildhandles(self.handles()+self.selectableedges)
