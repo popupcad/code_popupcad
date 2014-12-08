@@ -19,7 +19,7 @@ class InteractiveModes(Modes):
     modelist.append('mode_selectable_edges')
     modelist.append('mode_render')
     
-class Interactive(Common):
+class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
     z_value = 15
     isDeletable = True
     linewidth = 3.0
@@ -92,11 +92,11 @@ class Interactive(Common):
         self.scale = scale
         self.setPen(self.querypen())
 
-    def boundingRect(self):
-        rect = super(Interactive,self).boundingRect()
-        a = self.boundingrectbuffer * self.scale
-        rect.adjust(-a,-a,a,a)
-        return rect
+#    def boundingRect(self):
+#        rect = super(Interactive,self).boundingRect()
+#        a = self.boundingrectbuffer * self.scale
+#        rect.adjust(-a,-a,a,a)
+#        return rect
 
     def allchildren(self):
         return list(set(self.childItems()+self.handles()+self.selectableedges))
@@ -231,26 +231,38 @@ class Interactive(Common):
     def children(self):
         return self.handles()+self.selectableedges
         
-class InteractivePoly(Interactive,CommonShape,qg.QGraphicsPathItem):
+    def customshape(self):
+        import popupcad
+        print('customshape')
+        path = self.path()
+        s = qg.QPainterPathStroker()
+        s.setWidth(10*self.scale)
+        return s.createStroke(path)
+        
+
+class InteractivePoly(Interactive):
     pass
 
-class InteractiveCircle(Interactive,CommonShape,qg.QGraphicsPathItem):
+class InteractiveCircle(Interactive):
     pass
 
-class InteractiveRect2Point(Interactive,CommonShape,qg.QGraphicsPathItem):
+class InteractiveRect2Point(Interactive):
     pass
 
-class InteractivePath(Interactive,CommonShape,qg.QGraphicsPathItem):
+class InteractivePath(Interactive):
     brushes = Interactive.nobrushes.copy()
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
     def shape(self):
         return self.customshape()        
         
-class InteractiveLine(Interactive,CommonShape,qg.QGraphicsPathItem):
+class InteractiveLine(Interactive):
     brushes = Interactive.nobrushes.copy()
+        
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
+    def shape(self):
+        return self.customshape()        
 #    def updateshape(self):
 #        self.setLine(x1,y1,x2,y2)
 #        self.update()
@@ -258,8 +270,6 @@ class InteractiveLine(Interactive,CommonShape,qg.QGraphicsPathItem):
 #        self.setPath(path)
 #        self.update()
 
-    def shape(self):
-        return self.customshape()        
 #    def shape(self):
 #        from math import atan2,pi,sin,cos
 #        import popupcad

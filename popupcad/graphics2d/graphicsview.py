@@ -86,8 +86,8 @@ class GraphicsView(qg.QGraphicsView):
 
     def zoomToFit(self):
         scene = self.scene()
-        for item in scene.items():
-            item.resetTransform()
+#        for item in scene.items():
+#            item.resetTransform()
         self.resetTransform()
         scene_rect = scene.itemsBoundingRect()
 #        scene.setSceneRect()

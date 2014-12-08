@@ -25,10 +25,10 @@ class InteractiveVertex(InteractiveVertexBase):
         qg.QGraphicsEllipseItem.hoverEnterEvent(self,event)
 
         if self.connectedinteractive!=None:
-            siblings = list(set(self.connectedinteractive.handles())-set([self]))
+#            siblings = list(set(self.connectedinteractive.handles())-set([self]))
             self.setZValue(self.z_above)
-            for sibling in siblings:        
-                sibling.setZValue(sibling.z_below)            
+#            for sibling in siblings:        
+#                sibling.setZValue(sibling.z_below)            
         self.updatestate(self.states.state_hover)
             
     def hoverLeaveEvent(self,event):

@@ -83,7 +83,7 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     style = qc.Qt.SolidLine
     capstyle = qc.Qt.RoundCap
     joinstyle = qc.Qt.RoundJoin
-    defaultcolor = qg.QColor.fromRgbF(0,0,0,0)
+    defaultcolor = qg.QColor.fromRgbF(0,0,0,.1)
     nopen = qc.Qt.NoPen
     boundingrectbuffer = 2
     
@@ -171,10 +171,10 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     def hoverEnterEvent(self,event):
         super(InteractiveEdge,self).hoverEnterEvent(event)
         if self.connectedinteractive!=None:
-            siblings = list(set(self.connectedinteractive.selectableedges)-set([self]))
+#            siblings = list(set(self.connectedinteractive.selectableedges)-set([self]))
             self.setZValue(self.z_above)
-            for sibling in siblings:        
-                sibling.setZValue(sibling.z_below)            
+#            for sibling in siblings:        
+#                sibling.setZValue(sibling.z_below)            
         self.updatestate(self.states.state_hover)
     def hoverLeaveEvent(self,event):
         super(InteractiveEdge,self).hoverLeaveEvent(event)
