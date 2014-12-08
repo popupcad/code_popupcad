@@ -68,6 +68,14 @@ class CommonShape(object):
         self.setPath(path)
         self.update()
 
+    def customshape(self):
+        import popupcad
+        path = self.path()
+        s = qg.QPainterPathStroker()
+        s.setWidth(2*popupcad.internal_argument_scaling)
+        return s.createStroke(path)
+        
+
 #class Rect2Point(CommonShape):
 #    def create_selectable_edges(self):
 #        self.create_selectable_edge_path()
