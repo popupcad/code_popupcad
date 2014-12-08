@@ -92,6 +92,8 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
         self.scale = scale
         self.setPen(self.querypen())
 
+#        print('customscale')
+#        self.updateshape()
 #    def boundingRect(self):
 #        rect = super(Interactive,self).boundingRect()
 #        a = self.boundingrectbuffer * self.scale
@@ -233,7 +235,7 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
         
     def customshape(self):
         import popupcad
-        print('customshape')
+#        print('customshape')
         path = self.path()
         s = qg.QPainterPathStroker()
         s.setWidth(10*self.scale)
