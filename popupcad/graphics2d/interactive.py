@@ -257,52 +257,17 @@ class InteractivePath(Interactive):
         self.create_selectable_edge_path()
     def shape(self):
         return self.customshape()        
+    def boundingRect(self):
+        return self.shape().boundingRect()
         
 class InteractiveLine(Interactive):
     brushes = Interactive.nobrushes.copy()
-        
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
     def shape(self):
         return self.customshape()        
-#    def updateshape(self):
-#        self.setLine(x1,y1,x2,y2)
-#        self.update()
-#        path = self.painterpath()
-#        self.setPath(path)
-#        self.update()
-
-#    def shape(self):
-#        from math import atan2,pi,sin,cos
-#        import popupcad
-#        (x1,y1),(x2,y2) = self.generic.exteriorpoints()
-#        dx = x2-x1
-#        dy = y2-y1
-#        l = ((dx)**2+(dy)**2)**.5
-#        q = atan2(dy,dx)
-#        d = q*180/pi
-##        self.resetTransform()
-#        path = qg.QPainterPath()
-#        buf = 1*popupcad.internal_argument_scaling
-#        rect = qc.QRectF(0,-buf,l,2*buf)
-#        c1 = qc.QRectF(-buf,-buf,2*buf,2*buf)
-#        c2 = qc.QRectF(l-buf,-buf,2*buf,2*buf)
-#        path.addRect(rect)
-#        path.addEllipse(c1)
-#        path.addEllipse(c2)
-#        
-#        return path
-#        poly = qg.QPolygonF([qc.QPointF(0,0),qc.QPointF(l,0)])
-#        qg.QGraphicsLineItem.setLine(self,0,0,l,0)
-#        path.addPolygon(poly)
-#        self.setPath(path)
-#        self.rotate(d)
-##        r = (x1**2+y1**2)**.5
-#        xy = self.mapFromScene(x1,y1)
-#        self.translate(xy.x(),xy.y())
-#        self.update()
-#        self.updatechildhandles(self.handles()+self.selectableedges)
-
+    def boundingRect(self):
+        return self.shape().boundingRect()
 
     def updateshape(self):
         from math import atan2,pi,sin,cos
