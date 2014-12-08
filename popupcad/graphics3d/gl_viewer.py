@@ -45,7 +45,7 @@ class GLViewWidget(gl.GLViewWidget):
 #        c = pg.mkColor(120,120,200)
         c = pg.mkColor(1,1,1)
 #        print(c)
-#        self.setBackgroundColor(c)
+        self.setBackgroundColor(c)
             
     def clear(self):
         while len(self.items)>0:

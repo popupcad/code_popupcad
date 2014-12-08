@@ -95,3 +95,4 @@ class LocateOperation2(Operation):
 
     def locationgeometry(self):
         return self.sketchid
+
