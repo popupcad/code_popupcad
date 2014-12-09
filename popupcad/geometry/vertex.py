@@ -145,6 +145,7 @@ class BaseVertex(object):
 #        except AttributeError:
 #            self.interactivevertex = self.gen_interactive()
 #            return self.interactivevertex
+
     def shape_is_equal(self,other):
         from popupcad.filetypes.genericshapebase import GenericShapeBase
         tolerance = GenericShapeBase.tolerance
@@ -152,12 +153,16 @@ class BaseVertex(object):
         if type(self)==type(other):
             return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
         return False
+        
     def shift(self,dxdy):
         pos = numpy.array(self.getpos())
         dxdy = numpy.array(dxdy)
         newpos = pos+dxdy
         self.setpos(newpos)
-        
+
+    def constrainedshift(self,dxdy,constraintsystem):
+        constraintsystem.constrained_shift(self,dxdy)
+
 class ShapeVertex(BaseVertex):
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex

@@ -329,6 +329,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def loadsketch(self,sketch):
         self.sketch = sketch.copy()
         self.scene.deleteall()
+        self.scene.setsketch(self.sketch)
         for item in self.sketch.operationgeometry:
             newitem = item.outputinteractive()
             self.scene.addItem(newitem)

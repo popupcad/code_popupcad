@@ -78,6 +78,9 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
             self.setcustomscale(1/self.scene().views()[0].zoom())
         except (IndexError,AttributeError):
             pass            
+        
+    def constraintsystem(self):
+        return self.scene().sketch().constraintsystem
 
     def exterior(self):
         return self.generic.get_exterior_handles()

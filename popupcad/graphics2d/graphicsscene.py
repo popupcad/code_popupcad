@@ -78,6 +78,12 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         else:
             return point
 
+    def sketch(self):
+        return self._sketch
+        
+    def setsketch(self,sketch):
+        self._sketch = sketch
+
     def screenShot(self):
         import os
         import popupcad
