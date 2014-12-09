@@ -206,8 +206,8 @@ class DraggableTreeWidget(qg.QTreeWidget):
         newmasterlist = [item for item in self.allData()]
         debugprint('new master list')
 
-        self.clear()
-        debugprint('cleared')
+#        self.clear()
+#        debugprint('cleared')
 
         while len(self.masterlist)>0:
             self.masterlist.pop()
@@ -216,12 +216,12 @@ class DraggableTreeWidget(qg.QTreeWidget):
         [self.masterlist.append(item) for item in newmasterlist]
         debugprint('added new items')
 
-        items = [ParentItem(None,item) for item in self.masterlist]
-        debugprint('new parent items')
-        self.addTopLevelItems(items)
-        debugprint('new top level items')
-        self.expandAll()
-        debugprint('expanded all')
+#        items = [ParentItem(None,item) for item in self.masterlist]
+#        debugprint('new parent items')
+#        self.addTopLevelItems(items)
+#        debugprint('new top level items')
+#        self.expandAll()
+#        debugprint('expanded all')
 
 #        return self.masterlist
         self.master_refreshing = False
@@ -335,10 +335,11 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
     def linklist(self,masterlist):
         debugprint('linklist_p')
         network = self.networkgenerator()
-        if network.subsequencecomplete(masterlist):
-            super(DirectedDraggableTreeWidget,self).linklist(masterlist)
-        else:
-            raise(Exception('invalid sequence of operations'))
+#        if network.subsequencecomplete(masterlist):
+#            super(DirectedDraggableTreeWidget,self).linklist(masterlist)
+#        else:
+#            raise(Exception('invalid sequence of operations'))
+        super(DirectedDraggableTreeWidget,self).linklist(masterlist)
 
     def deleteCurrent(self):
         debugprint('deletecurrent_p')
