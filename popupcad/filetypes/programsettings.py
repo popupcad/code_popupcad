@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Oct 23 13:46:27 2014
-
-@author: danaukes
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 
 from popupcad.filetypes.genericfile import GenericFile,popupCADFile

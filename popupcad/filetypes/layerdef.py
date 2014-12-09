@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Sep 23 17:30:05 2014
-
-@author: danb0b
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 import popupcad
 

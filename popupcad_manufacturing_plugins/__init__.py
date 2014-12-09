@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 15 17:26:23 2014
-
-@author: danaukes
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 
 from . import manufacturing

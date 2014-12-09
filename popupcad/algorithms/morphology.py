@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Sep 23 19:57:44 2014
-
-@author: danb0b
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 
 def cleanup(ls1,value,resolution):
