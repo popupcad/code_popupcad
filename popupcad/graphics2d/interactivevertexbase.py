@@ -116,7 +116,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
                 self.changed_trigger = False
                 self.scene().savesnapshot.emit()
             dp = event.scenePos() - event.lastScenePos()
-            self.generic.shift(dp.toTuple())
+            self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
             self.updatefromgeneric()
 
 #        if self.generic.is_moveable():

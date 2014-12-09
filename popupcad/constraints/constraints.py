@@ -62,7 +62,7 @@ class ConstraintSystem(object):
         
     def gendq2(self,dq):
         return lambda x:dq(x,0)
-        
+
     def integrate(self,dq,qini,fun2,vertices,variables):
         q = numpy.array(qini)
         totalerror = (numpy.array(fun2(*(q.flatten().tolist()))[:])).sum(0)
@@ -86,7 +86,53 @@ class ConstraintSystem(object):
                 ini[key]=value
         return ini,vertexdict
 
-    def process(self,vertices): 
+    def process(self,*args,**kwargs):
+        return self.process_new(*args,**kwargs)
+        
+    def process_new(self,vertices):
+        ini,vertexdict = self.getlinks(vertices)
+        variables,qout = [],[]
+        if len(self.constraints)>0:
+            constraint_eqs,variables,constants,J= self.deriveJ(vertices)
+            constfun = sympy.utilities.lambdify(variables+constants,constraint_eqs)
+            Jfun= sympy.utilities.lambdify(variables+constants,J)
+
+            constvals = self.inilist(constants,ini)
+
+            def dq(q):
+                qlist = q.flatten().tolist()
+                zero  = constfun(*(qlist+constvals))
+                zero=numpy.array(zero[:]).flatten()
+#                zero = zero.sum(0)
+                n = len(zero)
+                m = len(q)
+#                print(zero)
+                if m>n:
+                    zero = numpy.r_[zero,[0]*(m-n)]
+                return zero        
+
+            def j(q):
+                qlist = q.flatten().tolist()
+                jnum= Jfun(*(qlist+constvals))
+                jnum=numpy.array(jnum[:])
+                m,n= jnum.shape
+#                print(jnum)
+                if n>m:
+                    jnum= numpy.r_[jnum,numpy.zeros((n-m,n))]
+#                zero = zero.sum(0)
+                return jnum        
+#            qout = opt.newton_krylov(dq,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+#            qout = opt.anderson(dq,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+#            qout = qout.tolist()
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
+            qout = opt.root(dq,numpy.array(self.inilist(variables,ini)),jac = j,tol = self.atol,method = 'lm')
+            qout = qout.x.tolist()
+
+        for ii,variable in enumerate(variables):
+            vertexdict[variable].setsymbol(variable,qout[ii])   
+    def process_orig(self,vertices): 
         ini,vertexdict = self.getlinks(vertices)
         variables,qout = [],[]
         if len(self.constraints)>0:
@@ -96,14 +142,25 @@ class ConstraintSystem(object):
             constvals = self.inilist(constants,ini)
             dq = self.gendq(Jfun,constfun,constvals)
             dq2 = self.gendq2(dq)
-            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
-            qout = qout.x.tolist()
+            
+#            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+            qout = qout.tolist()
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
+#            qout = qout.x.tolist()
+
         for ii,variable in enumerate(variables):
             vertexdict[variable].setsymbol(variable,qout[ii])   
     def cleanup(self,sketch_objects):
         for ii in range(len(self.constraints))[::-1]:
             if self.constraints[ii].cleanup(sketch_objects)==Constraint.CleanupFlags.Deletable:
                 self.constraints.pop(ii)
+    def constrained_shift(self,items):
+        for vertex,dxdy in items:
+            vertex.shift(dxdy)
 
 class ExactlyTwoPoints(object):
     def valid(self):
@@ -125,6 +182,11 @@ class AtLeastTwoLines(object):
         return len(self.segment_ids)>=2
     def throwvalidityerror(self):
         raise(Exception('Need at least two lines'))
+class AtLeastOneLine(object):
+    def valid(self):
+        return len(self.segment_ids)>=1
+    def throwvalidityerror(self):
+        raise(Exception('Need at least one line'))
 class ExactlyOnePointOneLine(object):
     def valid(self):
         return len(self.segment_ids)==1 and len(self.vertex_ids)==1
@@ -355,7 +417,7 @@ class distancey(ValueConstraint,AtLeastOnePoint):
             eq = ((vertices[1].p()[1]-vertices[0].p()[1])**2)**.5-((self.value*popupcad.internal_argument_scaling)**2)**.5
         return [eq]
 
-class angle(ValueConstraint,ExactlyTwoLines):
+class angle(ValueConstraint,AtLeastOneLine):
     name = 'angle'
     value_text = 'enter angle(in degrees)'
     def equations(self,objects):

@@ -39,6 +39,9 @@ class Common(object):
             del child
         self.setParentItem(None)
         self.removefromscene()
+    def constraintsystem(self):
+        return self.scene().sketch().constraintsystem
+
 
 class CommonShape(object):
     def create_selectable_edge_loop(self):

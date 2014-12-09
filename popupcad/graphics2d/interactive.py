@@ -79,9 +79,6 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
         except (IndexError,AttributeError):
             pass            
         
-    def constraintsystem(self):
-        return self.scene().sketch().constraintsystem
-
     def exterior(self):
         return self.generic.get_exterior_handles()
 
@@ -185,7 +182,7 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
                 self.scene().savesnapshot.emit()
             dp = event.scenePos() - event.lastScenePos()
             
-            self.generic.shift(dp.toTuple())
+            self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
             self.updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
 
