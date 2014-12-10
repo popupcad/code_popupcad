@@ -211,6 +211,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         distanceactions.append({'text':'DistanceX','kwargs':{'triggered':lambda:self.add_constraint(constraints.distancex),'icon':Icon('distancex')}})
         distanceactions.append({'text':'DistanceY','kwargs':{'triggered':lambda:self.add_constraint(constraints.distancey),'icon':Icon('distancey')}})
         distanceactions.append({'text':'Angle','kwargs':{'triggered':lambda:self.add_constraint(constraints.angle),'icon':Icon('angle')}})
+        distanceactions.append({'text':'Fixed','kwargs':{'triggered':lambda:self.add_constraint(constraints.fixed)}})
 
         twolineactions = []
         twolineactions.append({'text':'Parallel','kwargs':{'triggered':lambda:self.add_constraint(constraints.parallel),'icon':Icon('parallel')}})

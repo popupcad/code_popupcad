@@ -41,8 +41,6 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         self.setFlag(self.ItemIsMovable,True)
 #        self.setFlag(self.ItemSendsGeometryChanges,True)
 
-    def setstatic(self):
-        self.get_generic().setstatic(True)
     def updatemode(self,mode):
         self.mode = getattr(self.modes,mode)
         self.setPen(self.querypen())

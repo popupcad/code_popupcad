@@ -307,7 +307,7 @@ class Constraint(object):
             self.init_symbolics()
             return self._vertices+self._segment_vertices
             
-    def getvertices(self,objectlist):
+    def getvertices(self):
 #        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
 #        vertexlist = []
 #        for id1 in self.vertex_ids:
@@ -381,6 +381,49 @@ class ValueConstraint(Constraint):
         value, ok = qg.QInputDialog.getDouble(None, "Edit Value", "Value:", self.value, -10000, 10000, 5)
         if ok:
             self.value = value
+
+class fixed(Constraint,AtLeastOnePoint):
+    name = 'fixed'
+    def __init__(self,vertex_ids,values):
+        self.vertex_ids = vertex_ids
+        self.segment_ids = []
+        self.values = values
+        self.id = id(self)
+        self.init_symbolics()
+
+        self.generated_equations = self.equations()
+
+    @classmethod
+    def new(cls,*objects):
+        from popupcad.geometry.line import Line
+        from popupcad.geometry.vertex import BaseVertex
+    
+        segment_ids = [tuple(sorted((line.vertex1.id,line.vertex2.id))) for line in objects if isinstance(line,Line)]
+        segment_ids = list(set(segment_ids))
+        
+        vertex_ids = []
+        vertex_ids.extend([(vertex.id,vertex.getpos()) for vertex in objects if isinstance(vertex,BaseVertex)])
+        vertex_ids.extend([(vertex.id,vertex.getpos()) for line in objects if isinstance(line,Line) for vertex in (line.vertex1,line.vertex2)])
+        vertex_ids = dict(vertex_ids)
+        
+        obj = cls(list(vertex_ids.keys()),list(vertex_ids.values()))
+        if not obj.valid():
+            obj.throwvalidityerror()
+        return obj
+
+    def copy(self,identical = True):
+        new = type(self)(self.vertex_ids,self.values)
+        if identical:
+            new.id = self.id
+        return new
+
+    def equations(self):
+        eqs = []
+        for vertex,val in zip(self.getvertices(),self.values):
+            eqs.append(vertex.p()[0] - val[0])
+            eqs.append(vertex.p()[1] - val[1])
+        return eqs         
+    
 
 class horizontal(Constraint,AtLeastTwoPoints):
     name = 'horizontal'
