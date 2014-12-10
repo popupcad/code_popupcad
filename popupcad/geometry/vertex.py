@@ -58,7 +58,6 @@ class BaseVertex(object):
         if type(self)==type(other):
             return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
         return False
-        
 
     def __str__(self):
         return 'vertex'+str(self.id)

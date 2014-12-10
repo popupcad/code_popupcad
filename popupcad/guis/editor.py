@@ -420,7 +420,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             event.ignore()
         popupcad.settings.save_yaml(popupcad.settings_filename)
 
-
     def checkSafe(self):
         temp = qg.QMessageBox.warning(self, "Modified Document",
                 'This file has been modified.\nDo you want to save your''changes?',

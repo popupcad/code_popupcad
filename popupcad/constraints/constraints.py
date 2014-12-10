@@ -38,7 +38,7 @@ class ConstraintSystem(object):
         return listout
         
     def deriveJ(self,objects):
-        constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.equations(objects)])
+        constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
         variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
         constants = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Constant))]))
         J = constraint_eqs.jacobian(sympy.Matrix(variables))
@@ -187,8 +187,8 @@ class SymbolicVertex(object):
     def __init__(self,id):
         self.id = id
     def p(self):
-        p_x = Variable(str(self.id)+'_x')
-        p_y = Variable(str(self.id)+'_y')
+        p_x = Variable(str(self)+'_x')
+        p_y = Variable(str(self)+'_y')
         return sympy.Matrix([p_x,p_y,0])
     def __hash__(self):
         return self.id
@@ -198,6 +198,10 @@ class SymbolicVertex(object):
         return False
     def __lt__(self,other):
         return self.id<other.id
+    def __str__(self):
+        return 'vertex'+str(self.id)
+
+
 
 class SymbolicLine(object):
     def __init__(self,v1,v2):
@@ -222,10 +226,15 @@ class Constraint(object):
     
     def __init__(self,vertex_ids, segment_ids):
         self.vertex_ids = vertex_ids
-#        self.vertices = [SymbolicVertex(id) for id in vertex_ids]
         self.segment_ids = segment_ids
-#        self.segments = [SymbolicLine(SymbolicVertex(id1),SymbolicVertex(id2)) for id1,id2 in segment_ids]
         self.id = id(self)
+        self.init_symbolics()
+        self.generated_equations = self.equations()
+
+    def init_symbolics(self):
+        self._vertices = [SymbolicVertex(id) for id in self.vertex_ids]
+        self._segments = [SymbolicLine(SymbolicVertex(id1),SymbolicVertex(id2)) for id1,id2 in self.segment_ids]
+        self._segment_vertices = [SymbolicVertex(id) for id in self.vertices_in_lines()]        
         
     @classmethod
     def new(cls,*objects):
@@ -264,40 +273,56 @@ class Constraint(object):
         return self.name        
 
 
-    def getlines(self,objectlist):
-        from popupcad.geometry.line import Line
-        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
-        segmentlist = []
-        for id1,id2 in self.segment_ids:
-            try:
-                segmentlist.append(Line(id_dict[id1],id_dict[id2]))
-            except KeyError:
-                pass
-        return segmentlist
+    def getlines(self):
+#        from popupcad.geometry.line import Line
+#        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
+#        segmentlist = []
+#        for id1,id2 in self.segment_ids:
+#            try:
+#                segmentlist.append(Line(id_dict[id1],id_dict[id2]))
+#            except KeyError:
+#                pass
+#        return segmentlist
+        try:
+            return self._segments
+        except AttributeError:
+            self.init_symbolics()
+            return self._segments
+            
 
-    def getallvertices(self,objectlist):
-        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
-
-        vertexlist = []
-        for id1 in self.vertex_ids+self.vertices_in_lines():
-            try:
-                vertexlist.append(id_dict[id1])
-            except KeyError:
-                pass
-
-        return vertexlist
-
+    def getallvertices(self):
+#        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
+#
+#        vertexlist = []
+#        for id1 in self.vertex_ids+self.vertices_in_lines():
+#            try:
+#                vertexlist.append(id_dict[id1])
+#            except KeyError:
+#                pass
+#
+#        return vertexlist
+        try:
+            return self._vertices+self._segment_vertices
+        except AttributeError:
+            self.init_symbolics()
+            return self._vertices+self._segment_vertices
+            
     def getvertices(self,objectlist):
-        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
-        vertexlist = []
-        for id1 in self.vertex_ids:
-            try:
-                vertexlist.append(id_dict[id1])
-            except KeyError:
-                pass
-        return vertexlist
+#        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
+#        vertexlist = []
+#        for id1 in self.vertex_ids:
+#            try:
+#                vertexlist.append(id_dict[id1])
+#            except KeyError:
+#                pass
+#        return vertexlist
+        try:
+            return self._vertices
+        except AttributeError:
+            self.init_symbolics()
+            return self._vertices
 
-    def equations(self,objects):
+    def equations(self):
         return []
 
     def properties(self):
@@ -323,8 +348,14 @@ class Constraint(object):
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'
     def __init__(self,value,vertex_ids, segment_ids):
-        super(ValueConstraint,self).__init__(vertex_ids,segment_ids)
+        self.vertex_ids = vertex_ids
+        self.segment_ids = segment_ids
         self.value = value
+
+        self.id = id(self)
+        self.init_symbolics()
+
+        self.generated_equations = self.equations()
 
     @classmethod
     def new(cls,*objects):
@@ -353,8 +384,8 @@ class ValueConstraint(Constraint):
 
 class horizontal(Constraint,AtLeastTwoPoints):
     name = 'horizontal'
-    def equations(self,objects):
-        vertices = self.getallvertices(objects)
+    def equations(self):
+        vertices = self.getallvertices()
         eqs = []
         vertex0 = vertices.pop(0)
         p0 = vertex0.p()
@@ -364,8 +395,8 @@ class horizontal(Constraint,AtLeastTwoPoints):
 
 class vertical(Constraint,AtLeastTwoPoints):
     name = 'vertical'
-    def equations(self,objects):
-        vertices = self.getallvertices(objects)
+    def equations(self):
+        vertices = self.getallvertices()
         eqs = []
         vertex0 = vertices.pop(0)
         p0 = vertex0.p()
@@ -375,8 +406,8 @@ class vertical(Constraint,AtLeastTwoPoints):
 
 class distance(ValueConstraint,ExactlyTwoPoints):
     name = 'distance'
-    def equations(self,objects):
-        vertices = self.getallvertices(objects)
+    def equations(self):
+        vertices = self.getallvertices()
         p0 = vertices[0].p()
         p1 = vertices[1].p()
         if self.value==0.:
@@ -392,8 +423,8 @@ class distance(ValueConstraint,ExactlyTwoPoints):
 
 class coincident(Constraint,AtLeastTwoPoints):
     name = 'coincident'
-    def equations(self,objects):
-        vertices = self.getallvertices(objects)
+    def equations(self):
+        vertices = self.getallvertices()
         eq = []
         p0 = vertices.pop().p()
         for vertex in vertices:
@@ -404,8 +435,8 @@ class coincident(Constraint,AtLeastTwoPoints):
 
 class distancex(ValueConstraint,AtLeastOnePoint):
     name = 'distancex'
-    def equations(self,objects):
-        vertices = self.getallvertices(objects)
+    def equations(self):
+        vertices = self.getallvertices()
         if len(vertices)==1:
             eq = vertices[0].p()[0]-self.value*popupcad.internal_argument_scaling
         else:
@@ -414,8 +445,8 @@ class distancex(ValueConstraint,AtLeastOnePoint):
 
 class distancey(ValueConstraint,AtLeastOnePoint):
     name = 'distancey'
-    def equations(self,objects):
-        vertices = self.getallvertices(objects)
+    def equations(self):
+        vertices = self.getallvertices()
         if popupcad.flip_y:
             temp = 1.
         else:
@@ -429,8 +460,8 @@ class distancey(ValueConstraint,AtLeastOnePoint):
 class angle(ValueConstraint,AtLeastOneLine):
     name = 'angle'
     value_text = 'enter angle(in degrees)'
-    def equations(self,objects):
-        lines = self.getlines(objects)[0:2]
+    def equations(self):
+        lines = self.getlines()[0:2]
 
         if len(lines)==1:
             v1 = lines[0].v()
@@ -454,8 +485,8 @@ class angle(ValueConstraint,AtLeastOneLine):
 
 class parallel(Constraint,AtLeastTwoLines):
     name = 'parallel'
-    def equations(self,objects):
-        lines = self.getlines(objects)
+    def equations(self):
+        lines = self.getlines()
         v1 = lines.pop(0).v()
         eq = []
         for line in lines:
@@ -465,8 +496,8 @@ class parallel(Constraint,AtLeastTwoLines):
 
 class equal(Constraint,AtLeastTwoLines):
     name = 'equal'
-    def equations(self,objects):
-        lines = self.getlines(objects)
+    def equations(self):
+        lines = self.getlines()
         vs = [line.v() for line in lines]
         lengths = [v.dot(v)**.5 for v in vs]
         eqs = []
@@ -477,17 +508,17 @@ class equal(Constraint,AtLeastTwoLines):
         
 class perpendicular(Constraint,ExactlyTwoLines):
     name = 'perpendicular'
-    def equations(self,objects):
-        lines = self.getlines(objects)[0:2]
+    def equations(self):
+        lines = self.getlines()[0:2]
         v1 = lines[0].v()
         v2 = lines[1].v()
         return [v2[1]*v1[1] + v2[0]*v1[0]]
 
 class PointLine(ValueConstraint,ExactlyOnePointOneLine):
     name = 'PointLineDistance'
-    def equations(self,objects):
-        line = self.getlines(objects)[0]
-        p1 = self.getvertices(objects)[0].p()
+    def equations(self):
+        line = self.getlines()[0]
+        p1 = self.getvertices()[0].p()
         
         v1 = p1-line.p1()
         v = line.v()

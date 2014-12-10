@@ -17,15 +17,15 @@ class Line(object):
     def lines(self):
         return [self]
 
-    def p1(self):
-        return self.vertex1.p()
-    def p2(self):
-        return self.vertex2.p()
-    def v(self):
-        return self.p2() - self.p1()
-    def lv(self):
-        v = self.v()
-        return (v.dot(v))**.5        
+#    def p1(self):
+#        return self.vertex1.p()
+#    def p2(self):
+#        return self.vertex2.p()
+#    def v(self):
+#        return self.p2() - self.p1()
+#    def lv(self):
+#        v = self.v()
+#        return (v.dot(v))**.5        
 
     def gen_interactive(self):
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
