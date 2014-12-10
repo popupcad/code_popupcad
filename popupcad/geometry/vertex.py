@@ -8,8 +8,8 @@ Please see LICENSE.txt for full license.
 import numpy
 import sympy
     
-from popupcad.constraints.constraints import Variable, Constant
-    
+from popupcad.constraints.constraints import SymbolicVertex
+
 class BaseVertex(object):
     editable = ['pos','static','construction']
     deletable = []
@@ -50,6 +50,13 @@ class BaseVertex(object):
             self.moveable = True
             return self.moveable
 
+    def constraints_ref(self):
+        try:
+            return self._constraints_ref
+        except AttributeError:
+            self._constraints_ref = SymbolicVertex(self.id)
+            return self._constraints_ref
+
     def isValid(self):
         return True
 
@@ -77,13 +84,7 @@ class BaseVertex(object):
         return False
         
     def p(self):
-#        if self.is_static():
-#            p_x = Constant(str(self)+'_x')
-#            p_y = Constant(str(self)+'_y')
-#        else:
-        p_x = Variable(str(self)+'_x')
-        p_y = Variable(str(self)+'_y')
-        return sympy.Matrix([p_x,p_y,0])
+        return self.constraints_ref().p()
 
     def setpos(self,pos):
         pos = numpy.array(pos)
@@ -108,7 +109,7 @@ class BaseVertex(object):
             return self._pos
 
     def setsymbol(self,variable,value):
-        p = self.p()
+        p = self.constraints_ref().p()
         if p[0] == variable:
             self.setpos((value,self.getpos()[1]))            
         if p[1] == variable:

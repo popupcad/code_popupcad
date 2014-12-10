@@ -17,9 +17,6 @@ from popupcad.filetypes.enum import enum
 class Variable(sympy.Symbol):
     pass
 
-class Constant(sympy.Symbol):
-    pass
-
 class ConstraintSystem(object):
     atol = 1e-10
     rtol = 1e-10
@@ -50,75 +47,77 @@ class ConstraintSystem(object):
         new.constraints = [constraint.copy() for constraint in self.constraints]
         return new
 
-    def getlinks(self,vertices):
-        ini = {}
-        vertexdict = {}
-        for vertex in vertices:
-            p = vertex.p()[0:2]
+    def getlinks(self,objects):
 
-            vertexdict[p[0]]=vertex
-            vertexdict[p[1]]=vertex
-
-            pos = vertex.getpos()
-            for key,value in zip(p,pos):     
-                ini[key]=value
         return ini,vertexdict
 
-    def process(self,objects):
+    def update(self):
         from popupcad.geometry.vertex import BaseVertex
-        
-        ini,vertexdict = self.getlinks(objects)
-        variables,qout = [],[]
         if len(self.constraints)>0:
-
-            staticvertices = []
-            for item in objects:
-                if isinstance(item,BaseVertex):
-                    if item.is_static():
-                        staticvertices.append(item)
-                elif isinstance(item,Line):
-                    if item.vertex1.is_static():
-                        staticvertices.append(item.vertex1)
-                    if item.vertex2.is_static():
-                        staticvertices.append(item.vertex2)
-            constants = []
-            for item in staticvertices:
-                constants.extend(SymbolicVertex(item.id).p()[:2])
-            constants = list(set(constants))
-
-            constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
-            variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))])-set(constants))
-            J = constraint_eqs.jacobian(sympy.Matrix(variables))
-
-            f_constraints1 = sympy.utilities.lambdify(constants,constraint_eqs)
-            f_J_1 = sympy.utilities.lambdify(constants,J)
-
-            constvals = self.inilist(constants,ini)
-
-            f_constraints2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_constraints1(*constvals)))
-            f_J_2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_J_1(*constvals)))
-
-            def dq(q):
-                qlist = q.flatten().tolist()
-                zero  = f_constraints2(*(qlist))
-                zero=numpy.array(zero[:]).flatten()
-                n = len(zero)
-                m = len(q)
-                if m>n:
-                    zero = numpy.r_[zero,[0]*(m-n)]
-                return zero        
-
-            def j(q):
-                qlist = q.flatten().tolist()
-                jnum= f_J_2(*(qlist))
-                jnum=numpy.array(jnum[:])
-                m,n= jnum.shape
-                if n>m:
-                    jnum= numpy.r_[jnum,numpy.zeros((n-m,n))]
-                return jnum        
-
-            qout = opt.root(dq,numpy.array(self.inilist(variables,ini)),jac = j,tol = self.atol,method = 'lm')
-            qout = qout.x.tolist()
+            objects = self.vertex_builder()
+            if len(objects)>0:
+                variables,qout = [],[]
+                
+                ini = {}
+                vertexdict = {}
+                for vertex in objects:
+                    p = vertex.p()[0:2]
+        
+                    vertexdict[p[0]]=vertex
+                    vertexdict[p[1]]=vertex
+        
+                    pos = vertex.getpos()
+                    for key,value in zip(p,pos):     
+                        ini[key]=value
+    
+                staticvertices = []
+                for item in objects:
+                    if isinstance(item,BaseVertex):
+                        if item.is_static():
+                            staticvertices.append(item)
+                    elif isinstance(item,Line):
+                        if item.vertex1.is_static():
+                            staticvertices.append(item.vertex1)
+                        if item.vertex2.is_static():
+                            staticvertices.append(item.vertex2)
+                constants = []
+                for item in staticvertices:
+                    constants.extend(SymbolicVertex(item.id).p()[:2])
+                constants = list(set(constants))
+    
+                constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
+                variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))])-set(constants))
+                J = constraint_eqs.jacobian(sympy.Matrix(variables))
+    
+                f_constraints1 = sympy.utilities.lambdify(constants,constraint_eqs)
+                f_J_1 = sympy.utilities.lambdify(constants,J)
+    
+                constvals = self.inilist(constants,ini)
+    
+                f_constraints2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_constraints1(*constvals)))
+                f_J_2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_J_1(*constvals)))
+    
+                def dq(q):
+                    qlist = q.flatten().tolist()
+                    zero  = f_constraints2(*(qlist))
+                    zero=numpy.array(zero[:]).flatten()
+                    n = len(zero)
+                    m = len(q)
+                    if m>n:
+                        zero = numpy.r_[zero,[0]*(m-n)]
+                    return zero        
+    
+                def j(q):
+                    qlist = q.flatten().tolist()
+                    jnum= f_J_2(*(qlist))
+                    jnum=numpy.array(jnum[:])
+                    m,n= jnum.shape
+                    if n>m:
+                        jnum= numpy.r_[jnum,numpy.zeros((n-m,n))]
+                    return jnum        
+    
+                qout = opt.root(dq,numpy.array(self.inilist(variables,ini)),jac = j,tol = self.atol,method = 'lm')
+                qout = qout.x.tolist()
 
 #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
 #            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
@@ -129,21 +128,114 @@ class ConstraintSystem(object):
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
 #            qout = qout.x.tolist()
 
-        for ii,variable in enumerate(variables):
-            vertexdict[variable].setsymbol(variable,qout[ii])   
+            for ii,variable in enumerate(variables):
+                vertexdict[variable].setsymbol(variable,qout[ii])   
 
-    def update(self):
-        self.process(self.vertex_builder())
-        
     def cleanup(self):
         sketch_objects = self.vertex_builder()
         for ii in range(len(self.constraints))[::-1]:
             if self.constraints[ii].cleanup(sketch_objects)==Constraint.CleanupFlags.Deletable:
                 self.constraints.pop(ii)
-    def constrained_shift(self,items,sketch):
-        for vertex,dxdy in items:
-            vertex.shift(dxdy)
 
+    def constrained_shift(self,items,sketch):
+        dx_dict = {}
+        for vertex,dxdy in items:
+#            vertex.shift(dxdy)
+            key_x,key_y = vertex.constraints_ref().p()[:2]
+            dx_dict[key_x]=dxdy[0]
+            dx_dict[key_y]=dxdy[1]
+        self.constrained_shift_int(dx_dict)
+            
+    def constrained_shift_int(self,dx_dict):
+        from popupcad.geometry.vertex import BaseVertex
+        if len(self.constraints)>0:
+            objects = self.vertex_builder()
+            if len(objects)>0:
+                variables,qout = [],[]
+                
+                ini = {}
+                vertexdict = {}
+                for vertex in objects:
+                    p = vertex.p()[0:2]
+        
+                    vertexdict[p[0]]=vertex
+                    vertexdict[p[1]]=vertex
+        
+                    pos = vertex.getpos()
+                    for key,value in zip(p,pos):     
+                        ini[key]=value
+    
+                staticvertices = []
+                for item in objects:
+                    if isinstance(item,BaseVertex):
+                        if item.is_static():
+                            staticvertices.append(item)
+                    elif isinstance(item,Line):
+                        if item.vertex1.is_static():
+                            staticvertices.append(item.vertex1)
+                        if item.vertex2.is_static():
+                            staticvertices.append(item.vertex2)
+                constants = []
+                for item in staticvertices:
+                    constants.extend(SymbolicVertex(item.id).p()[:2])
+                constants = list(set(constants))
+    
+                constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
+                variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))])-set(constants))
+                J = constraint_eqs.jacobian(sympy.Matrix(variables))
+    
+                f_constraints1 = sympy.utilities.lambdify(constants,constraint_eqs)
+                f_J_1 = sympy.utilities.lambdify(constants,J)
+    
+                constvals = self.inilist(constants,ini)
+    
+                f_constraints2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_constraints1(*constvals)))
+                f_J_2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_J_1(*constvals)))
+    
+                def dq(q):
+                    qlist = q.flatten().tolist()
+                    zero  = f_constraints2(*(qlist))
+                    zero=numpy.array(zero[:]).flatten()
+                    n = len(zero)
+                    m = len(q)
+                    if m>n:
+                        zero = numpy.r_[zero,[0]*(m-n)]
+                    return zero        
+    
+                def j(q):
+                    qlist = q.flatten().tolist()
+                    jnum= f_J_2(*(qlist))
+                    jnum=numpy.array(jnum[:])
+                    m,n= jnum.shape
+                    if n>m:
+                        jnum= numpy.r_[jnum,numpy.zeros((n-m,n))]
+                    return jnum        
+
+                dx = numpy.zeros(len(variables))
+                for key in variables:
+                    if key in dx_dict:
+                        dx[variables.index(key)]=dx_dict[key]
+    
+                x0 = numpy.array(self.inilist(variables,ini))
+                Jnum = j(x0)
+                import scipy
+                L,S,R = scipy.linalg.svd(Jnum)
+                m = len(constraint_eqs)
+                n = len(variables)
+                rnull = R[(m-n):]
+
+                lnull = ((rnull**2).sum(1))**.5
+#                ldx = (dx**2).sum(-1)**.5
+                comp =   ((rnull*dx).sum(1))/lnull
+#                comp =   (rnull*dx).sum(1)
+                
+#                print(lnull)
+                x = x0 + (comp*rnull.T).sum(1)
+
+            for ii,variable in enumerate(variables):
+                vertexdict[variable].setsymbol(variable,x[ii])   
+                
+                
 class ExactlyTwoPoints(object):
     def valid(self):
         return len(set(self.vertex_ids+self.vertices_in_lines()))==2
@@ -223,7 +315,7 @@ class Constraint(object):
         self.segment_ids = segment_ids
         self.id = id(self)
         self.init_symbolics()
-        self.generated_equations = self.equations()
+        self.generate_equations()
 
     def init_symbolics(self):
         self._vertices = [SymbolicVertex(id) for id in self.vertex_ids]
@@ -237,6 +329,9 @@ class Constraint(object):
         if not obj.valid():
             obj.throwvalidityerror()
         return obj
+
+    def generate_equations(self):
+        self.generated_equations = self.equations()
         
     def copy(self,identical = True):
         new = type(self)(self.vertex_ids,self.segment_ids)
@@ -252,12 +347,26 @@ class Constraint(object):
         from popupcad.geometry.line import Line
         from popupcad.geometry.vertex import BaseVertex
     
-        segment_ids = [tuple(sorted((line.vertex1.id,line.vertex2.id))) for line in objects if isinstance(line,Line)]
-        segment_ids = list(set(segment_ids))
-        
-        vertex_ids = [vertex.id for vertex in objects if isinstance(vertex,BaseVertex)]
-        vertex_ids = list(set(vertex_ids))
+        vertex_ids = []
+        segment_ids = []
+        segment_vertex_ids = []
 
+        vertices = []
+        segments = []
+        segment_vertices = []
+
+        for item in objects:
+            if isinstance(item,BaseVertex):
+                vertex_ids.append(item.id)
+                vertices.append(item.constraints_ref())
+            if isinstance(item,Line)                :
+                segment_ids.append(tuple(sorted((item.vertex1.id,item.vertex2.id))))
+
+                segment_vertex_ids.append(item.vertex1.id)
+                segment_vertex_ids.append(item.vertex2.id)
+
+                segments.append(item.constraints_ref())
+                segment_vertices.extend(item.vertex_constraints_ref())
         return vertex_ids,segment_ids
 
     def vertices_in_lines(self):
@@ -320,7 +429,7 @@ class ValueConstraint(Constraint):
         self.id = id(self)
         self.init_symbolics()
 
-        self.generated_equations = self.equations()
+        self.generate_equations()
 
     @classmethod
     def new(cls,*objects):
@@ -346,7 +455,7 @@ class ValueConstraint(Constraint):
         value, ok = qg.QInputDialog.getDouble(None, "Edit Value", "Value:", self.value, -10000, 10000, 5)
         if ok:
             self.value = value
-        self.generated_equations = self.equations()
+        self.generate_equations()
 
 class fixed(Constraint,AtLeastOnePoint):
     name = 'fixed'
@@ -356,8 +465,7 @@ class fixed(Constraint,AtLeastOnePoint):
         self.values = values
         self.id = id(self)
         self.init_symbolics()
-
-        self.generated_equations = self.equations()
+        self.generate_equations()
 
     @classmethod
     def new(cls,*objects):

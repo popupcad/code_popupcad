@@ -4,7 +4,8 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-        
+from popupcad.constraints.constraints import SymbolicLine
+
 class Line(object):
     def __init__(self,v1,v2):
         super(Line,self).__init__()
@@ -17,15 +18,15 @@ class Line(object):
     def lines(self):
         return [self]
         
-#    def p1(self):
-#        return self.vertex1.p()
-#    def p2(self):
-#        return self.vertex2.p()
-#    def v(self):
-#        return self.p2() - self.p1()
-#    def lv(self):
-#        v = self.v()
-#        return (v.dot(v))**.5        
+    def constraints_ref(self):
+        try:
+            return self._constraints_ref
+        except AttributeError:
+            self._constraints_ref = SymbolicLine(self.vertex1.constraints_ref(),self.vertex2.constraints_ref())
+            return self._constraints_ref
+
+    def vertex_constraints_ref(self):
+        return [self.vertex1.constraints_ref(),self.vertex2.constraints_ref()]
 
     def gen_interactive(self):
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
