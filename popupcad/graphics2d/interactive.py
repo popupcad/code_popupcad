@@ -182,7 +182,7 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
                 self.scene().savesnapshot.emit()
             dp = event.scenePos() - event.lastScenePos()
             
-            self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
+            self.generic.constrained_shift(dp.toTuple(),self.constraintsystem(),self.sketch())
             self.updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
 

@@ -68,6 +68,11 @@ class GenericShapeBase(popupCADFile):
             self.moveable = True
             return self.moveable
 
+    def get_exterior(self):
+        return self.exterior
+    def get_interiors(self):
+        return self.interiors
+
     def is_construction(self):
         try:
             return self.construction
@@ -302,7 +307,7 @@ class GenericShapeBase(popupCADFile):
         [item.shift(dxdy) for item in self.exterior]
         [item.shift(dxdy) for interior in self.interiors for item in interior]
 
-    def constrained_shift(self,dxdy,constraintsystem):
+    def constrained_shift(self,dxdy,constraintsystem,sketch):
         a = [(item,dxdy) for item in self.exterior]
         a.extend([(item,dxdy) for interior in self.interiors for item in interior])
-        constraintsystem.constrained_shift(a)
+        constraintsystem.constrained_shift(a,sketch)

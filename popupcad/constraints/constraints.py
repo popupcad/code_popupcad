@@ -28,6 +28,14 @@ class ConstraintSystem(object):
     def __init__(self):
         self.constraints = []
         
+    def link_vertex_builder(self,callback):
+        self._vertex_builder = callback        
+    def vertex_builder(self):
+        try:
+            return self._vertex_builder()
+        except AttributeError:
+            return []
+        
     def add_constraint(self,constraint):
         self.constraints.append(constraint)
     
@@ -37,29 +45,10 @@ class ConstraintSystem(object):
             listout.append(ini[item])
         return listout
         
-    def deriveJ(self,objects,constants):
-        constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
-        variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
-#        constants = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Constant))]))
-        J = constraint_eqs.jacobian(sympy.Matrix(variables))
-        return constraint_eqs,variables,constants,J
-    
     def copy(self):
         new = ConstraintSystem()
         new.constraints = [constraint.copy() for constraint in self.constraints]
         return new
-
-    def gendq(self,Jfun,f_constraints,constvals):
-        def dq(q):
-            qlist = q.flatten().tolist()
-            dq  = Jfun(*(qlist+constvals))
-            dq=numpy.array(dq[:])
-            kf  = f_constraints(*(qlist+constvals))
-            kf=numpy.array(kf[:])
-            dq = -dq*kf
-            dq = dq.sum(0)*5
-            return dq        
-        return dq
 
     def getlinks(self,vertices):
         ini = {}
@@ -75,30 +64,27 @@ class ConstraintSystem(object):
                 ini[key]=value
         return ini,vertexdict
 
-    def process(self,*args,**kwargs):
-        return self.process_new(*args,**kwargs)
-        
-    def process_new(self,objects):
+    def process(self,objects):
         from popupcad.geometry.vertex import BaseVertex
         
-        staticvertices = []
-        for item in objects:
-            if isinstance(item,BaseVertex):
-                if item.is_static():
-                    staticvertices.append(item)
-            elif isinstance(item,Line):
-                if item.vertex1.is_static():
-                    staticvertices.append(item.vertex1)
-                if item.vertex2.is_static():
-                    staticvertices.append(item.vertex2)
-        constants = []
-        for item in staticvertices:
-            constants.extend(SymbolicVertex(item.id).p()[:2])
-        constants = list(set(constants))
-
         ini,vertexdict = self.getlinks(objects)
         variables,qout = [],[]
         if len(self.constraints)>0:
+
+            staticvertices = []
+            for item in objects:
+                if isinstance(item,BaseVertex):
+                    if item.is_static():
+                        staticvertices.append(item)
+                elif isinstance(item,Line):
+                    if item.vertex1.is_static():
+                        staticvertices.append(item.vertex1)
+                    if item.vertex2.is_static():
+                        staticvertices.append(item.vertex2)
+            constants = []
+            for item in staticvertices:
+                constants.extend(SymbolicVertex(item.id).p()[:2])
+            constants = list(set(constants))
 
             constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
             variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))])-set(constants))
@@ -134,22 +120,9 @@ class ConstraintSystem(object):
             qout = opt.root(dq,numpy.array(self.inilist(variables,ini)),jac = j,tol = self.atol,method = 'lm')
             qout = qout.x.tolist()
 
-        for ii,variable in enumerate(variables):
-            vertexdict[variable].setsymbol(variable,qout[ii])   
-    def process_orig(self,vertices): 
-        ini,vertexdict = self.getlinks(vertices)
-        variables,qout = [],[]
-        if len(self.constraints)>0:
-            constraint_eqs,variables,constants,J= self.deriveJ(vertices)
-            Jfun= sympy.utilities.lambdify(variables+constants,J)
-            f_constraints = sympy.utilities.lambdify(variables+constants,constraint_eqs)
-            constvals = self.inilist(constants,ini)
-            dq = self.gendq(Jfun,f_constraints,constvals)
-            dq2 = self.gendq(dq)
-            
 #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-            qout = qout.tolist()
+#            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+#            qout = qout.tolist()
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
 #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
@@ -158,11 +131,16 @@ class ConstraintSystem(object):
 
         for ii,variable in enumerate(variables):
             vertexdict[variable].setsymbol(variable,qout[ii])   
-    def cleanup(self,sketch_objects):
+
+    def update(self):
+        self.process(self.vertex_builder())
+        
+    def cleanup(self):
+        sketch_objects = self.vertex_builder()
         for ii in range(len(self.constraints))[::-1]:
             if self.constraints[ii].cleanup(sketch_objects)==Constraint.CleanupFlags.Deletable:
                 self.constraints.pop(ii)
-    def constrained_shift(self,items):
+    def constrained_shift(self,items,sketch):
         for vertex,dxdy in items:
             vertex.shift(dxdy)
 
@@ -220,8 +198,6 @@ class SymbolicVertex(object):
     def __str__(self):
         return 'vertex'+str(self.id)
 
-
-
 class SymbolicLine(object):
     def __init__(self,v1,v2):
         self.vertex1 = v1
@@ -241,8 +217,7 @@ class Constraint(object):
     deletable = []
 
     CleanupFlags = enum(NotDeletable=101,Deletable=102)
-#    CurrentFlags= enum(AllCurrent=201,SomeCurrent=202,NoneCurrent=203)
-    
+
     def __init__(self,vertex_ids, segment_ids):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
@@ -291,35 +266,14 @@ class Constraint(object):
     def __str__(self):
         return self.name        
 
-
     def getlines(self):
-#        from popupcad.geometry.line import Line
-#        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
-#        segmentlist = []
-#        for id1,id2 in self.segment_ids:
-#            try:
-#                segmentlist.append(Line(id_dict[id1],id_dict[id2]))
-#            except KeyError:
-#                pass
-#        return segmentlist
         try:
             return self._segments
         except AttributeError:
             self.init_symbolics()
             return self._segments
             
-
     def getallvertices(self):
-#        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
-#
-#        vertexlist = []
-#        for id1 in self.vertex_ids+self.vertices_in_lines():
-#            try:
-#                vertexlist.append(id_dict[id1])
-#            except KeyError:
-#                pass
-#
-#        return vertexlist
         try:
             return self._vertices+self._segment_vertices
         except AttributeError:
@@ -327,14 +281,6 @@ class Constraint(object):
             return self._vertices+self._segment_vertices
             
     def getvertices(self):
-#        id_dict = dict(zip([obj.id for obj in objectlist],objectlist))
-#        vertexlist = []
-#        for id1 in self.vertex_ids:
-#            try:
-#                vertexlist.append(id_dict[id1])
-#            except KeyError:
-#                pass
-#        return vertexlist
         try:
             return self._vertices
         except AttributeError:
@@ -400,6 +346,7 @@ class ValueConstraint(Constraint):
         value, ok = qg.QInputDialog.getDouble(None, "Edit Value", "Value:", self.value, -10000, 10000, 5)
         if ok:
             self.value = value
+        self.generated_equations = self.equations()
 
 class fixed(Constraint,AtLeastOnePoint):
     name = 'fixed'
@@ -442,7 +389,6 @@ class fixed(Constraint,AtLeastOnePoint):
             eqs.append(vertex.p()[0] - val[0])
             eqs.append(vertex.p()[1] - val[1])
         return eqs         
-    
 
 class horizontal(Constraint,AtLeastTwoPoints):
     name = 'horizontal'
@@ -581,13 +527,12 @@ class PointLine(ValueConstraint,ExactlyOnePointOneLine):
     def equations(self):
         line = self.getlines()[0]
         p1 = self.getvertices()[0].p()
-        
         v1 = p1-line.p1()
         v = line.v()
         lv = line.lv()
         a = v.dot(v1)/lv
         p0 = v*a/lv + line.p1()
-
+        
         if self.value==0.:
             eq = []
             eq.append(p1[0] - p0[0])
@@ -598,7 +543,6 @@ class PointLine(ValueConstraint,ExactlyOnePointOneLine):
             l1 = v1.dot(v1)**.5
             eq = l1 - self.value*popupcad.internal_argument_scaling
             return [eq]  
-        
         return [x]
 
 if __name__=='__main__':

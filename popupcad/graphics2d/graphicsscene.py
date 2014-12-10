@@ -96,17 +96,6 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
             time = popupcad.basic_functions.return_formatted_time()
             self.renderprocess('2D_screenshot_'+time+'.svg',*win.acceptdata())
 
-    def buildvertices(self,sceneitems,controlpoints,controllines):
-        from popupcad.graphics2d.interactive import Interactive
-        interactives = [parent for parent in sceneitems if ((isinstance(parent,Interactive)))]
-        interactivevertices = []
-        [interactivevertices.extend(item.handles()) for item in interactives]
-        vertices = list(set(interactivevertices+controlpoints))
-        vertices.extend([vertex for vertex in sceneitems if isinstance(vertex,DrawingPoint)])
-        symbolicvertices = [vertex.get_generic() for vertex in vertices]
-        [symbolicvertices.extend(controlline.get_generic().vertices()) for controlline in controllines]
-        return symbolicvertices,vertices,interactives
-
     def keyPressEvent(self,event):
         self.savesnapshot.emit()
         if event.key() == qc.Qt.Key_Delete:

@@ -210,13 +210,15 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         distanceactions.append({'text':'Distance','kwargs':{'triggered':lambda:self.add_constraint(constraints.distance),'icon':Icon('distance')}})
         distanceactions.append({'text':'DistanceX','kwargs':{'triggered':lambda:self.add_constraint(constraints.distancex),'icon':Icon('distancex')}})
         distanceactions.append({'text':'DistanceY','kwargs':{'triggered':lambda:self.add_constraint(constraints.distancey),'icon':Icon('distancey')}})
-        distanceactions.append({'text':'Angle','kwargs':{'triggered':lambda:self.add_constraint(constraints.angle),'icon':Icon('angle')}})
         distanceactions.append({'text':'Fixed','kwargs':{'triggered':lambda:self.add_constraint(constraints.fixed)}})
 
         twolineactions = []
+        twolineactions.append({'text':'Angle','kwargs':{'triggered':lambda:self.add_constraint(constraints.angle),'icon':Icon('angle')}})
         twolineactions.append({'text':'Parallel','kwargs':{'triggered':lambda:self.add_constraint(constraints.parallel),'icon':Icon('parallel')}})
         twolineactions.append({'text':'Perpendicular','kwargs':{'triggered':lambda:self.add_constraint(constraints.perpendicular),'icon':Icon('perpendicular')}})
         twolineactions.append({'text':'Equal','kwargs':{'triggered':lambda:self.add_constraint(constraints.equal),'icon':Icon('equal')}})
+        twolineactions.append({'text':'Horizontal','kwargs':{'triggered':lambda:self.add_constraint(constraints.horizontal),'icon':Icon('horizontal')}})
+        twolineactions.append({'text':'Vertical','kwargs':{'triggered':lambda:self.add_constraint(constraints.vertical),'icon':Icon('vertical')}})
 
         self.constraintactions = []
 
@@ -227,12 +229,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             
         self.constraintactions.append({'prepmethod':dummy,'text':'Constraints On','kwargs':{'triggered':self.showvertices,'icon':Icon('showconstraints')}})
         self.constraintactions.append(None)
-        self.constraintactions.append({'text':'Horizontal','kwargs':{'triggered':lambda:self.add_constraint(constraints.horizontal),'icon':Icon('horizontal')}})
-        self.constraintactions.append({'text':'Vertical','kwargs':{'triggered':lambda:self.add_constraint(constraints.vertical),'icon':Icon('vertical')}})
         self.constraintactions.append({'text':'Distance','submenu':distanceactions,'kwargs':{'icon':Icon('distance')}})
         self.constraintactions.append({'text':'Lines','submenu':twolineactions,'kwargs':{'icon':Icon('parallel')}})
         self.constraintactions.append({'text':'PointLine','kwargs':{'triggered':lambda:self.add_constraint(constraints.PointLine),'icon':Icon('pointline')}})
-        self.constraintactions.append({'text':'Update','kwargs':{'triggered':self.refreshconstraints,'icon':Icon('refresh')}})
+        self.constraintactions.append({'text':'Update','kwargs':{'triggered':self.refreshconstraints_button,'icon':Icon('refresh')}})
         self.constraintactions.append({'text':'Cleanup','kwargs':{'triggered':self.cleanupconstraints,'icon':Icon('broom')}})
 
         self.menu_file = self.addMenu(self.fileactions,name='File')
@@ -300,17 +300,33 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             self.sketch.constraintsystem.add_constraint(constraint)
             self.refreshconstraints()
 
+    def refreshconstraints_button(self):
+#        self.undoredo.savesnapshot()
+        self.refreshconstraints()
     def refreshconstraints(self):
-        self.undoredo.savesnapshot()
-        symbolicvertices,vertices,parents = self.scene.buildvertices(self.scene.items(),self.controlpoints,self.controllines)
-        self.sketch.constraintsystem.process(symbolicvertices)
-        [vertex.updatefromgeneric() for vertex in vertices]            
-        [parent.updateshape() for parent in parents]
+#        self.undoredo.savesnapshot()
+        self.sketch.constraintsystem.update()
+
+        for item in self.scene.items():
+            try:
+                item.updateshape()
+            except AttributeError:
+                pass
+        
         self.constraint_editor.refresh()
 
+    def buildvertices(self):
+        self.buildsketch()
+        
+        vertices = []
+        control =  [item.get_generic() for item in self.controlpoints+self.controllines]       
+
+        for geom in self.sketch.operationgeometry+control:
+            vertices.extend(geom.vertices())
+        return vertices
+
     def cleanupconstraints(self):
-        symbolicvertices,vertices,parents = self.scene.buildvertices(self.scene.items(),self.controlpoints,self.controllines)
-        self.sketch.constraintsystem.cleanup(symbolicvertices)
+        self.sketch.constraintsystem.cleanup()
         self.constraint_editor.refresh()
 
     def showconstraint_item(self,obj1):
@@ -337,6 +353,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             newitem.refreshview()
 
         self.constraint_editor.linklist(self.sketch.constraintsystem.constraints)
+        self.sketch.constraintsystem.link_vertex_builder(self.buildvertices)
         
     def showvertices(self):
         self.scene.showvertices(self.act_view_vertices.isChecked())

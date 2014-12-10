@@ -168,6 +168,9 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         point1 = self.generic.vertex1.getpos()
         point2 = self.generic.vertex2.getpos()
         self.setLine(point1[0],point1[1],point2[0],point2[1])
+    def updateshape(self):
+        self.handleupdate()
+        
     def hoverEnterEvent(self,event):
         super(InteractiveEdge,self).hoverEnterEvent(event)
         if self.connectedinteractive!=None:

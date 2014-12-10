@@ -41,6 +41,8 @@ class Common(object):
         self.removefromscene()
     def constraintsystem(self):
         return self.scene().sketch().constraintsystem
+    def sketch(self):
+        return self.scene().sketch()
 
 
 class CommonShape(object):

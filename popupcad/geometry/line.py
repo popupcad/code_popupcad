@@ -16,7 +16,7 @@ class Line(object):
 
     def lines(self):
         return [self]
-
+        
 #    def p1(self):
 #        return self.vertex1.p()
 #    def p2(self):

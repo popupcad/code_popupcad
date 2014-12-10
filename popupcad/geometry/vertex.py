@@ -131,19 +131,6 @@ class BaseVertex(object):
         if identical:
             new.id = self.id
         return new            
-#        
-#    def gen_interactive(self):
-#        from popupcad.graphics2d.interactivevertex import InteractiveVertex
-#        iv = InteractiveVertex(self)
-#        iv.updatefromgeneric()
-#        return iv
-
-#    def get_interactive(self):
-#        try:
-#            return self.interactivevertex
-#        except AttributeError:
-#            self.interactivevertex = self.gen_interactive()
-#            return self.interactivevertex
 
     def shape_is_equal(self,other):
         from popupcad.filetypes.genericshapebase import GenericShapeBase
@@ -159,8 +146,8 @@ class BaseVertex(object):
         newpos = pos+dxdy
         self.setpos(newpos)
 
-    def constrained_shift(self,dxdy,constraintsystem):
-        constraintsystem.constrained_shift([(self,dxdy)])
+    def constrained_shift(self,dxdy,constraintsystem,sketch):
+        constraintsystem.constrained_shift([(self,dxdy)],sketch)
 
 class ShapeVertex(BaseVertex):
     def gen_interactive(self):
