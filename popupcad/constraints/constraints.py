@@ -37,10 +37,10 @@ class ConstraintSystem(object):
             listout.append(ini[item])
         return listout
         
-    def deriveJ(self,objects):
+    def deriveJ(self,objects,constants):
         constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
         variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
-        constants = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Constant))]))
+#        constants = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Constant))]))
         J = constraint_eqs.jacobian(sympy.Matrix(variables))
         return constraint_eqs,variables,constants,J
     
@@ -78,12 +78,31 @@ class ConstraintSystem(object):
     def process(self,*args,**kwargs):
         return self.process_new(*args,**kwargs)
         
-    def process_new(self,vertices):
-        ini,vertexdict = self.getlinks(vertices)
+    def process_new(self,objects):
+        from popupcad.geometry.vertex import BaseVertex
+        
+        staticvertices = []
+        for item in objects:
+            if isinstance(item,BaseVertex):
+                if item.is_static():
+                    staticvertices.append(item)
+            elif isinstance(item,Line):
+                if item.vertex1.is_static():
+                    staticvertices.append(item.vertex1)
+                if item.vertex2.is_static():
+                    staticvertices.append(item.vertex2)
+        constants = []
+        for item in staticvertices:
+            constants.extend(SymbolicVertex(item.id).p()[:2])
+        constants = list(set(constants))
+
+        ini,vertexdict = self.getlinks(objects)
         variables,qout = [],[]
         if len(self.constraints)>0:
 
-            constraint_eqs,variables,constants,J= self.deriveJ(vertices)
+            constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
+            variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))])-set(constants))
+            J = constraint_eqs.jacobian(sympy.Matrix(variables))
 
             f_constraints1 = sympy.utilities.lambdify(constants,constraint_eqs)
             f_J_1 = sympy.utilities.lambdify(constants,J)

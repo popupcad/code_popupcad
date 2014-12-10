@@ -77,12 +77,12 @@ class BaseVertex(object):
         return False
         
     def p(self):
-        if self.is_static():
-            p_x = Constant(str(self)+'_x')
-            p_y = Constant(str(self)+'_y')
-        else:
-            p_x = Variable(str(self)+'_x')
-            p_y = Variable(str(self)+'_y')
+#        if self.is_static():
+#            p_x = Constant(str(self)+'_x')
+#            p_y = Constant(str(self)+'_y')
+#        else:
+        p_x = Variable(str(self)+'_x')
+        p_y = Variable(str(self)+'_y')
         return sympy.Matrix([p_x,p_y,0])
 
     def setpos(self,pos):
