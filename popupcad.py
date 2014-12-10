@@ -28,3 +28,4 @@ if __name__ == "__main__":
     mw.show()
     mw.raise_()
     sys.exit(app.exec_())
+    

@@ -294,7 +294,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             elif isinstance(item,StaticDrawingPoint):
                 items.append(item.get_generic())
                                          
-        constraint = constraintclass.new(self,*items)
+        constraint = constraintclass.new(*items)
         if constraint !=None:
             self.sketch.constraintsystem.add_constraint(constraint)
             self.refreshconstraints()

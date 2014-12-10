@@ -16,6 +16,7 @@ from popupcad.filetypes.enum import enum
 
 class Variable(sympy.Symbol):
     pass
+
 class Constant(sympy.Symbol):
     pass
 
@@ -48,29 +49,17 @@ class ConstraintSystem(object):
         new.constraints = [constraint.copy() for constraint in self.constraints]
         return new
 
-    def gendq(self,Jfun,constfun,constvals):
-        def dq(q,t):
+    def gendq(self,Jfun,f_constraints,constvals):
+        def dq(q):
             qlist = q.flatten().tolist()
             dq  = Jfun(*(qlist+constvals))
             dq=numpy.array(dq[:])
-            kf  = constfun(*(qlist+constvals))
+            kf  = f_constraints(*(qlist+constvals))
             kf=numpy.array(kf[:])
             dq = -dq*kf
             dq = dq.sum(0)*5
             return dq        
         return dq
-        
-    def gendq2(self,dq):
-        return lambda x:dq(x,0)
-
-    def integrate(self,dq,qini,fun2,vertices,variables):
-        q = numpy.array(qini)
-        totalerror = (numpy.array(fun2(*(q.flatten().tolist()))[:])).sum(0)
-        while abs(totalerror)>self.atol:
-            dq1 =dq(q,0)
-            q = q+dq1
-            totalerror = (numpy.array(fun2(*(q.flatten().tolist()))[:])).sum(0)
-        return q
 
     def getlinks(self,vertices):
         ini = {}
@@ -93,40 +82,36 @@ class ConstraintSystem(object):
         ini,vertexdict = self.getlinks(vertices)
         variables,qout = [],[]
         if len(self.constraints)>0:
+
             constraint_eqs,variables,constants,J= self.deriveJ(vertices)
-            constfun = sympy.utilities.lambdify(variables+constants,constraint_eqs)
-            Jfun= sympy.utilities.lambdify(variables+constants,J)
+
+            f_constraints1 = sympy.utilities.lambdify(constants,constraint_eqs)
+            f_J_1 = sympy.utilities.lambdify(constants,J)
 
             constvals = self.inilist(constants,ini)
 
+            f_constraints2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_constraints1(*constvals)))
+            f_J_2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_J_1(*constvals)))
+
             def dq(q):
                 qlist = q.flatten().tolist()
-                zero  = constfun(*(qlist+constvals))
+                zero  = f_constraints2(*(qlist))
                 zero=numpy.array(zero[:]).flatten()
-#                zero = zero.sum(0)
                 n = len(zero)
                 m = len(q)
-#                print(zero)
                 if m>n:
                     zero = numpy.r_[zero,[0]*(m-n)]
                 return zero        
 
             def j(q):
                 qlist = q.flatten().tolist()
-                jnum= Jfun(*(qlist+constvals))
+                jnum= f_J_2(*(qlist))
                 jnum=numpy.array(jnum[:])
                 m,n= jnum.shape
-#                print(jnum)
                 if n>m:
                     jnum= numpy.r_[jnum,numpy.zeros((n-m,n))]
-#                zero = zero.sum(0)
                 return jnum        
-#            qout = opt.newton_krylov(dq,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-#            qout = opt.anderson(dq,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-#            qout = qout.tolist()
-#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
-#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
-#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
+
             qout = opt.root(dq,numpy.array(self.inilist(variables,ini)),jac = j,tol = self.atol,method = 'lm')
             qout = qout.x.tolist()
 
@@ -138,10 +123,10 @@ class ConstraintSystem(object):
         if len(self.constraints)>0:
             constraint_eqs,variables,constants,J= self.deriveJ(vertices)
             Jfun= sympy.utilities.lambdify(variables+constants,J)
-            constfun = sympy.utilities.lambdify(variables+constants,constraint_eqs)
+            f_constraints = sympy.utilities.lambdify(variables+constants,constraint_eqs)
             constvals = self.inilist(constants,ini)
-            dq = self.gendq(Jfun,constfun,constvals)
-            dq2 = self.gendq2(dq)
+            dq = self.gendq(Jfun,f_constraints,constvals)
+            dq2 = self.gendq(dq)
             
 #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
             qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
@@ -198,21 +183,52 @@ class AtLeastOnePoint(object):
     def throwvalidityerror(self):
         raise(Exception('Need at least one point'))
         
+class SymbolicVertex(object):
+    def __init__(self,id):
+        self.id = id
+    def p(self):
+        p_x = Variable(str(self.id)+'_x')
+        p_y = Variable(str(self.id)+'_y')
+        return sympy.Matrix([p_x,p_y,0])
+    def __hash__(self):
+        return self.id
+    def __eq__(self,other):
+        if type(self)==type(other):
+            return self.id == other.id
+        return False
+    def __lt__(self,other):
+        return self.id<other.id
+
+class SymbolicLine(object):
+    def __init__(self,v1,v2):
+        self.vertex1 = v1
+        self.vertex2 = v2
+    def p1(self):
+        return self.vertex1.p()
+    def p2(self):
+        return self.vertex2.p()
+    def v(self):
+        return self.p2() - self.p1()
+    def lv(self):
+        v = self.v()
+        return (v.dot(v))**.5        
 
 class Constraint(object):
     name = 'Constraint'
     deletable = []
 
     CleanupFlags = enum(NotDeletable=101,Deletable=102)
-    CurrentFlags= enum(AllCurrent=201,SomeCurrent=202,NoneCurrent=203)
+#    CurrentFlags= enum(AllCurrent=201,SomeCurrent=202,NoneCurrent=203)
     
     def __init__(self,vertex_ids, segment_ids):
         self.vertex_ids = vertex_ids
+#        self.vertices = [SymbolicVertex(id) for id in vertex_ids]
         self.segment_ids = segment_ids
+#        self.segments = [SymbolicLine(SymbolicVertex(id1),SymbolicVertex(id2)) for id1,id2 in segment_ids]
         self.id = id(self)
         
     @classmethod
-    def new(cls,parent,*objects):
+    def new(cls,*objects):
         temp = cls._define_internals(*objects)
         obj = cls(*temp)
         if not obj.valid():
@@ -236,13 +252,8 @@ class Constraint(object):
         segment_ids = [tuple(sorted((line.vertex1.id,line.vertex2.id))) for line in objects if isinstance(line,Line)]
         segment_ids = list(set(segment_ids))
         
-        vertices = []
-        vertices.extend([vertex for vertex in objects if isinstance(vertex,BaseVertex)])
-        vertex_ids = [vertex.id for vertex in vertices]
+        vertex_ids = [vertex.id for vertex in objects if isinstance(vertex,BaseVertex)]
         vertex_ids = list(set(vertex_ids))
-
-        vertices_in_lines = []
-        vertices_in_lines.extend([vertex for line in objects if isinstance(line,Line) for vertex in [line.vertex1,line.vertex2]])
 
         return vertex_ids,segment_ids
 
@@ -312,14 +323,12 @@ class Constraint(object):
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'
     def __init__(self,value,vertex_ids, segment_ids):
-        self.vertex_ids = vertex_ids
-        self.segment_ids = segment_ids
+        super(ValueConstraint,self).__init__(vertex_ids,segment_ids)
         self.value = value
-        self.id = id(self)
 
     @classmethod
-    def new(cls,parent,*objects):
-        value,ok = cls.getValue(parent)                
+    def new(cls,*objects):
+        value,ok = cls.getValue()                
         if ok:
             vertex_ids, segment_ids = cls._define_internals(*objects)
             obj = cls(value,vertex_ids, segment_ids)
@@ -334,8 +343,8 @@ class ValueConstraint(Constraint):
         return new
 
     @classmethod    
-    def getValue(cls,parent):
-        return qg.QInputDialog.getDouble(parent, 'Edit Value', 'Value', 0,-10000, 10000, 5)
+    def getValue(cls):
+        return qg.QInputDialog.getDouble(None, 'Edit Value', 'Value', 0,-10000, 10000, 5)
         
     def edit(self):
         value, ok = qg.QInputDialog.getDouble(None, "Edit Value", "Value:", self.value, -10000, 10000, 5)
@@ -498,3 +507,10 @@ class PointLine(ValueConstraint,ExactlyOnePointOneLine):
             return [eq]  
         
         return [x]
+
+if __name__=='__main__':
+    a = SymbolicVertex(123)
+    b = SymbolicVertex(234)
+    c = tuple(sorted((a,b)))
+    d = tuple(sorted((a,b)))
+    
