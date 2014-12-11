@@ -112,6 +112,8 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         self.setFlag(self.ItemIsSelectable,True)
         self.setFlag(self.ItemIsMovable,False)
 
+        self.changed_trigger = False
+
     def shape(self,*args,**kwargs):
         return super(InteractiveEdge,self).shape(*args,**kwargs)
         
@@ -184,13 +186,33 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         self.updatestate(self.states.state_neutral)
         self.setZValue(self.z_below)
     def mousePressEvent(self,event):
+        if self.generic.is_moveable():
+            self.changed_trigger = True
         self.updatestate(self.states.state_pressed)
         if self.ItemIsSelectable==(self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge,self).mousePressEvent(event)
+
+    def mouseMoveEvent(self,event):
+        if self.connectedinteractive.mode!=None:
+            if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
+                if self.generic.is_moveable():
+                    if self.changed_trigger:
+                        self.changed_trigger = False
+                        self.scene().savesnapshot.emit()
+                    dp = event.scenePos() - event.lastScenePos()
+                    self.generic.constrained_shift(dp.toTuple(),self.constraintsystem(),self.sketch())
+                    self.updateshape()
+                try:
+                    self.connectedinteractive.updateshape()
+                except AttributeError:
+                    pass                
+
     def mouseReleaseEvent(self,event):
         self.updatestate(self.states.state_hover)
         if self.ItemIsSelectable==(self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge,self).mouseReleaseEvent(event)
+        self.changed_trigger = False
+            
 #    def notify(self):
 #        pass
 
