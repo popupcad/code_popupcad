@@ -15,8 +15,8 @@ class Line(object):
     def vertices(self):
         return [self.vertex1,self.vertex2]  
 
-    def constrained_shift(self,dxdy,constraintsystem,sketch):
-        constraintsystem.constrained_shift([(self.vertex1,dxdy),(self.vertex2,dxdy)],sketch)
+    def constrained_shift(self,dxdy,constraintsystem):
+        constraintsystem.constrained_shift([(self.vertex1,dxdy),(self.vertex2,dxdy)])
 
     def is_moveable(self):
         return True

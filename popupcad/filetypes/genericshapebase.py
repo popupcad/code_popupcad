@@ -307,7 +307,7 @@ class GenericShapeBase(popupCADFile):
         [item.shift(dxdy) for item in self.exterior]
         [item.shift(dxdy) for interior in self.interiors for item in interior]
 
-    def constrained_shift(self,dxdy,constraintsystem,sketch):
+    def constrained_shift(self,dxdy,constraintsystem):
         a = [(item,dxdy) for item in self.exterior]
         a.extend([(item,dxdy) for interior in self.interiors for item in interior])
-        constraintsystem.constrained_shift(a,sketch)
+        constraintsystem.constrained_shift(a)

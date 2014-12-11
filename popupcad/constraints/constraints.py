@@ -137,7 +137,7 @@ class ConstraintSystem(object):
             if self.constraints[ii].cleanup(sketch_objects)==Constraint.CleanupFlags.Deletable:
                 self.constraints.pop(ii)
 
-    def constrained_shift(self,items,sketch):
+    def constrained_shift(self,items):
         dx_dict = {}
         for vertex,dxdy in items:
 #            vertex.shift(dxdy)

@@ -147,8 +147,8 @@ class BaseVertex(object):
         newpos = pos+dxdy
         self.setpos(newpos)
 
-    def constrained_shift(self,dxdy,constraintsystem,sketch):
-        constraintsystem.constrained_shift([(self,dxdy)],sketch)
+    def constrained_shift(self,dxdy,constraintsystem):
+        constraintsystem.constrained_shift([(self,dxdy)])
 
 class ShapeVertex(BaseVertex):
     def gen_interactive(self):
