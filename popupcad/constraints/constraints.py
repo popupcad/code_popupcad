@@ -91,7 +91,8 @@ class ConstraintSystem(object):
                 constants = list(set(constants))
     
                 constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
-                variables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))])-set(constants))
+                allvariables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
+                variables = list(set(allvariables)-set(constants))
                 J = constraint_eqs.jacobian(sympy.Matrix(variables))
     
                 f_constraints1 = sympy.utilities.lambdify(constants,constraint_eqs)
@@ -105,8 +106,8 @@ class ConstraintSystem(object):
     
                 def dq(q):
                     qlist = q.flatten().tolist()
-                    zero  = f_constraints2(*(qlist))
-                    zero=numpy.array(zero[:]).flatten()
+                    zero = f_constraints2(*(qlist))
+                    zero = numpy.array(zero[:]).flatten()
                     n = len(zero)
                     m = len(q)
                     if m>n:
@@ -121,11 +122,11 @@ class ConstraintSystem(object):
                     if n>m:
                         jnum= numpy.r_[jnum,numpy.zeros((n-m,n))]
                     return jnum  
-                return dq,variables,j,vertexdict,constraint_eqs
+                return dq,variables,j,vertexdict,constraint_eqs,constants,allvariables
         
     def update(self):
         try:
-            dq,variables,j,vertexdict,constraint_eqs = self.generated_variables
+            dq,variables,j,vertexdict,constraint_eqs,constants,allvariables = self.generated_variables
             ini,vertexdict = self.ini()
             qout = opt.root(dq,numpy.array(self.inilist(variables,ini)),jac = j,tol = self.atol,method = 'lm')
             qout = qout.x.tolist()
@@ -144,9 +145,9 @@ class ConstraintSystem(object):
         except (AttributeError,TypeError):
             pass
     def constrained_shift(self,items):
+        ini,vertexdict = self.ini()
         try:
-            dq,variables,j,vertexdict,constraint_eqs = self.generated_variables
-            ini,vertexdict = self.ini()
+            dq,variables,j,vertexdict,constraint_eqs,constants,allvariables = self.generated_variables
     
             dx_dict = {}
             for vertex,dxdy in items:
@@ -157,30 +158,35 @@ class ConstraintSystem(object):
     
     
             dx = numpy.zeros(len(variables))
-            for key in variables:
-                if key in dx_dict:
+            for key in dx_dict:
+                if key in variables:
                     dx[variables.index(key)]=dx_dict[key]
+#                elif key in allvariables:
+#                    pass
+#                else:
+#                    vertexdict[key].setsymbol(key,ini[key]+dx_dict[key])   
+                
     
             x0 = numpy.array(self.inilist(variables,ini))
             Jnum = j(x0)
             import scipy
             L,S,R = scipy.linalg.svd(Jnum)
-            m = len(constraint_eqs)
+            aS = abs(S)
+            m = (aS>(aS[0]/100)).sum()
             n = len(variables)
-            rnull = R[(m-n):]
-    
+            d = m-n
+            rnull = R[d:]
             lnull = ((rnull**2).sum(1))**.5
-    #                ldx = (dx**2).sum(-1)**.5
             comp =   ((rnull*dx).sum(1))/lnull
-    #                comp =   (rnull*dx).sum(1)
-            
-    #                print(lnull)
-            x = x0 + (comp*rnull.T).sum(1)
+            x_motion = (comp*rnull.T).sum(1)
+
+            x = x0 + x_motion
     
             for ii,variable in enumerate(variables):
                 vertexdict[variable].setsymbol(variable,x[ii])   
         except (AttributeError,TypeError):
-            pass
+            for vertex,dxdy in items:
+                vertex.shift(dxdy)
         
     def cleanup(self):
         sketch_objects = self.vertex_builder()
