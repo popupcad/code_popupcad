@@ -161,10 +161,10 @@ class ConstraintSystem(object):
             for key in dx_dict:
                 if key in variables:
                     dx[variables.index(key)]=dx_dict[key]
-#                elif key in allvariables:
-#                    pass
-#                else:
-#                    vertexdict[key].setsymbol(key,ini[key]+dx_dict[key])   
+                elif key in allvariables:
+                    pass
+                else:
+                    vertexdict[key].setsymbol(key,ini[key]+dx_dict[key])   
                 
     
             x0 = numpy.array(self.inilist(variables,ini))
@@ -174,8 +174,9 @@ class ConstraintSystem(object):
             aS = abs(S)
             m = (aS>(aS[0]/100)).sum()
             n = len(variables)
-            d = m-n
-            rnull = R[d:]
+            d = n-m
+            
+            rnull = R[m:]
             lnull = ((rnull**2).sum(1))**.5
             comp =   ((rnull*dx).sum(1))/lnull
             x_motion = (comp*rnull.T).sum(1)
