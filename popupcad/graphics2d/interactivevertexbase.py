@@ -124,6 +124,8 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         super(InteractiveVertexBase,self).mouseReleaseEvent(event)    
         self.updatestate(self.states.state_hover)
         self.changed_trigger = False
+        self.scene().refresh_request.emit()
+        
 
     def setPos(self,pos):
         self.generic.setpos(pos.toTuple())

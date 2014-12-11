@@ -212,6 +212,7 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         if self.ItemIsSelectable==(self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge,self).mouseReleaseEvent(event)
         self.changed_trigger = False
+        self.scene().refresh_request.emit()
             
 #    def notify(self):
 #        pass

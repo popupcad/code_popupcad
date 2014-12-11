@@ -198,6 +198,7 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
 
     def mouseReleaseEvent(self,event):
         self.changed_trigger = False
+        self.scene().refresh_request.emit()
         super(Interactive,self).mouseReleaseEvent(event)                
         
     def mouseDoubleClickEvent(self,event):

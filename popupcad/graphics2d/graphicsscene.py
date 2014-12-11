@@ -30,6 +30,7 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
     leavingeditmode = qc.Signal()
     savesnapshot = qc.Signal()
     itemdeleted = qc.Signal()
+    refresh_request = qc.Signal()
 
     def __init__(self):
         super(GraphicsScene,self).__init__()

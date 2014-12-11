@@ -76,8 +76,11 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.scene.newpolygon.connect(self.undoredo.savesnapshot)
         self.scene.savesnapshot.connect(self.undoredo.savesnapshot)
         self.scene.itemdeleted.connect(self.cleanupconstraints)
+        self.scene.refresh_request.connect(self.refreshconstraints)
+
         self.constraint_editor.signal_edit.connect(self.editItem)
         self.constraint_editor.itemPressed.connect(self.showconstraint_item)
+        self.constraint_editor.itemdeleted.connect(self.constraint_deleted)        
         if self.selectops:
             self.optree.currentRowChanged.connect(self.load_references)
         
@@ -303,8 +306,12 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def refreshconstraints_button(self):
 #        self.undoredo.savesnapshot()
         self.refreshconstraints()
+    def constraint_deleted(self):
+#        self.undoredo.savesnapshot()
+        self.refreshconstraints()
     def refreshconstraints(self):
 #        self.undoredo.savesnapshot()
+        self.sketch.constraintsystem.regenerate()
         self.sketch.constraintsystem.update()
 
         for item in self.scene.items():
@@ -326,8 +333,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         return vertices
 
     def cleanupconstraints(self):
+#        self.sketch.constraintsystem.update()
         self.sketch.constraintsystem.cleanup()
         self.constraint_editor.refresh()
+        self.sketch.constraintsystem.regenerate()
 
     def showconstraint_item(self,obj1):
         self.showprop.emit(obj1.customdata)
