@@ -64,9 +64,8 @@ class GLViewWidget(gl.GLViewWidget):
         self.grabFrameBuffer().save(filename)
 
         
-    def update_object(self,zvalue,tris,lines,layers):
+    def update_object(self,zvalue,tris,layers):
         self.tris = tris
-        self.lines = lines
         self.layers = layers
         self.zvalue = zvalue
         self.build_object()

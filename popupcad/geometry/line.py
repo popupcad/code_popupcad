@@ -21,9 +21,6 @@ class Line(object):
     def is_moveable(self):
         return True
         
-    def lines(self):
-        return [self]
-        
     def constraints_ref(self):
         try:
             return self._constraints_ref

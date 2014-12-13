@@ -192,7 +192,6 @@ class GenericShape(GenericShapeBase):
             lines.extend(zip(poly,poly[1:]+poly[0:1]))  
         return lines
 
-
 GenericDrawable = GenericShape
 GenericPolygon = GenericShape
 

@@ -72,9 +72,6 @@ class BaseVertex(object):
     def vertices(self):
         return [self]
 
-    def lines(self):
-        return []
-
     def __hash__(self):
         return self.id
 
@@ -107,6 +104,9 @@ class BaseVertex(object):
                 self._pos = self._Vertex__pos
                 del self._Vertex__pos
             return self._pos
+
+    def getpos3D(self):
+        return (self._pos[0],self._pos[1],0)
 
     def setsymbol(self,variable,value):
         p = self.constraints_ref().p()

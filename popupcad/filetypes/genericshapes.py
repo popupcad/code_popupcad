@@ -31,7 +31,7 @@ class GenericLine(GenericShapeBase):
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj
     def segments(self):
-        return self.linesegments()
+        return self.segments_open()
         
 class GenericPolyline(GenericShapeBase):
     def outputinteractive(self):
@@ -49,7 +49,7 @@ class GenericPolyline(GenericShapeBase):
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj        
     def segments(self):
-        return self.linesegments()
+        return self.segments_open()
 
 class GenericPoly(GenericShapeBase):
     def outputinteractive(self):
@@ -91,7 +91,7 @@ class GenericPoly(GenericShapeBase):
         self.exterior.append(vertex)
         self.update_handles()
     def segments(self):
-        return self.loopsegments()
+        return self.segments_closed()
     def toTriangleFormat(self):
         import shapely.geometry as sg
         import numpy
@@ -157,7 +157,7 @@ class GenericCircle(GenericShapeBase):
         obj = customshapely.ShapelyPolygon(obj.boundary)
         return obj
     def segments(self):
-        return self.loopsegments()
+        return self.segments_closed()
         
 class GenericTwoPointRect(GenericShapeBase):
     def outputinteractive(self):
@@ -182,5 +182,5 @@ class GenericTwoPointRect(GenericShapeBase):
         obj = customshapely.ShapelyPolygon(corners)
         return obj
     def segments(self):
-        return self.loopsegments()
+        return self.segments_closed()
         

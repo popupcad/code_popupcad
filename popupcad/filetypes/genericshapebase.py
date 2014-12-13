@@ -92,19 +92,20 @@ class GenericShapeBase(popupCADFile):
         return vertices
 
     def points(self):
-        vertices = self.vertices()
-        return [vertex.getpos() for vertex in vertices]        
+        return [vertex.getpos() for vertex in self.vertices()]        
 
-    def loopsegments(self):
+    def segments_closed(self):
         points = self.exterior
         segments = zip(points,points[1:]+points[:1])
         for points in self.interiors:
             segments.extend(zip(points,points[1:]+points[:1]))
         return segments
 
-    def linesegments(self):
+    def segments_open(self):
         points = self.exterior
         segments = zip(points[:-1],points[1:])
+        for points in self.interiors:
+            segments.extend(zip(points[:-1],points[1:]))
         return segments
         
     def segmentpoints(self):
@@ -274,14 +275,6 @@ class GenericShapeBase(popupCADFile):
     
     def triangles3(self):
         return []
-
-    def lines(self):
-        lines = []
-        poly = self.exteriorpoints()
-        lines.extend(zip(poly,poly[1:]+poly[:1]))
-        for poly in self.interiorpoints():
-            lines.extend(zip(poly,poly[1:]+poly[0:1]))  
-        return lines
 
     @staticmethod
     def generateQPolygon(points):

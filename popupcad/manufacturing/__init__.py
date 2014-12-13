@@ -14,3 +14,4 @@ from .shiftflip2 import ShiftFlip2
 from .nulloperation import NullOp
 from .simplify import Simplify
 from . import cleanup
+from .jointop import JointOp

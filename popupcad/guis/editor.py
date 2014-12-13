@@ -200,6 +200,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.PlaceOperation7)}})
         self.operationactions.append({'text':'Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup.Cleanup)}})
         self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify.Simplify)}})
+        self.operationactions.append({'text':'Joints','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.jointop.JointOp)}})
 
         self.menu_file = self.addMenu(self.fileactions,name='File')
         self.menu_project= self.addMenu(self.projectactions,name='Project')
@@ -357,15 +358,13 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     def show3dgeometry3(self,operationoutput,selectedlayers):
         if self.act_view_3d.isChecked():
             tris = operationoutput.tris()
-            lines = operationoutput.lines()
-            self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,lines,selectedlayers)
+            self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,selectedlayers)
         else:
             self.clear3dgeometry()
 
     def clear3dgeometry(self):
         tris = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
-        lines = dict([(layer,[]) for layer in self.design.return_layer_definition().layers])
-        self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,lines,[])
+        self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,tris,[])
 
     @loggable
     def exportLayerSVG(self):

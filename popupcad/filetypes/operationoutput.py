@@ -108,15 +108,3 @@ class OperationOutput(UserData):
                         pass
                 self.alltriangles[layer] = triangles
             return self.alltriangles
-
-    def lines(self):
-        import popupcad.algorithms.points as points
-        try:
-            return self.allines
-        except AttributeError:
-            self.allines = {}
-            for layer,geoms in self.generic_geometry_2d().items():
-                linesegments = [item for geom in geoms for item in geom.lines()]
-                glformat = [point for segment in linesegments for point in segment]
-                self.allines[layer] = glformat
-            return self.allines
