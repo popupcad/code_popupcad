@@ -45,7 +45,7 @@ url = 'http://www.popupcad.com'
 #import uuid
 #uuid.uuid4()
 windows_uuid = '{875b89db-f819-48bf-9be4-ec93f57f29c2}'
-settings_filename = 'settings.popupcad'
+
 popupcad_dirname = 'popupCAD_files'
 popupcad_home_path = os.path.normpath(os.path.join(user_home_dir,popupcad_dirname))
 
@@ -59,6 +59,8 @@ scriptdir = os.path.normpath(os.path.join(popupcad_home_path ,'scripts'))
 sketchdir = os.path.normpath(os.path.join(popupcad_home_path ,'sketches'))
 shapedir = os.path.normpath(os.path.join(popupcad_home_path ,'shapes'))
 backupdir = os.path.normpath(os.path.join(popupcad_home_path ,'backup'))
+
+settings_filename = os.path.normpath(os.path.join(popupcad_home_path ,'settings.popupcad'))
 
 lastdir = popupcad_home_path
 lastdesigndir = designdir
