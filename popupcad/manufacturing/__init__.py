@@ -15,3 +15,4 @@ from .nulloperation import NullOp
 from .simplify import Simplify
 from . import cleanup
 from .jointop import JointOp
+from .flatten import Flatten
