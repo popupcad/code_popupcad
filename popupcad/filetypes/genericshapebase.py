@@ -96,16 +96,16 @@ class GenericShapeBase(popupCADFile):
 
     def segments_closed(self):
         points = self.exterior
-        segments = zip(points,points[1:]+points[:1])
+        segments = list(zip(points,points[1:]+points[:1]))
         for points in self.interiors:
-            segments.extend(zip(points,points[1:]+points[:1]))
+            segments.extend(list(zip(points,points[1:]+points[:1])))
         return segments
 
     def segments_open(self):
         points = self.exterior
-        segments = zip(points[:-1],points[1:])
+        segments = list(zip(points[:-1],points[1:]))
         for points in self.interiors:
-            segments.extend(zip(points[:-1],points[1:]))
+            segments.extend(list(zip(points[:-1],points[1:])))
         return segments
         
     def segmentpoints(self):
@@ -171,9 +171,8 @@ class GenericShapeBase(popupCADFile):
         
     @classmethod
     def remove_redundant_points(cls,points):
-        tests = zip(points,points[1:]+points[0:1])
         newpoints = []
-        for point1,point2 in tests:
+        for point1,point2 in zip(points,points[1:]+points[0:1]):
             if not cls.samepoint(point1.getpos(),point2.getpos()):
                 newpoints.append(point1)
         return newpoints

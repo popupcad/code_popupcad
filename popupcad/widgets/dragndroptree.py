@@ -397,7 +397,7 @@ if __name__=='__main__':
     app = qg.QApplication(sys.argv)
     tw = DirectedDraggableTreeWidget()
     nodes = list1
-    connections = zip(nodes[:-1],nodes[1:])
+    connections = list(zip(nodes[:-1],nodes[1:]))
     networkgenerator = lambda:AcyclicDirectedGraph(nodes,connections[0:3])
     tw.setnetworkgenerator(networkgenerator)
     tw.linklist(list1)

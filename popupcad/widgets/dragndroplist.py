@@ -147,7 +147,7 @@ if __name__=='__main__':
     lw = DirectedDraggableListWidget()
     lw.linklist(list1)
     nodes = lw.allItems()
-    connections = zip(nodes[:-1],nodes[1:])
+    connections = list(zip(nodes[:-1],nodes[1:]))
     network = lambda:AcyclicDirectedGraph(nodes,connections[0:5])
     lw.setnetworkgenerator(network)
     lw.signal_edit.connect(edituserdata)

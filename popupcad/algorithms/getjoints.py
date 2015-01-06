@@ -45,7 +45,7 @@ def getjoints(geoms):
             vertices = []
             [vertices.extend(item) for item in a[1:]]
             ordered_vertices = popupcad.algorithms.points.order_vertices(vertices,a[0],tolerance = tolerance)
-            segs = [(v1,v2) for v1,v2 in zip(ordered_vertices[:-1],ordered_vertices[1:])]
+            segs = list(zip(ordered_vertices[:-1],ordered_vertices[1:]))
             midpoints = popupcad.algorithms.points.segment_midpoints(segs)
             count = [0 for item in midpoints]
             for ii in segments:

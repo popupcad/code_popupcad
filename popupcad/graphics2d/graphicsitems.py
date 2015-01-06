@@ -51,8 +51,7 @@ class CommonShape(object):
         from popupcad.geometry.line import ShapeLine
         self.selectableedges = []
         exterior = self.generic.exterior
-        segments = zip(exterior,exterior[1:]+exterior[0:1])
-        for handle1,handle2 in segments:
+        for handle1,handle2 in zip(exterior,exterior[1:]+exterior[0:1]):
             genericline = ShapeLine(handle1,handle2)
             item = genericline.gen_interactive()
             self.selectableedges.append(item)  
@@ -61,8 +60,7 @@ class CommonShape(object):
         from popupcad.geometry.line import ShapeLine
         self.selectableedges = []
         exterior = self.generic.exterior
-        segments = zip(exterior[:-1],exterior[1:])
-        for handle1,handle2 in segments:
+        for handle1,handle2 in zip(exterior[:-1],exterior[1:]):
             genericline = ShapeLine(handle1,handle2)
             item = genericline.gen_interactive()
             self.selectableedges.append(item)  
