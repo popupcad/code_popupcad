@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad.materials as materials
-
+from popupcad.filetypes.layerdef import LayerDef
 import PySide.QtGui as qg
 
 class ClassItem(qg.QListWidgetItem):
@@ -20,7 +20,7 @@ class MaterialSelection(qg.QDialog):
     def __init__(self,initialleft,initialright,*args,**kwargs):
         super(MaterialSelection,self).__init__(*args,**kwargs)
         
-        self.layerdef = materials.LayerDef(*initialleft)
+        self.layerdef = LayerDef(*initialleft)
         self.lw = qg.QListWidget(self)
         self.lw.itemDoubleClicked.connect(self.remove_item)
 

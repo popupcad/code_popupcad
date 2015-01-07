@@ -8,6 +8,7 @@ Please see LICENSE.txt for full license.
 
 import sys
 import os
+import shutil
 
 def clear_compiled():
     folder = './'
@@ -20,6 +21,9 @@ def clear_compiled():
             if filename.rfind('.pyc')!=-1:
                 os.remove(os.path.join(directory,filename))
     #            print(filename)
-
+        for subdir in subdirectories:
+            if subdir=='__pycache__':
+                shutil.rmtree(os.path.join(directory,subdir))
+            
 if __name__=='__main__':
     clear_compiled()
