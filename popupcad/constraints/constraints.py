@@ -62,7 +62,6 @@ class ConstraintSystem(object):
                 ini[key]=value
         return ini,vertexdict
         
-        
     def regenerate(self):
         self.generated_variables = self.regenerate_inner()
         
@@ -92,14 +91,15 @@ class ConstraintSystem(object):
     
                 constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
                 allvariables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
-                variables = list(set(allvariables)-set(constants))
+                constants_in_eq = list(set(constants).intersection(allvariables))
+                variables = list(set(allvariables)-set(constants_in_eq))
                 J = constraint_eqs.jacobian(sympy.Matrix(variables))
     
-                f_constraints1 = sympy.utilities.lambdify(constants,constraint_eqs)
-                f_J_1 = sympy.utilities.lambdify(constants,J)
+                f_constraints1 = sympy.utilities.lambdify(constants_in_eq,constraint_eqs)
+                f_J_1 = sympy.utilities.lambdify(constants_in_eq,J)
     
                 ini,vertexdict = self.ini()
-                constvals = self.inilist(constants,ini)
+                constvals = self.inilist(constants_in_eq,ini)
     
                 f_constraints2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_constraints1(*constvals)))
                 f_J_2 = sympy.utilities.lambdify(variables,sympy.Matrix(f_J_1(*constvals)))
@@ -122,11 +122,11 @@ class ConstraintSystem(object):
                     if n>m:
                         jnum= numpy.r_[jnum,numpy.zeros((n-m,n))]
                     return jnum  
-                return dq,variables,j,vertexdict,constraint_eqs,constants,allvariables
+                return dq,variables,j,vertexdict,constraint_eqs,constants_in_eq,allvariables
         
     def update(self):
         try:
-            dq,variables,j,vertexdict,constraint_eqs,constants,allvariables = self.generated_variables
+            dq,variables,j,vertexdict,constraint_eqs,constants_in_eq,allvariables = self.generated_variables
             ini,vertexdict = self.ini()
             qout = opt.root(dq,numpy.array(self.inilist(variables,ini)),jac = j,tol = self.atol,method = 'lm')
             qout = qout.x.tolist()
@@ -147,7 +147,7 @@ class ConstraintSystem(object):
     def constrained_shift(self,items):
         ini,vertexdict = self.ini()
         try:
-            dq,variables,j,vertexdict,constraint_eqs,constants,allvariables = self.generated_variables
+            dq,variables,j,vertexdict,constraint_eqs,constants_in_eq,allvariables = self.generated_variables
     
             dx_dict = {}
             for vertex,dxdy in items:

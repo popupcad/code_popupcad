@@ -144,7 +144,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraintdock.closeEvent = lambda event: self.action_uncheck(self.act_view_constraints)
         self.propdock.closeEvent = lambda event: self.action_uncheck(self.act_view_properties)
         
-        
     def regen_id(self):
         self.sketch.regen_id()
 
@@ -512,16 +511,13 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                         controllines = [line.gen_interactive() for line in controllines]
                     except (IndexError,AttributeError):
                         pass
-
         return staticgeometries,controlpoints,controllines
     
     def load_references(self):
         self.scene.removerefgeoms()
         self.static_items,self.controlpoints,self.controllines = self.load_references3()
-
         self.scene.update_extra_objects(self.controlpoints+self.controllines)
         self.scene.updatevertices()
-
         [self.scene.addItem(item) for item in self.static_items]
 
     def group(self):
