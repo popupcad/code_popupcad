@@ -36,7 +36,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.accept_method = accept_method
         self.selectops = selectops
                 
-    
         if self.design == None:
             self.operations = [NullOp()]
         else:

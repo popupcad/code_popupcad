@@ -41,7 +41,7 @@ class Dialog(qg.QDialog):
         self.designwidget = DesignListManager(design)
 
         self.optree = DraggableTreeWidget()
-        
+
         self.sketchwidget = SketchListManager(design)
 
         self.radiobox_scale_x= qg.QRadioButton('Scale X')
@@ -154,7 +154,7 @@ class Dialog(qg.QDialog):
                 id, jj = subopref
                 if subdesign!=None:
                     ii = subdesign.operation_index(id)
-                    self.optree.setCurrentIndeces(ii,jj)
+                    self.optree.selectIndeces([(ii,jj)])
         except NoOperation:
             pass
 

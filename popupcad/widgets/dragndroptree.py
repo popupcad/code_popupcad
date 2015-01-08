@@ -288,6 +288,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
             else:
                 indeces.append((ii.row(),0))
         return indeces
+
     def selectIndeces(self,indeces,clear = True):
         debugprint('selectIndeces')
         if clear:

@@ -94,7 +94,7 @@ class Dialog(qg.QDialog):
         operation_type_index = self.operationtypeselector.currentIndex()
 
         function = self.cls.operationtypes[operation_type_index]
-        outputref = 0
+#        outputref = 0
         return sketchid, operation_link1,layer_links,function,outputref
 
 class SketchOperation2(Operation):
