@@ -303,3 +303,6 @@ class GenericShapeBase(popupCADFile):
         a = [(item,dxdy) for item in self.exterior]
         a.extend([(item,dxdy) for interior in self.interiors for item in interior])
         constraintsystem.constrained_shift(a)
+    def flip(self):
+        self.exterior = self.exterior[::-1]
+        self.interiors = [interior[::-1] for interior in self.interiors]

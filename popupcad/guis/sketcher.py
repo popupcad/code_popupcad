@@ -202,10 +202,13 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.drawingactions.append({'text':'circle','kwargs':{'triggered':lambda:self.addproto(ProtoCircle),'icon':Icon('circle')}})
         self.drawingactions.append({'text':'poly','kwargs':{'triggered':lambda:self.addproto(ProtoPoly),'icon':Icon('polygon')}})
         self.drawingactions.append({'text':'text','kwargs':{'triggered':lambda:self.addproto(TextParent),'icon':Icon('text')}})
-        self.drawingactions.append(None)
-        self.drawingactions.append({'text':'joinedges','kwargs':{'triggered':self.joinedges,'icon':Icon('joinedges')}})
-        self.drawingactions.append({'text':'autobridge','kwargs':{'triggered':self.autobridge,'icon':Icon('autobridge')}})
-        self.drawingactions.append({'text':'get joints','kwargs':{'triggered':self.getjoints,'icon':Icon('getjoints2')}})
+
+        self.tools = []
+#        self.drawingactions.append(None)
+        self.tools.append({'text':'joinedges','kwargs':{'triggered':self.joinedges,'icon':Icon('joinedges')}})
+        self.tools.append({'text':'autobridge','kwargs':{'triggered':self.autobridge,'icon':Icon('autobridge')}})
+        self.tools.append({'text':'get joints','kwargs':{'triggered':self.getjoints,'icon':Icon('getjoints2')}})
+        self.tools.append({'text':'flip direction','kwargs':{'triggered':self.flipdirection}})
 
         distanceactions = []
         distanceactions.append({'text':'Coincident','kwargs':{'triggered':lambda:self.add_constraint(constraints.coincident),'icon':Icon('coincident')}})
@@ -240,6 +243,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.menu_file = self.addMenu(self.fileactions,name='File')
         self.menu_edit = self.addMenu(self.editactions,name='Edit')
         self.toolbar_drawing,self.menu_drawing = self.addToolbarMenu(self.drawingactions,name='Drawing')
+        self.toolbar_tools,self.menu_tools = self.addToolbarMenu(self.tools,name='Drawing')
         self.toolbar_constraints,self.menu_constraints = self.addToolbarMenu(self.constraintactions,name='Constraints')
         self.menu_view = self.addMenu(self.viewactions,name='View')
 
@@ -537,6 +541,12 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 item.setPos(0,0)
                 item.removegroupeditems()
                 item.softdelete()
+    def flipdirection(self):
+        selecteditems = self.scene.selectedItems()
+        for item in selecteditems:
+            item.generic.flip()
+            item.updateshape()
+
                 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
