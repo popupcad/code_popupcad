@@ -61,7 +61,6 @@ class Static(Common):
         self.setselectable(False)
         self.updatemode(self.modes.mode_default)
         self.updateshape()
-        self.setselectable(False)
     def painterpath(self):
         return self.generic.painterpath()
     def exteriorpoints(self):
@@ -98,15 +97,6 @@ class Static(Common):
 
         if self.selectable:
             self.setFlag(self.ItemIsSelectable,True)
-
-    def mouseDoubleClickEvent(self,event):
-        if self.selectable:
-            try:
-                self.scene().highlightbody.emit(self.generic.id)
-            except:
-                pass
-        else:
-            super(Static,self).mouseDoubleClickEvent(event)
             
 class StaticPoly(Static,CommonShape,qg.QGraphicsPathItem):
     pass

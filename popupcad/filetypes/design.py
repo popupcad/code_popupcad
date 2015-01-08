@@ -136,8 +136,8 @@ class Design(popupCADFile):
         if operations == None:
             operations = self.operations
 
-        operations = self.network().sortedallchildrenofnodes(operations)
-        for op in operations:
+        operations2 = self.network().sortedallchildrenofnodes(operations)
+        for op in operations2:
             op.generate(self)
 
     def network(self):

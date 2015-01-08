@@ -93,7 +93,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.setWindowTitle('Editor')
         self.operationeditor.signal_edit.connect(self.editoperation) 
         self.newfile()
-        self.sceneview.highlightbody.connect(self.highlightbody)
+#        self.sceneview.highlightbody.connect(self.highlightbody)
         self.operationadded.connect(self.newoperationslot)
         self.operationedited.connect(self.editedoperationslot)
 
@@ -403,14 +403,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             geoms = [item.outputstatic(color=layer.color) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(basename,*win.acceptdata())
-
-    @loggable
-    def highlightbody(self,ref):
-        import popupcad.algorithms.bodydetection as bodydetection
-        ii,jj = self.operationeditor.currentIndeces()
-        generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
-        bodies = bodydetection.findallconnectedneighborgeoms(self.design,ref,generic_geometry_2d)
-        print(bodies)
 
     def closeEvent(self, event):
         if self.checkSafe():

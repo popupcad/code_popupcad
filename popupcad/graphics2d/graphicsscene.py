@@ -22,7 +22,6 @@ from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
 from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
 
 class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
-    highlightbody=qc.Signal(int)
     mode_select,mode_pan,mode_newgeometry = range(3)
     newpolygon = qc.Signal()
     itemclicked = qc.Signal(object)
