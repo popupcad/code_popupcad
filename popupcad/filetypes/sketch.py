@@ -68,5 +68,6 @@ class Sketch(popupCADFile):
             except AttributeError as ex:
                 shapelyitem = item.outputshapely()
                 shapelygeoms.append(shapelyitem)
-        operationgeom = popupcad.geometry.customshapely.unary_union_safe(shapelygeoms)   
-        return operationgeom
+        shapelygeoms = popupcad.geometry.customshapely.unary_union_safe(shapelygeoms)   
+        shapelygeoms = popupcad.geometry.customshapely.multiinit(shapelygeoms)
+        return shapelygeoms

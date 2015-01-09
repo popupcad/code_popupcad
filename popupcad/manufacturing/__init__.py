@@ -7,6 +7,7 @@ Please see LICENSE.txt for full license.
 from .bufferop2 import BufferOperation2
 from .laminateoperation import LaminateOperation
 from .sketchoperation2 import SketchOperation2
+from .simplesketchoperation import SimpleSketchOp
 from .layerop import LayerOp
 from .locateoperation2 import LocateOperation2
 from .placeop7 import PlaceOperation7

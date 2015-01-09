@@ -91,7 +91,6 @@ class ListManager(qg.QWidget):
             item.value.saveAs()
 
     def copy_item(self):
-        newitems = []
         for item in self.itemlist.selectedItems():
             newitem = item.value.copy(identical = False)
             newitem.regen_id()

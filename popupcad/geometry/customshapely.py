@@ -61,6 +61,7 @@ def unary_union_safe(listin):
     try:
         return so.unary_union(listin)
     except (shapely.geos.TopologicalError,ValueError):
+        print('Unary Union Failed.  Falling Back...')
         workinglist = listin[:]
         try:
             result = workinglist.pop(0)

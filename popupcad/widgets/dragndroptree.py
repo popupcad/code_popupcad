@@ -91,20 +91,19 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.master_refreshing = False
         self.refreshing = False
 
-    def setCurrentIndeces(self,ii,jj=0):
-        debugprint('setcurrentindeces')
-        m = self.model()
-        parentindex = m.index(ii,0,qc.QModelIndex())
-        if jj==0:
-            self.setCurrentIndex(parentindex)
-        else:            
-            childindex = m.index(jj,0,parentindex)
-            self.setCurrentIndex(childindex)
+#    def setCurrentIndeces(self,ii,jj=0):
+#        debugprint('setcurrentindeces')
+#        m = self.model()
+#        parentindex = m.index(ii,0,qc.QModelIndex())
+#        if jj==0:
+#            self.setCurrentIndex(parentindex)
+#        else:            
+#            childindex = m.index(jj,0,parentindex)
+#            self.setCurrentIndex(childindex)
         
     def currentOperationOutputIndex(self):
         debugprint('currentOperationOutputIndex')
         index = self.currentValidIndex(ii=-1)
-        m = self.model()
         if index.parent().isValid():
             return index.row()+1
         else:
@@ -269,9 +268,9 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setDragDropMode(self.DragDropMode.InternalMove)
         self.setEditTriggers(self.EditTrigger.EditKeyPressed)
     
-    def setnetworkgenerator(self,generator):
-        debugprint('setnetworkgenerator')
-        pass
+#    def setnetworkgenerator(self,generator):
+#        debugprint('setnetworkgenerator')
+#        pass
 
     def myRowsInserted(self,*args,**kwargs):
         debugprint('myRowsInserted')
@@ -306,12 +305,12 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 self.setItemSelected(item,True)
                 
 
-    def currentRefs(draggabletreewidget):
+    def currentRefs(self):
         debugprint('currentrefs')
         '''This only works with OperationList, but I haven't made a new subclass'''
         indeces = []
-        for item in draggabletreewidget.selectedItems():
-            ii = draggabletreewidget.indexFromItem(item)
+        for item in self.selectedItems():
+            ii = self.indexFromItem(item)
             if isinstance(item,ChildItem):
                 indeces.append((item.parent().userdata.id,ii.row()+1))
             else:
@@ -335,7 +334,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
 
     def linklist(self,masterlist):
         debugprint('linklist_p')
-        network = self.networkgenerator()
+#        network = self.networkgenerator()
 #        if network.subsequencecomplete(masterlist):
 #            super(DirectedDraggableTreeWidget,self).linklist(masterlist)
 #        else:
