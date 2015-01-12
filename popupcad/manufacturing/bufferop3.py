@@ -6,19 +6,17 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from .multivalueoperation2 import MultiValueOperation2
+from .multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
-from .bufferop3 import BufferOperation3
 
-class BufferOperation2(MultiValueOperation2):
+class BufferOperation3(MultiValueOperation3):
     name = 'Buffer'
     show = []
 #    function = 'buffer'
     valuenames = ['Buffer','Resolution']
     defaults = [0.,popupcad.default_buffer_resolution]
-    upgradeclass = BufferOperation3
 
     def operate(self,design):
-        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+        link,output = self.operation_links['parent'][0]
+        ls1 = design.op_from_ref(link).output[output].csg
         return ls1.buffer(self.values[0]*popupcad.internal_argument_scaling,resolution = int(self.values[1]))
-

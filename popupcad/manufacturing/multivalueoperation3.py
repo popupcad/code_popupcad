@@ -76,15 +76,18 @@ class Dialog(qg.QDialog):
         ref,ii= self.le1.currentRefs()[0]
         
         values = [float(valueedit.text()) for valueedit in self.valueboxes]
-        return ref,values,option,ii
+        operation_links = {}
+        operation_links['parent'] = [(ref,ii)]
+
+        return operation_links,{},{},values,option
         
-class MultiValueOperation2(Operation):
+class MultiValueOperation3(Operation):
     name = 'Multi-Value Operation'
     valuenames = ['value']
     show = ['keepout']
     defaults = [0.]
 
-    attr_init = 'operation_link1','values','keepout_type','outputref'
+    attr_init = 'operation_links','sketch_links','subdesign_links','values','keepout_type'
     attr_init_k = tuple()
     attr_copy = 'id','customname'
     
@@ -92,43 +95,35 @@ class MultiValueOperation2(Operation):
     keepout_type_default = keepout_types.laser_keepout
     
     def __init__(self,*args):
-        super(MultiValueOperation2,self).__init__()
+        super(MultiValueOperation3,self).__init__()
         self.id = id(self)
 
         self.editdata(*args)
 
-    def editdata(self,operation_link1,values,keepout_type,outputref):
-        super(MultiValueOperation2,self).editdata()
-        self.operation_link1 = operation_link1
+    def editdata(self,operation_links,sketch_links,subdesign_links,values,keepout_type):
+        super(MultiValueOperation3,self).editdata()
+        self.operation_links = operation_links
+        self.sketch_links = sketch_links
+        self.subdesign_links = subdesign_links
         self.values = values
         self.keepout_type = keepout_type
-        self.outputref = outputref
         
     def parentrefs(self):
-        return [self.operation_link1]
+        return [self.operation_links['parent'][0][0]]
 
     def getoutputref(self):
-        return self.outputref
-
+        return self.operation_links['parent'][0][1]
+        
     @classmethod
     def buildnewdialog(cls,design,currentop):
         dialog = Dialog(cls.keepout_types,cls.valuenames,cls.defaults,design.operations,currentop,cls.show,keepouttype = cls.keepout_type_default)
         return dialog
 
     def buildeditdialog(self,design):
-        selectedindex = design.operation_index(self.operation_link1)
-        dialog = Dialog(self.keepout_types,self.valuenames,self.defaults,design.prioroperations(self),selectedindex,self.show,self.values,self.keepout_type,self.getoutputref())
+        operation_ref,output_index = self.operation_links['parent'][0]
+        operation_index = design.operation_index(operation_ref)
+        dialog = Dialog(self.keepout_types,self.valuenames,self.defaults,design.prioroperations(self),operation_index,self.show,self.values,self.keepout_type,output_index)
         return dialog
 
     def upgrade(self):
-        operation_links = {}
-        operation_links['parent'] = [(self.operation_link1,self.outputref)]
-        new = self.upgradeclass(operation_links,{},{},self.values,self.keepout_type)
-        new.id = self.id
-        new.customname = self.customname
-        return new
-
-    def copy(self):
-        return self.upgrade()
-        
-
+        return self

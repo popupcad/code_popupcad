@@ -6,21 +6,20 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
 from .. import algorithms
-from .outersheet3 import OuterSheet3
 
-class OuterSheet2(MultiValueOperation2):
+class OuterSheet3(MultiValueOperation3):
     name = 'Sheet'
     show = []
     valuenames = ['Buffer']
     defaults = [0.]
-    upgradeclass = OuterSheet3
 
     def operate(self,design):
         from ..algorithms import web
-        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+        operation_ref,output_index = self.operation_links['parent'][0]
+        ls1 = design.op_from_ref(operation_ref).output[output_index].csg
         ls,dummy = web.supportsheet(design.return_layer_definition(),ls1,self.values[0]*popupcad.internal_argument_scaling)
         return ls
                 

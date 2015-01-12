@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
@@ -15,19 +15,19 @@ from popupcad.filetypes.layer import Layer
 import shapely.geometry as sg
 import numpy
 from .identifybodies import find_minimum_xy,sort_lams
-from .identifyrigidbodies2 import IdentifyRigidBodies2
 
-class IdentifyRigidBodies(MultiValueOperation2):
+class IdentifyRigidBodies2(MultiValueOperation3):
     name = 'Identify Rigid Bodies'
     show = []
     valuenames = []
     defaults = []
-    upgradeclass = IdentifyRigidBodies2
 
     def generate(self,design):
+        operation_ref,output_index = self.operation_links['parent'][0]
+        
         from popupcad.materials.materials import Rigid
 
-        generic = design.op_from_ref(self.operation_link1).output[self.getoutputref()].generic_geometry_2d()
+        generic = design.op_from_ref(operation_ref).output[output_index].generic_geometry_2d()
         
         layerdef = design.return_layer_definition()
 

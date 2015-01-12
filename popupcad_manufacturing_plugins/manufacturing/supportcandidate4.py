@@ -6,22 +6,20 @@ Please see LICENSE.txt for full license.
 """
 
 
-from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 from .. import algorithms
-from .supportcandidate4 import SupportCandidate4
 
-class SupportCandidate3(MultiValueOperation2):
+class SupportCandidate4(MultiValueOperation3):
     name = 'Support Candidate'
     valuenames = ['Support Gap','Keep-out Distance']
     defaults = [0.,0.]
-    upgradeclass = SupportCandidate4
 
     def generate(self,design):
-#    def operate(self,design):
+        operation_ref,output_index = self.operation_links['parent'][0]
         import popupcad
-        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+        ls1 = design.op_from_ref(operation_ref).output[output_index].csg
 
         if self.keepout_type == self.keepout_types.laser_keepout:
             keepout = popupcad.algorithms.keepout.laserkeepout(ls1)
@@ -43,4 +41,5 @@ class SupportCandidate3(MultiValueOperation2):
 #        e = OperationOutput(down_support ,'down_support',self)
 #        self.output = [a,a,b,c,d,e]
         self.output = [a,a,b,c]                
+    
 

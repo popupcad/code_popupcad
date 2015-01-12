@@ -6,12 +6,11 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
 import numpy
-from .identifybodies2 import IdentifyBodies2
 
 def find_minimum_xy(geom):
     points = numpy.array(geom.exteriorpoints())
@@ -25,17 +24,18 @@ def sort_lams(lams,values):
     lam_out = [lams[ii] for ii in ii_mins]
     return lam_out
 
-class IdentifyBodies(MultiValueOperation2):
+class IdentifyBodies2(MultiValueOperation3):
     name = 'Identify Bodies'
     show = []
     valuenames = []
     defaults = []
-    upgradeclass = IdentifyBodies2
 
     def generate(self,design):
+        operation_ref,output_index = self.operation_links['parent'][0]
+        
         from ..algorithms import bodydetection as bd
         
-        generic = design.op_from_ref(self.operation_link1).output[self.getoutputref()].generic_geometry_2d()
+        generic = design.op_from_ref(operation_ref).output[output_index].generic_geometry_2d()
         layerdef = design.return_layer_definition()
 
         layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
@@ -61,4 +61,4 @@ class IdentifyBodies(MultiValueOperation2):
         for ii,item in enumerate(laminates):
             self.output.append(OperationOutput(item,'Body {0:d}'.format(ii),self))
         self.output.insert(0,self.output[0])
- 
+                

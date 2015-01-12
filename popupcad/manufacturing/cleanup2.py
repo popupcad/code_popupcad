@@ -6,19 +6,19 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from .multivalueoperation2 import MultiValueOperation2
-from .cleanup2 import Cleanup2
+from .multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
 
-class Cleanup(MultiValueOperation2):
+class Cleanup2(MultiValueOperation3):
     name = 'Cleanup'
     show = []
 #    function = 'buffer'
     valuenames = ['Buffer','Resolution']
     defaults = [0.0001,1]
-    upgradeclass = Cleanup2
 
     def operate(self,design):
-        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+        operation_ref,output_index = self.operation_links['parent'][0]
+        ls1 = design.op_from_ref(operation_ref).output[output_index].csg
         return popupcad.algorithms.morphology.cleanup(ls1,self.values[0]*popupcad.internal_argument_scaling,int(self.values[1]))
 
+        

@@ -5,19 +5,18 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
-from .keepout3 import Keepout3
 
-class KeepOut2(MultiValueOperation2):
+class KeepOut3(MultiValueOperation3):
     name = 'KeepOut'
     valuenames = []
     defaults = []
-    upgradeclass = Keepout3
 
     def operate(self,design):
+        operation_ref,output_index = self.operation_links['parent'][0]
         import popupcad
-        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+        ls1 = design.op_from_ref(operation_ref).output[output_index].csg
 
         if self.keepout_type == self.keepout_types.laser_keepout:
             keepout = popupcad.algorithms.keepout.laserkeepout(ls1)
