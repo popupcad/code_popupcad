@@ -16,6 +16,9 @@ class Operation(Node,UserData,ClassTools):
     attr_init = tuple()
     attr_init_k = tuple()
     attr_copy = tuple()
+    
+    attr_ref = tuple()
+    attr_refs = tuple()
 
     def __init__(self):
         Node.__init__(self)
@@ -35,6 +38,16 @@ class Operation(Node,UserData,ClassTools):
 
     def sketchrefs(self):
         return []
+
+    def replacerefs(self,refold,refnew):
+        for attr in self.attr_ref:
+            if getattr(self,attr)==refold:
+                setattr(self,attr,refnew)
+        for attr in self.attr_refs:
+            list1 = getattr(self,attr)==refold
+            while refold in list1:
+                ii = list1.index(refold)
+                list1[ii]=refnew
 
     def copy(self):
         newop = self.init_copy(self.attr_init,self.attr_init_k)

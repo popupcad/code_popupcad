@@ -69,9 +69,6 @@ class Flatten(Operation):
         new.customname = self.customname
         return new
 
-    def parentrefs(self):
-        return []
-
     def getoutputref(self):
         return self.outputref
 
