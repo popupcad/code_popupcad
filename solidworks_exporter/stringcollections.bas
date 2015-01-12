@@ -1,7 +1,6 @@
 Attribute VB_Name = "stringcollections"
-
-Function PadStrings(lines As collection, s_before_firstline, s_before As String, s_after As String)
-    Dim linesout As New collection
+Function PadStrings(lines As Collection, s_before_firstline, s_before As String, s_after As String)
+    Dim linesout As New Collection
     Dim item As Variant
     
     item = lines(1)
@@ -15,7 +14,7 @@ Function PadStrings(lines As collection, s_before_firstline, s_before As String,
     Set lines = linesout
 End Function
 
-Function WriteFile(s As collection, filename As String)
+Function WriteFile(s As Collection, filename As String)
     Dim fs, a
     Dim line As Variant
     

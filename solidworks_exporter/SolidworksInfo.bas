@@ -23,7 +23,7 @@ Function getview(model As SldWorks.ModelDoc2, view As SldWorks.view)
     'Set getview = view
 End Function
 
-Function get_visible_faces(view As SldWorks.view, visible_faces As collection)
+Function get_visible_faces(view As SldWorks.view, visible_faces As Collection)
     Dim comp As SldWorks.Component2
     Dim faces As Variant
     Dim face As SldWorks.Face2
@@ -46,7 +46,7 @@ Function get_referenced_doc(view As SldWorks.view) As SldWorks.ModelDoc2
     Dim ref_conf As SldWorks.Configuration
     Dim swRootComp As SldWorks.component
     Dim comp As SldWorks.Component2
-    Dim faceexport As New collection
+    Dim faceexport As New Collection
     Set ref_doc = view.ReferencedDocument
     
     
@@ -54,8 +54,8 @@ Function get_referenced_doc(view As SldWorks.view) As SldWorks.ModelDoc2
     
 End Function
 
-Sub build_component_info(ref_doc As SldWorks.ModelDoc2, component_info As collection)
-    Dim components As New collection
+Sub build_component_info(ref_doc As SldWorks.ModelDoc2, component_info As Collection)
+    Dim components As New Collection
     Dim vComponents As Variant
     Dim comp As Component2
     Dim vBodies As Variant
@@ -69,7 +69,7 @@ Sub build_component_info(ref_doc As SldWorks.ModelDoc2, component_info As collec
     Dim mathTransform As SldWorks.mathTransform
     Dim arrayTransform As Variant
     
-    Dim ci As collection
+    Dim ci As Collection
     
     Set ref_conf = ref_doc.GetActiveConfiguration
     Set rootcomponent = ref_conf.GetRootComponent
@@ -91,7 +91,7 @@ Sub build_component_info(ref_doc As SldWorks.ModelDoc2, component_info As collec
 
 End Sub
 
-Sub buildcomponentlist_rec(componentlist As collection, component As Component2)
+Sub buildcomponentlist_rec(componentlist As Collection, component As Component2)
     Dim children As Variant
     children = component.GetChildren
     
@@ -103,8 +103,8 @@ Sub buildcomponentlist_rec(componentlist As collection, component As Component2)
     Next
 End Sub
 
-Function part_comp_info(comp As SldWorks.PartDoc) As collection
-    Dim info As New collection
+Function part_comp_info(comp As SldWorks.PartDoc) As Collection
+    Dim info As New Collection
 
 '   ---------
     info.Add comp, "component"
@@ -115,11 +115,11 @@ Function part_comp_info(comp As SldWorks.PartDoc) As collection
     info.Add (comp.Visible = swComponentVisibilityState_e.swComponentVisible), "isVisible"
 '   ---------
     
-    Dim bodies As New collection
+    Dim bodies As New Collection
     Dim vBodies As Variant
     Dim vBodyInfo As Variant
     Dim body As SldWorks.Body2
-    Dim bi As collection
+    Dim bi As Collection
 
     vBodies = comp.GetBodies2(SwConst.swBodyType_e.swSolidBody, False)
     For j = 0 To UBound(vBodies)
@@ -136,7 +136,7 @@ Function part_comp_info(comp As SldWorks.PartDoc) As collection
     
     info.Add arrayTransform, "transform"
 '   ---------
-        Dim transformstring As New collection
+        Dim transformstring As New Collection
         Set transformstring = Matrices.toString(arrayTransform)
         stringcollections.PadStrings transformstring, "- [", "- [", "]"
         info.Add transformstring, "transform_s"
@@ -145,8 +145,8 @@ Function part_comp_info(comp As SldWorks.PartDoc) As collection
 
 End Function
 
-Function assembly_comp_info(comp As SldWorks.Component2) As collection
-    Dim info As New collection
+Function assembly_comp_info(comp As SldWorks.Component2) As Collection
+    Dim info As New Collection
 '   ---------
     info.Add comp, "component"
     info.Add "component", "type"
@@ -155,11 +155,11 @@ Function assembly_comp_info(comp As SldWorks.Component2) As collection
 '   ---------
     info.Add (comp.Visible = swComponentVisibilityState_e.swComponentVisible), "isVisible"
 '   ---------
-    Dim bodies As New collection
+    Dim bodies As New Collection
     Dim vBodies As Variant
     Dim vBodyInfo As Variant
     Dim body As SldWorks.Body2
-    Dim bi As collection
+    Dim bi As Collection
 
     vBodies = comp.GetBodies3(SwConst.swBodyType_e.swSolidBody, vBodyInfo)
     For j = 0 To UBound(vBodies)
@@ -181,7 +181,7 @@ Function assembly_comp_info(comp As SldWorks.Component2) As collection
     
     info.Add arrayTransform, "transform"
 '   ---------
-        Dim transformstring As New collection
+        Dim transformstring As New Collection
         Set transformstring = Matrices.toString(arrayTransform)
         stringcollections.PadStrings transformstring, "- [", "- [", "]"
         info.Add transformstring, "transform_s"
@@ -190,8 +190,8 @@ Function assembly_comp_info(comp As SldWorks.Component2) As collection
 
 End Function
 
-Function BodyInfo(body As SldWorks.Body2, parent As collection) As collection
-    Dim info As New collection
+Function BodyInfo(body As SldWorks.Body2, parent As Collection) As Collection
+    Dim info As New Collection
     info.Add body, "body"
     info.Add "body", "type"
 '   ---------
@@ -202,9 +202,9 @@ Function BodyInfo(body As SldWorks.Body2, parent As collection) As collection
     info.Add parent, "parent"
 '   ---------
     Dim FaceArray As Variant
-    Dim faces As New collection
+    Dim faces As New Collection
     Dim face As SldWorks.Face2
-    Dim fi As collection
+    Dim fi As Collection
     
     FaceArray = body.getfaces()
 
@@ -219,8 +219,8 @@ Function BodyInfo(body As SldWorks.Body2, parent As collection) As collection
     Set BodyInfo = info
 End Function
 
-Function FaceInfoDict(face As SldWorks.Face2, parent As collection) As collection
-    Dim info As New collection
+Function FaceInfoDict(face As SldWorks.Face2, parent As Collection) As Collection
+    Dim info As New Collection
     info.Add face, "face"
     info.Add "face", "type"
 '   ---------
@@ -246,8 +246,8 @@ Function FaceInfoDict(face As SldWorks.Face2, parent As collection) As collectio
     Set FaceInfoDict = info
 End Function
 
-Function MarkVisibleFaces(component_info As collection, visible_faces As collection)
-    Dim component, bodies, body_info, faces, face_info As collection
+Function MarkVisibleFaces(component_info As Collection, visible_faces As Collection)
+    Dim component, bodies, body_info, faces, face_info As Collection
     Dim ii As Integer
     ii = 0
     For Each component In component_info
@@ -265,8 +265,8 @@ Function MarkVisibleFaces(component_info As collection, visible_faces As collect
     Next component
 End Function
 
-Function GenFaceOutput(outputstring As collection, component_info As collection)
-    Dim component, bodies, body_info, faces, face_info As collection
+Function GenFaceOutput(outputstring As Collection, component_info As Collection)
+    Dim component, bodies, body_info, faces, face_info As Collection
     For Each component In component_info
         For Each body_info In component.item("bodies")
             For Each face_info In body_info.item("faces")

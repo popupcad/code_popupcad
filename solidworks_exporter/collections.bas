@@ -1,9 +1,9 @@
 Attribute VB_Name = "collections"
-Function addkeyed(dict As collection, variable As collection)
+Function addkeyed(dict As Collection, variable As Collection)
     dict.Add variable, variable.item("id")
 End Function
 
-Function ExtendCollection(c1 As collection, c2 As collection)
+Function ExtendCollection(c1 As Collection, c2 As Collection)
     Dim item As Variant
     
     For Each item In c2
@@ -12,7 +12,7 @@ Function ExtendCollection(c1 As collection, c2 As collection)
     
 End Function
 
-Function ExtendCollectionFromArray(c1 As collection, c2 As Variant)
+Function ExtendCollectionFromArray(c1 As Collection, c2 As Variant)
     Dim item As Variant
     Dim ii As Integer
     
@@ -22,7 +22,7 @@ Function ExtendCollectionFromArray(c1 As collection, c2 As Variant)
 End Function
 
 
-Function face_index(c As collection, item As SldWorks.Face2) As Integer
+Function face_index(c As Collection, item As SldWorks.Face2) As Integer
 Dim element As SldWorks.Face2
 Dim ii As Integer
 
@@ -39,9 +39,9 @@ Next element
 face_index = index
 End Function
 
-Function reverse_c(c As collection)
-    Dim c_in As collection
-    Dim c_out As New collection
+Function reverse_c(c As Collection)
+    Dim c_in As Collection
+    Dim c_out As New Collection
     Dim ii, jj, l As Integer
     
     Set c_in = c
@@ -64,9 +64,9 @@ Function UniqueID() As String
     
 End Function
 
-Function replace(c As collection, replacement, index)
-    Dim cin As collection
-    Dim cout As New collection
+Function replace(c As Collection, replacement, index)
+    Dim cin As Collection
+    Dim cout As New Collection
     
     Set cin = c
     l = cin.Count

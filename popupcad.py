@@ -20,11 +20,14 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
 import os
+from popupcad.filetypes.design import Design
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(popupcad.supportfiles.Icon('popupcad'))
     mw = popupcad.guis.editor.Editor()
+    if len(sys.argv)>1:
+        mw.open(filename = sys.argv[1])
     mw.show()
     mw.raise_()
     sys.exit(app.exec_())

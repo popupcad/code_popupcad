@@ -254,13 +254,16 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         from popupcad.materials.materials import Carbon_0_90_0,Pyralux,Kapton
         design = Design()
         design.define_layers(LayerDef(Carbon_0_90_0(),Pyralux(),Kapton(),Pyralux(),Carbon_0_90_0()))
-        self.loadfile(design)
+        self.load_design(design)
 
     @loggable
-    def open(self):
-        design = Design.open(self)
+    def open(self,filename=None):
+        if filename==None:
+            design = Design.open(self)
+        else:
+            design = Design.load_yaml(filename)
         if not design==None:
-            self.loadfile(design)
+            self.load_design(design)
             if self.act_autoreprocesstoggle.isChecked():
                 self.reprocessoperations()
 
@@ -273,7 +276,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         return self.design.saveAs(self)
 
     @loggable
-    def loadfile(self,design):
+    def load_design(self,design):
         self.design = design
         self.operationeditor.blockSignals(True)
         self.layerlistwidget.blockSignals(True)

@@ -9,6 +9,7 @@ Function FaceInfo(face As SldWorks.Face2) As Variant
     loops = face.GetLoops
     
     l = -1
+    'm = UBound(loops) - LBound(loops)
     For jj = LBound(loops) To UBound(loops)
         Set loop1 = loops(jj)
         l = ArrayFunctions.AddItem(faceloops, ProcessLoop(loop1), l)
@@ -147,7 +148,7 @@ Function ApproximateEdge(edge As SldWorks.edge) As Variant
         vEndPt(kk) = params(kk + 3)
     Next kk
     
-    tesspoints = curve.GetTessPts(0#, 0.0001, vStartPt, vEndPt)
+    tesspoints = curve.GetTessPts(0#, 0.00000001, vStartPt, vEndPt)
     
     l = -1
     For ii = LBound(tesspoints) To UBound(tesspoints) Step 3
@@ -191,9 +192,9 @@ Function VertexInfo(loop1 As SldWorks.Loop2) As Variant
     VertexInfo = scoords
 End Function
 
-Function build_loops_string(loops As Variant) As collection
-    Dim face_string As New collection
-    Dim loopstring As collection
+Function build_loops_string(loops As Variant) As Collection
+    Dim face_string As New Collection
+    Dim loopstring As Collection
     
     If Not ArrayFunctions.IsVarArrayEmpty(loops) Then
         For Each loop1 In loops
@@ -211,7 +212,7 @@ Function build_loops_string(loops As Variant) As collection
     Set build_loops_string = face_string
 End Function
 
-Function build_loop_string(loop1 As Variant) As collection
+Function build_loop_string(loop1 As Variant) As Collection
     edgematrix = Matrices.build_from_vectors(loop1)
     Set build_loop_string = Matrices.toYaml2(edgematrix)
 End Function

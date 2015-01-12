@@ -1,7 +1,7 @@
 Attribute VB_Name = "vectors"
 Function ComparePoints(p1, p2 As Variant) As Boolean
     Dim tol As Double
-    tol = 0.00001
+    tol = 0.0000000001
     Dim p3() As Variant
     p3 = minus(p1, p2)
     ComparePoints = dot(p3, p3) < tol * tol

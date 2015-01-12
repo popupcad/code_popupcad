@@ -7,12 +7,12 @@ Sub main()
     
     Dim model As SldWorks.ModelDoc2
     Dim view As SldWorks.view
-    Dim visible_faces As New collection
+    Dim visible_faces As New Collection
     Dim ref_doc As SldWorks.ModelDoc2
     
-    Dim component_info As New collection
+    Dim component_info As New Collection
    
-    Dim strings As collection
+    Dim strings As Collection
     Dim transform As mathTransform
     
     SolidworksInfo.getview model, view
@@ -29,12 +29,13 @@ Sub main()
     Dim filename2 As String
     filename2 = swApp.GetCurrentWorkingDirectory() & model.GetTitle & "_" & view.Name & ".yaml"
     stringcollections.WriteFile strings, filename2
+    Debug.Print "Done"
 End Sub
 
-Function BuildExportData(viewTransform As SldWorks.mathTransform, component_info As collection) As collection
-    Dim lines As New collection
+Function BuildExportData(viewTransform As SldWorks.mathTransform, component_info As Collection) As Collection
+    Dim lines As New Collection
     Dim transform As Variant
-    Dim transformstring As New collection
+    Dim transformstring As New Collection
     
     lines.Add "!!python/object:popupcad.filetypes.solidworksimport.SolidworksImport"
     lines.Add "transform:"
@@ -45,17 +46,17 @@ Function BuildExportData(viewTransform As SldWorks.mathTransform, component_info
     collections.ExtendCollection lines, transformstring
     
     lines.Add "geoms:"
-    Dim geomstring As New collection
+    Dim geomstring As New Collection
     SolidworksInfo.GenFaceOutput lines, component_info
     
     Set BuildExportData = lines
 End Function
 
 
-Function BuildExportData2(viewTransform As SldWorks.mathTransform, component_info As collection) As collection
-    Dim lines As New collection
+Function BuildExportData2(viewTransform As SldWorks.mathTransform, component_info As Collection) As Collection
+    Dim lines As New Collection
     Dim transform As Variant
-    Dim transformstring As New collection
+    Dim transformstring As New Collection
     
     lines.Add "!!python/object:popupcad.filetypes.solidworksimport.SolidworksImport"
     lines.Add "transform:"
@@ -66,9 +67,9 @@ Function BuildExportData2(viewTransform As SldWorks.mathTransform, component_inf
     collections.ExtendCollection lines, transformstring
     
     lines.Add "geoms:"
-    Dim geomstring As New collection
+    Dim geomstring As New Collection
     
-    Dim component, bodies, body_info, faces, face_info As collection
+    Dim component, bodies, body_info, faces, face_info As Collection
     For Each component In component_info
         For Each body_info In component.item("bodies")
             For Each face_info In body_info.item("faces")
@@ -82,12 +83,12 @@ Function BuildExportData2(viewTransform As SldWorks.mathTransform, component_inf
     Set BuildExportData2 = lines
 End Function
 
-Function BuildExportData3(viewTransform As SldWorks.mathTransform, components As collection) As collection
-    Dim lines As New collection
+Function BuildExportData3(viewTransform As SldWorks.mathTransform, components As Collection) As Collection
+    Dim lines As New Collection
     Dim transform As Variant
-    Dim transformstring As New collection
-    Dim componentstring As New collection
-    Dim facestring As New collection
+    Dim transformstring As New Collection
+    Dim componentstring As New Collection
+    Dim facestring As New Collection
     
     lines.Add "!!python/object:popupcad.filetypes.solidworksimport.Assembly"
     lines.Add "transform:"
@@ -98,13 +99,13 @@ Function BuildExportData3(viewTransform As SldWorks.mathTransform, components As
     collections.ExtendCollection lines, transformstring
     
     lines.Add "components:"
-    Dim geomstring As New collection
+    Dim geomstring As New Collection
     
-    Dim component_info, bodies, body_info, faces, face_info As collection
+    Dim component_info, bodies, body_info, faces, face_info As Collection
     For Each component_info In components
         If component_info.item("isVisible") Then
 '        If True Then
-            Set componentstring = New collection
+            Set componentstring = New Collection
             componentstring.Add "!!python/object:popupcad.filetypes.solidworksimport.Component"
             componentstring.Add "transform:"
             Set transformstring = component_info.item("transform_s")
@@ -116,7 +117,7 @@ Function BuildExportData3(viewTransform As SldWorks.mathTransform, components As
 '                If True Then
                     For Each face_info In body_info.item("faces")
                         If face_info.item("isVisible") Then
-                            Set facestring = New collection
+                            Set facestring = New Collection
                             facestring.Add "!!python/object:popupcad.filetypes.solidworksimport.Face"
                             'facestring.Add "exterior:"
                             'collections.ExtendCollection facestring, face_info.item("exterior_s")
