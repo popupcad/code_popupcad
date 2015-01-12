@@ -6,8 +6,8 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-from popupcad.filetypes.operation import Operation
-from toolclearance3 import ToolClearance3
+#from popupcad.filetypes.operation import Operation
+from .toolclearance3 import ToolClearance3
 
 class ToolClearance2(MultiValueOperation2):
     name = 'ToolClearance'
@@ -30,4 +30,3 @@ class ToolClearance2(MultiValueOperation2):
             raise(Exception('keepout type'))
             
         return toolclearance
-

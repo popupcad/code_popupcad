@@ -130,5 +130,4 @@ class MultiValueOperation2(Operation):
 
     def copy(self):
         return self.upgrade()
-        
 

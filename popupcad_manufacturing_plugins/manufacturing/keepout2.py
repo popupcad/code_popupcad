@@ -6,14 +6,14 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-from popupcad.filetypes.operation import Operation
-from .keepout3 import Keepout3
+#from popupcad.filetypes.operation import Operation
+from .keepout3 import KeepOut3
 
 class KeepOut2(MultiValueOperation2):
     name = 'KeepOut'
     valuenames = []
     defaults = []
-    upgradeclass = Keepout3
+    upgradeclass = KeepOut3
 
     def operate(self,design):
         import popupcad
@@ -28,4 +28,3 @@ class KeepOut2(MultiValueOperation2):
         else:
             raise(Exception('keepout type'))
         return keepout
-
