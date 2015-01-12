@@ -23,11 +23,13 @@ class Dialog(qg.QDialog):
 
         self.device_index = DraggableTreeWidget()
         self.device_index.linklist(self.operationlist)
-        self.device_index.setCurrentIndeces(device_index,deviceoutputref)
+#        self.device_index.setCurrentIndeces(device_index,deviceoutputref)
+        self.device_index.selectIndeces([(device_index,deviceoutputref)])
         
         self.support_index = DraggableTreeWidget()
         self.support_index.linklist(self.operationlist)
-        self.support_index.setCurrentIndeces(support_index,supportoutputref)
+#        self.support_index.setCurrentIndeces(support_index,supportoutputref)
+        self.support_index.selectIndeces([(support_index,supportoutputref)])
 
         self.support_width = qg.QLineEdit()
         self.support_width.setAlignment(qc.Qt.AlignRight)

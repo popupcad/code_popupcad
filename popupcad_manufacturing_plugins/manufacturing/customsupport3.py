@@ -29,7 +29,8 @@ class Dialog(qg.QDialog):
 
         self.device_index = DraggableTreeWidget()
         self.device_index.linklist(self.operationlist)
-        self.device_index.setCurrentIndeces(device_index,deviceoutputref)
+#        self.device_index.setCurrentIndeces(device_index,deviceoutputref)
+        self.device_index.selectIndeces([(device_index,deviceoutputref)])
         
         self.sketchwidget = SketchListManager(self.design)
         for ii in range(self.sketchwidget.itemlist.count()):

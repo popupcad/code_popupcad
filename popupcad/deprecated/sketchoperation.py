@@ -104,7 +104,6 @@ class SketchOperation(Operation):
         opindex = self.operationtypes.index(self.function)
         sketch  = design.sketches[self.sketchid]
         
-        myindex = design.operation_index(self.id)
         try:
             ii = design.operation_index(self.operation_link1)
         except popupcad.filetypes.design.NoOperation:
@@ -112,7 +111,7 @@ class SketchOperation(Operation):
             
         f = lambda *args:self.editedsketch(design,editedsignal,*args)
         kk = self.operationtypes.index(self.function)
-        dialog = Sketcher(parent,sketch,design,ii = ii,jj = self.outputref,kk = kk,isOperation = True,selectops = True,accept_method = f,oplimit = myindex,selectedlayers= layers)
+        dialog = Sketcher(parent,sketch,design,ii = ii,jj = self.outputref,kk = kk,isOperation = True,selectops = True,accept_method = f,selectedlayers= layers)
 #        dialog= popupcad.guis.sketcher.SketcherMainWindow(parent,sketch,design.return_layer_definition().layers,layers,prioroperations,self.operation_link1,self.operationtypes,opindex,design,True)
 #        dialog.sketchaccepted.connect(f)
         dialog.show()

@@ -29,7 +29,7 @@ from popupcad.graphics2d.text import TextParent
 
 class Sketcher(qg.QMainWindow,WidgetCommon):
     showprop = qc.Signal(object)
-    def __init__(self,parent,sketch,design = None,ii = None,jj = 0,kk = 0,accept_method = None,selectops = False,oplimit = None,refs = None):
+    def __init__(self,parent,sketch,design = None,accept_method = None,selectops = False):
         
         qg.QMainWindow.__init__(self,parent)
         self.design = design
@@ -39,10 +39,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         if self.design == None:
             self.operations = [NullOp()]
         else:
-            if oplimit==None:
-                self.operations = [NullOp()]+self.design.operations[:]
-            else:
-                self.operations = [NullOp()]+self.design.operations[:oplimit]
+            self.operations = [NullOp()]+self.design.operations[:]
 
         self.setupLayout()   
         
@@ -56,12 +53,12 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
         self.createActions()        
         
-        if self.selectops:
-            if ii!=None:
-                ii = ii+1
-            else:
-                ii = 0
-            self.optree.setCurrentIndeces(ii,jj)
+#        if self.selectops:
+#            if ii!=None:
+#                ii = ii+1
+#            else:
+#                ii = 0
+#            self.optree.setCurrentIndeces(ii,jj)
         
         self.load_references()
 
