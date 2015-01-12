@@ -61,7 +61,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
                             new_source_geoms.append({'id':source_geom['id'],'csg':new_geom})                        
                 source_geoms = new_source_geoms
         
-        print(connections)
+#        print(connections)
         
         ids = [geom.id for geom in rigid_geoms]
         m = len(ids)
@@ -79,7 +79,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
             D = D_last.dot(C)+C
             done = (D==D_last).all()
             D_last = D
-        print(D)
+#        print(D)
 
         rigid_bodies = []
         rigid_geoms_set = set(rigid_geoms[:])
@@ -91,7 +91,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
             rigid_geoms_set-=b
             rigid_bodies.append(list(b))
         
-        print(rigid_bodies)
+#        print(rigid_bodies)
 
         values = [tuple((numpy.array([find_minimum_xy(geom) for geom in body])).min(0)) for body in rigid_bodies]
         rigid_bodies = sort_lams(rigid_bodies,values)

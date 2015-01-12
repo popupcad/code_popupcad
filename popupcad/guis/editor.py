@@ -331,7 +331,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def showcurrentoutput(self):
         selected_indeces = self.operationeditor.currentIndeces2()
-        print(selected_indeces)
+#        print(selected_indeces)
         if len(selected_indeces)>0:
             ii,jj = selected_indeces[0]
         else:
