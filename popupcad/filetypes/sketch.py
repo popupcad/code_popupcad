@@ -69,5 +69,5 @@ class Sketch(popupCADFile):
                 shapelyitem = item.outputshapely()
                 shapelygeoms.append(shapelyitem)
         shapelygeoms = popupcad.geometry.customshapely.unary_union_safe(shapelygeoms)   
-#        shapelygeoms = popupcad.geometry.customshapely.multiinit(shapelygeoms)
+        shapelygeoms = popupcad.geometry.customshapely.multiinit(shapelygeoms)
         return shapelygeoms

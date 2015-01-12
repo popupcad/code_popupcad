@@ -137,7 +137,7 @@ class SketchOperation2(Operation):
         
         laminate2 = Laminate(design.return_layer_definition())
         for layer in layers:
-            laminate2.replacelayergeoms(layer,[operationgeom])
+            laminate2.replacelayergeoms(layer,operationgeom)
 
         lsout = laminate1.binaryoperation(laminate2,self.function)
         return lsout

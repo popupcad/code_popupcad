@@ -155,7 +155,7 @@ class CustomSupport3(Operation):
         layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
         support = Laminate(design.return_layer_definition())
         for layer in layers:
-            support.replacelayergeoms(layer,[operationgeom])
+            support.replacelayergeoms(layer,operationgeom)
         
         device = design.op_from_ref(self.device_link).output[self.deviceoutputref].csg
         modified_device,supports,cuts = algorithms.modify_device.modify_device(device,support,self.support_width*popupcad.internal_argument_scaling,self.support_out*popupcad.internal_argument_scaling,self.hole_radius*popupcad.internal_argument_scaling,self.cut_width*popupcad.internal_argument_scaling)

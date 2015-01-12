@@ -89,7 +89,7 @@ class SimpleSketchOp(Operation):
 
     def operate(self,design):
         operationgeom = design.sketches[self.sketchid].output_csg()
-        operationgeom = popupcad.geometry.customshapely.multiinit(operationgeom)
+#        operationgeom = popupcad.geometry.customshapely.multiinit(operationgeom)
         layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
         laminate = Laminate(design.return_layer_definition())
         for layer in layers:
