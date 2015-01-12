@@ -360,12 +360,22 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
                     m = qg.QMessageBox()
                     m.setIcon(m.Information)
                     m.setText(str(self.masterlist[ii])+' cannot be deleted.')
+                    m.setInformativeText('Delete all dependent operations?')
                     s = 'This is due to the following dependent operations:\n'
                     for child in children[:-1]:
                         s+='{0},\n'.format(str(child))
                     s+='{0}'.format(str(children[-1]))
-                    m.setInformativeText(s)
-                    m.exec_()
+                    m.setDetailedText(s)
+                    m.addButton(m.YesToAll)
+                    m.addButton(m.Cancel)
+                    result = m.exec_()
+                    if result == m.YesToAll:
+                        alltodelete = [self.masterlist.index(item) for item in children]
+                        alltodelete.append(ii)
+                        alltodelete = sorted(alltodelete)[::-1]
+                        [self.masterlist.pop(jj) for jj in alltodelete]
+                    else:
+                        pass
             self.refresh()
 
     def disable(self):
