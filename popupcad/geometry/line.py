@@ -34,7 +34,7 @@ class Line(object):
     def gen_interactive(self):
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
         v = InteractiveEdge(self)
-        v.handleupdate()
+        v.updateshape()
         return v
 
 class ShapeLine(Line):
@@ -44,6 +44,6 @@ class ReferenceLine(Line):
     def gen_interactive(self):
         from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
         v = ReferenceInteractiveEdge(self)
-        v.handleupdate()
+        v.updateshape()
         return v
         

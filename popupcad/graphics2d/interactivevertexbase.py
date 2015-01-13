@@ -115,7 +115,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
                 self.scene().savesnapshot.emit()
             dp = event.scenePos() - event.lastScenePos()
             self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
-            self.updatefromgeneric()
+            self.updateshape()
 
 #        if self.generic.is_moveable():
 #            super(InteractiveVertexBase,self).mouseMoveEvent(event)
@@ -129,7 +129,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
 
     def setPos(self,pos):
         self.generic.setpos(pos.toTuple())
-        self.updatefromgeneric()
+        self.updateshape()
 
     def get_generic(self):
         try:
@@ -139,21 +139,16 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
             del self.symbolic
             return self.generic
 
-    def handleupdate(self):
-        self.updatefromgeneric()
     
 #    def pos(self):
 #        pos= super(InteractiveVertexBase,self).pos()
 #        return pos
 
-    def updatefromgeneric(self):
+    def updateshape(self):
         postuple = self.get_generic().getpos()
         pos = qc.QPointF(*postuple)
         super(InteractiveVertexBase,self).setPos(pos)
 
-    def updateshape(self):
-        self.updatefromgeneric()
-        
     def setcustomscale(self,scale):
         self.setScale(scale)
 

@@ -154,7 +154,7 @@ class ShapeVertex(BaseVertex):
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex
         iv = InteractiveShapeVertex(self)
-        iv.updatefromgeneric()
+        iv.updateshape()
         return iv
 
 class DrawnPoint(ShapeVertex):
@@ -165,7 +165,7 @@ class DrawnPoint(ShapeVertex):
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import DrawingPoint
         iv = DrawingPoint(self)
-        iv.updatefromgeneric()
+        iv.updateshape()
         return iv
     def points(self):
         return [self.getpos()]
@@ -176,13 +176,13 @@ class DrawnPoint(ShapeVertex):
     def outputinteractive(self):
         from popupcad.graphics2d.interactivevertex import DrawingPoint
         iv = DrawingPoint(self)
-        iv.updatefromgeneric()
+        iv.updateshape()
         return iv
 
     def outputstatic(self,*args,**kwargs):
         from popupcad.graphics2d.interactivevertex import StaticDrawingPoint
         iv = StaticDrawingPoint(self)
-        iv.updatefromgeneric()
+        iv.updateshape()
         return iv
 
     def outputshapely(self):
@@ -198,5 +198,5 @@ class ReferenceVertex(BaseVertex):
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
         iv = ReferenceInteractiveVertex(self)
-        iv.updatefromgeneric()
+        iv.updateshape()
         return iv

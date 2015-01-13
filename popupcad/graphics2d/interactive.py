@@ -125,7 +125,7 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
 
     def updatechildhandles(self,children):
         for child in children:
-            child.handleupdate()
+            child.updateshape()
 
     def updatehandles(self):
         for edge in self.selectableedges:
