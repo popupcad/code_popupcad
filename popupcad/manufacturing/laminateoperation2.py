@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.laminate  import Laminate
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 import PySide.QtGui as qg
 from popupcad.filetypes.listwidgetitem import ListWidgetItem
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildItem
@@ -20,7 +20,7 @@ class Dialog(qg.QDialog):
             operationindeces2 = []
         
         from popupcad.widgets.operationlist import OperationList
-        self.le0 = OperationList(LaminateOperation.unaryoperationtypes,LaminateOperation.pairoperationtypes,LaminateOperation.displayorder)
+        self.le0 = OperationList(LaminateOperation2.unaryoperationtypes,LaminateOperation2.pairoperationtypes,LaminateOperation2.displayorder)
         self.operationlist = operationlist
 
         self.unarylistwidget = DraggableTreeWidget()
@@ -71,37 +71,37 @@ class Dialog(qg.QDialog):
         unaryparents = self.unarylistwidget.currentRefs()
         pairparents = self.pairlistwidget.currentRefs()
         function = self.le0.currentText()
-        return unaryparents, pairparents, function
+        operation_links = {'unary':unaryparents,'binary':pairparents}
+        return operation_links, function
 
-class LaminateOperation(Operation):
+class LaminateOperation2(Operation2):
     name = 'Laminate Op'
     unaryoperationtypes = ['union','intersection']    
     pairoperationtypes = ['difference','symmetric_difference']
     displayorder = unaryoperationtypes + pairoperationtypes
-    attr_init = 'operation_links1','operation_links2','function'
+    attr_init = 'operation_links','function'
     attr_init_k = tuple()
     attr_copy = 'id','customname'
     
     def __init__(self,*args,**kwargs):
-        super(LaminateOperation,self).__init__()
+        super(LaminateOperation2,self).__init__()
         self.editdata(*args,**kwargs)
         self.id = id(self)
         
-    def editdata(self,operation_links1,operation_links2,function):
-        super(LaminateOperation,self).editdata()
-        self.operation_links1 = operation_links1
-        self.operation_links2 = operation_links2
+    def editdata(self,operation_links,function):
+        super(LaminateOperation2,self).editdata(operation_links,{},{})
+        self.operation_links = operation_links
         self.function = function
 
     def operate(self,design):
         if self.function in self.unaryoperationtypes:
-            laminates = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links1]
+            laminates = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links['unary']]
             laminateout = Laminate.unaryoperation(laminates,self.function)
             return laminateout
         elif self.function in self.pairoperationtypes:
-            laminates1 = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links1]
+            laminates1 = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links['unary']]
             laminate1 = Laminate.unaryoperation(laminates1,'union')
-            laminates2 = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links2]
+            laminates2 = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links['binary']]
             laminate2 = Laminate.unaryoperation(laminates2,'union')
             return laminate1.binaryoperation(laminate2,self.function)
         
@@ -110,24 +110,13 @@ class LaminateOperation(Operation):
         return Dialog(design.operations,0)
 
     def buildeditdialog(self,design):
-        operationindeces1 = [(design.operation_index(ref),ii) for ref,ii in self.operation_links1]
-        operationindeces2 = [(design.operation_index(ref),ii) for ref,ii in self.operation_links2]
+        operationindeces1 = [(design.operation_index(ref),ii) for ref,ii in self.operation_links['unary']]
+        operationindeces2 = [(design.operation_index(ref),ii) for ref,ii in self.operation_links['binary']]
         ii = self.displayorder.index(self.function)
         return Dialog(design.prioroperations(self),ii,operationindeces1,operationindeces2)
 
     def parentrefs(self):
         if self.function in self.unaryoperationtypes:
-            return [ref for ref,ii in self.operation_links1]
+            return [ref for ref,ii in self.operation_links['unary']]
         else:
-            return [ref for ref,ii in self.operation_links1 + self.operation_links2]
-
-    def upgrade(self):
-        from laminateoperation2 import LaminateOperation2
-        operation_links = {'unary':self.operation_links1,'binary':self.operation_links2}
-        new = LaminateOperation2(operation_links,self.function)
-        new.customname = self.customname
-        new.id = self.id
-        return new
-
-    def copy(self):
-        return self.upgrade()
+            return [ref for ref,ii in self.operation_links['unary'] + self.operation_links['binary']]

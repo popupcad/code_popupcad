@@ -17,37 +17,42 @@ class Operation2(Node,UserData,ClassTools):
     attr_init_k = tuple()
     attr_copy = tuple()
     
-    attr_ref = tuple()
-    attr_refs = tuple()
-
     def __init__(self):
         Node.__init__(self)
         UserData.__init__(self)
 
-    def editdata(self):
+    def editdata(self,operation_links,sketch_links,design_links):
+        self.operation_links = operation_links
+        self.sketch_links = sketch_links
+        self.design_links = design_links
         try:
             del self.output
         except AttributeError:
             pass
         
     def parentrefs(self):
-        return []
-
+        a = []
+        for key,values in self.operation_links.items():
+            b = [operation_ref for operation_ref,output_index in values]
+            a.extend(b)
+        return a
+        
     def subdesignrefs(self):
-        return []
+        a = []
+        for key,values in self.design_links.items():
+            a.extend(values)
+        return a
 
     def sketchrefs(self):
-        return []
+        a = []
+        for key,values in self.sketch_links.items():
+            a.extend(values)
+        return a
 
-    def replacerefs(self,refold,refnew):
-        for attr in self.attr_ref:
-            if getattr(self,attr)==refold:
-                setattr(self,attr,refnew)
-        for attr in self.attr_refs:
-            list1 = getattr(self,attr)==refold
+    def replace_op_refs(self,refold,refnew):
+        for key,list1 in self.operation_links.items():
             while refold in list1:
-                ii = list1.index(refold)
-                list1[ii]=refnew
+                list1[list1.index(refold)]=refnew
 
     def copy(self):
         newop = self.init_copy(self.attr_init,self.attr_init_k)

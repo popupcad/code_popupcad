@@ -11,7 +11,7 @@ from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.layer import Layer
 from popupcad.filetypes.sketch import Sketch
 import popupcad.widgets
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 from popupcad.filetypes.design import NoOperation
 import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.listmanager import SketchListManager
@@ -65,14 +65,14 @@ class Dialog(qg.QDialog):
             return None
 
     def acceptdata(self):
-        sketchid =  self.sketch().id
+        sketch_links = {'sketch':[self.sketch().id]}
         layer_links = [item.customdata.id for item in self.outputlayerselector.selectedItems()]
-        return sketchid,layer_links
+        return sketch_links,layer_links
 
-class SimpleSketchOp(Operation):
+class SimpleSketchOp(Operation2):
     name = 'Sketch Operation'
     def copy(self):
-        new = type(self)(self.sketchid,self.layer_links)
+        new = type(self)(self.sketch_links,self.layer_links)
         new.id = self.id
         new.customname = self.customname
         return new
@@ -82,13 +82,12 @@ class SimpleSketchOp(Operation):
         self.editdata(*args)
         self.id = id(self)
         
-    def editdata(self,sketchid,layer_links):        
-        super(SimpleSketchOp,self).editdata()
-        self.sketchid = sketchid
+    def editdata(self,sketch_links,layer_links):        
+        super(SimpleSketchOp,self).editdata({},sketch_links,{})
         self.layer_links = layer_links
 
     def operate(self,design):
-        operationgeom = design.sketches[self.sketchid].output_csg()
+        operationgeom = design.sketches[self.sketch_links['sketch'][0]].output_csg()
 #        operationgeom = popupcad.geometry.customshapely.multiinit(operationgeom)
         layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
         laminate = Laminate(design.return_layer_definition())
@@ -96,15 +95,12 @@ class SimpleSketchOp(Operation):
             laminate.replacelayergeoms(layer,operationgeom)
         return laminate
 
-    def sketchrefs(self):
-        return [self.sketchid]
-
     @classmethod
     def buildnewdialog(cls,design,currentop):
         dialog = Dialog(cls,design,design.operations)
         return dialog
         
     def buildeditdialog(self,design):
-        sketch = design.sketches[self.sketchid]
+        sketch = design.sketches[self.sketch_links['sketch'][0]]
         dialog = Dialog(self,design,design.prioroperations(self),self.layer_links,sketch)
         return dialog

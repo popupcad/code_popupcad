@@ -8,6 +8,9 @@ import popupcad
 from popupcad.filetypes.genericfile import GenericFile,popupCADFile
 import popupcad.algorithms.acyclicdirectedgraph
 import os 
+import PySide.QtCore as qc
+import PySide.QtGui as qg
+
 class NoOperation(Exception):
     def __init__(self):
         Exception.__init__(self,'No Parent Operation')
@@ -54,6 +57,25 @@ class Design(popupCADFile):
 
     def op_from_ref(self,ref):
         return self.operations[self.operation_index(ref)]
+
+    def replace_op_refs(self,oldref,newref):
+        failed_ops=[]
+        for op in self.operations:
+            try:
+                op.replace_op_refs(oldref,newref)
+            except AttributeError:
+                failed_ops.append(op)
+        if not not failed_ops:
+            m = qg.QMessageBox()
+            m.setIcon(m.Warning)
+            m.setText('Some operations cannot be updated')
+            m.setInformativeText('Please update manually.')
+            s = 'This is due to the following operations:\n'
+            for child in failed_ops[:-1]:
+                s+='{0},\n'.format(str(child))
+            s+='{0}'.format(str(failed_ops[-1]))
+            m.setDetailedText(s)
+            m.exec_()
 
     def prioroperations(self,op):
         priorindex = self.operation_index(op.id)

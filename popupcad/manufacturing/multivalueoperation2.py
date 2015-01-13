@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.operation2 import Operation2
+from popupcad.filetypes.operation import Operation
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
@@ -78,7 +78,7 @@ class Dialog(qg.QDialog):
         values = [float(valueedit.text()) for valueedit in self.valueboxes]
         return ref,values,option,ii
         
-class MultiValueOperation2(Operation2):
+class MultiValueOperation2(Operation):
     name = 'Multi-Value Operation'
     valuenames = ['value']
     show = ['keepout']
@@ -123,7 +123,7 @@ class MultiValueOperation2(Operation2):
     def upgrade(self):
         operation_links = {}
         operation_links['parent'] = [(self.operation_link1,self.outputref)]
-        new = self.upgradeclass(operation_links,{},{},self.values,self.keepout_type)
+        new = self.upgradeclass(operation_links,self.values,self.keepout_type)
         new.id = self.id
         new.customname = self.customname
         return new

@@ -189,10 +189,9 @@ class Dialog(qg.QDialog):
         ii,jj = self.optree.currentIndeces2()[0]  
         subopid = self.subdesign().operations[ii].id    
         subopref = subopid,jj
-        operation_links = {}
         sketch_links = {'place':[self.sketch().id]}
         design_links = {'subdesign':[self.subdesign().id]}
-        return operation_links,sketch_links,design_links,subopref,transformtype_x,transformtype_y,self.sb.value(),self.flip.isChecked(),float(self.scalex.text()),float(self.scaley.text())
+        return sketch_links,design_links,subopref,transformtype_x,transformtype_y,self.sb.value(),self.flip.isChecked(),float(self.scalex.text()),float(self.scaley.text())
             
         
 class PlaceOperation8(Operation2):
@@ -200,7 +199,7 @@ class PlaceOperation8(Operation2):
     operationtypes = ['placement']
     transformtypes = enum(scale = 'scale',custom = 'custom')
     def copy(self,identical = True):
-        new = PlaceOperation8(self.operation_links,self.sketch_links,self.design_links,self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
+        new = PlaceOperation8(self.sketch_links,self.design_links,self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
         new.customname = self.customname
         if identical:
             new.id = self.id
@@ -210,13 +209,8 @@ class PlaceOperation8(Operation2):
         self.editdata(*args)
         self.id = id(self)
 
-    def editdata(self,operation_links,sketch_links,design_links,subopref,transformtype_x,transformtype_y,shift,flip,scalex,scaley):
-        super(PlaceOperation8,self).editdata()
-
-        self.operation_links = operation_links
-        self.sketch_links = sketch_links
-        self.design_links = design_links
-
+    def editdata(self,sketch_links,design_links,subopref,transformtype_x,transformtype_y,shift,flip,scalex,scaley):
+        super(PlaceOperation8,self).editdata({},sketch_links,design_links)
 #        self.sketchid = sketchid
 #        self.subdesignid = subdesignid
         self.subopref = subopref
@@ -281,13 +275,6 @@ class PlaceOperation8(Operation2):
             
         return lsout
         
-    def parentrefs(self):
-        return []
-    def subdesignrefs(self):
-        return [self.design_links['subdesign'][0]]
-    def sketchrefs(self):
-        return [self.sketch_links['place'][0]]
-
     def fromQTransform(self,tin):
         tout = numpy.array([[tin.m11(),tin.m12(),tin.m13()],[tin.m21(),tin.m22(),tin.m23()],[tin.m31(),tin.m32(),tin.m33()]]).T
         return tout

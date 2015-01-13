@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
@@ -79,15 +79,15 @@ class Dialog(qg.QDialog):
         operation_links = {}
         operation_links['parent'] = [(ref,ii)]
 
-        return operation_links,{},{},values,option
+        return operation_links,values,option
         
-class MultiValueOperation3(Operation):
+class MultiValueOperation3(Operation2):
     name = 'Multi-Value Operation'
     valuenames = ['value']
     show = ['keepout']
     defaults = [0.]
 
-    attr_init = 'operation_links','sketch_links','design_links','values','keepout_type'
+    attr_init = 'operation_links','values','keepout_type'
     attr_init_k = tuple()
     attr_copy = 'id','customname'
     
@@ -100,19 +100,10 @@ class MultiValueOperation3(Operation):
 
         self.editdata(*args)
 
-    def editdata(self,operation_links,sketch_links,design_links,values,keepout_type):
-        super(MultiValueOperation3,self).editdata()
-        self.operation_links = operation_links
-        self.sketch_links = sketch_links
-        self.design_links = design_links
+    def editdata(self,operation_links,values,keepout_type):
+        super(MultiValueOperation3,self).editdata(operation_links,{},{})
         self.values = values
         self.keepout_type = keepout_type
-        
-    def parentrefs(self):
-        return [self.operation_links['parent'][0][0]]
-
-    def getoutputref(self):
-        return self.operation_links['parent'][0][1]
         
     @classmethod
     def buildnewdialog(cls,design,currentop):

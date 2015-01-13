@@ -196,12 +196,12 @@ class PlaceOperation7(Operation):
     name = 'PlacementOp'
     operationtypes = ['placement']
     transformtypes = enum(scale = 'scale',custom = 'custom')
-#    def copy(self,identical = True):
-#        new = PlaceOperation7(self.sketchid,self.subdesignid, self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
-#        new.customname = self.customname
-#        if identical:
-#            new.id = self.id
-#        return new
+    def copy(self,identical = True):
+        new = PlaceOperation7(self.sketchid,self.subdesignid, self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
+        new.customname = self.customname
+        if identical:
+            new.id = self.id
+        return new
     def __init__(self,*args):
         super(PlaceOperation7,self).__init__()
         self.editdata(*args)
@@ -298,11 +298,10 @@ class PlaceOperation7(Operation):
 
     def upgrade(self):
         from .placeop8 import PlaceOperation8
-        operation_links = {}
         sketch_links = {'place':[self.sketchid]}
         design_links = {'subdesign':[self.subdesignid]}
 
-        new = PlaceOperation8(operation_links,sketch_links,design_links,self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
+        new = PlaceOperation8(sketch_links,design_links,self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
         new.customname = self.customname
         new.id = self.id
         return new

@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 import PySide.QtGui as qg
 from popupcad.filetypes.listwidgetitem import ListWidgetItem
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildItem
@@ -29,7 +29,7 @@ class Dialog(qg.QDialog):
             selectedoutput = layerlist
 
         from popupcad.widgets.operationlist import OperationList
-        self.le0 = OperationList(LayerOp.unaryoperationtypes,LayerOp.pairoperationtypes,LayerOp.displayorder)
+        self.le0 = OperationList(LayerOp2.unaryoperationtypes,LayerOp2.pairoperationtypes,LayerOp2.displayorder)
 
 
         self.operations = operations
@@ -96,53 +96,47 @@ class Dialog(qg.QDialog):
         [item.setSelected(item.customdata.id in selectedoutput) for item in outputitems]        
 
     def acceptdata(self):
-        operation_link1,outputref = self.operationselector.currentRefs()[0]
         function = self.le0.currentText()
         unary_layer_links = [item.customdata.id for item in self.unarylayerselector.selectedItems()]
         pair_layer_links = [item.customdata.id for item in self.pairlayerselector.selectedItems()]
         output_layer_links = [item.customdata.id for item in self.outputlayerselector.selectedItems()]
         
-        return operation_link1,function,unary_layer_links,pair_layer_links,output_layer_links,outputref
+        operation_links = {'parent':self.operationselector.currentRefs()}
+        return operation_links,function,unary_layer_links,pair_layer_links,output_layer_links
         
-class LayerOp(Operation):
+class LayerOp2(Operation2):
     name = 'Layer Op'
     function = None
     pairoperationtypes = ['difference','symmetric_difference']    
     unaryoperationtypes = ['union','intersection']   
     displayorder = unaryoperationtypes + pairoperationtypes
 
-    attr_init = 'operation_link1','function','unary_layer_links','pair_layer_links','output_layer_links','outputref'
+    attr_init = 'operation_links','function','unary_layer_links','pair_layer_links','output_layer_links'
     attr_init_k = tuple()
     attr_copy = 'id','customname'
     
     def __init__(self,*args,**kwargs):
-        super(LayerOp,self).__init__()
+        super(LayerOp2,self).__init__()
         self.editdata(*args,**kwargs)
         self.id = id(self)
 
-    def editdata(self,operation_link1,function,unary_layer_links,pair_layer_links,output_layer_links,outputref):
-        super(LayerOp,self).editdata()
-        self.operation_link1 = operation_link1
+    def editdata(self,operation_links,function,unary_layer_links,pair_layer_links,output_layer_links):
+        super(LayerOp2,self).editdata(operation_links,{},{})
         self.function = function
         self.unary_layer_links = unary_layer_links        
         self.pair_layer_links = pair_layer_links
         self.output_layer_links = output_layer_links
-        self.outputref = outputref
-
-    def getoutputref(self):
-        return self.outputref
-        
-    def parentrefs(self):
-        return [self.operation_link1]
 
     def operate(self,design):
+        operation_ref,output_index = self.operation_links['parent'][0]
+        
         if self.function in self.unaryoperationtypes:
             selectedinputlayers = [design.return_layer_definition().getlayer(link) for link in self.unary_layer_links]
             selectedoutputlayers = [design.return_layer_definition().getlayer(link) for link in self.output_layer_links]
-            lsin=design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+            lsin=design.op_from_ref(operation_ref).output[output_index].csg
             return lsin.unarylayeroperation(self.function,selectedinputlayers,selectedoutputlayers)
         elif self.function in self.pairoperationtypes:
-            ls = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+            ls = design.op_from_ref(operation_ref).output[output_index].csg
             pair1 = [design.return_layer_definition().getlayer(link) for link in self.unary_layer_links]
             pair2 = [design.return_layer_definition().getlayer(link) for link in self.pair_layer_links]
             outputlayers = [design.return_layer_definition().getlayer(layerlink) for layerlink in self.output_layer_links]
@@ -153,16 +147,7 @@ class LayerOp(Operation):
         return Dialog(design.operations,design.return_layer_definition().layers)
 
     def buildeditdialog(self,design):
-        operationindex = design.operation_index(self.operation_link1) 
+        operation_ref,output_index = self.operation_links['parent'][0]
+        operationindex = design.operation_index(operation_ref) 
         ii = self.displayorder.index(self.function)
-        return Dialog(design.prioroperations(self),design.return_layer_definition().layers,ii,operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,self.getoutputref())
-
-    def upgrade(self):
-        from layerop2 import LayerOp2
-        operation_links = {'parent':[(self.operation_link1,self.outputref)]}
-        new = LayerOp2(operation_links,self.function,self.unary_layer_links,self.pair_layer_links,self.output_layer_links)
-        new.customname = self.customname
-        new.id = self.id
-        return new
-    def copy(self):
-        return self.upgrade()
+        return Dialog(design.prioroperations(self),design.return_layer_definition().layers,ii,operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,output_index)
