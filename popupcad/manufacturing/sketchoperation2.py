@@ -82,7 +82,13 @@ class Dialog(qg.QDialog):
     def acceptdata(self):
         sketchid =  self.sketch().id
 
-        ii,outputref = self.optree.currentIndeces()
+        selected_indeces = self.optree.currentIndeces2()
+        if len(selected_indeces)>0:
+            ii,jj = selected_indeces[0]
+        else:
+            ii,jj = 0,0
+            self.operationeditor.selectIndeces([(ii,jj)])
+            
         ii -= 1
         if ii==-1:
             operation_link1, outputref = None,0

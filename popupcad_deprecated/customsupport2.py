@@ -85,8 +85,8 @@ class Dialog(qg.QDialog):
         button2.pressed.connect(self.reject)
 
     def acceptdata(self):
-        ii,kk = self.device_index.currentIndeces()
-        jj,ll = self.support_index.currentIndeces()
+        ii,kk = self.device_index.currentIndeces2()[0]
+        jj,ll = self.support_index.currentIndeces2()[0]
         return self.operationlist[ii].id,self.operationlist[jj].id,float(self.support_width.text()),float(self.support_out.text()),float(self.hole_radius.text()),float(self.cut_width.text()),kk,ll
 
 class CustomSupport2(Operation):

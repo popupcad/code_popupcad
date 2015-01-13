@@ -119,7 +119,7 @@ class Dialog(qg.QDialog):
         self.sketcherdialog.show()
         self.sketcherdialog.activateWindow()
         self.sketcherdialog.raise_() 
-    def addsketchop(self,sketch,ii,jj):
+    def addsketchop(self,sketch):
         self.sketch = sketch
     def validatename(self):
         self.combobox.clear()

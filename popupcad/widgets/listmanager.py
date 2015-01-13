@@ -120,7 +120,7 @@ class SketchListManager(ListManager):
     def new_method(self):
         from popupcad.guis.sketcher import Sketcher
         from popupcad.filetypes.sketch import Sketch
-        def accept_method(sketch,*args):
+        def accept_method(sketch):
             self.design.sketches[sketch.id] = sketch
             self.refresh_list(sketch)
         sketcher = Sketcher(None,Sketch(),self.design,accept_method = accept_method,selectops = True)

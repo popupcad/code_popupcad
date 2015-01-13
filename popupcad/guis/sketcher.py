@@ -474,14 +474,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         
     def acceptdata(self):
         self.buildsketch()
-        if self.selectops:
-            ii,jj = self.optree.currentIndeces()
-            ii -= 1
-            if ii==-1:
-                ii=None
-            return self.sketch,ii,jj
-        else:
-            return self.sketch,
+        return self.sketch,
 
     def keypressfiltering(self,event):
         if event.key() == qc.Qt.Key_Escape:
@@ -496,21 +489,23 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def load_references3(self):
         staticgeometries,controlpoints,controllines = [],[],[]        
         if self.selectops:
-            ii,jj = self.optree.currentIndeces()
-            if ii>0:
-                ii-=1
-                if self.design !=None:
-                    try:
-                        operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
-                        staticgeometries =  [item.outputstatic() for item in operationgeometries]
-
-                        controlpoints = self.design.operations[ii].output[jj].controlpoints()
-                        controlpoints = [point.gen_interactive() for point in controlpoints]
-
-                        controllines = self.design.operations[ii].output[jj].controllines()
-                        controllines = [line.gen_interactive() for line in controllines]
-                    except (IndexError,AttributeError):
-                        pass
+            selected_indeces = self.optree.currentIndeces2()
+            if len(selected_indeces)>0:
+                ii,jj = selected_indeces[0]
+                if ii>0:
+                    ii-=1
+                    if self.design !=None:
+                        try:
+                            operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
+                            staticgeometries =  [item.outputstatic() for item in operationgeometries]
+    
+                            controlpoints = self.design.operations[ii].output[jj].controlpoints()
+                            controlpoints = [point.gen_interactive() for point in controlpoints]
+    
+                            controllines = self.design.operations[ii].output[jj].controllines()
+                            controllines = [line.gen_interactive() for line in controllines]
+                        except (IndexError,AttributeError):
+                            pass
         return staticgeometries,controlpoints,controllines
     
     def load_references(self):
