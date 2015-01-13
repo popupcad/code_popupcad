@@ -60,22 +60,39 @@ class Design(popupCADFile):
 
     def replace_op_refs(self,oldref,newref):
         failed_ops=[]
-        for op in self.operations:
-            try:
-                op.replace_op_refs(oldref,newref)
-            except AttributeError:
-                failed_ops.append(op)
-        if not not failed_ops:
+
+        self.network()
+        
+        oldop = self.op_from_ref(oldref[0])
+        newop = self.op_from_ref(newref[0])
+        
+        if oldop in newop.allchildren():
             m = qg.QMessageBox()
-            m.setIcon(m.Warning)
-            m.setText('Some operations cannot be updated')
-            m.setInformativeText('Please update manually.')
-            s = 'This is due to the following operations:\n'
-            for child in failed_ops[:-1]:
-                s+='{0},\n'.format(str(child))
-            s+='{0}'.format(str(failed_ops[-1]))
-            m.setDetailedText(s)
+            m.setIcon(m.Information)
+            m.setText(str(oldop)+' is a child of '+str(newop))
             m.exec_()
+        elif newop in oldop.allchildren():
+            m = qg.QMessageBox()
+            m.setIcon(m.Information)
+            m.setText(str(newop)+' is a child of '+str(oldop))
+            m.exec_()
+        else:
+            for op in self.operations:
+                try:
+                    op.replace_op_refs(oldref,newref)
+                except AttributeError:
+                    failed_ops.append(op)
+            if not not failed_ops:
+                m = qg.QMessageBox()
+                m.setIcon(m.Warning)
+                m.setText('Some operations cannot be updated')
+                m.setInformativeText('Please update manually.')
+                s = 'This is due to the following operations:\n'
+                for child in failed_ops[:-1]:
+                    s+='{0},\n'.format(str(child))
+                s+='{0}'.format(str(failed_ops[-1]))
+                m.setDetailedText(s)
+                m.exec_()
 
     def prioroperations(self,op):
         priorindex = self.operation_index(op.id)

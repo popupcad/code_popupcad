@@ -25,6 +25,9 @@ class Operation2(Node,UserData,ClassTools):
         self.operation_links = operation_links
         self.sketch_links = sketch_links
         self.design_links = design_links
+        self.clear_output()
+
+    def clear_output(self):
         try:
             del self.output
         except AttributeError:
@@ -53,6 +56,7 @@ class Operation2(Node,UserData,ClassTools):
         for key,list1 in self.operation_links.items():
             while refold in list1:
                 list1[list1.index(refold)]=refnew
+        self.clear_output()
 
     def copy(self):
         newop = self.init_copy(self.attr_init,self.attr_init_k)

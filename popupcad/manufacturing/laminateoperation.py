@@ -94,14 +94,20 @@ class LaminateOperation(Operation):
         self.function = function
 
     def operate(self,design):
-        if self.function in self.unaryoperationtypes:
-            laminates = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links1]
-            laminateout = Laminate.unaryoperation(laminates,self.function)
-            return laminateout
-        elif self.function in self.pairoperationtypes:
+        if len(self.operation_links1)>0:
             laminates1 = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links1]
-            laminate1 = Laminate.unaryoperation(laminates1,'union')
+        else:
+            laminates1 = [Laminate(design.return_layer_definition())]
+
+        if len(self.operation_links2)>0:
             laminates2 = [design.op_from_ref(link).output[ii].csg for link,ii in self.operation_links2]
+        else:
+            laminates2 = [Laminate(design.return_layer_definition())]
+            
+        if self.function in self.unaryoperationtypes:
+            return Laminate.unaryoperation(laminates1,self.function)
+        elif self.function in self.pairoperationtypes:
+            laminate1 = Laminate.unaryoperation(laminates1,'union')
             laminate2 = Laminate.unaryoperation(laminates2,'union')
             return laminate1.binaryoperation(laminate2,self.function)
         

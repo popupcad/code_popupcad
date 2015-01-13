@@ -161,6 +161,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.projectactions.append({'text':'Sketches...','kwargs':{'triggered':self.sketchlist}})
         self.projectactions.append({'text':'SubDesigns...','kwargs':{'triggered' :self.subdesigns}})
         self.projectactions.append({'text':'Replace...','kwargs':{'triggered' :self.replace}})
+        self.projectactions.append({'text':'Insert Laminate Op and Replace...','kwargs':{'triggered' :self.insert_and_replace}})
 
         self.viewactions = []
         def dummy(action):
@@ -429,30 +430,35 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     def preferences(self):
         pe = popupcad.widgets.propertyeditor.PropertyEditor(popupcad.settings)
         pe.show()
+
     def replace(self):
         d = qg.QDialog()
-        le1 = popupcad.widgets.dragndroptree.DraggableTreeWidget()
-        le1.linklist(self.design.operations)
-        le2 = popupcad.widgets.dragndroptree.DraggableTreeWidget()
-        le2.linklist(self.design.operations)
+        operationlist = popupcad.widgets.dragndroptree.DraggableTreeWidget()
+        operationlist.linklist(self.design.operations)
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')
-        layout1 = qg.QHBoxLayout()
-        layout1.addWidget(le1)
-        layout1.addWidget(le2)
         layout2 = qg.QHBoxLayout()
         layout2.addWidget(button1)
         layout2.addWidget(button2)
         layout3 = qg.QVBoxLayout()
-        layout3.addLayout(layout1)        
+        layout3.addWidget(operationlist)        
         layout3.addLayout(layout2) 
         d.setLayout(layout3)
         button1.pressed.connect(d.accept)
         button2.pressed.connect(d.reject)
         result = d.exec_()
         if result:
-#            print('replace',le1.currentRefs(),'with',le2.currentRefs())
-            self.design.replace_op_refs(le1.currentRefs()[0],le2.currentRefs()[0])
+            self.design.replace_op_refs(self.operationeditor.currentRefs()[0],operationlist.currentRefs()[0])
+        self.reprocessoperations()
+    def insert_and_replace(self):
+        from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
+        operation_ref,output_index = self.operationeditor.currentRefs()[0]
+        operation_index = self.design.operation_index(operation_ref)
+        newop = LaminateOperation2({'unary':[],'binary':[]},'union')
+        self.design.operations.insert(operation_index+1,newop)
+        self.design.replace_op_refs((operation_ref,output_index),(newop.id,0))
+        newop.operation_links['unary'].append((operation_ref,output_index))
+        self.reprocessoperations()
         
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
