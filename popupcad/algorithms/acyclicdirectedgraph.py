@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
@@ -57,7 +56,7 @@ class AcyclicDirectedGraph(object):
     def __init__(self,nodes=None,connections=None):
         self.nodes = []
         self.connections = []
-        self.A = [[]]
+        self.A = numpy.array([[]])
         if nodes!=None:
             self.addnodes(nodes)
             if connections!=None:
@@ -142,7 +141,7 @@ class AcyclicDirectedGraph(object):
         for node in nodes:
             if isinstance(node,Node):
                 node.setnetwork(self)
-            self.nodes.append(node)
+        self.nodes.extend(nodes)
         self.cleannodes()
 
     def addconnection(self,parent,child):
@@ -153,7 +152,7 @@ class AcyclicDirectedGraph(object):
     def addsingleconnection(self,parent,child):
         '''just add the connection to the network, don't recalculate anything'''
         if parent in self.nodes and child in self.nodes:
-            if parent in self.allchildren()[child]:
+            if parent in self.allchildren_item(child):
                 raise(Exception('the parent is a child'))
             else:
                 self.connections.append((parent,child))
@@ -167,8 +166,8 @@ class AcyclicDirectedGraph(object):
     def buildAB(self):
         '''build internal representation of directed connections'''
         A,self.forwardindex,self.reverseindex = self.findA(self.nodes,self.connections)
-        self.A = A.tolist()
-        self.B = self.findB(A).tolist()
+        self.A = A
+        self.B = self.findB(A)
 
     @staticmethod
     def findA(nodes,connections):
@@ -219,19 +218,32 @@ class AcyclicDirectedGraph(object):
             parents[child] = self.itemchildren(self.B,child)
         return parents
 
+    def parents_item(self,child):
+        '''return the direct parents of nodes'''
+        return self.itemparents(self.A,child)
+    def children_item(self,child):
+        '''return the direct children of nodes'''
+        return self.itemchildren(self.A,child)
+    def allparents_item(self,child):
+        '''return all parents of nodes'''
+        return self.itemparents(self.B,child)
+    def allchildren_item(self,child):
+        '''return all children of nodes'''
+        return self.itemchildren(self.B,child)
+        
     def itemparents(self,C,child):
         '''return the parents of a particular node.  The input connection matrix C determines what type of relationship'''
-        array = numpy.array(C)
+#        array = numpy.array(C)
         ii = self.forwardindex[child]
-        itemparents = array[:,ii].nonzero()[0].tolist()            
+        itemparents = C[:,ii].nonzero()[0].tolist()            
         itemparents = [self.reverseindex[item] for item in itemparents ]
         return itemparents
         
     def itemchildren(self,C,child):
         '''return the children of a particular node.  The input connection matrix C determines what type of relationship'''
-        array = numpy.array(C)
+#        array = numpy.array(C)
         ii = self.forwardindex[child]
-        itemparents = array[ii,:].nonzero()[0].tolist()            
+        itemparents = C[ii,:].nonzero()[0].tolist()            
         itemparents = [self.reverseindex[item] for item in itemparents ]
         return itemparents
             
@@ -269,13 +281,13 @@ class AcyclicDirectedGraph(object):
     def generatesubmatrices(self,sequence):
         '''return connection submatrices consisting just of nodes and connections in the given sequence.'''
         iis = [self.forwardindex[item] for item in sequence]
-        subA = numpy.array(self.A)[iis,:][:,iis]
-        subB = numpy.array(self.B)[iis,:][:,iis]
+        subA = self.A[iis,:][:,iis]
+        subB = self.B[iis,:][:,iis]
         return subA,subB        
 
     def sortedallchildrensequence(self,node):
         '''return a correctly ordered sequence of a node and all its children'''
-        newsequence = self.fixsequence([node]+self.itemchildren(numpy.array(self.B),node))
+        newsequence = self.fixsequence([node]+self.itemchildren(self.B,node))
         ii = newsequence.index(node)
         return newsequence[ii:]    
 
