@@ -25,7 +25,7 @@ class ProgramSettings(popupCADFile):
         self.id = id(self)
         self.nominal_width = 1024
         self.nominal_height = 768
-        self.deprecated_mode = False
+#        self.deprecated_mode = False
     def copy(self,identical = True):
         new = type(self)()
         new.inkscape_path = self.inkscape_path
@@ -33,7 +33,7 @@ class ProgramSettings(popupCADFile):
         new.toolbar_icon_size = self.toolbar_icon_size
         new.nominal_width=self.nominal_width
         new.nominal_height=self.nominal_height
-        new.deprecated_mode=self.deprecated_mode
+#        new.deprecated_mode=self.deprecated_mode
         
         if identical:
             new.id = self.id

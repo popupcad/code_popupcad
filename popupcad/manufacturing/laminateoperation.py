@@ -128,7 +128,7 @@ class LaminateOperation(Operation):
             return [ref for ref,ii in self.operation_links1 + self.operation_links2]
 
     def upgrade(self):
-        from laminateoperation2 import LaminateOperation2
+        from .laminateoperation2 import LaminateOperation2
         operation_links = {'unary':self.operation_links1,'binary':self.operation_links2}
         new = LaminateOperation2(operation_links,self.function)
         new.customname = self.customname

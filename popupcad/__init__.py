@@ -37,6 +37,8 @@ version = basic_functions.return_formatted_time(specificity = 'day',small_separa
 default_buffer_resolution = 4
 
 program_name = 'popupCAD'
+deprecated_program_name = 'popupCAD(Compatibility)'
+upgrade_tool_name = 'popupCAD Upgrade Tool'
 description = 'popupCAD: A design tool for developing laminate devices'
 classifiers = ['Programming Language :: Python','Programming Language :: Python :: 3']
 author = 'Daniel M. Aukes'
@@ -91,5 +93,4 @@ from . import manufacturing
 from . import materials
 from . import supportfiles
 from . import widgets
-from . import deprecated
 

@@ -25,10 +25,12 @@ packages.append('popupcad.widgets')
 
 packages.append('pypoly2tri')
 packages.append('popupcad_manufacturing_plugins')
+packages.append('popupcad_deprecated')
 
 
 package_data = {}
-package_data['popupcad'] = ['scripts/*','designs/*','import/*','supportfiles/*']
+package_data['popupcad'] = ['docs','supportfiles/*']
+
 setup(name=popupcad.program_name,
       version=popupcad.version,
       classifiers=popupcad.classifiers,      

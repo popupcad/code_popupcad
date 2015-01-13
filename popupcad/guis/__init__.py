@@ -7,3 +7,4 @@ Please see LICENSE.txt for full license.
 
 from . import sketcher
 from . import editor
+from . import upgrader
