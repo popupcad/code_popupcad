@@ -87,7 +87,7 @@ class MultiValueOperation3(Operation):
     show = ['keepout']
     defaults = [0.]
 
-    attr_init = 'operation_links','sketch_links','subdesign_links','values','keepout_type'
+    attr_init = 'operation_links','sketch_links','design_links','values','keepout_type'
     attr_init_k = tuple()
     attr_copy = 'id','customname'
     
@@ -100,11 +100,11 @@ class MultiValueOperation3(Operation):
 
         self.editdata(*args)
 
-    def editdata(self,operation_links,sketch_links,subdesign_links,values,keepout_type):
+    def editdata(self,operation_links,sketch_links,design_links,values,keepout_type):
         super(MultiValueOperation3,self).editdata()
         self.operation_links = operation_links
         self.sketch_links = sketch_links
-        self.subdesign_links = subdesign_links
+        self.design_links = design_links
         self.values = values
         self.keepout_type = keepout_type
         

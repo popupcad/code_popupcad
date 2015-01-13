@@ -26,12 +26,12 @@ class Dialog(qg.QDialog):
         super(Dialog,self).__init__()
 
         if transformtype_x ==None:
-            self.transformtype_x = PlaceOperation7.transformtypes.scale            
+            self.transformtype_x = PlaceOperation8.transformtypes.scale            
         else:
             self.transformtype_x = transformtype_x
 
         if transformtype_y ==None:
-            self.transformtype_y = PlaceOperation7.transformtypes.scale            
+            self.transformtype_y = PlaceOperation8.transformtypes.scale            
         else:
             self.transformtype_y = transformtype_y
 
@@ -124,14 +124,14 @@ class Dialog(qg.QDialog):
         self.radiobox_scale_y.setChecked(False)
         self.radiobox_custom_y.setChecked(False)
 
-        if self.transformtype_x == PlaceOperation7.transformtypes.scale:
+        if self.transformtype_x == PlaceOperation8.transformtypes.scale:
             self.radiobox_scale_x.setChecked(True)
-        elif self.transformtype_x == PlaceOperation7.transformtypes.custom:
+        elif self.transformtype_x == PlaceOperation8.transformtypes.custom:
             self.radiobox_custom_x.setChecked(True)
 
-        if self.transformtype_y == PlaceOperation7.transformtypes.scale:
+        if self.transformtype_y == PlaceOperation8.transformtypes.scale:
             self.radiobox_scale_y.setChecked(True)
-        elif self.transformtype_y == PlaceOperation7.transformtypes.custom:
+        elif self.transformtype_y == PlaceOperation8.transformtypes.custom:
             self.radiobox_custom_y.setChecked(True)
 
 #        if self.subdesign != None:
@@ -177,40 +177,48 @@ class Dialog(qg.QDialog):
 
     def acceptdata(self):
         if self.radiobox_scale_x.isChecked():
-            transformtype_x = PlaceOperation7.transformtypes.scale
+            transformtype_x = PlaceOperation8.transformtypes.scale
         elif self.radiobox_custom_x.isChecked():
-            transformtype_x = PlaceOperation7.transformtypes.custom
+            transformtype_x = PlaceOperation8.transformtypes.custom
 
         if self.radiobox_scale_y.isChecked():
-            transformtype_y = PlaceOperation7.transformtypes.scale
+            transformtype_y = PlaceOperation8.transformtypes.scale
         elif self.radiobox_custom_y.isChecked():
-            transformtype_y = PlaceOperation7.transformtypes.custom
+            transformtype_y = PlaceOperation8.transformtypes.custom
             
         ii,jj = self.optree.currentIndeces2()[0]  
         subopid = self.subdesign().operations[ii].id    
         subopref = subopid,jj
-        return self.sketch().id,self.subdesign().id,subopref,transformtype_x,transformtype_y,self.sb.value(),self.flip.isChecked(),float(self.scalex.text()),float(self.scaley.text())
+        operation_links = {}
+        sketch_links = {'place':[self.sketch().id]}
+        design_links = {'subdesign':[self.subdesign().id]}
+        return operation_links,sketch_links,design_links,subopref,transformtype_x,transformtype_y,self.sb.value(),self.flip.isChecked(),float(self.scalex.text()),float(self.scaley.text())
             
         
-class PlaceOperation7(Operation):
+class PlaceOperation8(Operation):
     name = 'PlacementOp'
     operationtypes = ['placement']
     transformtypes = enum(scale = 'scale',custom = 'custom')
-#    def copy(self,identical = True):
-#        new = PlaceOperation7(self.sketchid,self.subdesignid, self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
-#        new.customname = self.customname
-#        if identical:
-#            new.id = self.id
-#        return new
+    def copy(self,identical = True):
+        new = PlaceOperation8(self.operation_links,self.sketch_links,self.design_links,self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
+        new.customname = self.customname
+        if identical:
+            new.id = self.id
+        return new
     def __init__(self,*args):
-        super(PlaceOperation7,self).__init__()
+        super(PlaceOperation8,self).__init__()
         self.editdata(*args)
         self.id = id(self)
 
-    def editdata(self,sketchid,subdesignid,subopref,transformtype_x,transformtype_y,shift,flip,scalex,scaley):
-        super(PlaceOperation7,self).editdata()
-        self.sketchid = sketchid
-        self.subdesignid = subdesignid
+    def editdata(self,operation_links,sketch_links,design_links,subopref,transformtype_x,transformtype_y,shift,flip,scalex,scaley):
+        super(PlaceOperation8,self).editdata()
+
+        self.operation_links = operation_links
+        self.sketch_links = sketch_links
+        self.design_links = design_links
+
+#        self.sketchid = sketchid
+#        self.subdesignid = subdesignid
         self.subopref = subopref
         self.transformtype_x = transformtype_x
         self.transformtype_y = transformtype_y
@@ -221,17 +229,18 @@ class PlaceOperation7(Operation):
 
     def operate(self,design):
         import shapely.affinity as aff
-        subdesign = design.subdesigns[self.subdesignid]
+        subdesign = design.subdesigns[self.design_links['subdesign'][0]]
 
         locateline = subdesign.findlocateline()
 
+        operation_ref,output_index = self.subopref
         try:
-            designgeometry = subdesign.operations[subdesign.operation_index(self.subopref[0])].output[self.subopref[1]].csg
+            designgeometry = subdesign.operations[subdesign.operation_index(operation_ref)].output[output_index].csg
         except AttributeError:
 #            subdesign.reprocessoperations()
-            designgeometry = subdesign.operations[subdesign.operation_index(self.subopref[0])].output[self.subopref[1]].csg
+            designgeometry = subdesign.operations[subdesign.operation_index(operation_ref)].output[output_index].csg
             
-        sketch = design.sketches[self.sketchid]
+        sketch = design.sketches[self.sketch_links['place'][0]]
 
         if self.transformtype_x==self.transformtypes.scale:
             scale_x = None
@@ -275,9 +284,9 @@ class PlaceOperation7(Operation):
     def parentrefs(self):
         return []
     def subdesignrefs(self):
-        return [self.subdesignid]
+        return [self.design_links['subdesign'][0]]
     def sketchrefs(self):
-        return [self.sketchid]
+        return [self.sketch_links['place'][0]]
 
     def fromQTransform(self,tin):
         tout = numpy.array([[tin.m11(),tin.m12(),tin.m13()],[tin.m21(),tin.m22(),tin.m23()],[tin.m31(),tin.m32(),tin.m33()]]).T
@@ -291,25 +300,10 @@ class PlaceOperation7(Operation):
         dialog = Dialog(design,design.operations)
         return dialog
     def buildeditdialog(self,design):
-        sketch = design.sketches[self.sketchid]
-        subdesign = design.subdesigns[self.subdesignid]
+        sketch = design.sketches[self.sketch_links['place'][0]]
+        subdesign = design.subdesigns[self.design_links['subdesign'][0]]
         dialog = Dialog(design,design.prioroperations(self),sketch = sketch,subdesign = subdesign, subopref = self.subopref, transformtype_x = self.transformtype_x,transformtype_y = self.transformtype_y,shift=self.shift,flip = self.flip,scalex = self.scalex,scaley = self.scaley)
         return dialog
-
-    def upgrade(self):
-        from .placeop8 import PlaceOperation8
-        operation_links = {}
-        sketch_links = {'place':[self.sketchid]}
-        design_links = {'subdesign':[self.subdesignid]}
-
-        new = PlaceOperation8(operation_links,sketch_links,design_links,self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
-        new.customname = self.customname
-        new.id = self.id
-        return new
-    def copy(self):
-        return self.upgrade()
-
-        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     sys.exit(app.exec_())    
