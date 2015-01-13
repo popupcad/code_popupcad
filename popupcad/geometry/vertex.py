@@ -122,6 +122,9 @@ class BaseVertex(object):
     def copy(self,identical = True):
         new = type(self)()
         return self.copy_values(new,identical)
+
+    def upgrade(self):
+        return self.copy()
         
     def copy_values(self,new,identical=False):
         new.setpos(self.getpos())

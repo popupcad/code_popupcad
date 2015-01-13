@@ -275,6 +275,9 @@ class PlaceOperation5(Operation):
         subdesign = design.subdesigns[self.subdesignid]
         dialog = Dialog(design,design.prioroperations(self),sketch = sketch,subdesign = subdesign, subopid = self.subopid, transformtype = self.transformtype,shift=self.shift,flip = self.flip,scalex = self.scalex,scaley = self.scaley)
         return dialog
+    def upgrade(self):
+        return self.copy()
+        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     sys.exit(app.exec_())    

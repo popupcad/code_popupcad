@@ -163,3 +163,6 @@ class CustomSupport3(Operation):
         c = OperationOutput(cuts,'cuts',self)
         d = OperationOutput(modified_device,'device',self)
         self.output = [d,s,c]
+
+    def upgrade(self):
+        return self.copy()

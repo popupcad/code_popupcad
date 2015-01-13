@@ -127,3 +127,5 @@ class SketchOperation(Operation):
         function = self.operationtypes[kk]
         self.editdata(sketch.id,ref,layer_links,function,jj)
         editedsignal.emit(self)
+    def upgrade(self):
+        return self.copy()

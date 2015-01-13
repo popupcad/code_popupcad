@@ -160,3 +160,5 @@ class ScrapOperation(Operation):
 #        self.output = [a,a,b,c,d,e]
         self.output = [a,a,b,c]                
     
+    def upgrade(self):
+        return self.copy()

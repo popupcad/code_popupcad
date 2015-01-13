@@ -26,6 +26,7 @@ dt = t2-t1
 t1=t2
 print('loaded. reprocessing...',dt)
 
+design = design.upgrade()
 design.reprocessoperations()
 
 t2 = time.time()

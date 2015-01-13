@@ -53,10 +53,11 @@ class GenericShapeBase(popupCADFile):
         new.setmoveable(self.is_moveable())
         if identical:
             new.id = self.id
-
         self.copy_file_params(new,identical)
-        
         return new
+
+    def upgrade(self):
+        return self.copy()
 
     def setmoveable(self,test):
         self.moveable = test
