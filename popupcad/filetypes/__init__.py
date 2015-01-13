@@ -16,6 +16,7 @@ from . import layer
 from . import layerdef
 from . import listwidgetitem
 from . import operation
+from . import operation2
 from . import operationoutput
 from . import plugin
 from . import programsettings

@@ -213,8 +213,9 @@ class GenericFile(object):
             
     def save_yaml(self,filename,identical = True):
         import yaml
+        new = self.copy(identical)
         with open(filename,'w') as f:        
-            yaml.dump(self.copy(identical),f)
+            yaml.dump(new,f)
         return True
     def __str__(self):
         return self.get_basename()

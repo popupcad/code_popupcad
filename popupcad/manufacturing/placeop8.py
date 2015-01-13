@@ -10,7 +10,7 @@ import PySide.QtGui as qg
 import numpy
 import popupcad
 import popupcad.filetypes
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.design import NoOperation
 from popupcad.filetypes.design import Design
@@ -195,7 +195,7 @@ class Dialog(qg.QDialog):
         return operation_links,sketch_links,design_links,subopref,transformtype_x,transformtype_y,self.sb.value(),self.flip.isChecked(),float(self.scalex.text()),float(self.scaley.text())
             
         
-class PlaceOperation8(Operation):
+class PlaceOperation8(Operation2):
     name = 'PlacementOp'
     operationtypes = ['placement']
     transformtypes = enum(scale = 'scale',custom = 'custom')
