@@ -168,6 +168,7 @@ class PlaceOperation4(Operation):
         if identical:
             new.id = self.id
         return new
+
     def __init__(self,*args):
         super(PlaceOperation4,self).__init__()
         self.editdata(*args)
@@ -261,6 +262,9 @@ class PlaceOperation4(Operation):
         if dialog.exec_()==dialog.Accepted:
             self.editdata(*dialog.acceptdata)
             editedsignal.emit(self)
+
+    def upgrade(self):
+        return self.copy()
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

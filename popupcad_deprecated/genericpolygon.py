@@ -15,7 +15,6 @@ from popupcad.filetypes.genericshapebase import GenericShapeBase
     
 class GenericShape(GenericShapeBase):
 
-
     def copy(self,identical = True):
         exterior = [vertex.copy(identical) for vertex in self.exterior]
         interiors = [[vertex.copy(identical) for vertex in interior] for interior in self.interiors]
@@ -28,6 +27,8 @@ class GenericShape(GenericShapeBase):
             new.id = self.id
         return new
 
+    def upgrade(self):
+        return self.copy()
         
     def pickpainterpathfunction(self):
         if (self.shapetype == self.shapetypes.line) or (self.shapetype == self.shapetypes.polyline):

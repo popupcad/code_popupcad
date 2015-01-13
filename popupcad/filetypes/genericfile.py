@@ -36,6 +36,9 @@ class GenericFile(object):
         self.copy_file_params(new,identical)
         return new
 
+    def upgrade(self):
+        return self.copy()
+
     @classmethod
     def lastdir(cls):
         return cls._lastdir
