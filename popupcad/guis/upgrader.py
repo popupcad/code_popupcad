@@ -333,7 +333,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def showcurrentoutput(self):
         selected_indeces = self.operationeditor.currentIndeces2()
-#        print(selected_indeces)
         if len(selected_indeces)>0:
             ii,jj = selected_indeces[0]
         else:
@@ -382,7 +381,13 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         if not accepted:
             return
             
-        ii,jj = self.operationeditor.currentIndeces()
+        selected_indeces = self.operationeditor.currentIndeces2()
+        if len(selected_indeces)>0:
+            ii,jj = selected_indeces[0]
+        else:
+            ii,jj = -1,0
+            self.operationeditor.selectIndeces([(ii,jj)])
+
         generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
@@ -400,7 +405,13 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         if not accepted:
             return
             
-        ii,jj = self.operationeditor.currentIndeces()
+        selected_indeces = self.operationeditor.currentIndeces2()
+        if len(selected_indeces)>0:
+            ii,jj = selected_indeces[0]
+        else:
+            ii,jj = -1,0
+            self.operationeditor.selectIndeces([(ii,jj)])
+
         generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
