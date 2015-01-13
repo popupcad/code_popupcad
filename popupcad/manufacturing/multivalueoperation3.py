@@ -116,5 +116,3 @@ class MultiValueOperation3(Operation2):
         dialog = Dialog(self.keepout_types,self.valuenames,self.defaults,design.prioroperations(self),operation_index,self.show,self.values,self.keepout_type,output_index)
         return dialog
 
-    def upgrade(self):
-        return self

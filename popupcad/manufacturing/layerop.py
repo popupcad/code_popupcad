@@ -164,5 +164,5 @@ class LayerOp(Operation):
         new.customname = self.customname
         new.id = self.id
         return new
-    def copy(self):
-        return self.upgrade()
+#    def copy(self):
+#        return self.upgrade()

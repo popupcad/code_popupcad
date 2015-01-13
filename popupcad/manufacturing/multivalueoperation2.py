@@ -128,6 +128,6 @@ class MultiValueOperation2(Operation):
         new.customname = self.customname
         return new
 
-    def copy(self):
-        return self.upgrade()
+#    def copy(self):
+#        return self.upgrade()
 

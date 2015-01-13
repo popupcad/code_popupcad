@@ -135,5 +135,5 @@ class LaminateOperation(Operation):
         new.id = self.id
         return new
 
-    def copy(self):
-        return self.upgrade()
+#    def copy(self):
+#        return self.upgrade()
