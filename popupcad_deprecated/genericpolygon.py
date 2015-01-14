@@ -27,8 +27,8 @@ class GenericShape(GenericShapeBase):
             new.id = self.id
         return new
 
-    def upgrade(self):
-        return self.copy()
+    def upgrade(self,*args,**kwargs):
+        return self.copy(*args,**kwargs)
         
     def pickpainterpathfunction(self):
         if (self.shapetype == self.shapetypes.line) or (self.shapetype == self.shapetypes.polyline):

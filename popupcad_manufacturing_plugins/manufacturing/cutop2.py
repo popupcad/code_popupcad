@@ -160,6 +160,6 @@ class CutOperation2(Operation):
         c = OperationOutput(error ,'error',self)
         self.output = [a,a,b,c]
                 
-    def upgrade(self):
-        return self.copy()
+    def upgrade(self,*args,**kwargs):
+        return self.copy(*args,**kwargs)
     

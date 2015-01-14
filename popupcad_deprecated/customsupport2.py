@@ -142,5 +142,5 @@ class CustomSupport2(Operation):
         d = OperationOutput(modified_device,'device',self)
         self.output = [d,s,c]
 
-    def upgrade(self):
-        return self.copy()
+    def upgrade(self,*args,**kwargs):
+        return self.copy(*args,**kwargs)
