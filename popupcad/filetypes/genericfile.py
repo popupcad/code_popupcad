@@ -110,7 +110,8 @@ class GenericFile(object):
         import yaml
         with open(filename,'r') as f:
             obj1 = yaml.load(f)
-            return obj1.upgrade()
+#            return obj1.upgrade()
+            return obj1
 
     @classmethod
     def load_safe(cls,filepathin,suggestions = None,openmethod = None,**openmethodkwargs):
@@ -216,7 +217,7 @@ class GenericFile(object):
             
     def save_yaml(self,filename,identical = True):
         import yaml
-        new = self.upgrade(identical)
+        new = self.copy(identical)
         with open(filename,'w') as f:        
             yaml.dump(new,f)
         return True
