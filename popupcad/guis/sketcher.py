@@ -488,18 +488,21 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
 
     def load_references3(self,ii,jj):
         staticgeometries,controlpoints,controllines = [],[],[]        
-        if self.design !=None:
-            try:
-                operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
-                staticgeometries =  [item.outputstatic() for item in operationgeometries]
-
-                controlpoints = self.design.operations[ii].output[jj].controlpoints()
-                controlpoints = [point.gen_interactive() for point in controlpoints]
-
-                controllines = self.design.operations[ii].output[jj].controllines()
-                controllines = [line.gen_interactive() for line in controllines]
-            except (IndexError,AttributeError):
-                pass
+        ii-=1
+        if ii>=0:
+            if self.design !=None:
+                print(ii,jj)
+                try:
+                    operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
+                    staticgeometries =  [item.outputstatic() for item in operationgeometries]
+    
+                    controlpoints = self.design.operations[ii].output[jj].controlpoints()
+                    controlpoints = [point.gen_interactive() for point in controlpoints]
+    
+                    controllines = self.design.operations[ii].output[jj].controllines()
+                    controllines = [line.gen_interactive() for line in controllines]
+                except (IndexError,AttributeError):
+                    pass
         return staticgeometries,controlpoints,controllines
     
     def load_references_inner(self,ii,jj):
@@ -514,9 +517,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             selected_indeces = self.optree.currentIndeces2()
             if len(selected_indeces)>0:
                 ii,jj = selected_indeces[0]
-                if ii>0:
-                    ii-=1
-                    self.load_references_inner(ii,jj)
+                self.load_references_inner(ii,jj)
 
     def group(self):
         from popupcad.graphics2d.grouper import Grouper
