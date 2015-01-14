@@ -296,7 +296,7 @@ class PlaceOperation7(Operation):
         dialog = Dialog(design,design.prioroperations(self),sketch = sketch,subdesign = subdesign, subopref = self.subopref, transformtype_x = self.transformtype_x,transformtype_y = self.transformtype_y,shift=self.shift,flip = self.flip,scalex = self.scalex,scaley = self.scaley)
         return dialog
 
-    def upgrade(self):
+    def upgrade(self,*args,**kwargs):
         from .placeop8 import PlaceOperation8
         sketch_links = {'place':[self.sketchid]}
         design_links = {'subdesign':[self.subdesignid]}

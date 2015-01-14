@@ -41,8 +41,8 @@ class Operation(Node,UserData,ClassTools):
         newop.copyattrs(self,self.attr_copy)
         return newop
 
-    def upgrade(self):
-        return self.copy()
+    def upgrade(self,*args,**kwargs):
+        return self.copy(*args,**kwargs)
     
     def getoutputref(self):
         try:

@@ -120,7 +120,7 @@ class MultiValueOperation2(Operation):
         dialog = Dialog(self.keepout_types,self.valuenames,self.defaults,design.prioroperations(self),selectedindex,self.show,self.values,self.keepout_type,self.getoutputref())
         return dialog
 
-    def upgrade(self):
+    def upgrade(self,*args,**kwargs):
         operation_links = {}
         operation_links['parent'] = [(self.operation_link1,self.outputref)]
         new = self.upgradeclass(operation_links,self.values,self.keepout_type)
