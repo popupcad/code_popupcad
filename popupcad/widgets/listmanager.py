@@ -125,6 +125,8 @@ class SketchListManager(ListManager):
             self.refresh_list(sketch)
         sketcher = Sketcher(None,Sketch(),self.design,accept_method = accept_method,selectops = True)
         sketcher.show()
+        sketcher.graphicsview.zoomToFit()
+        
     
     def load_item(self):
         from popupcad.filetypes.sketch import Sketch

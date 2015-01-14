@@ -53,17 +53,17 @@ class GraphicsView(qg.QGraphicsView):
             
         self.scale(zoom,zoom)
 
-    def mousePressEvent(self, event):
-        super(GraphicsView,self).mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        super(GraphicsView,self).mouseMoveEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        super(GraphicsView,self).mouseReleaseEvent(event)
-
-    def mouseDoubleClickEvent(self,event):
-        super(GraphicsView,self).mouseDoubleClickEvent(event)
+#    def mousePressEvent(self, event):
+#        super(GraphicsView,self).mousePressEvent(event)
+#
+#    def mouseMoveEvent(self, event):
+#        super(GraphicsView,self).mouseMoveEvent(event)
+#
+#    def mouseReleaseEvent(self, event):
+#        super(GraphicsView,self).mouseReleaseEvent(event)
+#
+#    def mouseDoubleClickEvent(self,event):
+#        super(GraphicsView,self).mouseDoubleClickEvent(event)
     
     def turn_off_drag(self):
         self.lastdrag = self.dragMode()

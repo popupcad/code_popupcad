@@ -50,8 +50,9 @@ class Sketch(popupCADFile):
         from popupcad.guis.sketcher import Sketcher
         sketcher = Sketcher(parent,self,design,accept_method = self.edit_result,**kwargs)
         sketcher.show()
+        sketcher.graphicsview.zoomToFit()
 
-    def edit_result(self,sketch,*args):
+    def edit_result(self,sketch):
         self.operationgeometry = sketch.operationgeometry
         self.constraintsystem = sketch.constraintsystem
         

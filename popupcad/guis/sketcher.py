@@ -68,7 +68,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.setAttribute(qc.Qt.WA_DeleteOnClose)
         self.scene.itemclicked.connect(self.loadpropwindow)
         self.showprop.connect(self.loadpropwindow)
-        self.graphicsview.zoomToFit()
         self.scene.newpolygon.connect(self.undoredo.savesnapshot)
         self.scene.savesnapshot.connect(self.undoredo.savesnapshot)
         self.scene.itemdeleted.connect(self.cleanupconstraints)

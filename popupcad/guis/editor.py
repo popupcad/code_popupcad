@@ -293,6 +293,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.layerlistwidget.selectAll()
         self.operationeditor.blockSignals(False)
         self.layerlistwidget.blockSignals(False)
+        self.view_2d.zoomToFit()        
 
     @loggable
     def editlayers(self):
