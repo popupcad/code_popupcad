@@ -49,7 +49,7 @@ class Dialog(qg.QDialog):
         outputitems = [popupcad.filetypes.listwidgetitem.ListWidgetItem(item,self.outputlayerselector) for item in design.return_layer_definition().layers]
         [item.setSelected(item.customdata.id in selectedoutput) for item in outputitems]        
 
-        from  popupcad.widgets.operationlist import OperationList
+        from popupcad.widgets.operationlist import OperationList
         self.operationtypeselector = OperationList([],cls.function_names,cls.function_names)
         self.operationtypeselector.setCurrentIndex(operation_type_index)        
 
