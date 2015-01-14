@@ -78,7 +78,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraint_editor.itemPressed.connect(self.showconstraint_item)
         self.constraint_editor.itemdeleted.connect(self.constraint_deleted)        
         if self.selectops:
-            self.optree.currentRowChanged.connect(self.load_references)
+            self.optree.currentRowChanged.connect(self.load_references_inner)
         
     def setupLayout(self):
         self.constraint_editor = ListEditor()
@@ -486,34 +486,37 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         else:
             return False
 
-    def load_references3(self):
+    def load_references3(self,ii,jj):
         staticgeometries,controlpoints,controllines = [],[],[]        
+        if self.design !=None:
+            try:
+                operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
+                staticgeometries =  [item.outputstatic() for item in operationgeometries]
+
+                controlpoints = self.design.operations[ii].output[jj].controlpoints()
+                controlpoints = [point.gen_interactive() for point in controlpoints]
+
+                controllines = self.design.operations[ii].output[jj].controllines()
+                controllines = [line.gen_interactive() for line in controllines]
+            except (IndexError,AttributeError):
+                pass
+        return staticgeometries,controlpoints,controllines
+    
+    def load_references_inner(self,ii,jj):
+        self.scene.removerefgeoms()
+        self.static_items,self.controlpoints,self.controllines = self.load_references3(ii,jj)
+        self.scene.update_extra_objects(self.controlpoints+self.controllines)
+        self.scene.updatevertices()
+        [self.scene.addItem(item) for item in self.static_items]
+
+    def load_references(self):
         if self.selectops:
             selected_indeces = self.optree.currentIndeces2()
             if len(selected_indeces)>0:
                 ii,jj = selected_indeces[0]
                 if ii>0:
                     ii-=1
-                    if self.design !=None:
-                        try:
-                            operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
-                            staticgeometries =  [item.outputstatic() for item in operationgeometries]
-    
-                            controlpoints = self.design.operations[ii].output[jj].controlpoints()
-                            controlpoints = [point.gen_interactive() for point in controlpoints]
-    
-                            controllines = self.design.operations[ii].output[jj].controllines()
-                            controllines = [line.gen_interactive() for line in controllines]
-                        except (IndexError,AttributeError):
-                            pass
-        return staticgeometries,controlpoints,controllines
-    
-    def load_references(self):
-        self.scene.removerefgeoms()
-        self.static_items,self.controlpoints,self.controllines = self.load_references3()
-        self.scene.update_extra_objects(self.controlpoints+self.controllines)
-        self.scene.updatevertices()
-        [self.scene.addItem(item) for item in self.static_items]
+                    self.load_references_inner(ii,jj)
 
     def group(self):
         from popupcad.graphics2d.grouper import Grouper
