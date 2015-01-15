@@ -148,6 +148,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
         self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})      
+        self.fileactions.append({'text':"Update...",'kwargs':{'triggered':self.download_installer}})      
 
         self.projectactions = []
         self.projectactions.append({'text':'&Rebuild','kwargs':{'icon':Icon('refresh'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_R,'triggered':self.reprocessoperations}})
@@ -479,7 +480,20 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.load_design(self.design.upgrade())
         if self.act_autoreprocesstoggle.isChecked():
             self.reprocessoperations()
-        self.view_2d.zoomToFit()        
+        self.view_2d.zoomToFit() 
+    def get_update_link(self):
+        import requests
+        r = requests.get('http://www.popupcad.org/downloads/current')
+        if r.status_code==requests.codes.ok:
+#            self.update_text = 'Update('+r.text+')'
+            update_link = 'http://www.popupcad.org/downloads/'+r.text
+        else:
+#            self.update_text = 'Visit popupCAD.com'
+            update_link = 'http://www.popupcad.org/download'
+        return update_link
+        
+    def download_installer(self):
+        qg.QDesktopServices.openUrl(self.get_update_link())
 
         
 if __name__ == "__main__":
