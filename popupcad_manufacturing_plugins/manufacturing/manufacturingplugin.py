@@ -49,8 +49,3 @@ class ManufacturingPlugin(Plugin):
 
 
         editor.toolbar_manufacturing,editor.menu_manufacturing = editor.addToolbarMenu(manufacturingactions,name='Manufacturing')
-#        self.menu_manufacturing = self.buildMenu(self.manufacturingactions,name='Manufacturing')
-
-#        for item in manufacturingactions:
-#            editor.addMenuItem(editor.menu_manufacturing,item.copy())
-#            editor.addToolbarItem(editor.toolbar_manufacturing,item.copy())

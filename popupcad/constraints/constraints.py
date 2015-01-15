@@ -47,8 +47,10 @@ class ConstraintSystem(object):
         new.constraints = [constraint.copy() for constraint in self.constraints]
         return new
 
-    def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+    def upgrade(self):
+        new = ConstraintSystem()
+        new.constraints = [constraint.upgrade() for constraint in self.constraints]
+        return new
 
     def ini(self):
         objects = self.vertex_builder()

@@ -27,8 +27,17 @@ class GenericShape(GenericShapeBase):
             new.id = self.id
         return new
 
-    def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+    def upgrade(self,identical = True):
+        exterior = [vertex.upgrade(identical) for vertex in self.exterior]
+        interiors = [[vertex.upgrade(identical) for vertex in interior] for interior in self.interiors]
+        try:
+            self.construction
+        except AttributeError:
+            self.construction = False
+        new = type(self)(exterior,interiors,self.shapetype,self.construction)
+        if identical:
+            new.id = self.id
+        return new
         
     def pickpainterpathfunction(self):
         if (self.shapetype == self.shapetypes.line) or (self.shapetype == self.shapetypes.polyline):

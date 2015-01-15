@@ -56,8 +56,15 @@ class GenericShapeBase(popupCADFile):
         self.copy_file_params(new,identical)
         return new
 
-    def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+    def upgrade(self,identical = True):
+        exterior = [vertex.upgrade(identical) for vertex in self.exterior]
+        interiors = [[vertex.upgrade(identical) for vertex in interior] for interior in self.interiors]
+        new = type(self)(exterior,interiors,self.is_construction())
+        new.setmoveable(self.is_moveable())
+        if identical:
+            new.id = self.id
+        self.copy_file_params(new,identical)
+        return new
 
     def setmoveable(self,test):
         self.moveable = test

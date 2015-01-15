@@ -35,9 +35,16 @@ class Sketch(popupCADFile):
         new.constraintsystem = self.constraintsystem.copy()
         if identical:
             new.id = self.id
-
         self.copy_file_params(new,identical)
+        return new
 
+    def upgrade(self,identical = True):
+        new = Sketch()
+        new.operationgeometry = [geom.upgrade(identical=True) for geom in self.operationgeometry if geom.isValid()]
+        new.constraintsystem = self.constraintsystem.upgrade()
+        if identical:
+            new.id = self.id
+        self.copy_file_params(new,identical)
         return new
 
     def addoperationgeometries(self,polygons):

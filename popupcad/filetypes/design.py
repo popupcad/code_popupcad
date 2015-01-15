@@ -110,16 +110,27 @@ class Design(popupCADFile):
         if identical:
             new.id=self.id
         new.sketches = {}
-
         for key,value in self.sketches.items():
             new.sketches[key]=value.copy(identical = True)
         new.subdesigns = {}
-        
         for key,value in self.subdesigns.items():
             new.subdesigns[key]=value.copy(identical = True)
-
         self.copy_file_params(new,identical)
+        return new    
 
+    def upgrade(self,identical = True):
+        new = Design()
+        new.operations = [operation.upgrade() for operation in self.operations]
+        new.define_layers(self.return_layer_definition())
+        if identical:
+            new.id=self.id
+        new.sketches = {}
+        for key,value in self.sketches.items():
+            new.sketches[key]=value.upgrade(identical = True)
+        new.subdesigns = {}
+        for key,value in self.subdesigns.items():
+            new.subdesigns[key]=value.upgrade(identical = True)
+        self.copy_file_params(new,identical)
         return new    
 
     def addoperation(self,operation):

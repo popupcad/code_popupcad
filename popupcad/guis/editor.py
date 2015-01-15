@@ -143,6 +143,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"&Open...",'kwargs':{'icon':Icon('open'),'shortcut':qg.QKeySequence.Open,'statusTip':"Open an existing file", 'triggered':self.open}})
         self.fileactions.append({'text':"&Save",'kwargs':{'icon':Icon('save'),'shortcut':qg.QKeySequence.Save,'statusTip':"Save the document to disk", 'triggered':self.save}})
         self.fileactions.append({'text':"Save &As...",'kwargs':{'icon':Icon('saveas'),'shortcut':qg.QKeySequence.SaveAs,'statusTip':"Save the document under a new name",'triggered':self.saveAs}})
+        self.fileactions.append({'text':"Upgrade",'kwargs':{'statusTip':"Upgrade the file",'triggered':self.upgrade}})
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
         self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
@@ -257,6 +258,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         design = Design()
         design.define_layers(LayerDef(Carbon_0_90_0(),Pyralux(),Kapton(),Pyralux(),Carbon_0_90_0()))
         self.load_design(design)
+        self.view_2d.zoomToFit()        
+
 
     @loggable
     def open(self,filename=None):
@@ -268,6 +271,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             self.load_design(design)
             if self.act_autoreprocesstoggle.isChecked():
                 self.reprocessoperations()
+            self.view_2d.zoomToFit()        
+
 
     @loggable
     def save(self):
@@ -293,7 +298,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.layerlistwidget.selectAll()
         self.operationeditor.blockSignals(False)
         self.layerlistwidget.blockSignals(False)
-        self.view_2d.zoomToFit()        
 
     @loggable
     def editlayers(self):
@@ -471,6 +475,12 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.design.replace_op_refs((operation_ref,output_index),(newop.id,0))
         newop.operation_links['unary'].append((operation_ref,output_index))
         self.reprocessoperations()
+    def upgrade(self):
+        self.load_design(self.design.upgrade())
+        if self.act_autoreprocesstoggle.isChecked():
+            self.reprocessoperations()
+        self.view_2d.zoomToFit()        
+
         
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
