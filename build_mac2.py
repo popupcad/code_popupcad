@@ -4,9 +4,10 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import glob, os
+import popupcad
 import sys
 from cx_Freeze import setup, Executable
+import glob, os
 
 def include_entire_directory(source_dir,dest_dir):
     m = len(source_dir)
@@ -19,7 +20,6 @@ def include_entire_directory(source_dir,dest_dir):
     return include
     
 iconfile = os.path.normpath(os.path.join(popupcad.supportfiledir,'printapede.ico'))
-
 
 packages = []
 packages.append('popupcad')
@@ -36,42 +36,50 @@ packages.append('popupcad.widgets')
 
 packages.append('pypoly2tri')
 packages.append('popupcad_manufacturing_plugins')
+packages.append('popupcad_deprecated')
 
 packages.append("scipy.integrate.vode")
 packages.append("scipy.integrate.lsoda")
 packages.append("scipy.sparse.csgraph._validation")
 packages.append("OpenGL.platform.win32")
-#packages.append("matplotlib.backends")
 packages.append("sympy.assumptions.handlers")
 packages.append("numpy")
 packages.append("scipy")
 
-basedir = os.path.dirname(sys.executable)
-
 include_files = []
-include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/shapely/geos_c.dll')),'geos_c.dll'))
-include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libifcoremd.dll')),'libifcoremd.dll'))
-include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libifcoremd.dll')),'libifcoremd.dll'))
-include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libmmd.dll')),'libmmd.dll'))
+
+if sys.platform=="win32":
+    basedir = os.path.dirname(sys.executable)
+    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/shapely/geos_c.dll')),'geos_c.dll'))
+    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libifcoremd.dll')),'libifcoremd.dll'))
+    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libifcoremd.dll')),'libifcoremd.dll'))
+    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libmmd.dll')),'libmmd.dll'))
+elif sys.platform == 'darwin':
+    import site
+    sites = site.getsitepackages()
+    basedir = sites[0]
+    userdir = '~/Documents'
+
 include_files.append(('LICENSE.txt','LICENSE.txt'))
 include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
 include_files.extend(include_entire_directory('licenses','licenses'))
 
+zip_includes = []
+#zip_includes = include_entire_directory(os.path.normpath(os.path.join(basedir,"Lib\\site-packages\\OpenGL")),"OpenGL")
+#includes.append("zmq")
+#includes.append("zmq.utils.garbage")
+#includes.append("zmq.backend.cython")
      
 base = None
 toinclude = []
 includes = []
 #packages = []
 files = []
-excludes = []
+excludes = ['Tkinter']
 toinclude = []
-zipinclude2 = []
+#zipinclude2 = []
 
-elif sys.platform == 'darwin':
-    import site
-    sites = site.getsitepackages()
-    basedir = sites[0]
-    userdir = '~/Documents'
+build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'packages':packages,'includes':includes,'excludes':excludes,'icon':iconfile }
 
 bdist_dmg_options = {}
 base = None
