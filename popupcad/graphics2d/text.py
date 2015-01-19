@@ -28,6 +28,10 @@ class GenericText(object):
         if identical:
             new.id = self.id
         return new
+
+    def upgrade(self,*args,**kwargs):
+        return self.copy()
+        
     def isValid(self):
         return True
     def genpath(self):
