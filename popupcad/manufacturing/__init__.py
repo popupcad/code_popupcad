@@ -8,6 +8,7 @@ from .bufferop2 import BufferOperation2
 from .bufferop3 import BufferOperation3
 from .cleanup import Cleanup
 from .cleanup2 import Cleanup2
+from .cleanup3 import Cleanup3
 from .laminateoperation import LaminateOperation
 from .sketchoperation2 import SketchOperation2
 from .simplesketchoperation import SimpleSketchOp
