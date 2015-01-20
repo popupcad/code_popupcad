@@ -48,6 +48,17 @@ packages.append("scipy")
 
 include_files = []
 
+base = None
+toinclude = []
+includes = []
+#packages = []
+files = []
+excludes = []
+#excludes.append'Tkinter')
+excludes.append('scipy.special')
+toinclude = []
+zip_includes = []
+
 if sys.platform=="win32":
     basedir = os.path.dirname(sys.executable)
     include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/shapely/geos_c.dll')),'geos_c.dll'))
@@ -57,29 +68,26 @@ if sys.platform=="win32":
 elif sys.platform == 'darwin':
     import site
     sites = site.getsitepackages()
-    basedir = sites[0]
-    userdir = '~/Documents'
+##    basedir = sites[0]
+##    userdir = '~/Documents'
+    include_files.extend(glob.glob('/usr/local/Cellar/geos/3.4.2/lib/*.dylib'))
+#    zip_includes.append(('/usr/local/lib/python3.4/site-packages/scipy/.dylibs/libgcc_s.1.dylib','scipy/.dylibs/libgcc_s.1.dylib'))
+#    zip_includes.append(('/usr/local/lib/python3.4/site-packages/scipy/.dylibs/libgfortran.2.0.0.dylib','scipy/.dylibs/libgfortran.2.0.0.dylib'))
+#    include_files.extend(glob.glob('/usr/local/gfortran/lib/*.dylib'))
 
-include_files.append(('LICENSE.txt','LICENSE.txt'))
-include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
-include_files.extend(include_entire_directory('licenses','licenses'))
+#include_files.append(('LICENSE.txt','LICENSE.txt'))
+#include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
+#include_files.extend(include_entire_directory('licenses','licenses'))
 
-zip_includes = []
 #zip_includes = include_entire_directory(os.path.normpath(os.path.join(basedir,"Lib\\site-packages\\OpenGL")),"OpenGL")
 #includes.append("zmq")
 #includes.append("zmq.utils.garbage")
 #includes.append("zmq.backend.cython")
      
-base = None
-toinclude = []
-includes = []
-#packages = []
-files = []
-excludes = ['Tkinter']
-toinclude = []
 #zipinclude2 = []
 
-build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'packages':packages,'includes':includes,'excludes':excludes,'icon':iconfile }
+#build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'packages':packages,'includes':includes,'excludes':excludes,'icon':iconfile }
+build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'excludes':excludes}
 
 bdist_dmg_options = {}
 base = None
@@ -88,6 +96,7 @@ setup_options = {}
 #setup_options['build_exe']=build_exe_options
 #setup_options['bdist_msi']=bdist_msi_options
 setup_options['bdist_dmg']=bdist_dmg_options
+setup_options['build_exe']=build_exe_options
 #base = None
 #if sys.platform == "win32":
 #    base = "Win32GUI"

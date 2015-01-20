@@ -7,6 +7,15 @@ Please see LICENSE.txt for full license.
 #from __future__ import absolute_import
 
 import sys
+
+from shapely import speedups
+if sys.platform == 'win32':
+    if speedups.available:
+        speedups.enable()
+elif sys.platform == 'darwin':
+    pass
+
+
 import os
 
 from . import basic_functions

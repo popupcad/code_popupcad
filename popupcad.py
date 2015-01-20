@@ -4,10 +4,6 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from shapely import speedups
-if speedups.available:
-    speedups.enable()
-
 import sys
 
 if hasattr(sys, 'frozen'):
