@@ -15,7 +15,7 @@ import imp
 import popupcad
 
 from popupcad.filetypes.design import Design
-from popupcad.filetypes.sketch import Sketch
+#from popupcad.filetypes.sketch import Sketch
 from popupcad.supportfiles import Icon
 
 class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
@@ -195,16 +195,16 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.viewactions.append({'text':'3D Screenshot','kwargs':{'triggered':self.view_3d.screenshot}})
 
         self.operationactions = []        
-        self.operationactions.append({'text':'&SketchOp','kwargs':{'icon':Icon('polygons'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_S,'triggered':lambda:self.newoperation(popupcad.manufacturing.SimpleSketchOp)}})
-        self.operationactions.append({'text':'&Dilate/Erode','kwargs':{'icon':Icon('bufferop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_B,'triggered':lambda:self.newoperation(popupcad.manufacturing.BufferOperation2)}})
-        self.operationactions.append({'text':'&LayerOp','kwargs':{'icon':Icon('layerop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_L,'triggered':lambda:self.newoperation(popupcad.manufacturing.LayerOp)}})
-        self.operationactions.append({'text':'&LaminateOp','kwargs':{'icon':Icon('metaop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_M,'triggered':lambda:self.newoperation(popupcad.manufacturing.LaminateOperation)}})
+        self.operationactions.append({'text':'&SketchOp','kwargs':{'icon':Icon('polygons'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_S,'triggered':lambda:self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})
+        self.operationactions.append({'text':'&Dilate/Erode','kwargs':{'icon':Icon('bufferop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_B,'triggered':lambda:self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
+        self.operationactions.append({'text':'&LayerOp','kwargs':{'icon':Icon('layerop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_L,'triggered':lambda:self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
+        self.operationactions.append({'text':'&LaminateOp','kwargs':{'icon':Icon('metaop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_M,'triggered':lambda:self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)}})
         self.operationactions.append({'text':'Shift/Flip','kwargs':{'icon':Icon('shiftflip'),'triggered':lambda:self.newoperation(popupcad.manufacturing.ShiftFlip2)}})
-        self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.LocateOperation2)}})
-        self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.PlaceOperation7)}})
-        self.operationactions.append({'text':'Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup.Cleanup)}})
+        self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.locateoperation2.LocateOperation2)}})
+        self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
+        self.operationactions.append({'text':'Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)}})
         self.operationactions.append({'text':'New Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup3.Cleanup3)}})
-        self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify.Simplify)}})
+        self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify2.Simplify2)}})
 #        self.operationactions.append({'text':'Joints','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.jointop.JointOp)}})
         self.operationactions.append({'text':'Flatten','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.flatten.Flatten)}})
 
@@ -380,7 +380,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def exportLayerSVG(self):
-        import os
+#        import os
         from popupcad.graphics2d.svg_support import OutputSelection
 
         win = OutputSelection()
@@ -404,7 +404,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             scene.renderprocess(basename,*win.acceptdata())
 
     def exportLayerSVG2(self):
-        import os
+#        import os
         from popupcad.graphics2d.svg_support import OutputSelection
 
         win = OutputSelection()
