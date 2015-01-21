@@ -29,5 +29,3 @@ from . import removability
 from . import scrapoperation
 from . import cutop2
 
-def initialize(editor,design):
-    manufacturingplugin.ManufacturingPlugin(editor,design)
