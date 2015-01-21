@@ -38,13 +38,19 @@ packages.append('pypoly2tri')
 packages.append('popupcad_manufacturing_plugins')
 packages.append('popupcad_deprecated')
 
-packages.append("scipy.integrate.vode")
-packages.append("scipy.integrate.lsoda")
-packages.append("scipy.sparse.csgraph._validation")
-packages.append("OpenGL.platform.win32")
-packages.append("sympy.assumptions.handlers")
+#packages.append("scipy.integrate.vode")
+#packages.append("scipy.integrate.lsoda")
+#packages.append("scipy.sparse.csgraph._validation")
+#packages.append("OpenGL.platform.win32")
+#packages.append("sympy.assumptions.handlers")
 packages.append("numpy")
 packages.append("scipy")
+packages.append('scipy.integrate.vode')
+packages.append('scipy.integrate.lsoda')
+#packages.append('scipy.sparse.csgraph._validation')
+#packages.append('sympy.assumptions.handlers')
+#packages.append('scipy.special._ufuncs')
+#packages.append('scipy.special._ufuncs_cxx')
 
 include_files = []
 
@@ -55,7 +61,7 @@ includes = []
 files = []
 excludes = []
 #excludes.append'Tkinter')
-excludes.append('scipy.special')
+#excludes.append('scipy.special')
 toinclude = []
 zip_includes = []
 
@@ -70,36 +76,30 @@ elif sys.platform == 'darwin':
     sites = site.getsitepackages()
 ##    basedir = sites[0]
 ##    userdir = '~/Documents'
+    packages.append('OpenGL.platform.darwin')
+    
     include_files.extend(glob.glob('/usr/local/Cellar/geos/3.4.2/lib/*.dylib'))
 #    zip_includes.append(('/usr/local/lib/python3.4/site-packages/scipy/.dylibs/libgcc_s.1.dylib','scipy/.dylibs/libgcc_s.1.dylib'))
 #    zip_includes.append(('/usr/local/lib/python3.4/site-packages/scipy/.dylibs/libgfortran.2.0.0.dylib','scipy/.dylibs/libgfortran.2.0.0.dylib'))
 #    include_files.extend(glob.glob('/usr/local/gfortran/lib/*.dylib'))
 
-#include_files.append(('LICENSE.txt','LICENSE.txt'))
-#include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
-#include_files.extend(include_entire_directory('licenses','licenses'))
+include_files.append(('LICENSE.txt','LICENSE.txt'))
+include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
+include_files.extend(include_entire_directory('licenses','licenses'))
 
 #zip_includes = include_entire_directory(os.path.normpath(os.path.join(basedir,"Lib\\site-packages\\OpenGL")),"OpenGL")
 #includes.append("zmq")
 #includes.append("zmq.utils.garbage")
 #includes.append("zmq.backend.cython")
      
-#zipinclude2 = []
-
-#build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'packages':packages,'includes':includes,'excludes':excludes,'icon':iconfile }
-build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'excludes':excludes}
+build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'packages':packages,'includes':includes,'excludes':excludes,'icon':iconfile }
 
 bdist_dmg_options = {}
 base = None
 
 setup_options = {}
-#setup_options['build_exe']=build_exe_options
-#setup_options['bdist_msi']=bdist_msi_options
 setup_options['bdist_dmg']=bdist_dmg_options
 setup_options['build_exe']=build_exe_options
-#base = None
-#if sys.platform == "win32":
-#    base = "Win32GUI"
 
 setup_arguments = {}
 setup_arguments['name'] = popupcad.program_name
