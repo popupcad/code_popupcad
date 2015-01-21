@@ -15,17 +15,6 @@ if not sys.platform == 'darwin':
     if speedups.available:
         speedups.enable()
 
-def cx_freeze_dependencies():
-    from scipy.sparse.csgraph import _validation
-    from scipy.special import _ufuncs_cxx
-#    from matplotlib.backends import backend_tkagg #this one is for matplotlib
-    from scipy.integrate import vode
-    import scipy.integrate.vode
-    from scipy.integrate import lsoda
-    import scipy.integrate.lsoda
-    import OpenGL.platform.darwin
-    from OpenGL.platform import darwin
-
 import os
 
 from . import basic_functions

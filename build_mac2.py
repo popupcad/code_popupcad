@@ -38,19 +38,16 @@ packages.append('pypoly2tri')
 packages.append('popupcad_manufacturing_plugins')
 packages.append('popupcad_deprecated')
 
-#packages.append("scipy.integrate.vode")
-#packages.append("scipy.integrate.lsoda")
-#packages.append("scipy.sparse.csgraph._validation")
-#packages.append("OpenGL.platform.win32")
-#packages.append("sympy.assumptions.handlers")
-packages.append("numpy")
-packages.append("scipy")
+#packages.append("numpy")
+#packages.append("scipy")
+#packages.append('scipy.integrate.vode')
+#packages.append('scipy.integrate.lsoda')
+#packages.append('OpenGL.platform.darwin')
+packages.append('scipy.sparse.csgraph._validation')
+packages.append('scipy.special._ufuncs_cxx')
 packages.append('scipy.integrate.vode')
 packages.append('scipy.integrate.lsoda')
-#packages.append('scipy.sparse.csgraph._validation')
-#packages.append('sympy.assumptions.handlers')
-#packages.append('scipy.special._ufuncs')
-#packages.append('scipy.special._ufuncs_cxx')
+packages.append('OpenGL.platform.darwin')
 
 include_files = []
 
@@ -65,32 +62,15 @@ excludes = []
 toinclude = []
 zip_includes = []
 
-if sys.platform=="win32":
-    basedir = os.path.dirname(sys.executable)
-    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/shapely/geos_c.dll')),'geos_c.dll'))
-    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libifcoremd.dll')),'libifcoremd.dll'))
-    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libifcoremd.dll')),'libifcoremd.dll'))
-    include_files.append((os.path.normpath(os.path.join(basedir,'Lib/site-packages/numpy/core/libmmd.dll')),'libmmd.dll'))
-elif sys.platform == 'darwin':
-    import site
-    sites = site.getsitepackages()
-##    basedir = sites[0]
-##    userdir = '~/Documents'
-    packages.append('OpenGL.platform.darwin')
+import site
+sites = site.getsitepackages()
     
-    include_files.extend(glob.glob('/usr/local/Cellar/geos/3.4.2/lib/*.dylib'))
-#    zip_includes.append(('/usr/local/lib/python3.4/site-packages/scipy/.dylibs/libgcc_s.1.dylib','scipy/.dylibs/libgcc_s.1.dylib'))
-#    zip_includes.append(('/usr/local/lib/python3.4/site-packages/scipy/.dylibs/libgfortran.2.0.0.dylib','scipy/.dylibs/libgfortran.2.0.0.dylib'))
-#    include_files.extend(glob.glob('/usr/local/gfortran/lib/*.dylib'))
+include_files.extend(glob.glob('/usr/local/Cellar/geos/3.4.2/lib/*.dylib'))
 
 include_files.append(('LICENSE.txt','LICENSE.txt'))
 include_files.extend(include_entire_directory(popupcad.supportfiledir,'supportfiles'))
 include_files.extend(include_entire_directory('licenses','licenses'))
 
-#zip_includes = include_entire_directory(os.path.normpath(os.path.join(basedir,"Lib\\site-packages\\OpenGL")),"OpenGL")
-#includes.append("zmq")
-#includes.append("zmq.utils.garbage")
-#includes.append("zmq.backend.cython")
      
 build_exe_options = {"include_files":include_files,"zip_includes": zip_includes,'packages':packages,'includes':includes,'excludes':excludes,'icon':iconfile }
 
