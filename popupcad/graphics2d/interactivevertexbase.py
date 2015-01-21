@@ -7,7 +7,7 @@ Please see LICENSE.txt for full license.
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-import popupcad.graphics2d.modes as modes
+from . import modes
 from popupcad.graphics2d.graphicsitems import Common
 
 class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):

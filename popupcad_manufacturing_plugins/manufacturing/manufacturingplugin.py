@@ -7,16 +7,16 @@ Please see LICENSE.txt for full license.
 
 from popupcad.supportfiles import Icon
 from popupcad.filetypes.plugin import Plugin
-import popupcad_manufacturing_plugins.manufacturing.autoweb4 as autoweb4
-import popupcad_manufacturing_plugins.manufacturing.outersheet3 as outersheet3
-import popupcad_manufacturing_plugins.manufacturing.supportcandidate4 as supportcandidate4
-import popupcad_manufacturing_plugins.manufacturing.customsupport3 as customsupport3
-import popupcad_manufacturing_plugins.manufacturing.keepout3 as keepout3
-import popupcad_manufacturing_plugins.manufacturing.cutop2 as cutop2
-import popupcad_manufacturing_plugins.manufacturing.identifybodies2 as identifybodies2
-import popupcad_manufacturing_plugins.manufacturing.identifyrigidbodies2 as identifyrigidbodies2
-import popupcad_manufacturing_plugins.manufacturing.removability2 as removability2
-import popupcad_manufacturing_plugins.manufacturing.scrapoperation as scrapoperation
+from . import autoweb4
+from . import outersheet3
+from . import supportcandidate4
+from . import customsupport3
+from . import keepout3
+from . import cutop2
+from . import identifybodies2
+from . import identifyrigidbodies2
+from . import removability2
+from . import scrapoperation
 
 class ManufacturingPlugin(Plugin):
     def __init__(self, editor, design):
