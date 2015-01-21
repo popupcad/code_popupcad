@@ -4,10 +4,6 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from shapely import speedups
-if speedups.available:
-    speedups.enable()
-
 import sys
 
 if hasattr(sys, 'frozen'):
@@ -17,13 +13,11 @@ else:
     clear_compiled.clear_compiled()
     
 import PySide.QtGui as qg
-import PySide.QtCore as qc
+
 import popupcad
 import popupcad_deprecated
 popupcad.deprecated = popupcad_deprecated
 sys.modules['popupcad.deprecated'] = popupcad_deprecated
-import os
-from popupcad.filetypes.design import Design
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

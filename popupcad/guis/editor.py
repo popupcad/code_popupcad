@@ -15,7 +15,6 @@ import imp
 import popupcad
 
 from popupcad.filetypes.design import Design
-#from popupcad.filetypes.sketch import Sketch
 from popupcad.supportfiles import Icon
 
 class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
@@ -380,7 +379,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def exportLayerSVG(self):
-#        import os
         from popupcad.graphics2d.svg_support import OutputSelection
 
         win = OutputSelection()
@@ -404,7 +402,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             scene.renderprocess(basename,*win.acceptdata())
 
     def exportLayerSVG2(self):
-#        import os
         from popupcad.graphics2d.svg_support import OutputSelection
 
         win = OutputSelection()

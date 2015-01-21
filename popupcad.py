@@ -13,10 +13,8 @@ else:
     clear_compiled.clear_compiled()
     
 import PySide.QtGui as qg
-#import PySide.QtCore as qc
+
 import popupcad
-#import os
-#from popupcad.filetypes.design import Design
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

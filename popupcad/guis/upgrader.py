@@ -15,7 +15,6 @@ import imp
 import popupcad
 
 from popupcad.filetypes.design import Design
-from popupcad.filetypes.sketch import Sketch
 from popupcad.supportfiles import Icon
 
 class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
@@ -143,10 +142,12 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"&Open...",'kwargs':{'icon':Icon('open'),'shortcut':qg.QKeySequence.Open,'statusTip':"Open an existing file", 'triggered':self.open}})
         self.fileactions.append({'text':"&Save",'kwargs':{'icon':Icon('save'),'shortcut':qg.QKeySequence.Save,'statusTip':"Save the document to disk", 'triggered':self.save}})
         self.fileactions.append({'text':"Save &As...",'kwargs':{'icon':Icon('saveas'),'shortcut':qg.QKeySequence.SaveAs,'statusTip':"Save the document under a new name",'triggered':self.saveAs}})
+        self.fileactions.append({'text':"Upgrade",'kwargs':{'statusTip':"Upgrade the file",'triggered':self.upgrade}})
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
         self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
         self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})      
+        self.fileactions.append({'text':"Update...",'kwargs':{'triggered':self.download_installer}})      
 
         self.projectactions = []
         self.projectactions.append({'text':'&Rebuild','kwargs':{'icon':Icon('refresh'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_R,'triggered':self.reprocessoperations}})
@@ -193,15 +194,16 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.viewactions.append({'text':'3D Screenshot','kwargs':{'triggered':self.view_3d.screenshot}})
 
         self.operationactions = []        
-        self.operationactions.append({'text':'&SketchOp','kwargs':{'icon':Icon('polygons'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_S,'triggered':lambda:self.newoperation(popupcad.manufacturing.SimpleSketchOp)}})
-        self.operationactions.append({'text':'&Dilate/Erode','kwargs':{'icon':Icon('bufferop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_B,'triggered':lambda:self.newoperation(popupcad.manufacturing.bufferop2.BufferOperation2)}})
-        self.operationactions.append({'text':'&LayerOp','kwargs':{'icon':Icon('layerop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_L,'triggered':lambda:self.newoperation(popupcad.manufacturing.layerop.LayerOp)}})
-        self.operationactions.append({'text':'&LaminateOp','kwargs':{'icon':Icon('metaop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_M,'triggered':lambda:self.newoperation(popupcad.manufacturing.LaminateOperation)}})
+        self.operationactions.append({'text':'&SketchOp','kwargs':{'icon':Icon('polygons'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_S,'triggered':lambda:self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})
+        self.operationactions.append({'text':'&Dilate/Erode','kwargs':{'icon':Icon('bufferop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_B,'triggered':lambda:self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
+        self.operationactions.append({'text':'&LayerOp','kwargs':{'icon':Icon('layerop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_L,'triggered':lambda:self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
+        self.operationactions.append({'text':'&LaminateOp','kwargs':{'icon':Icon('metaop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_M,'triggered':lambda:self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)}})
         self.operationactions.append({'text':'Shift/Flip','kwargs':{'icon':Icon('shiftflip'),'triggered':lambda:self.newoperation(popupcad.manufacturing.shiftflip2.ShiftFlip2)}})
-        self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.LocateOperation2)}})
-        self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.placeop7.PlaceOperation7)}})
-        self.operationactions.append({'text':'Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup.Cleanup)}})
-        self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify.Simplify)}})
+        self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.locateoperation2.LocateOperation2)}})
+        self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
+        self.operationactions.append({'text':'Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)}})
+        self.operationactions.append({'text':'New Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup3.Cleanup3)}})
+        self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify2.Simplify2)}})
 #        self.operationactions.append({'text':'Joints','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.jointop.JointOp)}})
         self.operationactions.append({'text':'Flatten','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.flatten.Flatten)}})
 
@@ -257,6 +259,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         design = Design()
         design.define_layers(LayerDef(Carbon_0_90_0(),Pyralux(),Kapton(),Pyralux(),Carbon_0_90_0()))
         self.load_design(design)
+        self.view_2d.zoomToFit()        
+
 
     @loggable
     def open(self,filename=None):
@@ -268,6 +272,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             self.load_design(design)
             if self.act_autoreprocesstoggle.isChecked():
                 self.reprocessoperations()
+            self.view_2d.zoomToFit()        
+
 
     @loggable
     def save(self):
@@ -373,7 +379,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def exportLayerSVG(self):
-        import os
         from popupcad.graphics2d.svg_support import OutputSelection
 
         win = OutputSelection()
@@ -397,7 +402,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             scene.renderprocess(basename,*win.acceptdata())
 
     def exportLayerSVG2(self):
-        import os
         from popupcad.graphics2d.svg_support import OutputSelection
 
         win = OutputSelection()
@@ -470,6 +474,25 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.design.replace_op_refs((operation_ref,output_index),(newop.id,0))
         newop.operation_links['unary'].append((operation_ref,output_index))
         self.reprocessoperations()
+    def upgrade(self):
+        self.load_design(self.design.upgrade())
+        if self.act_autoreprocesstoggle.isChecked():
+            self.reprocessoperations()
+        self.view_2d.zoomToFit() 
+    def get_update_link(self):
+        import requests
+        r = requests.get('http://www.popupcad.org/downloads/current')
+        if r.status_code==requests.codes.ok:
+#            self.update_text = 'Update('+r.text+')'
+            update_link = 'http://www.popupcad.org/downloads/'+r.text
+        else:
+#            self.update_text = 'Visit popupCAD.com'
+            update_link = 'http://www.popupcad.org/download'
+        return update_link
+        
+    def download_installer(self):
+        qg.QDesktopServices.openUrl(self.get_update_link())
+
         
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

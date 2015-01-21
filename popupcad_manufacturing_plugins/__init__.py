@@ -10,7 +10,6 @@ from . import algorithms
 
 def initialize(editor, design):
     from popupcad.supportfiles import Icon
-    from popupcad.filetypes.plugin import Plugin
 
     scrap = []
     scrap.append({'text':'Sheet','kwargs':{'icon':Icon('outersheet'),'triggered':lambda:editor.newoperation(manufacturing.outersheet3.OuterSheet3)}})
