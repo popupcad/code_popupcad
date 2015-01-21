@@ -6,9 +6,8 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from .multivalueoperation2 import MultiValueOperation2
-from popupcad.filetypes.operation import Operation
-from .simplify2 import Simplify2
+from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.simplify2 import Simplify2
 
 class Simplify(MultiValueOperation2):
     name = 'Simplify'

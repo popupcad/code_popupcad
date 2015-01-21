@@ -297,7 +297,7 @@ class PlaceOperation7(Operation):
         return dialog
 
     def upgrade(self,*args,**kwargs):
-        from .placeop8 import PlaceOperation8
+        from popupcad.manufacturing.placeop8 import PlaceOperation8
         sketch_links = {'place':[self.sketchid]}
         design_links = {'subdesign':[self.subdesignid]}
 

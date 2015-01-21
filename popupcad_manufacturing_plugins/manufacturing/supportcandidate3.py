@@ -7,10 +7,9 @@ Please see LICENSE.txt for full license.
 
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
-from .. import algorithms
-from .supportcandidate4 import SupportCandidate4
+import popupcad_manufacturing_plugins.manufacturing.algorithms as algorithms
+from popupcad_manufacturing_plugins.manufacturing.supportcandidate4 import SupportCandidate4
 
 class SupportCandidate3(MultiValueOperation2):
     name = 'Support Candidate'
@@ -19,7 +18,6 @@ class SupportCandidate3(MultiValueOperation2):
     upgradeclass = SupportCandidate4
 
     def generate(self,design):
-#    def operate(self,design):
         import popupcad
         ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
 
@@ -35,12 +33,8 @@ class SupportCandidate3(MultiValueOperation2):
         support=algorithms.web.autosupport(ls1,keepout,design.return_layer_definition(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
         k2 = keepout.buffer(1e-5*popupcad.internal_argument_scaling)
         k3 = k2.difference(keepout)
-#        return support
         a = OperationOutput(support,'support',self)
         b = OperationOutput(keepout,'cut line',self)
         c = OperationOutput(k3,'cut area',self)
-#        d = OperationOutput(up_support ,'up_support',self)
-#        e = OperationOutput(down_support ,'down_support',self)
-#        self.output = [a,a,b,c,d,e]
         self.output = [a,a,b,c]                
 

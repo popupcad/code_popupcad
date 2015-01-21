@@ -7,9 +7,9 @@ Please see LICENSE.txt for full license.
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-from . import modes
-from .graphicsitems import Common
-from .interactivevertexbase import InteractiveVertexBase
+#import popupcad.graphics2d.modes as modes
+#from popupcad.graphics2d.graphicsitems import Common
+from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
 
 class InteractiveVertex(InteractiveVertexBase):
     radius = 10

@@ -6,10 +6,9 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
-from .. import algorithms
-from .autoweb4 import AutoWeb4
+import popupcad_manufacturing_plugins.manufacturing.algorithms as algorithms
+from popupcad_manufacturing_plugins.manufacturing.autoweb4 import AutoWeb4
 
 class AutoWeb3(MultiValueOperation2):
     name = 'Web'

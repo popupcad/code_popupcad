@@ -5,4 +5,4 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from .constraints import *
+from . import constraints

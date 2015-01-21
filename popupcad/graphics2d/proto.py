@@ -7,7 +7,7 @@ Please see LICENSE.txt for full license.
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-from .graphicsitems import Common,CommonShape
+from popupcad.graphics2d.graphicsitems import Common,CommonShape
 from popupcad.geometry.vertex import ShapeVertex
 from popupcad.filetypes.genericshapes import GenericPoly,GenericPolyline,GenericLine,GenericCircle,GenericTwoPointRect
 import popupcad

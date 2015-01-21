@@ -47,7 +47,7 @@ class Common(object):
 
 class CommonShape(object):
     def create_selectable_edge_loop(self):
-        from .interactiveedge import InteractiveEdge
+#        from popupcad.graphics2d.interactiveedge import InteractiveEdge
         from popupcad.geometry.line import ShapeLine
         self.selectableedges = []
         exterior = self.generic.exterior
@@ -56,7 +56,7 @@ class CommonShape(object):
             item = genericline.gen_interactive()
             self.selectableedges.append(item)  
     def create_selectable_edge_path(self):
-        from .interactiveedge import InteractiveEdge
+#        from popupcad.graphics2d.interactiveedge import InteractiveEdge
         from popupcad.geometry.line import ShapeLine
         self.selectableedges = []
         exterior = self.generic.exterior

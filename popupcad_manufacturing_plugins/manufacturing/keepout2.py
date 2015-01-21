@@ -6,8 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-#from popupcad.filetypes.operation import Operation
-from .keepout3 import KeepOut3
+from popupcad_manufacturing_plugins.manufacturing.keepout3 import KeepOut3
 
 class KeepOut2(MultiValueOperation2):
     name = 'KeepOut'

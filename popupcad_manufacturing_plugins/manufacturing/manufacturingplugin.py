@@ -5,29 +5,18 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-#import popupcad
 from popupcad.supportfiles import Icon
-#import PySide.QtCore as qc
-#import PySide.QtGui as qg
 from popupcad.filetypes.plugin import Plugin
-#from .autoweb3 import AutoWeb3
-from . import autoweb4
-#from .outersheet2 import OuterSheet2
-from . import outersheet3
-#from .supportcandidate3 import SupportCandidate3
-from . import supportcandidate4
-from .customsupport3 import CustomSupport3
-#from .keepout2 import KeepOut2
-from . import keepout3
-#from .toolclearance2 import ToolClearance2
-from . import cutop2
-#from .identifybodies import IdentifyBodies
-from . import identifybodies2
-#from .identifyrigidbodies import IdentifyRigidBodies
-from . import identifyrigidbodies2
-#from .removability import Removability
-from . import removability2
-from .scrapoperation import ScrapOperation
+import popupcad_manufacturing_plugins.manufacturing.autoweb4 as autoweb4
+import popupcad_manufacturing_plugins.manufacturing.outersheet3 as outersheet3
+import popupcad_manufacturing_plugins.manufacturing.supportcandidate4 as supportcandidate4
+import popupcad_manufacturing_plugins.manufacturing.customsupport3 as customsupport3
+import popupcad_manufacturing_plugins.manufacturing.keepout3 as keepout3
+import popupcad_manufacturing_plugins.manufacturing.cutop2 as cutop2
+import popupcad_manufacturing_plugins.manufacturing.identifybodies2 as identifybodies2
+import popupcad_manufacturing_plugins.manufacturing.identifyrigidbodies2 as identifyrigidbodies2
+import popupcad_manufacturing_plugins.manufacturing.removability2 as removability2
+import popupcad_manufacturing_plugins.manufacturing.scrapoperation as scrapoperation
 
 class ManufacturingPlugin(Plugin):
     def __init__(self, editor, design):
@@ -35,11 +24,11 @@ class ManufacturingPlugin(Plugin):
         scrap = []
         scrap.append({'text':'Sheet','kwargs':{'icon':Icon('outersheet'),'triggered':lambda:editor.newoperation(outersheet3.OuterSheet3)}})
         scrap.append({'text':'&Web','kwargs':{'icon':Icon('outerweb'),'triggered':lambda:editor.newoperation(autoweb4.AutoWeb4)}})
-        scrap.append({'text':'Scrap(Beta)','kwargs':{'icon':Icon('scrap'),'triggered':lambda:editor.newoperation(ScrapOperation)}})
+        scrap.append({'text':'Scrap(Beta)','kwargs':{'icon':Icon('scrap'),'triggered':lambda:editor.newoperation(scrapoperation.ScrapOperation)}})
 
         supportactions= []
         supportactions.append({'text':'S&upport','kwargs':{'icon':Icon('autosupport'),'triggered':lambda:editor.newoperation(supportcandidate4.SupportCandidate4)}})
-        supportactions.append({'text':'Custom Support','kwargs':{'icon':Icon('customsupport'),'triggered':lambda:editor.newoperation(CustomSupport3)}})
+        supportactions.append({'text':'Custom Support','kwargs':{'icon':Icon('customsupport'),'triggered':lambda:editor.newoperation(customsupport3.CustomSupport3)}})
         
         other = []
         other.append({'text':'Keep-outs','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:editor.newoperation(keepout3.KeepOut3)}})

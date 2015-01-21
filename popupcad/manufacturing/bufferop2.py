@@ -6,9 +6,9 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from .multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 from popupcad.filetypes.operation import Operation
-from .bufferop3 import BufferOperation3
+from popupcad.manufacturing.bufferop3 import BufferOperation3
 
 class BufferOperation2(MultiValueOperation2):
     name = 'Buffer'

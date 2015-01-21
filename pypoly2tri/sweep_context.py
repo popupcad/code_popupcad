@@ -5,8 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 '''
 
-from .shapes import Point, Edge, Triangle
-from .advancing_front import AdvancingFront,Node
+from pypoly2tri.shapes import Point, Edge, Triangle
+from pypoly2tri.advancing_front import AdvancingFront,Node
 
 
 class Basin(object):

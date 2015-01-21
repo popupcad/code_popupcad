@@ -5,8 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 '''
 
-from .sweep_context import SweepContext
-from .sweep import Sweep
+from pypoly2tri.sweep_context import SweepContext
+from pypoly2tri.sweep import Sweep
 
 class CDT(object):
     def __init__(self,polyline):

@@ -9,12 +9,10 @@ Please see LICENSE.txt for full license.
 import sys
 
 from shapely import speedups
-if sys.platform == 'win32':
+#necessary for homebrewed libgeos which does not work with speedups for some reason.
+if not sys.platform == 'darwin':
     if speedups.available:
         speedups.enable()
-elif sys.platform == 'darwin':
-    pass
-
 
 import os
 
@@ -83,8 +81,6 @@ subdirectories = [popupcad_home_path,designdir,importdir,exportdir,scriptdir,ske
 for path in subdirectories:
     if not os.path.isdir(path):
         os.mkdir(path)
-        
-
 
 from . import algorithms
 from . import constraints

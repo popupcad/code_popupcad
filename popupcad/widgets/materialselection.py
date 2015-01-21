@@ -4,7 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import popupcad.materials as materials
+import popupcad.materials.materials as materials
 from popupcad.filetypes.layerdef import LayerDef
 import PySide.QtGui as qg
 

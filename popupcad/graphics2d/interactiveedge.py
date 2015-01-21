@@ -6,11 +6,9 @@ Please see LICENSE.txt for full license.
 """
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-from popupcad.geometry.line import Line
-from . import modes
-from .graphicsitems import Common
-from math import atan2,pi,sin,cos
-import popupcad
+import popupcad.graphics2d.modes as modes
+from popupcad.graphics2d.graphicsitems import Common
+from math import atan2,pi
 
 class EdgeBase(Common):
     def __init__(self):

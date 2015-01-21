@@ -5,9 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
-import PySide.QtCore as qc
 
-from .dragndroplist import DraggableListWidget,DraggableItem,UserData
+from popupcad.widgets.dragndroplist import DraggableListWidget,UserData
 
 class CompositeMakeup(DraggableListWidget):
     def __init__(self):

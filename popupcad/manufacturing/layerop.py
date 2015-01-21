@@ -158,7 +158,7 @@ class LayerOp(Operation):
         return Dialog(design.prioroperations(self),design.return_layer_definition().layers,ii,operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,self.getoutputref())
 
     def upgrade(self,*args,**kwargs):
-        from .layerop2 import LayerOp2
+        from popupcad.manufacturing.layerop2 import LayerOp2
         operation_links = {'parent':[(self.operation_link1,self.outputref)]}
         new = LayerOp2(operation_links,self.function,self.unary_layer_links,self.pair_layer_links,self.output_layer_links)
         new.customname = self.customname

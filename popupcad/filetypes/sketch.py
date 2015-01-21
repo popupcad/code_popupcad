@@ -4,11 +4,9 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import os
-from popupcad.constraints import ConstraintSystem
+from popupcad.constraints.constraints import ConstraintSystem
 import popupcad
-#import PySide.QtGui as qg
-from .genericfile import popupCADFile
+from popupcad.filetypes.genericfile import popupCADFile
 
 class Sketch(popupCADFile):
     filetypes = {'sketch':'Sketch File'}

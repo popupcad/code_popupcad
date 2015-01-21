@@ -7,9 +7,9 @@ Please see LICENSE.txt for full license.
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-from .graphicsitems import Common
-from .graphicsitems import CommonShape
-from .modes import Modes
+from popupcad.graphics2d.graphicsitems import Common
+from popupcad.graphics2d.graphicsitems import CommonShape
+from popupcad.graphics2d.modes import Modes
 
 class StaticModes(Modes):
     modelist = []

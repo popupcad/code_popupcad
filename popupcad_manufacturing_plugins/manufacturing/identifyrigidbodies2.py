@@ -5,16 +5,12 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-import popupcad
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
-from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.layer import Layer
-#from popupcad.geometry.customshapely import ShapelyPolygon
 import shapely.geometry as sg
 import numpy
-from .identifybodies import find_minimum_xy,sort_lams
+from popupcad_manufacturing_plugins.manufacturing.identifybodies import find_minimum_xy,sort_lams
 
 class IdentifyRigidBodies2(MultiValueOperation3):
     name = 'Identify Rigid Bodies'

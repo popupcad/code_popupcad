@@ -5,13 +5,11 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-import popupcad
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
 import numpy
-from .identifybodies2 import IdentifyBodies2
+from popupcad_manufacturing_plugins.manufacturing.identifybodies2 import IdentifyBodies2
 
 def find_minimum_xy(geom):
     points = numpy.array(geom.exteriorpoints())

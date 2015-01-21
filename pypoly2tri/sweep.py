@@ -5,9 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 '''
 
-from .utils import *
-from .shapes import Triangle
-from .advancing_front import Node
+from pypoly2tri.utils import EPSILON,Orientation,Orient2d,InScanArea
+from pypoly2tri.shapes import Triangle
+from pypoly2tri.advancing_front import Node
 #ii=0
 class Sweep(object):
     def __init__(self):

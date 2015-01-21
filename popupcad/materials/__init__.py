@@ -5,5 +5,4 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from .materials import *
 from . import materials

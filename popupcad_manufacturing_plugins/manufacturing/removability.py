@@ -6,10 +6,9 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-from popupcad.filetypes.operation import Operation
 import popupcad.filetypes.enum as enum
-from .. import algorithms
-from .removability2 import Removability2
+import popupcad_manufacturing_plugins.algorithms as algorithms
+from popupcad_manufacturing_plugins.manufacturing.removability2 import Removability2
 
 class Removability(MultiValueOperation2):
     name = 'Removability KeepOut'
@@ -20,7 +19,6 @@ class Removability(MultiValueOperation2):
     upgradeclass = Removability2
     
     def operate(self,design):
-        import popupcad
         ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
 
         if self.keepout_type == self.keepout_types.one_way_up:

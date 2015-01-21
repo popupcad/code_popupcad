@@ -10,7 +10,7 @@ import PySide.QtGui as qg
 import math
 import numpy
 
-from .graphicsitems import Common
+from popupcad.graphics2d.graphicsitems import Common
 
 def calctransform(x1,x2,q1,q2,scale_x,scale_y):
     

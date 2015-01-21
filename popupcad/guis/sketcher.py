@@ -16,7 +16,7 @@ from popupcad.graphics2d.static import Static,StaticLine
 from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,ProtoRect2Point
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
-import popupcad.constraints as constraints
+import popupcad.constraints.constraints as constraints
 from popupcad.filetypes.sketch import Sketch
 from popupcad.widgets.listeditor import ListEditor,ListSelector
 from popupcad.supportfiles import Icon

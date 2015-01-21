@@ -6,9 +6,8 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-from .multivalueoperation2 import MultiValueOperation2
-from .cleanup2 import Cleanup2
-from popupcad.filetypes.operation import Operation
+from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
+from popupcad.manufacturing.cleanup2 import Cleanup2
 
 class Cleanup(MultiValueOperation2):
     name = 'Cleanup'
