@@ -4,7 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from popupcad.constraints.constraints import SymbolicLine
+from dev_tools.constraints import SymbolicLine
 
 class Line(object):
     def __init__(self,v1,v2):

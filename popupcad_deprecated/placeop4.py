@@ -16,7 +16,7 @@ from popupcad.filetypes.design import NoOperation
 from popupcad.filetypes.design import Design
 import popupcad.geometry.customshapely as customshapely
 
-from popupcad.filetypes.enum import enum
+from dev_tools.enum import enum
 from popupcad.algorithms.points import calctransformfrom2lines    
 from popupcad.filetypes.sketch import Sketch
 

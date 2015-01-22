@@ -5,10 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad
-from popupcad.filetypes.genericfile import GenericFile,popupCADFile
-import popupcad.algorithms.acyclicdirectedgraph
-import os 
-import PySide.QtCore as qc
+from popupcad.filetypes.popupcad_file import popupCADFile
+from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph
 import PySide.QtGui as qg
 
 class NoOperation(Exception):
@@ -18,7 +16,7 @@ class NoOperation(Exception):
 class Design(popupCADFile):
     filetypes = {'cad':'CAD Design'}
     defaultfiletype = 'cad'
-    filters,filterstring,selectedfilter = GenericFile.buildfilters(filetypes,defaultfiletype)
+    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
     @classmethod
     def lastdir(cls):
@@ -197,7 +195,7 @@ class Design(popupCADFile):
             for parentref in child.parentrefs():
                 parent = self.op_from_ref(parentref)
                 connections.append((parent,child))
-        network = popupcad.algorithms.acyclicdirectedgraph.AcyclicDirectedGraph(nodes,connections)
+        network = AcyclicDirectedGraph(nodes,connections)
         return network
 
     def cleanup_subdesigns(self):

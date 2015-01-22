@@ -7,7 +7,7 @@ Please see LICENSE.txt for full license.
 
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operation import Operation
-import popupcad.filetypes.enum as enum
+import dev_tools.enum as enum
 from .. import algorithms
 
 class Removability2(MultiValueOperation3):

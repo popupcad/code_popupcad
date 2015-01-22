@@ -8,12 +8,11 @@ Please see LICENSE.txt for full license.
 from popupcad.geometry import customshapely
 from popupcad.geometry.vertex import ShapeVertex
 
-import shapely.geometry
 import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-from popupcad.filetypes.enum import enum
-from popupcad.filetypes.genericfile import popupCADFile
+from dev_tools.enum import enum
+from popupcad.filetypes.popupcad_file import popupCADFile
 import popupcad
 
 class ShapeInvalid(Exception):
@@ -131,7 +130,7 @@ class GenericShapeBase(popupCADFile):
         return path
 
     def properties(self):
-        from popupcad.widgets.propertyeditor import PropertyEditor
+        from dev_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
         
     def __init__(self,exterior,interiors,construction = False,test_shapely = False):

@@ -83,8 +83,9 @@ for path in subdirectories:
     if not os.path.isdir(path):
         os.mkdir(path)
 
+from . import dev_tools_migration
 from . import algorithms
-from . import constraints
+#from . import constraints
 from . import filetypes
 from popupcad.filetypes.programsettings import ProgramSettings
 try:

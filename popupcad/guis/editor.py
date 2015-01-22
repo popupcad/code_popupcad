@@ -311,7 +311,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def editlaminate(self):
-        from popupcad.widgets.propertyeditor import PropertyEditor
+        from dev_tools.propertyeditor import PropertyEditor
         dialog = self.builddialog(PropertyEditor(self.design.return_layer_definition().layers))
         dialog.exec_()
         self.design.return_layer_definition().refreshzvalues()
@@ -443,7 +443,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             return False
         return True            
     def preferences(self):
-        pe = popupcad.widgets.propertyeditor.PropertyEditor(popupcad.settings)
+        pe = dev_tools.propertyeditor.PropertyEditor(popupcad.settings)
         pe.show()
 
     def replace(self):

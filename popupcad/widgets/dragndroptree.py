@@ -8,7 +8,7 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.userdata import UserData
-from popupcad.algorithms.acyclicdirectedgraph import AcyclicDirectedGraph,Node
+from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph,Node
 
 def debugprint(*args,**kwargs):
     pass

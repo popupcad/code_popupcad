@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-import popupcad.filetypes.enum as enum
+import dev_tools.enum as enum
 import popupcad_manufacturing_plugins.algorithms as algorithms
 from popupcad_manufacturing_plugins.manufacturing.removability2 import Removability2
 

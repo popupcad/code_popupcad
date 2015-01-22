@@ -6,9 +6,8 @@ Please see LICENSE.txt for full license.
 """
    
 import numpy
-import sympy
     
-from popupcad.constraints.constraints import SymbolicVertex
+from dev_tools.constraints import SymbolicVertex
 
 class BaseVertex(object):
     editable = ['pos','static','construction']
@@ -116,7 +115,7 @@ class BaseVertex(object):
             self.setpos((self.getpos()[0],value))
             
     def properties(self):
-        from popupcad.widgets.propertyeditor import PropertyEditor
+        from dev_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
         
     def copy(self,identical = True):

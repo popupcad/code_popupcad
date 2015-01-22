@@ -5,12 +5,12 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.filetypes.genericfile import GenericFile,popupCADFile
+from popupcad.filetypes.popupcad_file import popupCADFile
 
 class ProgramSettings(popupCADFile):
     filetypes = {'popupcad':'CAD Design'}
     defaultfiletype = 'popupcad'
-    filters,filterstring,selectedfilter = GenericFile.buildfilters(filetypes,defaultfiletype)
+    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
 #    display = ['*']
     editable = ['*']

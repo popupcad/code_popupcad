@@ -8,10 +8,8 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 
 import popupcad
-#import popupcad.constraints.constraints as constraints
 from popupcad.graphics2d.static import Static
 from popupcad.graphics2d.svg_support import SVGOutputSupport
-#from popupcad.graphics2d.modes import Modes
 from popupcad.geometry.vertex import DrawnPoint,BaseVertex
 from popupcad.graphics2d.interactivevertex import DrawingPoint,StaticDrawingPoint
 from popupcad.graphics2d.text import TextParent,GenericText

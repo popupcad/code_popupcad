@@ -11,7 +11,7 @@ from popupcad.filetypes.operationoutput import OperationOutput
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-import popupcad.filetypes.enum as enum
+import dev_tools.enum as enum
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildItem
 
 class Dialog(qg.QDialog):

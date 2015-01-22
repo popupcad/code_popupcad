@@ -11,7 +11,7 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 
 from popupcad.filetypes.validators import StrictDoubleValidator
-from popupcad.filetypes.enum import enum
+from dev_tools.enum import enum
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 

@@ -12,7 +12,10 @@ import numpy
 import PySide.QtGui as qg
 import scipy.optimize as opt
 import popupcad
-from popupcad.filetypes.enum import enum
+from dev_tools.enum import enum
+
+internal_argument_scaling = 1
+
 
 class Variable(sympy.Symbol):
     pass
@@ -368,7 +371,7 @@ class Constraint(object):
         return []
 
     def properties(self):
-        from popupcad.widgets.propertyeditor import PropertyEditor
+        from dev_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
 
     def cleanup(self,objects):
@@ -502,7 +505,7 @@ class distance(ValueConstraint,ExactlyTwoPoints):
         else:
             v1 = p1 - p0
             l1 = v1.dot(v1)**.5
-            eq = l1 - self.value*popupcad.internal_argument_scaling
+            eq = l1 - self.value*internal_argument_scaling
             return [eq]  
 
 class coincident(Constraint,AtLeastTwoPoints):
@@ -522,9 +525,9 @@ class distancex(ValueConstraint,AtLeastOnePoint):
     def equations(self):
         vertices = self.getallvertices()
         if len(vertices)==1:
-            eq = vertices[0].p()[0]-self.value*popupcad.internal_argument_scaling
+            eq = vertices[0].p()[0]-self.value*internal_argument_scaling
         else:
-            eq = ((vertices[1].p()[0]-vertices[0].p()[0])**2)**.5-((self.value*popupcad.internal_argument_scaling)**2)**.5
+            eq = ((vertices[1].p()[0]-vertices[0].p()[0])**2)**.5-((self.value*internal_argument_scaling)**2)**.5
         return [eq]
 
 class distancey(ValueConstraint,AtLeastOnePoint):
@@ -536,9 +539,9 @@ class distancey(ValueConstraint,AtLeastOnePoint):
         else:
             temp = -1.
         if len(vertices)==1:
-            eq = vertices[0].p()[1]-self.value*temp*popupcad.internal_argument_scaling
+            eq = vertices[0].p()[1]-self.value*temp*internal_argument_scaling
         else:
-            eq = ((vertices[1].p()[1]-vertices[0].p()[1])**2)**.5-((self.value*popupcad.internal_argument_scaling)**2)**.5
+            eq = ((vertices[1].p()[1]-vertices[0].p()[1])**2)**.5-((self.value*internal_argument_scaling)**2)**.5
         return [eq]
 
 class angle(ValueConstraint,AtLeastOneLine):
@@ -617,7 +620,7 @@ class PointLine(ValueConstraint,ExactlyOnePointOneLine):
         else:
             v1 = p1 - p0
             l1 = v1.dot(v1)**.5
-            eq = l1 - self.value*popupcad.internal_argument_scaling
+            eq = l1 - self.value*internal_argument_scaling
             return [eq]  
         return [x]
 

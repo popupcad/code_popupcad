@@ -11,7 +11,7 @@ from popupcad.filetypes.genericshapebase import GenericShapeBase
 from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid
 import popupcad
 import PySide.QtGui as qg
-from popupcad.filetypes.genericfile import popupCADFile
+from popupcad.filetypes.popupcad_file import popupCADFile
 import shapely.geometry as sg
 import popupcad.geometry.customshapely as cs
 

@@ -4,9 +4,9 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from popupcad.constraints.constraints import ConstraintSystem
+from dev_tools.constraints import ConstraintSystem
 import popupcad
-from popupcad.filetypes.genericfile import popupCADFile
+from popupcad.filetypes.popupcad_file import popupCADFile
 
 class Sketch(popupCADFile):
     filetypes = {'sketch':'Sketch File'}

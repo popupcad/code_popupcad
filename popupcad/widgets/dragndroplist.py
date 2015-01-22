@@ -9,7 +9,7 @@ import PySide.QtGui as qg
 import sys
 
 from popupcad.filetypes.userdata import UserData
-from popupcad.algorithms.acyclicdirectedgraph import AcyclicDirectedGraph,Node
+from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph,Node
 
 
 class DraggableItem(qg.QListWidgetItem):

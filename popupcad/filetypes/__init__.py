@@ -7,8 +7,7 @@ Please see LICENSE.txt for full license.
 
 from . import classtools
 from . import design
-from . import enum
-from . import genericfile
+from . import popupcad_file
 from . import genericshapebase
 from . import genericshapes
 from . import laminate

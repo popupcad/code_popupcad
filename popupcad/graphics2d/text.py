@@ -94,7 +94,7 @@ class GenericText(object):
             obj1 = objs[0]
         return obj1
     def properties(self):
-        from popupcad.widgets.propertyeditor import PropertyEditor
+        from dev_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
         
 

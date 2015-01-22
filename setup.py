@@ -11,7 +11,7 @@ import popupcad
 packages = []
 packages.append('popupcad')
 packages.append('popupcad.algorithms')
-packages.append('popupcad.constraints')
+#packages.append('popupcad.constraints')
 packages.append('popupcad.deprecated')
 packages.append('popupcad.filetypes')
 packages.append('popupcad.geometry')
@@ -24,6 +24,7 @@ packages.append('popupcad.supportfiles')
 packages.append('popupcad.widgets')
 
 packages.append('pypoly2tri')
+packages.append('dev_tools')
 packages.append('popupcad_manufacturing_plugins')
 packages.append('popupcad_deprecated')
 

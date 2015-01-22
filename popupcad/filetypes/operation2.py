@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.algorithms.acyclicdirectedgraph import Node
+from dev_tools.acyclicdirectedgraph import Node
 from popupcad.filetypes.userdata import UserData
 from popupcad.filetypes.classtools import ClassTools
 from popupcad.filetypes.operationoutput import OperationOutput
