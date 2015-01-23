@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 #import PySide.QtCore as qc
 import PySide.QtGui as qg
@@ -64,29 +64,28 @@ class Dialog(qg.QDialog):
 #        self.le1.setCurrentIndex(index)
 
     def acceptdata(self):
-#        ii = self.le1.currentIndex()
-        ref,ii = self.le1.currentRefs()[0]
-        return ref,self.sb.value(),self.flip.isChecked(),self.rotate.isChecked(),ii
+        operation_links = {'parent':[self.le1.currentRefs()[0]]}
+        return operation_links,self.sb.value(),self.flip.isChecked(),self.rotate.isChecked()
 
-class ShiftFlip2(Operation):
+class ShiftFlip3(Operation2):
     name = 'Shift/Flip'
 
-    attr_init = 'operation_link1','shift','flip','rotate','outputref'
-    attr_init_k = tuple()
-    attr_copy = 'id','customname'
-    
     def __init__(self,*args):
-        super(ShiftFlip2,self).__init__()
+        super(ShiftFlip3,self).__init__()
         self.editdata(*args)
         self.id = id(self)
         
-    def editdata(self,operation_link1,shift,flip,rotate,outputref):
-        super(ShiftFlip2,self).editdata()
-        self.operation_link1 = operation_link1
+    def editdata(self,operation_links,shift,flip,rotate):
+        super(ShiftFlip3,self).editdata(operation_links,{},{})
         self.shift = shift
         self.flip = flip
         self.rotate = rotate
-        self.outputref = outputref
+
+    def copy(self,*args,**kwargs):
+        new = type(self)(self.operation_links,self.shift,self.flip,self.rotate)
+        new.customname = self.customname
+        new.id = self.id
+        return new
 
     def f_rotate(self):
         try:
@@ -95,19 +94,18 @@ class ShiftFlip2(Operation):
             self.rotate = False
             return self.rotate
     
-    def parentrefs(self):
-        return [self.operation_link1]
-
     @classmethod
     def buildnewdialog(cls,design,currentop):
         return Dialog(design.operations,currentop)
 
     def buildeditdialog(self,design):
-        selectedindex = design.operation_index(self.operation_link1)
-        return Dialog(design.prioroperations(self),selectedindex,self.shift,self.flip,self.f_rotate(),self.outputref)
+        operation_link1,outputref = self.operation_links['parent'][0]
+        selectedindex = design.operation_index(operation_link1)
+        return Dialog(design.prioroperations(self),selectedindex,self.shift,self.flip,self.f_rotate(),outputref)
 
     def operate(self,design):
-        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
+        operation_link1,outputref = self.operation_links['parent'][0]
+        ls1 = design.op_from_ref(operation_link1).output[outputref].csg
         lsout = Laminate(ls1.layerdef)
         layers = ls1.layerdef.layers
         step = 1
@@ -132,11 +130,4 @@ class ShiftFlip2(Operation):
             for layerout,layerin in zip(layers[outshift:],layers[::step][inshift:]):
                 lsout.replacelayergeoms(layerout,ls1.layer_sequence[layerin].geoms)
         return lsout
-    def upgrade(self,*args,**kwargs):
-        from popupcad.manufacturing.shiftflip3 import ShiftFlip3
-        operation_links = {'parent':[(self.operation_link1,self.outputref)]}
-        new = ShiftFlip3(operation_links,self.shift,self.flip,self.rotate)
-        new.customname = self.customname
-        new.id = self.id
-        return new
         
