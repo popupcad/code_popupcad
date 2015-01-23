@@ -16,6 +16,7 @@ from . import simplesketchoperation
 from . import layerop
 from . import layerop2
 from . import locateoperation2
+from . import locateoperation3
 from . import placeop7
 from . import placeop8
 from . import shiftflip2

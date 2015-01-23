@@ -5,19 +5,10 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
-import shapely.ops as ops
-import popupcad
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.layer import Layer
-from popupcad.filetypes.sketch import Sketch
-import popupcad.widgets
-from popupcad.filetypes.operation import Operation
-from popupcad.filetypes.design import NoOperation
+from popupcad.filetypes.operation2 import Operation2
 import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.listmanager import SketchListManager
-from popupcad.widgets.dragndroptree import DraggableTreeWidget
-from popupcad.manufacturing.nulloperation import NullOp
-
 
 class Dialog(qg.QDialog):
     def __init__(self,cls,design,sketch = None):
@@ -52,28 +43,24 @@ class Dialog(qg.QDialog):
             return None
 
     def acceptdata(self):
-        sketchid =  self.sketch().id
-        return sketchid,
+        sketch_links = {'sketch':[self.sketch().id]}
+        return sketch_links,
 
-class LocateOperation2(Operation):
+class LocateOperation3(Operation2):
     name = 'Locate Operation'
 
     def copy(self):
-        new = type(self)(self.sketchid)
+        new = type(self)(self.sketch_links)
         new.id = self.id
         return new
 
     def __init__(self,*args):
-        super(LocateOperation2,self).__init__()
+        super(LocateOperation3,self).__init__()
         self.editdata(*args)
         self.id = id(self)
         
-    def editdata(self,sketchid):        
-        super(LocateOperation2,self).editdata()
-        self.sketchid = sketchid
-
-    def sketchrefs(self):
-        return [self.sketchid]
+    def editdata(self,sketch_links):        
+        super(LocateOperation3,self).editdata({},sketch_links,{})
 
     @classmethod
     def buildnewdialog(cls,design,currentop):
@@ -81,12 +68,14 @@ class LocateOperation2(Operation):
         return dialog
         
     def buildeditdialog(self,design):
-        sketch = design.sketches[self.sketchid]
+        sketchid = self.sketch_links['sketch'][0]
+        sketch = design.sketches[sketchid]
         dialog = Dialog(self,design,sketch)
         return dialog
 
     def operate(self,design):
-        sketch = design.sketches[self.sketchid]
+        sketchid = self.sketch_links['sketch'][0]
+        sketch = design.sketches[sketchid]
         operationgeom = customshapely.unary_union_safe([item.outputshapely() for item in sketch.operationgeometry])
         lsout = Laminate(design.return_layer_definition())
         for layer in design.return_layer_definition().layers:
@@ -94,11 +83,6 @@ class LocateOperation2(Operation):
         return lsout
 
     def locationgeometry(self):
-        return self.sketchid
+        sketchid = self.sketch_links['sketch'][0]
+        return sketchid
 
-    def upgrade(self,*args,**kwargs):
-        from popupcad.manufacturing.locateoperation3 import LocateOperation3
-        sketch_links = {'sketch':[self.sketchid]}
-        new = LocateOperation3(sketch_links)
-        new.id = self.id
-        return new
