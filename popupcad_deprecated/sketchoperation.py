@@ -128,4 +128,8 @@ class SketchOperation(Operation):
         self.editdata(sketch.id,ref,layer_links,function,jj)
         editedsignal.emit(self)
     def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+        from popupcad.manufacturing.sketchoperation2 import SketchOperation2
+        new = SketchOperation2(self.sketchid,self.operation_link1,self.layer_links,self.function,self.outputref)
+        new.id = self.id
+        new.customname = self.customname
+        return new

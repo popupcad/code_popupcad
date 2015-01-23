@@ -170,3 +170,13 @@ class SketchOperation2(Operation):
             selectedindex = None
         dialog = Dialog(self,design,design.prioroperations(self),selectedindex,self.outputref,self.layer_links,sketch,operation_type_index)
         return dialog
+    def upgrade(self,*args,**kwargs):
+        from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
+        if self.operation_link1==None and self.function=='union':
+            sketch_links = {'sketch':[self.sketchid]}
+            new = SimpleSketchOp(sketch_links,self.layer_links)
+            new.id = self.id
+            new.customname = self.customname
+            return new
+        else:
+            return super(SketchOperation2,self).upgrade(*args,**kwargs)

@@ -129,7 +129,45 @@ class Design(popupCADFile):
         for key,value in self.subdesigns.items():
             new.subdesigns[key]=value.upgrade(identical = True)
         self.copy_file_params(new,identical)
+        new.upgrade_higher_level()
         return new    
+
+    def upgrade_higher_level(self):
+        from popupcad.manufacturing.sketchoperation2 import SketchOperation2
+        from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
+        from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
+        newoperations = []        
+        ops_to_remove = []
+        replacements = []
+        for op0 in self.operations:
+            if isinstance(op0,SketchOperation2) and op0.operation_link1!=None:
+                sketch_links = {'sketch':[op0.sketchid]}
+                op1 = SimpleSketchOp(sketch_links,op0.layer_links)
+                a = (op0.operation_link1,op0.outputref)
+                b = (op1.id,0)
+                if op0.function in LaminateOperation2.unaryoperationtypes:
+                    unary_links = [a,b]
+                    binary_links = []
+                else:
+                    unary_links = [a]
+                    binary_links = [b]
+                operation_links = {'unary':unary_links,'binary':binary_links}
+                op2 = LaminateOperation2(operation_links,op0.function)
+                newoperations.append(op0)
+                newoperations.append(op1)
+                newoperations.append(op2)
+                replacements.append(((op0.id,0),(op2.id,0)))
+                ops_to_remove.append(op0)
+            else:
+                newoperations.append(op0)
+
+        self.operations.clear()
+        self.operations.extend(newoperations)
+
+        for old,new in replacements:
+            self.replace_op_refs(old,new)
+        for op in ops_to_remove:
+            self.operations.pop(self.operations.index(op))
 
     def addoperation(self,operation):
         if not not self.operations:
