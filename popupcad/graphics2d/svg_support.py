@@ -165,16 +165,21 @@ def svg_to_dxf_files(filenames,xshift=0,yshift=0):
     inkscape_path = popupcad.settings.inkscape_path
     pstoedit_path = popupcad.settings.pstoedit_path
 
-    export_string_1 = '''"{0}"'''.format(inkscape_path) + ''' --export-area-page -P {1} "{0}"'''
-    export_string_2 = '''"{0}" -xshift {1} -yshift {2} -dt -f '''.format(pstoedit_path,xshift*72/25.4,yshift*72/25.4)+'''"dxf:-polyaslines -mm" {1} "{0}"'''
+    export_string_1 = '''"{0}"'''.format(inkscape_path) + ''' --export-area-page -P "{1}" "{0}"'''
+    export_string_2 = '''"{0}" -xshift {1} -yshift {2} -dt -f '''.format(pstoedit_path,xshift*72/25.4,yshift*72/25.4)+'''"dxf:-polyaslines -mm" "{1}" "{0}"'''
     for input_file in filenames:
         dirname = os.path.dirname(input_file)
         tempfilename = os.path.join(dirname,'temp.ps')
         print(input_file)
         output_file = input_file.replace('.svg','.dxf')
     
-        run1=subprocess.call(export_string_1.format(input_file,tempfilename))
-        run2=subprocess.call(export_string_2.format(output_file,tempfilename))
+        run1=subprocess.Popen(export_string_1.format(input_file,tempfilename),stdout = subprocess.PIPE,stderr = subprocess.PIPE)
+        out1,err1 = run1.communicate()
+        run2=subprocess.Popen(export_string_2.format(output_file,tempfilename),stdout = subprocess.PIPE,stderr = subprocess.PIPE)
+        out2,err2 = run2.communicate()
+#        m = qg.QMessageBox(qg.QMessageBox.Icon.Information,'Convert Output',(out1+err1+out2+err2).decode())        
+#        m.exec_()
+        
     os.remove(tempfilename)
         
 if __name__=='__main__':
