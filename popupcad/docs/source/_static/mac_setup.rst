@@ -1,35 +1,41 @@
 Mac Setup
 ================
-#. disable Mac security for apps.
+#. (optional?)disable Mac security for apps.
  #. open settings
  #. go to "security and privacy", then select the "general" tab
  #. click the lock and supply your password, if needed
  #. on the "Allow apps downloaded from" radio buttons, select "anywhere"
-#. Download and install packages
- * `<python https://www.python.org/>`_
- * `pip <http://pip.readthedocs.org/en/latest/installing.html#install-pip>`_
-  * don't forget to use sudo
- * `Qt4.8 for Mac Opensource <http://qt-project.org/downloads>`_
- * `pyside binaries <http://qt-project.org/wiki/PySide_Binaries_MacOSX>`_
- * `gfortran binaries <https://gcc.gnu.org/wiki/GFortranBinaries#MacOS>`_
- * `cmake <http://www.cmake.org/cmake/resources/software.html>`_
- * `geos <http://trac.osgeo.org/geos/>`_
-  #. unzip the source file
-  #. from the terminal::
-  
-      cd DOWNLOAD_DIRECTORY/geos-3.x.x
-      ./configure
-      sudo make install
+#. download and install X-Code from the app store(https://developer.apple.com/xcode/)
+#. run this...::
 
-#. add the installed version of python to your path::
+    echo Enter your first name and press [ENTER]:
+    read FirstName
+    echo Enter your last name and press [ENTER]:
+    read LastName
+    echo Enter your email and press [ENTER]:
+    read EmailAddress
 
-     echo 'export PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"' >> .bash_profile
-#. install some python modules from pip::
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-     pip install --upgrade numpy scipy sympy pyqtgraph cx_freeze sphinx spyder shapely pyopengl pyyaml 
+    echo export PATH=/usr/local/bin:\$PATH >> ~/.bash_profile
+    echo export RESOURCEPATH=\$RESOURCEPATH >> ~/.bash_profile
+    source ~/.bash_profile
 
-#. :doc:`popupcad_git_setup`
-#. from the terminal, run spyder::
+    brew install gcc
+    brew install geos
+    brew install python3
+    brew install pyside --with-python3
 
-     spyder
- * navigate to popupcad.py and run to enable debugging
+    pip3 install cx_freeze numpy pip pyopengl pyqtgraph pyyaml scipy setuptools shapely spyder sympy
+
+    git config --global user.name "$LastName, $FirstName"
+    git config --global user.email "$EmailAddress"
+    cd ~/
+    git clone https://github.com/danaukes/popupcad.git
+    cd ~/popupcad/
+    git checkout master
+    git pull
+
+    echo "export PYTHONPATH=\$PYTHONPATH:~/popupcad" >> ~/.bash_profile
+    source ~/.bash_profile
+    

@@ -1,4 +1,4 @@
-===============
+ï»¿===============
 Software Layout
 ===============
 
@@ -124,10 +124,10 @@ Creating new geometry begins by selecting the geometry type from the toolbar abo
 Constraints
 ^^^^^^^^^^^
 
-A variety of constraints can be added to points or line segments, allowing them to be further defined.  Constraint mode is enabled by selecting “constraints on” which toggles all active vertices and line segments.  Clicking on one or more points or line segments with the ctrl key pressed allows the user to select multiple objects.  By clicking on the desired constraint, the constraint becomes added to the constraint list on the left.
-Some constraints are value constraints, such as the “distance”, point/line, “distance x” and “distance y” constraints.  If selected, a dialog box opens allowing the user to specify the desired constraint value.  Double clicking on the constraint in the constraint list also enables the user to edit the value later.
-Constraints are not continually evaluated, and if the user drags or moves an object or vertex, they must refresh the constraints manually.  This is accomplished by the “refresh constraints” button, which reevaluates all constraints which have been added to the sketch.
-Sketches can operate on previous geometry in a variety of ways.  They can be combined in the editor through a variety of laminate and layer operations, or they may operate directly on previous operations in the sketcher itself.  This is made possible by selecting a previous parent in the left dropbox, and by selecting the type of operation the sketcher is performing.  For example, in the example below, a user has chosen to merge the previous geometry (named Body(placement op), and colored reddish) with a new polygon they have drawn(in yellow).  By selecting “union” the two sets of polygons will merge as seen below.  The “union”, “intersect”, and “difference” operations are all available, each producing different output geometry.
+A variety of constraints can be added to points or line segments, allowing them to be further defined.  Constraint mode is enabled by selecting "constraints on" which toggles all active vertices and line segments.  Clicking on one or more points or line segments with the ctrl key pressed allows the user to select multiple objects.  By clicking on the desired constraint, the constraint becomes added to the constraint list on the left.
+Some constraints are value constraints, such as the "distance", point/line, "distance x" and "distance y" constraints.  If selected, a dialog box opens allowing the user to specify the desired constraint value.  Double clicking on the constraint in the constraint list also enables the user to edit the value later.
+Constraints are not continually evaluated, and if the user drags or moves an object or vertex, they must refresh the constraints manually.  This is accomplished by the "refresh constraints" button, which reevaluates all constraints which have been added to the sketch.
+Sketches can operate on previous geometry in a variety of ways.  They can be combined in the editor through a variety of laminate and layer operations, or they may operate directly on previous operations in the sketcher itself.  This is made possible by selecting a previous parent in the left dropbox, and by selecting the type of operation the sketcher is performing.  For example, in the example below, a user has chosen to merge the previous geometry (named Body(placement op), and colored reddish) with a new polygon they have drawn(in yellow).  By selecting "union" the two sets of polygons will merge as seen below.  The "union", "intersect", and "difference" operations are all available, each producing different output geometry.
 The layer window seen in the sketcher does not serve to alter which layers are visible in the sketch.  In this case, it is used to designate how sketch geometry is copied to each layer in the laminate.  If all layers are selected, for example, they each get an instance of the resulting sketch operation in each layer.  If only one is selected, the resulting operation will only be applied to the one layer, giving the user a high level of control in combining geometric operations.
 
 .. image:: overview_images/sketch_operation.*
@@ -143,7 +143,7 @@ Operations
 
 For a more detailed discussion of the basic operations available in popupCAD, please see:
 
-Aukes, D.M, Goldberg, B., Cutkosky, M.R., and Wood, R.J., “An Analytic Framework for Developing Inherently-Manufacturable Pop-up Laminate Devices”.
+Aukes, D.M, Goldberg, B., Cutkosky, M.R., and Wood, R.J., "An Analytic Framework for Developing Inherently-Manufacturable Pop-up Laminate Devices".
 
 * Dilate / Erode: grow or shrink laminate geometry by a certain radius.  Applied to all layers in the laminate
 * Layer op: combines one or more layer geometries with a union/intersection/difference operation, and outputs the geometry to the specified layer
