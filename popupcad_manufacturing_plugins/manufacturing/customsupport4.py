@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
@@ -107,36 +107,32 @@ class Dialog(qg.QDialog):
         opid,outputref= self.device_index.currentRefs()[0]
         layer_links = [item.customdata.id for item in self.outputlayerselector.selectedItems()]
         
-        return opid,sketchid,layer_links,float(self.support_width.text()),float(self.support_out.text()),float(self.hole_radius.text()),float(self.cut_width.text()),outputref
+        operation_links = {'device':[(opid,outputref)]}
+        sketch_links = {'sketch':[sketchid]}
+        return operation_links,sketch_links,layer_links,float(self.support_width.text()),float(self.support_out.text()),float(self.hole_radius.text()),float(self.cut_width.text())
 
-class CustomSupport3(Operation):
+class CustomSupport4(Operation2):
     name = 'Custom Support'
     outputtypes = enum(device = 201,supports = 202,cuts = 203)    
     
     def __init__(self,*args):
-        super(CustomSupport3,self).__init__()
+        super(CustomSupport4,self).__init__()
         self.editdata(*args)
         self.id = id(self)
         
-    def editdata(self,device_link,sketch_link,layer_links,support_width,support_out,hole_radius,cut_width,deviceoutputref):
-        super(CustomSupport3,self).editdata()
-        self.device_link= device_link
-        self.sketch_link = sketch_link
+    def editdata(self,operation_links,sketch_links,layer_links,support_width,support_out,hole_radius,cut_width):
+        super(CustomSupport4,self).editdata(operation_links,sketch_links,{})
         self.layer_links = layer_links
         self.support_width= support_width
         self.support_out= support_out
         self.hole_radius= hole_radius
         self.cut_width= cut_width
-        self.deviceoutputref = deviceoutputref
 
     def copy(self):
-        new = type(self)(self.device_link,self.sketch_link,self.layer_links,self.support_width,self.support_out,self.hole_radius,self.cut_width,self.deviceoutputref)
+        new = type(self)(self.operation_links,self.sketch_links,self.layer_links,self.support_width,self.support_out,self.hole_radius,self.cut_width)
         new.id = self.id
         new.customname = self.customname
         return new
-
-    def parentrefs(self):
-        return [self.device_link]
 
     @classmethod
     def buildnewdialog(cls,design,currentoperation):
@@ -144,19 +140,23 @@ class CustomSupport3(Operation):
         return dialog
 
     def buildeditdialog(self,design):        
-        device_index= design.operation_index(self.device_link)
-        sketch = design.sketches[self.sketch_link]
-        dialog = Dialog(design,design.prioroperations(self),device_index,self.support_width,self.support_out,self.hole_radius,self.cut_width,self.deviceoutputref,sketch,self.layer_links)
+        devicelink,outputindex = self.operation_links['device'][0]
+        device_index = design.operation_index(devicelink)
+        sketch = design.sketches[self.sketch_links['sketch'][0]]
+        dialog = Dialog(design,design.prioroperations(self),device_index,self.support_width,self.support_out,self.hole_radius,self.cut_width,outputindex,sketch,self.layer_links)
         return dialog
 
     def generate(self,design):
-        operationgeom = design.sketches[self.sketch_link].output_csg()
+        devicelink,outputindex= self.operation_links['device'][0]
+        sketch = design.sketches[self.sketch_links['sketch'][0]]
+
+        operationgeom = sketch.output_csg()
         layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
         support = Laminate(design.return_layer_definition())
         for layer in layers:
             support.replacelayergeoms(layer,operationgeom)
         
-        device = design.op_from_ref(self.device_link).output[self.deviceoutputref].csg
+        device = design.op_from_ref(devicelink).output[outputindex].csg
         modified_device,supports,cuts = algorithms.modify_device.modify_device(device,support,self.support_width*popupcad.internal_argument_scaling,self.support_out*popupcad.internal_argument_scaling,self.hole_radius*popupcad.internal_argument_scaling,self.cut_width*popupcad.internal_argument_scaling)
         s = OperationOutput(supports,'supports',self)
         c = OperationOutput(cuts,'cuts',self)
@@ -164,12 +164,4 @@ class CustomSupport3(Operation):
         self.output = [d,s,c]
 
     def upgrade(self,*args,**kwargs):
-        from popupcad_manufacturing_plugins.manufacturing.customsupport4 import CustomSupport4
-        
-        operation_links = {'device':[(self.device_link,self.deviceoutputref)]}
-        sketch_links = {'sketch':[self.sketch_link]}
-
-        new = CustomSupport4(operation_links,sketch_links,self.layer_links,self.support_width,self.support_out,self.hole_radius,self.cut_width)
-        new.id = self.id
-        new.customname = self.customname
-        return new
+        return self.copy(*args,**kwargs)

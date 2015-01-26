@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 from popupcad.filetypes.operationoutput import OperationOutput
 
 import PySide.QtCore as qc
@@ -81,54 +81,60 @@ class Dialog(qg.QDialog):
         for b in self.radiobuttons:
             if b.isChecked():
                 option = b.uservalue
-        operationlinks = [self.le1.currentRefs()[0],self.le3.currentRefs()[0]]
+
+        operation_links = {'sheet':self.le1.currentRefs(),'device':self.le3.currentRefs()}
         values = [float(valueedit.text()) for valueedit in self.valueboxes]
-        return operationlinks,values,option
+        return operation_links,values,option
         
-class ScrapOperation(Operation):
+class ScrapOperation2(Operation2):
     name = 'Scrap Operation'
     valuenames = ['device buffer']
     show = ['keepout']
     defaults = [1.]
-
-    keepout_types = enum.enum(laser_keepout = 301,mill_keepout = 302,mill_flip_keepout = 303)
-    
-    def __init__(self,*args):
-        super(ScrapOperation,self).__init__()
-        self.editdata(*args)
-        self.id = id(self)
-
-    def editdata(self,operation_links,values,keepout_type):
-        super(ScrapOperation,self).editdata()
-        self.operation_links = operation_links
-        self.values = values
-        self.keepout_type = keepout_type
 
     def copy(self):
         new = type(self)(self.operation_links,self.values,self.keepout_type)
         new.customname = self.customname
         new.id = self.id
         return new
-        
-    def parentrefs(self):
-        return [link[0] for link in self.operation_links]
 
+    keepout_types = enum.enum(laser_keepout = 301,mill_keepout = 302,mill_flip_keepout = 303)
+    
+    def __init__(self,*args):
+        super(ScrapOperation2,self).__init__()
+        self.editdata(*args)
+        self.id = id(self)
+
+    def editdata(self,operation_links,values,keepout_type):
+        super(ScrapOperation2,self).editdata(operation_links,{},{})
+        self.values = values
+        self.keepout_type = keepout_type
+        
     @classmethod
     def buildnewdialog(cls,design,currentop):
         dialog = Dialog(cls.keepout_types,cls.valuenames,cls.defaults,design.operations,cls.show,keepouttype = cls.keepout_types.laser_keepout)
         return dialog
 
     def buildeditdialog(self,design):
-        operationindeces = [[design.operation_index(l[0]),l[1]] for l in self.operation_links]
+        sheet_id,sheet_output = self.operation_links['sheet'][0]
+        device_id,device_output = self.operation_links['device'][0]
+        
+        sheet_index = design.operation_index(sheet_id)
+        device_index= design.operation_index(device_id)
+        operationindeces = [[sheet_index,sheet_output],[device_index,device_output]]
+
         dialog = Dialog(self.keepout_types,self.valuenames,self.defaults,design.prioroperations(self),self.show,operationindeces,self.values,self.keepout_type)
         return dialog
 
     def generate(self,design):
         import popupcad
         import popupcad_manufacturing_plugins.algorithms.removability as removability
+
+        sheet_id,sheet_output = self.operation_links['sheet'][0]
+        device_id,device_output = self.operation_links['device'][0]
         
-        sheet = design.op_from_ref(self.operation_links[0][0]).output[self.operation_links[0][1]].csg
-        device= design.op_from_ref(self.operation_links[1][0]).output[self.operation_links[1][1]].csg
+        sheet = design.op_from_ref(sheet_id).output[sheet_output].csg
+        device= design.op_from_ref(device_id).output[device_output].csg
 
         removable_both,removable_up,removable_down = removability.generate_removable_scrap(device,sheet,device_buffer=self.values[0]*popupcad.internal_argument_scaling)
 
@@ -138,9 +144,4 @@ class ScrapOperation(Operation):
         self.output = [a,a,b,c]                
     
     def upgrade(self,*args,**kwargs):
-        from popupcad_manufacturing_plugins.manufacturing.scrapoperation2 import ScrapOperation2
-        operation_links = {'sheet':[(self.operation_links[0][0],self.operation_links[0][1])],'device':[(self.operation_links[1][0],self.operation_links[1][1])]}
-        new = ScrapOperation2(operation_links,self.values,self.keepout_type)
-        new.customname = self.customname
-        new.id = self.id
-        return new
+        return self.copy(*args,**kwargs)
