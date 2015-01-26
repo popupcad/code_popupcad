@@ -5,9 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-import popupcad
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
-from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
 import numpy
@@ -31,10 +29,9 @@ class IdentifyBodies2(MultiValueOperation3):
     defaults = []
 
     def generate(self,design):
+        import popupcad_manufacturing_plugins.algorithms.bodydetection as bodydetection
+
         operation_ref,output_index = self.operation_links['parent'][0]
-        
-        from ..algorithms import bodydetection as bd
-        
         generic = design.op_from_ref(operation_ref).output[output_index].generic_geometry_2d()
         layerdef = design.return_layer_definition()
 
@@ -47,7 +44,7 @@ class IdentifyBodies2(MultiValueOperation3):
         while len(geom_dict)>0:
             laminate = Laminate(layerdef)
             g = list(geom_dict.values())[0]
-            gs = bd.findallconnectedneighborgeoms(design,g.id,generic)
+            gs = bodydetection.findallconnectedneighborgeoms(design,g.id,generic)
             geom_mins = numpy.array([find_minimum_xy(geom_dict_whole[geom_id]) for geom_id in gs])
             values.append(tuple(geom_mins.min(0)))
             for item_id in gs:

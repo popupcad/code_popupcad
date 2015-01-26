@@ -11,7 +11,6 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.layer import Layer
 from popupcad.filetypes.validators import StrictDoubleValidator
 from dev_tools.enum import enum
 from popupcad.filetypes.operationoutput import OperationOutput
@@ -19,7 +18,7 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.widgets.listmanager import SketchListManager
 from popupcad.filetypes.listwidgetitem import ListWidgetItem
 
-from .. import algorithms
+import popupcad_manufacturing_plugins.algorithms as algorithms
 
 class Dialog(qg.QDialog):
     def __init__(self,design,operationlist,device_index=0,support_width = 1.0,support_out = 1.0,hole_radius = 1.0,cut_width = 1.0,deviceoutputref = 0,sketch = None,selectedoutput = None):

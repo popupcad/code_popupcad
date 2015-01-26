@@ -8,7 +8,7 @@ Please see LICENSE.txt for full license.
 #import types
 #import sys
 
-from . import manufacturingplugin
+#from . import manufacturingplugin
 from . import identifybodies2
 from . import identifybodies
 from . import identifyrigidbodies2

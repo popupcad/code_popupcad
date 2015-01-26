@@ -28,7 +28,7 @@ class IdentifyRigidBodies2(MultiValueOperation3):
         layerdef = design.return_layer_definition()
 
         layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
-        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
+#        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
 #        csg_dict = dict([(geom.id,geom.outputshapely()) for layer,geoms in generic.items() for geom in geoms])
 
         layerdef = design.return_layer_definition()

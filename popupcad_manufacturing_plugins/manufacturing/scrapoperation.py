@@ -5,14 +5,13 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 import dev_tools.enum as enum
-from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildItem
+from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
 class Dialog(qg.QDialog):
     def __init__(self,keepouttypes,valuenames,defaults,operations,show,operationindeces  = None,values = None,keepouttype = None):
@@ -124,40 +123,16 @@ class ScrapOperation(Operation):
 
     def generate(self,design):
         import popupcad
-        from ..algorithms import removability
-        from ..algorithms import web
+        import popupcad_manufacturing_plugins.algorithms.removability as removability
         
         sheet = design.op_from_ref(self.operation_links[0][0]).output[self.operation_links[0][1]].csg
-#        supported_device= design.op_from_ref(self.operation_links[1][0]).output[self.operation_links[1][1]].csg
         device= design.op_from_ref(self.operation_links[1][0]).output[self.operation_links[1][1]].csg
 
-#        if self.keepout_type == self.keepout_types.laser_keepout:
-#            keepout = popupcad.algorithms.keepout.laserkeepout(device)
-#        elif self.keepout_type == self.keepout_types.mill_keepout:
-#            keepout = popupcad.algorithms.keepout.laserkeepout(device)
-#        elif self.keepout_type == self.keepout_types.mill_flip_keepout:
-#            keepout = popupcad.algorithms.keepout.laserkeepout(device)
-
-#        firstpass = sheet.difference(keepout.difference(supported_device))
-#        secondpass = sheet.difference(keepout2)
-#        laminate = Laminate(design.return_layer_definition())
-#        device2= firstpass.difference(secondpass)
-#        error = device2.symmetric_difference(device)
-#        error = error.buffer(-.001)
-#
-
         removable_both,removable_up,removable_down = removability.generate_removable_scrap(device,sheet,device_buffer=self.values[0]*popupcad.internal_argument_scaling)
-#        removable_both,removable_up,removable_down = removability.more_removable_mod(1*popupcad.internal_argument_scaling, device,sheet)
-
-#        up_support = (removable_up.buffer(1*popupcad.internal_argument_scaling)).difference(keepout)
-#        down_support = (removable_down.buffer(1*popupcad.internal_argument_scaling)).difference(keepout)
 
         a = OperationOutput(removable_both,'removable_both',self)
         b = OperationOutput(removable_up,'removable_up',self)
         c = OperationOutput(removable_down ,'removable_down',self)
-#        d = OperationOutput(up_support ,'up_support',self)
-#        e = OperationOutput(down_support ,'down_support',self)
-#        self.output = [a,a,b,c,d,e]
         self.output = [a,a,b,c]                
     
     def upgrade(self,*args,**kwargs):

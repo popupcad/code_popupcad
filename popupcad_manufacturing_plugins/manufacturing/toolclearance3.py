@@ -6,7 +6,6 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
-from popupcad.filetypes.operation import Operation
 
 class ToolClearance3(MultiValueOperation3):
     name = 'ToolClearance'
@@ -14,8 +13,7 @@ class ToolClearance3(MultiValueOperation3):
     defaults = []
 
     def operate(self,design):
-        import popupcad
-        from ..algorithms import toolclearance as toolclearance
+        import popupcad_manufacturing_plugins.algorithms.toolclearance as toolclearance
         operation_ref,output_index = self.operation_links['parent'][0]
         
         ls1 = design.op_from_ref(operation_ref).output[output_index].csg

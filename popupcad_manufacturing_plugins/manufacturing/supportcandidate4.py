@@ -7,9 +7,8 @@ Please see LICENSE.txt for full license.
 
 
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
-from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
-from .. import algorithms
+import popupcad_manufacturing_plugins.algorithms as algorithms
 
 class SupportCandidate4(MultiValueOperation3):
     name = 'Support Candidate'
