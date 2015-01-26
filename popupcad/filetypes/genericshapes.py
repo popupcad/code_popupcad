@@ -11,7 +11,6 @@ import shapely.geometry
 import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-from dev_tools.enum import enum
 
 from popupcad.filetypes.genericshapebase import GenericShapeBase
 

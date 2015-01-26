@@ -8,10 +8,8 @@ Please see LICENSE.txt for full license.
 from popupcad.geometry import customshapely
 
 import numpy
-import PySide.QtCore as qc
-import PySide.QtGui as qg
-from dev_tools.enum import enum
 from popupcad.filetypes.genericshapebase import GenericShapeBase
+from popupcad.filetypes.genericshapes import GenericCircle,GenericLine,GenericPoly,GenericPolyline,GenericTwoPointRect
     
 class GenericShape(GenericShapeBase):
 
@@ -34,7 +32,19 @@ class GenericShape(GenericShapeBase):
             self.construction
         except AttributeError:
             self.construction = False
-        new = type(self)(exterior,interiors,self.shapetype,self.construction)
+
+        if self.shapetype == self.shapetypes.line:
+            newtype = GenericLine
+        elif self.shapetype == self.shapetypes.polyline:
+            newtype = GenericPolyline
+        elif self.shapetype == self.shapetypes.polygon:
+            newtype = GenericPoly
+        elif self.shapetype == self.shapetypes.circle:
+            newtype = GenericCircle
+        elif self.shapetype == self.shapetypes.rect2point:
+            newtype = GenericTwoPointRect
+
+        new = newtype(exterior,interiors,self.construction)
         if identical:
             new.id = self.id
         return new
