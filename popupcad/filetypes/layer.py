@@ -4,9 +4,9 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import shapely.ops as so
 import popupcad.geometry.customshapely as customshapely
 import shapely.geometry as sg
+import popupcad
 
 class Layer(object):
     def __init__(self,geoms):
@@ -29,6 +29,7 @@ class Layer(object):
         self.geoms.extend(geoms)
 
     def promote(self,layerdef):
+        from popupcad.filetypes.laminate import Laminate
         lsout = Laminate(layerdef)
         for layer in layerdef.layers:
             lsout.replacelayergeoms(layer,self.geoms)
