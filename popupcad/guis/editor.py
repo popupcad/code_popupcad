@@ -443,6 +443,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             return False
         return True            
     def preferences(self):
+        import dev_tools.propertyeditor
         pe = dev_tools.propertyeditor.PropertyEditor(popupcad.settings)
         pe.show()
 
