@@ -97,7 +97,7 @@ class ConstraintSystem(object):
                     constants.extend(SymbolicVertex(item.id).p()[:2])
                 constants = list(set(constants))
     
-                constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations])
+                constraint_eqs = sympy.Matrix([equation for constraint in self.constraints for equation in constraint.generated_equations()])
                 allvariables = list(set([item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
                 constants_in_eq = list(set(constants).intersection(allvariables))
                 variables = list(set(allvariables)-set(constants_in_eq))
@@ -283,7 +283,7 @@ class Constraint(object):
         self.segment_ids = segment_ids
         self.id = id(self)
         self.init_symbolics()
-        self.generate_equations()
+#        self.generate_equations()
 
     def init_symbolics(self):
         self._vertices = [SymbolicVertex(id) for id in self.vertex_ids]
@@ -298,8 +298,15 @@ class Constraint(object):
             obj.throwvalidityerror()
         return obj
 
+    def generated_equations(self):
+        try:
+            return self._generated_equations
+        except AttributeError:
+            self.generate_equations()
+            return self._generated_equations
+
     def generate_equations(self):
-        self.generated_equations = self.equations()
+        self._generated_equations = self.equations()
         
     def copy(self,identical = True):
         new = type(self)(self.vertex_ids,self.segment_ids)
