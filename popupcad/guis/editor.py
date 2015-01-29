@@ -146,8 +146,10 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
         self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
-        self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})      
-        self.fileactions.append({'text':"Update...",'kwargs':{'triggered':self.download_installer}})      
+        self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})     
+        def dummy(action):
+            action.setEnabled(sys.platform=='win32' and getattr(sys,'frozen',False))
+        self.fileactions.append({'text':"Update...",'kwargs':{'triggered':self.download_installer},'prepmethod':dummy})      
 
         self.projectactions = []
         self.projectactions.append({'text':'&Rebuild','kwargs':{'icon':Icon('refresh'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_R,'triggered':self.reprocessoperations}})

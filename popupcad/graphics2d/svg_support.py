@@ -11,6 +11,7 @@ import popupcad
 from math import pi, sin, cos
 import numpy
 import os
+import sys
 class OutputSelection(qg.QDialog):
     def __init__(self):
         super(OutputSelection,self).__init__()
@@ -59,6 +60,7 @@ class OutputSelection(qg.QDialog):
         button2.pressed.connect(self.reject)
         self.Inkscape.setChecked(True)
         self.setLayout(layout3)
+        self.RenderDXF.setEnabled(sys.platform=='win32')
     def checkradio(self):
         if self.RenderDXF.isChecked():
             self.rotation.setText(str(0))
