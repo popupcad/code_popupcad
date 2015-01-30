@@ -204,6 +204,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.tools.append({'text':'autobridge','kwargs':{'triggered':self.autobridge,'icon':Icon('autobridge')}})
         self.tools.append({'text':'get joints','kwargs':{'triggered':self.getjoints,'icon':Icon('getjoints2')}})
         self.tools.append({'text':'flip direction','kwargs':{'triggered':self.flipdirection}})
+        self.tools.append({'text':'hollow','kwargs':{'triggered':self.hollow}})
+        self.tools.append({'text':'fill','kwargs':{'triggered':self.fill}})
 
         distanceactions = []
         distanceactions.append({'text':'Coincident','kwargs':{'triggered':lambda:self.add_constraint(constraints.coincident),'icon':Icon('coincident')}})
@@ -540,6 +542,22 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         for item in selecteditems:
             item.generic.flip()
             item.updateshape()
+    def hollow(self):
+        selecteditems = self.scene.selectedItems()
+        newgenerics = []
+        for item in selecteditems:
+            newgenerics.append(item.generic.hollow())
+            item.harddelete()
+        for item in newgenerics:
+            self.scene.addItem(item.outputinteractive())
+    def fill(self):
+        selecteditems = self.scene.selectedItems()
+        newgenerics = []
+        for item in selecteditems:
+            newgenerics.append(item.generic.fill())
+            item.harddelete()
+        for item in newgenerics:
+            self.scene.addItem(item.outputinteractive())
 
                 
 if __name__ == "__main__":

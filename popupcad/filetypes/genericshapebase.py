@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes.
@@ -45,15 +46,18 @@ class GenericShapeBase(popupCADFile):
         notempty = len(self.exterior)>0
         return notempty
 
-    def copy(self,identical = True):
+    def copy_data(self,new_type,identical = True):
         exterior = [vertex.copy(identical) for vertex in self.exterior]
         interiors = [[vertex.copy(identical) for vertex in interior] for interior in self.interiors]
-        new = type(self)(exterior,interiors,self.is_construction())
+        new = new_type(exterior,interiors,self.is_construction())
         new.setmoveable(self.is_moveable())
         if identical:
             new.id = self.id
         self.copy_file_params(new,identical)
         return new
+        
+    def copy(self,identical = True):
+        return self.copy_data(type(self),identical)
 
     def upgrade(self,identical = True):
         exterior = [vertex.upgrade(identical) for vertex in self.exterior]
@@ -314,3 +318,8 @@ class GenericShapeBase(popupCADFile):
     def flip(self):
         self.exterior = self.exterior[::-1]
         self.interiors = [interior[::-1] for interior in self.interiors]
+
+    def hollow(self):
+        return self
+    def fill(self):
+        return self

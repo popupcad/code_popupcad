@@ -63,6 +63,9 @@ class Design(popupCADFile):
         
         oldop = self.op_from_ref(oldref[0])
         newop = self.op_from_ref(newref[0])
+        ii = self.operations.index(newop)
+        jjs = [self.operations.index(item) for item in oldop.allchildren()]
+        jj = min(jjs)        
         
         if oldop in newop.allchildren():
             m = qg.QMessageBox()
@@ -73,6 +76,11 @@ class Design(popupCADFile):
             m = qg.QMessageBox()
             m.setIcon(m.Information)
             m.setText(str(newop)+' is a child of '+str(oldop))
+            m.exec_()
+        elif ii>jj:
+            m = qg.QMessageBox()
+            m.setIcon(m.Information)
+            m.setText(str(newop)+' is below a child of '+str(oldop)+'. Please move up.')
             m.exec_()
         else:
             for op in self.operations:

@@ -49,6 +49,8 @@ class GenericPolyline(GenericShapeBase):
         return obj        
     def segments(self):
         return self.segments_open()
+    def fill(self,identical = True):
+        return self.copy_data(GenericPoly,identical)
 
 class GenericPoly(GenericShapeBase):
     def outputinteractive(self):
@@ -77,7 +79,7 @@ class GenericPoly(GenericShapeBase):
         if len(self.exterior)>2:
             if special:
                 a = [v.getpos() for v in self.exterior]
-                b = zip(a,a[1:]+a[:1])
+                b = list(zip(a,a[1:]+a[:1]))
                 c = numpy.array(b)
                 d = numpy.array(vertex.getpos())
                 e = c - d
@@ -125,6 +127,9 @@ class GenericPoly(GenericShapeBase):
         t = triangle.triangulate(a)
         b = t['vertices'][t['triangles']]        
         return [tri.tolist() for tri in b]
+    def hollow(self,identical = True):
+        return self.copy_data(GenericPolyline,identical)
+        
 
 class GenericCircle(GenericShapeBase):
     def outputinteractive(self):
