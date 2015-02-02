@@ -9,6 +9,7 @@ from . import bufferop3
 from . import cleanup
 from . import cleanup2
 from . import cleanup3
+from . import cross_section
 from . import laminateoperation
 from . import laminateoperation2
 from . import sketchoperation2

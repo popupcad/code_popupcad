@@ -208,6 +208,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.operationactions.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify2.Simplify2)}})
 #        self.operationactions.append({'text':'Joints','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.jointop.JointOp)}})
         self.operationactions.append({'text':'Flatten','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.flatten.Flatten)}})
+        self.operationactions.append({'text':'Cross-Section','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.cross_section.CrossSection)}})
 
         self.menu_file = self.addMenu(self.fileactions,name='File')
         self.menu_project= self.addMenu(self.projectactions,name='Project')

@@ -91,16 +91,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.master_refreshing = False
         self.refreshing = False
 
-#    def setCurrentIndeces(self,ii,jj=0):
-#        debugprint('setcurrentindeces')
-#        m = self.model()
-#        parentindex = m.index(ii,0,qc.QModelIndex())
-#        if jj==0:
-#            self.setCurrentIndex(parentindex)
-#        else:            
-#            childindex = m.index(jj,0,parentindex)
-#            self.setCurrentIndex(childindex)
-        
     def currentOperationOutputIndex(self):
         debugprint('currentOperationOutputIndex')
         index = self.currentValidIndex(ii=-1)

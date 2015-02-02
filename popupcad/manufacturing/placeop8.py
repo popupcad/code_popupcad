@@ -13,12 +13,12 @@ import popupcad.filetypes
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.design import NoOperation
-from popupcad.filetypes.design import Design
+#from popupcad.filetypes.design import Design
 import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from dev_tools.enum import enum
 from popupcad.algorithms.points import calctransformfrom2lines    
-from popupcad.filetypes.sketch import Sketch
+#from popupcad.filetypes.sketch import Sketch
 from  popupcad.widgets.listmanager import SketchListManager,DesignListManager
 
 class Dialog(qg.QDialog):

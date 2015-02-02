@@ -434,7 +434,11 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         
         handles = []
         [handles.extend(item.handles()) for item in interactives]
-        handles.extend(self.controlpoints)        
+        try:
+            handles.extend(self.controlpoints)        
+        except AttributeError:
+            pass
+        handles.extend([item for item in self.scene.items() if isinstance(item,DrawingPoint)])
         vertices = []
         for handle in handles:
             scenepos = handle.scenePos()
