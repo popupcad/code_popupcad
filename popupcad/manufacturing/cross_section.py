@@ -72,18 +72,32 @@ class CrossSection(Operation2):
         super(CrossSection,self).editdata(operation_links,sketch_links,{})
 
     def operate(self,design):
+        from popupcad.filetypes.genericshapes import GenericLine
+        import shapely.affinity as aff
+        import popupcad.algorithms.points as points
+        
         parent_ref,parent_index  = self.operation_links['source'][0]
         parent = design.op_from_ref(parent_ref).output[parent_index].csg
         
         sketch = design.sketches[self.sketch_links['cross_section'][0]]
-        sketch_csg = sketch.output_csg()
         
-        layerdef = design.return_layer_definition()
-        laminate = Laminate(layerdef)
-        for layer in layerdef.layers:
-            laminate.replacelayergeoms(layer,sketch_csg)
-        
-        return parent.intersection(laminate)
+        for item in sketch.operationgeometry:
+            if isinstance(item,GenericLine):
+                line = item
+                a = points.calctransformfrom2lines(line.exteriorpoints(),[(0,0),(1,0)],scale_x=1,scale_y=1)            
+#                aff.affine_transform()
+                sketch_csg = sketch.output_csg()
+                
+                layerdef = design.return_layer_definition()
+                laminate = Laminate(layerdef)
+                for layer in layerdef.layers:
+                    laminate.replacelayergeoms(layer,sketch_csg)
+                result = parent.intersection(laminate)
+                laminate2 = Laminate(layerdef)
+                for ii,layer in enumerate(result):
+                    laminate2[ii] = [aff.affine_transform(item,a) for item in layer.geoms]
+                    
+                return laminate2
 
     @classmethod
     def buildnewdialog(cls,design,currentop):
