@@ -10,9 +10,10 @@ from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.listmanager import SketchListManager
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.filetypes.laminate import Laminate
+from popupcad.filetypes.design import NoOperation
 
 class Dialog(qg.QDialog):
-    def __init__(self,design,operations):
+    def __init__(self,design,operations,sketch = None,opref = None):
         super(Dialog,self).__init__()
         SketchListManager(design)
         self.optree = DraggableTreeWidget()
@@ -34,13 +35,21 @@ class Dialog(qg.QDialog):
         layout.addLayout(layout2)
 
         self.setLayout(layout)
-
-    def sketch(self):
+        
+        for ii in range(self.sketchwidget.itemlist.count()):
+            item = self.sketchwidget.itemlist.item(ii)
+            if item.value==sketch:
+                item.setSelected(True)
+                
         try:
-            return self.sketchwidget.itemlist.selectedItems()[0].value
-        except IndexError:
-            return None
-
+            if opref != None: 
+                id, jj = opref
+                ii = design.operation_index(id)
+                self.optree.selectIndeces([(ii,jj)])
+        except NoOperation:
+            pass
+                
+        
     def acceptdata(self):
         operation_links = {}
         operation_links['source'] = [self.optree.currentRefs()[0]]
@@ -119,10 +128,11 @@ class CrossSection(Operation2):
             
     @classmethod
     def buildnewdialog(cls,design,currentop):
-        dialog = Dialog(design,design.operations)
+        opref = design.operations[currentop].id,0
+        dialog = Dialog(design,design.operations,opref = opref)
         return dialog
     def buildeditdialog(self,design):
-#        sketch = design.sketches[self.sketch_links['place'][0]]
-#        subdesign = design.subdesigns[self.design_links['subdesign'][0]]
-        dialog = Dialog(design,design.prioroperations(self))
+        sketch = design.sketches[self.sketch_links['cross_section'][0]]
+        opref = self.operation_links['source'][0]
+        dialog = Dialog(design,design.prioroperations(self),sketch,opref)
         return dialog
