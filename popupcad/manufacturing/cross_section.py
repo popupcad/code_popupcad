@@ -87,6 +87,7 @@ class CrossSection(Operation2):
         import popupcad.algorithms.points as points
         import popupcad
         import shapely.geometry as sg
+        import numpy
         
         parent_ref,parent_index  = self.operation_links['source'][0]
         parent = design.op_from_ref(parent_ref).output[parent_index].csg
@@ -98,8 +99,9 @@ class CrossSection(Operation2):
         for item in sketch.operationgeometry:
             if isinstance(item,GenericLine):
                 line = item
-                a = points.calctransformfrom2lines(line.exteriorpoints(),[(0,0),(1,0)],scale_x=1,scale_y=1)            
-#                aff.affine_transform()
+                b = line.exteriorpoints()[0]
+                c = numpy.array(b)+numpy.array([1,0])
+                a = points.calctransformfrom2lines(line.exteriorpoints(),[b,c.tolist()],scale_x=1,scale_y=1)            
                 sketch_csg = sketch.output_csg()
                 
                 for layer in layerdef.layers:
@@ -124,7 +126,7 @@ class CrossSection(Operation2):
                     laminate2[ii] = newgeoms
                 return laminate2
 
-#        return laminate
+        return laminate
             
     @classmethod
     def buildnewdialog(cls,design,currentop):
