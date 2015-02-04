@@ -52,7 +52,7 @@ class Dialog(qg.QDialog):
         except IndexError:
             pass
         
-        return operation_links,sketch_links
+        return operation_links,sketch_links,100
 
 class CrossSection(Operation2):
     name='Cross-Section'
@@ -62,25 +62,30 @@ class CrossSection(Operation2):
         self.editdata(*args,**kwargs)
 
     def copy(self,identical = True):
-        new = type(self)(self.operation_links,self.sketch_links)
+        new = type(self)(self.operation_links,self.sketch_links,self.scale_value)
         if identical:        
             new.id = self.id
         new.customname = self.customname
         return new
 
-    def editdata(self,operation_links,sketch_links):
+    def editdata(self,operation_links,sketch_links,scale_value):
         super(CrossSection,self).editdata(operation_links,sketch_links,{})
-
+        self.scale_value = scale_value
+        
     def operate(self,design):
         from popupcad.filetypes.genericshapes import GenericLine
         import shapely.affinity as aff
         import popupcad.algorithms.points as points
+        import popupcad
+        import shapely.geometry as sg
         
         parent_ref,parent_index  = self.operation_links['source'][0]
         parent = design.op_from_ref(parent_ref).output[parent_index].csg
         
         sketch = design.sketches[self.sketch_links['cross_section'][0]]
         
+        layerdef = design.return_layer_definition()
+        laminate = Laminate(layerdef)
         for item in sketch.operationgeometry:
             if isinstance(item,GenericLine):
                 line = item
@@ -88,17 +93,30 @@ class CrossSection(Operation2):
 #                aff.affine_transform()
                 sketch_csg = sketch.output_csg()
                 
-                layerdef = design.return_layer_definition()
-                laminate = Laminate(layerdef)
                 for layer in layerdef.layers:
                     laminate.replacelayergeoms(layer,sketch_csg)
                 result = parent.intersection(laminate)
                 laminate2 = Laminate(layerdef)
-                for ii,layer in enumerate(result):
-                    laminate2[ii] = [aff.affine_transform(item,a) for item in layer.geoms]
-                    
+                for ii,layerid in enumerate(layerdef.layers):
+#                for ii,layer in enumerate(result):
+                    yshift = layerdef.zvalue[layerid] * self.scale_value
+                    layer = result.layer_sequence[layerid]
+                    thickness = layerid.thickness*popupcad.internal_argument_scaling*self.scale_value
+                    newgeoms = [item for item in layer.geoms]
+                    newgeoms = [aff.affine_transform(item,a) for item in newgeoms]
+#                    newgeoms = [item.buffer(bufferval) for item in newgeoms]
+                    newgeoms2 = []
+                    for geom in newgeoms:
+                        newgeom = sg.box(geom.coords[0][0],geom.coords[0][1],geom.coords[-1][0],geom.coords[-1][1]+thickness)
+                        newgeoms2.append(newgeom)
+                    newgeoms = newgeoms2
+                    newgeoms = [aff.translate(item,yoff = yshift) for item in newgeoms]
+                    newgeoms = popupcad.geometry.customshapely.multiinit(*newgeoms)
+                    laminate2[ii] = newgeoms
                 return laminate2
 
+#        return laminate
+            
     @classmethod
     def buildnewdialog(cls,design,currentop):
         dialog = Dialog(design,design.operations)
