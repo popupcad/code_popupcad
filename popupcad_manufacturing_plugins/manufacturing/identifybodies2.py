@@ -33,8 +33,8 @@ class IdentifyBodies2(MultiValueOperation3):
 
         operation_ref,output_index = self.operation_links['parent'][0]
         operation_output= design.op_from_ref(operation_ref).output[output_index]
-        lam_in = operation_output.csg
-        generic = lam_in.generic_geometry_2d()
+#        lam_in = operation_output.csg
+        generic = operation_output.generic_geometry_2d()
         layerdef = design.return_layer_definition()
 
         layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
