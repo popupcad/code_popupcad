@@ -29,6 +29,8 @@ def multiinit(*geoms):
                 geoms2.append(ShapelyLineString(geom))
             elif isinstance(geom,sg.Point):
                 geoms2.append(ShapelyPoint(geom))
+            elif isinstance(geom,sg.MultiPoint):
+                geoms2.extend([ShapelyPoint(item) for item in geom.geoms])
             else:
                 raise(Exception('unknown type: '+str(type(geom))))
                 geoms2.append(geom)

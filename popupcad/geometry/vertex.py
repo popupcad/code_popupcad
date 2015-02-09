@@ -188,8 +188,9 @@ class DrawnPoint(ShapeVertex):
         return iv
 
     def outputshapely(self):
-        from shapely.geometry import Point
-        p = Point(*self.getpos())
+        from popupcad.geometry.customshapely import ShapelyPoint
+#        from shapely.geometry import Point
+        p = ShapelyPoint(*self.getpos())
         return p
 
 
