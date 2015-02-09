@@ -42,14 +42,15 @@ class IdentifyBodies(MultiValueOperation2):
         
         laminates = []
         values = []
+        layerdef = design.return_layer_definition()
         while len(geom_dict)>0:
             laminate = Laminate(layerdef)
-            g = list(geom_dict.values())[0]
-            gs = bodydetection.findallconnectedneighborgeoms(design,g.id,generic)
+            key = list(geom_dict.keys())[0]
+            gs = bodydetection.findallconnectedneighborgeoms(key,generic,geom_dict,layerdef)
             geom_mins = numpy.array([find_minimum_xy(geom_dict_whole[geom_id]) for geom_id in gs])
             values.append(tuple(geom_mins.min(0)))
             for item_id in gs:
-                geom = geom_dict.pop(item_id)
+                geom = geom_dict_whole[item_id]
                 laminate.insertlayergeoms(layer_dict[item_id], [geom.outputshapely()])
             laminates.append(laminate)
             

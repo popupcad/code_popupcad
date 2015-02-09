@@ -5,8 +5,8 @@ Created on Sat Dec 13 14:41:02 2014
 @author: danaukes
 """
 
-from popupcad.manufacturing.sketchoperation2 import SketchOperation2
+from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
 
-class JointOp(SketchOperation2):
+class JointOp(SimpleSketchOp):
     name = 'Joint Definition'
     pass

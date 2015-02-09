@@ -199,17 +199,17 @@ class Design(popupCADFile):
             if not isinstance(op,LocateOperation):
                 return op
                 
-    def geomrefs(self):
-        refs = []
-        for op in self.operations:
-            try:
-                for output in op.output:
-                    for layer,geoms in output.generic_geometry_2d().items():
-                        for geom in geoms:
-                            refs.append((geom.id,geom))
-            except AttributeError:
-                pass
-        return dict(refs)
+#    def geomrefs(self):
+#        refs = []
+#        for op in self.operations:
+#            try:
+#                for output in op.output:
+#                    for layer,geoms in output.generic_geometry_2d().items():
+#                        for geom in geoms:
+#                            refs.append((geom.id,geom))
+#            except AttributeError:
+#                pass
+#        return dict(refs)
 
     def subdesigns_are_reprocessed(self,setvalue = None):
         if setvalue==None:

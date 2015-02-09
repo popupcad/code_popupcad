@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad
+from popupcad.materials.materials import Adhesive
 
 class LayerDef(object):
     def __init__(self,*args):
@@ -29,3 +30,20 @@ class LayerDef(object):
     def getlayer(self,ref):
         dict1 = dict([(item.id,item) for item in self.layers])
         return dict1[ref]
+
+    def neighbors(self,layer):   
+        '''Find the layers above and below a given layer'''
+#        from popupcad.materials.materials import Adhesive
+        ii = self.layers.index(layer)
+        neighbors = []
+        if ii > 0:
+            neighbors.append(self.layers[ii-1])
+        if ii<len(self.layers)-1:
+            neighbors.append(self.layers[ii+1])
+        return neighbors
+
+    def connected_neighbors(self,layer):
+        neighbors = self.neighbors(layer)
+        connected = [neighbor for neighbor in neighbors if (isinstance(neighbor,Adhesive) or isinstance(layer,Adhesive))]
+        return connected
+        

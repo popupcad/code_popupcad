@@ -32,7 +32,9 @@ class IdentifyBodies2(MultiValueOperation3):
         import popupcad_manufacturing_plugins.algorithms.bodydetection as bodydetection
 
         operation_ref,output_index = self.operation_links['parent'][0]
-        generic = design.op_from_ref(operation_ref).output[output_index].generic_geometry_2d()
+        operation_output= design.op_from_ref(operation_ref).output[output_index]
+        lam_in = operation_output.csg
+        generic = lam_in.generic_geometry_2d()
         layerdef = design.return_layer_definition()
 
         layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
@@ -41,14 +43,15 @@ class IdentifyBodies2(MultiValueOperation3):
         
         laminates = []
         values = []
+        layerdef = design.return_layer_definition()
         while len(geom_dict)>0:
             laminate = Laminate(layerdef)
-            g = list(geom_dict.values())[0]
-            gs = bodydetection.findallconnectedneighborgeoms(design,g.id,generic)
+            key = list(geom_dict.keys())[0]
+            gs = bodydetection.findallconnectedneighborgeoms(key,generic,geom_dict,layerdef)
             geom_mins = numpy.array([find_minimum_xy(geom_dict_whole[geom_id]) for geom_id in gs])
             values.append(tuple(geom_mins.min(0)))
             for item_id in gs:
-                geom = geom_dict.pop(item_id)
+                geom = geom_dict_whole[item_id]
                 laminate.insertlayergeoms(layer_dict[item_id], [geom.outputshapely()])
             laminates.append(laminate)
             
