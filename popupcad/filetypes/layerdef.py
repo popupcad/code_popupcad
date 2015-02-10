@@ -30,7 +30,10 @@ class LayerDef(object):
     def getlayer(self,ref):
         dict1 = dict([(item.id,item) for item in self.layers])
         return dict1[ref]
-
+    def getlayer_ii(self,ref):
+        layer = self.getlayer(ref)
+        return self.layers.index(layer)
+        
     def neighbors(self,layer):   
         '''Find the layers above and below a given layer'''
 #        from popupcad.materials.materials import Adhesive

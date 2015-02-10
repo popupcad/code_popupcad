@@ -10,7 +10,7 @@ from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
 import shapely.geometry as sg
 import numpy
-from popupcad_manufacturing_plugins.manufacturing.identifybodies import find_minimum_xy,sort_lams
+from popupcad_manufacturing_plugins.algorithms.bodydetection import find_minimum_xy,sort_lams
 
 class IdentifyRigidBodies2(MultiValueOperation3):
     name = 'Identify Rigid Bodies'
