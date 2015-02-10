@@ -234,6 +234,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.constraintactions.append({'text':'Distance','submenu':distanceactions,'kwargs':{'icon':Icon('distance')}})
         self.constraintactions.append({'text':'Lines','submenu':twolineactions,'kwargs':{'icon':Icon('parallel')}})
         self.constraintactions.append({'text':'PointLine','kwargs':{'triggered':lambda:self.add_constraint(constraints.PointLine),'icon':Icon('pointline')}})
+        self.constraintactions.append({'text':'Midpoint','kwargs':{'triggered':lambda:self.add_constraint(constraints.LineMidpoint)}})
         self.constraintactions.append({'text':'Update','kwargs':{'triggered':self.refreshconstraints_button,'icon':Icon('refresh')}})
         self.constraintactions.append({'text':'Cleanup','kwargs':{'triggered':self.cleanupconstraints,'icon':Icon('broom')}})
 

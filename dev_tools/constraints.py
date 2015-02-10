@@ -630,6 +630,17 @@ class PointLine(ValueConstraint,ExactlyOnePointOneLine):
             eq = l1 - self.value*internal_argument_scaling
             return [eq]  
         return [x]
+class LineMidpoint(Constraint,ExactlyOnePointOneLine):
+    name = 'Line Midpoint'
+    def equations(self):
+        line = self.getlines()[0]
+        p1 = self.getvertices()[0].p()
+        p0 = (line.p1()+line.p2())/2
+        
+        eq = []
+        eq.append(p1[0] - p0[0])
+        eq.append(p1[1] - p0[1])
+        return eq
 
 if __name__=='__main__':
     a = SymbolicVertex(123)

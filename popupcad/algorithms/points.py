@@ -147,6 +147,20 @@ def calctransformfrom2lines(pointset1,pointset2,scale_x = None,scale_y = None):
     T = T3.dot(T2.dot(T1.dot(T0)))
     return T[0,0],T[0,1],T[1,0],T[1,1],T[0,2],T[1,2]  
 
+def angle_between_lines(pointset1,pointset2,scale_x = None,scale_y = None):
+    import math
+    pointset1 = numpy.array(pointset1)
+    pointset2 = numpy.array(pointset2)
+    v1 = pointset1[1]-pointset1[0]
+    v2 = pointset2[1]-pointset2[0]
+
+    l1 = (v1.dot(v1))**.5
+    l2 = (v2.dot(v2))**.5
+
+    cq = v1.dot(v2)/(l1*l2)
+    q1 = math.acos(cq)
+    return q1
+
 def convert_to_3d(listin):
     a = numpy.array(listin)
     c = a.T[0]*0
