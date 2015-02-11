@@ -83,9 +83,9 @@ class JointOp(SimpleSketchOp):
         for line,geoms in connections2.items():
             connections2[line]=Laminate.unaryoperation(geoms,'union')
         
-        self.connections = connections
+        self.connections = [(key,connections[key]) for key in hingelines]
         
-        laminates = [sketch_result,safe,unsafe2,split1,split2]+bodies+connections2.values()
+        laminates = [sketch_result,safe,unsafe2,split1,split2]+bodies+list(connections2.values())
         self.output = []
         for ii,item in enumerate(laminates):
             self.output.append(OperationOutput(item,'Body {0:d}'.format(ii),self))
