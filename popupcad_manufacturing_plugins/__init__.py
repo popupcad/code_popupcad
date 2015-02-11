@@ -22,7 +22,7 @@ def initialize(editor, design):
     
     other = []
     other.append({'text':'Keep-outs','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:editor.newoperation(manufacturing.keepout3.KeepOut3)}})
-    other.append({'text':'Cuts','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:editor.newoperation(manufacturing.cutop2.CutOperation2)}})
+#    other.append({'text':'Cuts','kwargs':{'icon':Icon('firstpass'),'triggered':lambda:editor.newoperation(manufacturing.cutop2.CutOperation2)}})
     other.append({'text':'Identify Rigid Bodies','kwargs':{'triggered':lambda:editor.newoperation(manufacturing.identifyrigidbodies2.IdentifyRigidBodies2)}})
 
     manufacturingactions = []
