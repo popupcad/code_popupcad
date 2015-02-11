@@ -6,6 +6,7 @@ Created on Sat Dec 13 14:41:02 2014
 """
 
 from popupcad.filetypes.operationoutput import OperationOutput
+from popupcad.filetypes.genericlaminate import GenericLaminate
 from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
 import popupcad
 from popupcad.filetypes.laminate import Laminate
@@ -63,10 +64,28 @@ class JointOp(SimpleSketchOp):
         
         split1 = last.difference(unsafe2)
         split2 = split1.difference(buffered2)
-        split_separated = popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.genericfromls(),layerdef)
+        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.genericfromls(),layerdef)
         
+        bodies_generic = [item.genericfromls() for item in bodies]
+        bodies_generic = [GenericLaminate(layerdef,item) for item in bodies_generic]
         
-        laminates = [sketch_result,safe,unsafe2,split1,split2]+split_separated
+        connections = {}
+        connections2 = {}
+        for line,geom in zip(hingelines,safe_sections):
+            connections[line]=[]
+            connections2[line]=[]
+            for body,body_generic in zip(bodies,bodies_generic):
+                if not geom.intersection(body).isEmpty():
+                    connections[line].append(body_generic)
+                    connections2[line].append(body)
+#                if not not connections2[line]:
+#                    connections2[line].append(geom)
+        for line,geoms in connections2.items():
+            connections2[line]=Laminate.unaryoperation(geoms,'union')
+        
+        self.connections = connections
+        
+        laminates = [sketch_result,safe,unsafe2,split1,split2]+bodies+connections2.values()
         self.output = []
         for ii,item in enumerate(laminates):
             self.output.append(OperationOutput(item,'Body {0:d}'.format(ii),self))

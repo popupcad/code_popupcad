@@ -23,6 +23,10 @@ class GenericFile(object):
     filetypes = {'file':'Generic File'}
     defaultfiletype = 'file'
     _lastdir = '.'
+    def __init__(self):
+        self.id = id(self)
+        self._basename = self.genbasename()
+        
     def get_basename(self):
         try:
             return self._basename

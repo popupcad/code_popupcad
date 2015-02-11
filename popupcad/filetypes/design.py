@@ -262,3 +262,14 @@ class Design(popupCADFile):
         for key in unused:
             self.sketches.pop(key)
         
+
+    def save_joint_def(self):
+#        import popupcad.
+        from popupcad.manufacturing.jointop import JointOp
+        import yaml
+        import os
+        for op in self.operations:
+            if isinstance(op,JointOp):
+                filename = os.path.normpath(os.path.join(self.filename()+'.joints',))
+                with open(filename,'w') as f:
+                    yaml.dump(op.connections,f)

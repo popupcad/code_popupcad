@@ -34,6 +34,12 @@ class Layer(object):
         for layer in layerdef.layers:
             lsout.replacelayergeoms(layer,self.geoms)
         return lsout
+
+    @classmethod
+    def unary_union(cls,layers):
+        geoms = [geom for layer in layers for geom in layer.geoms]
+        result = customshapely.unary_union_safe(geoms)
+        return cls(customshapely.multiinit(result))
         
     def binaryoperation(self,layer2,functionname):
         sourcegeoms = self.geoms

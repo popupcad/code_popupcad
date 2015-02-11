@@ -144,7 +144,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"Save &As...",'kwargs':{'icon':Icon('saveas'),'shortcut':qg.QKeySequence.SaveAs,'statusTip':"Save the document under a new name",'triggered':self.saveAs}})
         self.fileactions.append({'text':"Upgrade",'kwargs':{'statusTip':"Upgrade the file",'triggered':self.upgrade}})
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
-        self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
+#        self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
+        self.fileactions.append({'text':"Save Joint Defs",'kwargs':{'triggered':self.save_joint_def}})      
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
         self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})     
         def dummy(action):
@@ -499,8 +500,9 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         
     def download_installer(self):
         qg.QDesktopServices.openUrl(self.get_update_link())
-
-        
+                
+    def save_joint_def(self):
+        self.design.save_joint_def()
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(Icon('popupcad'))

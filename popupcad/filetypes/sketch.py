@@ -28,7 +28,7 @@ class Sketch(popupCADFile):
         self._basename = self.genbasename()
 
     def copy(self,identical = True):
-        new = Sketch()
+        new = type(self)()
         new.operationgeometry = [geom.copy(identical=True) for geom in self.operationgeometry if geom.isValid()]
         new.constraintsystem = self.constraintsystem.copy()
         if identical:
@@ -37,7 +37,7 @@ class Sketch(popupCADFile):
         return new
 
     def upgrade(self,identical = True):
-        new = Sketch()
+        new = type(self)()
         new.operationgeometry = [geom.upgrade(identical=True) for geom in self.operationgeometry if geom.isValid()]
         new.constraintsystem = self.constraintsystem.upgrade()
         if identical:

@@ -90,6 +90,7 @@ class Laminate(IterableLaminate):
 
     @staticmethod
     def unaryoperation(laminates,function):
+        laminates = laminates[:]
         lsout = laminates.pop(0)
         while not not laminates:
             lsout = lsout.binaryoperation(laminates.pop(0),function)
@@ -146,4 +147,9 @@ class Laminate(IterableLaminate):
                 genericgeoms.append(GenericShapeBase.genfromshapely(geom))
             genericgeometry[layer] = genericgeoms
         return genericgeometry
+
+    def to_generic_laminate(self):
+        from popupcad.filetypes.genericlaminate import GenericLaminate
+        new = GenericLaminate(self.layerdef,self.genericfromls)
+        return new
         
