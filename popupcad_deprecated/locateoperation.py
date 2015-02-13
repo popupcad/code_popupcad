@@ -25,3 +25,11 @@ class LocateOperation(SketchOperation2):
 
     def locationgeometry(self):
         return self.sketchid
+
+    def upgrade(self,*args,**kwargs):
+        from popupcad.manufacturing.locateoperation3 import LocateOperation3
+        sketch_links = {'sketch':[self.sketchid]}
+        new = LocateOperation3(sketch_links)
+        new.id = self.id
+        return new
+        

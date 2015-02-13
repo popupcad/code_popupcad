@@ -46,7 +46,7 @@ class Assembly(popupCADFile):
         ok4 = True
         ok5 = True
         if scalefactor == None:
-            scalefactor, ok1 = qg.QInputDialog.getDouble(parent,'Scale Factor','Scale Factor',1,0,1e10)        
+            scalefactor, ok1 = qg.QInputDialog.getDouble(parent,'Scale Factor','Scale Factor',1,0,1e10,decimals = 10)        
 
         if area_ratio == None:
             area_ratio, ok2 = qg.QInputDialog.getDouble(parent,'Area Ratio','Area Ratio',.001,0,1e10,decimals = 10)        
