@@ -18,11 +18,11 @@ import popupcad_manufacturing_plugins
 
 class JointOp(SimpleSketchOp):
     name = 'Joint Definition'
-    hinge_gap = 1*popupcad.internal_argument_scaling
-    safe_buffer1 = .5*popupcad.internal_argument_scaling
-    safe_buffer2 = .5*popupcad.internal_argument_scaling
-    safe_buffer3 = .5*popupcad.internal_argument_scaling
-    split_buffer = .1*popupcad.internal_argument_scaling
+    hinge_gap = .01*popupcad.internal_argument_scaling
+    safe_buffer1 = .5*hinge_gap
+    safe_buffer2 = .5*hinge_gap
+    safe_buffer3 = .5*hinge_gap
+    split_buffer = .1*hinge_gap
     resolution = 2
     
     pass

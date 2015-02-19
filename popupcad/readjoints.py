@@ -11,7 +11,7 @@ pynamics.script_mode = False
 from pynamics.frame import Frame        
 from pynamics.system import System
 from pynamics.variable_types import Differentiable,Constant
-from pynamics.tree_topology import TreeTopology
+#from pynamics.tree_topology import TreeTopology
 from pynamics.particle import Particle
 from pynamics.output import Output
 import numpy
@@ -78,22 +78,22 @@ def build_hierarchy(frame):
     return dict([(frame_dict[item[0]],build_hierarchy(item[0])) for item in searched[frame]])
 
 def build_rotations(dict1):
-    for frame in dict1.keys():
-        for child in dict1[frame].keys():
-            points = numpy.c_[connections_rev[frozenset([frame,child])].exteriorpoints(),[0,0]]
+    for parent in dict1.keys():
+        for child in dict1[parent].keys():
+            points = numpy.c_[connections_rev[frozenset([parent,child])].exteriorpoints(),[0,0]]
             axis = points[1] - points[0]
-#            axisvector = axis[0]*frame.x+axis[1]*frame
+#            axisvector = axis[0]*parent.x+axis[1]*parent
             x,x_d,x_dd = Differentiable(system)
-            child.rotate_fixed_axis(frame,axis.tolist(),x,system)  
-            fixedaxis = frame.connections[child].fixedaxis
+            child.rotate_fixed_axis_directed(parent,axis.tolist(),x,system)  
+            fixedaxis = parent.connections[child].fixedaxis
             print(fixedaxis)
-            fixedaxis = frame.x*fixedaxis[0]+frame.y*fixedaxis[1]+frame.z*fixedaxis[2]
-            w = frame.getw_(child)
+            fixedaxis = parent.x*fixedaxis[0]+parent.y*fixedaxis[1]+parent.z*fixedaxis[2]
+            w = parent.getw_(child)
             t_damper = -b*w
             t_spring = -k*x*fixedaxis
             system.addforce(t_damper,w)
             system.addforce(t_spring,w)
-        build_rotations(dict1[frame])
+        build_rotations(dict1[parent])
 
 def gen_info(body):
     lam = body.toLaminate()
@@ -112,7 +112,7 @@ def gen_info(body):
 
 hierarchy = {frame_dict[top]:build_hierarchy(top)}
 build_rotations(hierarchy)
-TreeTopology.search(hierarchy)
+#TreeTopology.search(hierarchy)
 system.set_newtonian(top_frame)
 #p=Particle(system,0*N.x,1)
 #gen_info(top)
