@@ -95,8 +95,9 @@ class Assembly(popupCADFile):
                     except ShapeInvalid:
                         pass
                     except ValueError as ex:
-                        if ex.message!='A LinearRing must have at least 3 coordinate tuples':
-                            print(ex.message)
+                        print(ex)
+#                        if ex.message!='A LinearRing must have at least 3 coordinate tuples':
+#                            print(ex.message)
         self.filter_small_areas(area_ratio)
             
     @staticmethod
