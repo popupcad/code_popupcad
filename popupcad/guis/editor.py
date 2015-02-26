@@ -201,6 +201,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.tools1.append({'text':'New Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup3.Cleanup3)}})
         self.tools1.append({'text':'Simplify','kwargs':{'icon':Icon('simplify'),'triggered':lambda:self.newoperation(popupcad.manufacturing.simplify2.Simplify2)}})
         self.tools1.append({'text':'Joints','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.jointop.JointOp)}})
+        self.tools1.append({'text':'Joints','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.joint_operation2.JointOperation2)}})
         self.tools1.append({'text':'Flatten','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.flatten.Flatten)}})
         self.tools1.append({'text':'Cross-Section','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.cross_section.CrossSection)}})
 

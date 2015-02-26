@@ -26,4 +26,5 @@ from . import simplify
 from . import simplify2
 from . import cleanup
 from . import jointop
+from . import joint_operation2
 from . import flatten
