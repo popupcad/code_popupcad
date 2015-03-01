@@ -4,18 +4,16 @@ Created on Sat Dec 13 14:41:02 2014
 
 @author: danaukes
 """
+from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
+import PySide.QtGui as qg
+import PySide.QtCore as qc
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.genericlaminate import GenericLaminate
 from popupcad.filetypes.operation2 import Operation2
 import popupcad
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.layer import Layer
-import numpy
-import math
-import operator
 import popupcad_manufacturing_plugins
-from popupcad.widgets.joint_op_dialog import MainWidget
 
 class JointDef(object):
     def __init__(self,sketch,joint_layer,sublaminate_layers,width):
@@ -24,13 +22,272 @@ class JointDef(object):
         self.sublaminate_layers = sublaminate_layers
         self.width = width
 
+class ListWidgetItem(qg.QListWidgetItem):
+    def __init__(self,data):
+        self.customdata = data
+        super(ListWidgetItem,self).__init__(str(data))
+
+class SingleiListWidget(qg.QListWidget):
+    editingFinished = qc.Signal()
+    def __init__(self,list1,*args,**kwargs):
+        super(SingleiListWidget,self).__init__(*args,**kwargs)
+        [self.addItem(ListWidgetItem(item)) for item in list1]
+        self.itemClicked.connect(self.fire_signal)
+    def fire_signal(self):
+        self.editingFinished.emit()
+    def setData(self,data):
+        self.clearSelection()
+        for ii in range(self.model().rowCount()):
+            item = self.item(ii)
+            if item.customdata == data:
+                item.setSelected(True)
+
+class MultiListWidget(qg.QListWidget):
+    editingFinished = qc.Signal()
+    def __init__(self,list1,*args,**kwargs):
+        super(MultiListWidget,self).__init__(*args,**kwargs)
+        [self.addItem(ListWidgetItem(item)) for item in list1]
+        self.setSelectionMode(self.SelectionMode.MultiSelection)
+    def setData(self,data):
+        self.clearSelection()
+        for ii in range(self.model().rowCount()):
+            item = self.item(ii)
+            if item.customdata in data:
+                item.setSelected(True)
+            
+class Table(qg.QTableWidget):
+    def calc_table_width(self):
+        w = sum([self.columnWidth(ii) for ii in range(self.columnCount())])
+        w2 = self.frameWidth()*2
+        return w+w2        
+    def calc_table_width2(self):
+        width = 0
+        width += self.verticalHeader().width()
+        width += sum([self.columnWidth(ii) for ii in range(self.columnCount())])
+        width += self.style().pixelMetric(qg.QStyle.PM_ScrollBarExtent)
+        width += self.frameWidth() * 2      
+        return width
+    def reset_min_width(self):
+        self.horizontalHeader().setStretchLastSection(False)        
+        self.setMinimumWidth(self.calc_table_width2())
+        self.horizontalHeader().setStretchLastSection(True)        
+        
+class MainWidget(qg.QDialog):
+    def __init__(self,design,sketches,layers,operations,jointop=None,*args,**kwargs):
+        super(MainWidget,self).__init__(*args,**kwargs)
+        self.design = design
+        self.sketches = sketches
+        self.layers = layers
+        self.operations = operations
+        
+        self.operation_list = DraggableTreeWidget()
+        self.operation_list.linklist(self.operations)
+        
+        self.table= Table()
+        self.table.setRowCount(0)
+        self.table.setColumnCount(4)
+        self.table.setShowGrid(False)
+        self.table.setAlternatingRowColors(True)
+        self.table.setHorizontalHeaderLabels(['joint sketch','joint layer','sublaminate layers','hinge width'])
+        self.table.resizeColumnsToContents()
+        self.table.reset_min_width()
+        self.table.setItemDelegate(Delegate())
+        self.table.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        button_add = qg.QPushButton('Add')
+        button_remove = qg.QPushButton('Remove')
+        button_up = qg.QPushButton('up')
+        button_down = qg.QPushButton('down')
+
+        button_add.pressed.connect(self.row_add)
+        button_remove.pressed.connect(self.row_remove)
+        button_up.pressed.connect(self.row_shift_up)
+        button_down.pressed.connect(self.row_shift_down)
+
+        sublayout1 = qg.QHBoxLayout()
+        sublayout1.addWidget(button_add)
+        sublayout1.addWidget(button_remove)
+        sublayout1.addStretch()
+        sublayout1.addWidget(button_up)
+        sublayout1.addWidget(button_down)
+
+        button_ok = qg.QPushButton('Ok')
+        button_cancel = qg.QPushButton('Cancel')
+
+        button_ok.pressed.connect(self.accept)        
+        button_cancel.pressed.connect(self.reject)        
+
+        sublayout2 = qg.QHBoxLayout()
+        sublayout2.addWidget(button_ok)
+        sublayout2.addWidget(button_cancel)
+
+        layout = qg.QVBoxLayout()
+        layout.addWidget(qg.QLabel('Device'))
+        layout.addWidget(self.operation_list)
+        layout.addWidget(self.table)
+        layout.addLayout(sublayout1)
+        layout.addLayout(sublayout2)
+        self.setLayout(layout)
+
+        if jointop!=None:
+            op_ref,output_ii = jointop.operation_links['parent'][0]
+            op_ii = design.operation_index(op_ref)
+            
+            self.operation_list.selectIndeces([(op_ii,output_ii)])
+            for item in jointop.joint_defs:
+                sketch = self.design.sketches[item.sketch]
+                joint_layer = self.design.return_layer_definition().getlayer(item.joint_layer)
+                sublaminate_layers = [self.design.return_layer_definition().getlayer(item2) for item2 in item.sublaminate_layers]
+                self.row_add(sketch,joint_layer,sublaminate_layers,item.width)
+
+    def row_add(self,sketch = None,joint_layer = None,sublaminate_layers = None,width = None):
+        ii = self.table.rowCount()
+        self.table.setRowCount(ii+1)
+        item = qg.QTableWidgetItem()
+        if sketch!=None:
+            item.setData(qc.Qt.ItemDataRole.UserRole,sketch)
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(sketch))
+        self.table.setItem(ii,0,item)
+        
+        item = qg.QTableWidgetItem()
+        if joint_layer!=None:
+            item.setData(qc.Qt.ItemDataRole.UserRole,joint_layer)
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(joint_layer))
+        self.table.setItem(ii,1,item)
+    
+        item = qg.QTableWidgetItem()
+        if sublaminate_layers!=None:
+            item.setData(qc.Qt.ItemDataRole.UserRole,sublaminate_layers)
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(sublaminate_layers))
+        else:
+            item.setData(qc.Qt.ItemDataRole.UserRole,[])
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,str([]))
+        self.table.setItem(ii,2,item)
+
+        item = qg.QTableWidgetItem()
+        if width!=None:
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,width)
+        else:
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,0.0)
+        self.table.setItem(ii,3,item)
+        self.table.reset_min_width()
+    def row_remove(self):
+        ii = self.table.currentRow()
+        kk = self.table.currentColumn()
+        self.table.removeRow(ii)
+        self.table.setCurrentCell(ii,kk)
+    def row_shift_up(self):
+        ii = self.table.currentRow()
+        kk = self.table.currentColumn()
+        if ii>0:
+            cols = self.table.columnCount()
+            items_below = [self.table.takeItem(ii,jj) for jj in range(cols)]
+            items_above = [self.table.takeItem(ii-1,jj) for jj in range(cols)]
+            [self.table.setItem(ii,jj,item) for item,jj in zip(items_above,range(cols))]
+            [self.table.setItem(ii-1,jj,item) for item,jj in zip(items_below,range(cols))]
+        self.table.setCurrentCell(ii-1,kk)
+    def row_shift_down(self):
+        ii = self.table.currentRow()
+        kk = self.table.currentColumn()
+        if ii<self.table.rowCount()-1:
+            cols = self.table.columnCount()
+            items_below = [self.table.takeItem(ii+1,jj) for jj in range(cols)]
+            items_above = [self.table.takeItem(ii,jj) for jj in range(cols)]
+            [self.table.setItem(ii+1,jj,item) for item,jj in zip(items_above,range(cols))]
+            [self.table.setItem(ii,jj,item) for item,jj in zip(items_below,range(cols))]
+        self.table.setCurrentCell(ii+1,kk)
+    def acceptdata(self):
+        from popupcad.manufacturing.joint_operation2 import JointDef
+        jointdefs = []
+        for ii in range(self.table.rowCount()):
+            sketch = self.table.item(ii,0).data(qc.Qt.ItemDataRole.UserRole)
+            joint_layer = self.table.item(ii,1).data(qc.Qt.ItemDataRole.UserRole)
+            sublaminate_layers = self.table.item(ii,2).data(qc.Qt.ItemDataRole.UserRole)
+            width = float(self.table.item(ii,3).data(qc.Qt.ItemDataRole.DisplayRole))
+            jointdefs.append(JointDef(sketch.id,joint_layer.id,[item.id for item in sublaminate_layers],width))
+        operation_links = {}
+        operation_links['parent'] = self.operation_list.currentRefs()
+        return operation_links,jointdefs
+        
+
+class Delegate(qg.QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super(Delegate, self).__init__(parent)
+        
+    def createEditor(self, parent, option, index):
+        if index.column() == 0:
+            editor = SingleiListWidget(parent.parent().parent().sketches,parent)
+            editor.editingFinished.connect(self.commitAndCloseEditor)
+            return editor
+        elif index.column() == 1:
+            editor = SingleiListWidget(parent.parent().parent().layers,parent)
+            editor.editingFinished.connect(self.commitAndCloseEditor)
+            return editor
+        elif index.column() == 2:
+            editor = MultiListWidget(parent.parent().parent().layers,parent)
+            editor.editingFinished.connect(self.commitAndCloseEditor)
+            return editor
+        elif index.column() == 3:
+            editor = qg.QLineEdit(parent)
+            val = qg.QDoubleValidator(0, 1e6, 6, editor)
+            editor.setValidator(val)
+            return editor
+        else:
+            return super(Delegate,self).createEditor(parent, option, index)
+            
+    def commitAndCloseEditor(self):
+        editor = self.sender()
+        self.commitData.emit(editor)
+        self.closeEditor.emit(editor, qg.QAbstractItemDelegate.NoHint)        
+    
+    def updateEditorGeometry(self, editor, option, index):
+        if index.column() in [0,1,2]:
+            rect = option.rect
+            rect.setBottom(rect.bottom()+100)
+            editor.setGeometry(rect)
+        else:
+            editor.setGeometry(option.rect)
+        
+    def setEditorData(self, editor, index):
+        if index.column() == 0:
+            d = index.data(qc.Qt.ItemDataRole.UserRole)
+            editor.setData(d)
+        elif index.column() == 1:
+            d = index.data(qc.Qt.ItemDataRole.UserRole)
+            editor.setData(d)
+        elif index.column() == 2:
+            d = index.data(qc.Qt.ItemDataRole.UserRole)
+            editor.setData(d)
+        elif index.column() == 3:
+            d = index.data()
+            editor.setText(str(d))
+        else:
+            return super(Delegate,self).setEditorData(editor, index)
+
+    def setModelData(self, editor, model, index):
+        if index.column() == 0:
+            try:
+                value = editor.selectedItems()[0].customdata
+                model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
+                model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
+            except IndexError:
+                pass
+        elif index.column() == 1:
+            try:
+                value = editor.selectedItems()[0].customdata
+                model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
+                model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
+            except IndexError:
+                pass
+        elif index.column() == 2:
+            values = [item.customdata for item in editor.selectedItems()]
+            model.setData(index, str(values), qc.Qt.ItemDataRole.EditRole)        
+            model.setData(index, values, qc.Qt.ItemDataRole.UserRole)        
+        else:
+            return super(Delegate,self).setModelData(editor, model, index)
+
 class JointOperation2(Operation2):
     name = 'Joint Definition'
-#    hinge_gap = .01*popupcad.internal_argument_scaling
-#    safe_buffer1 = .5*hinge_gap
-#    safe_buffer2 = .5*hinge_gap
-#    safe_buffer3 = .5*hinge_gap
-#    split_buffer = .1*hinge_gap
     resolution = 2
     
     name = 'Joint Operation'
@@ -54,7 +311,6 @@ class JointOperation2(Operation2):
         joint_def = self.joint_defs[0]
         operationgeom = design.sketches[joint_def.sketch].output_csg()
         layers = [design.return_layer_definition().getlayer(joint_def.joint_layer)]
-#        operationgeom = popupcad.geometry.customshapely.multiinit(operationgeom)
         laminate = Laminate(design.return_layer_definition())
         for layer in layers:
             laminate.replacelayergeoms(layer,operationgeom)
@@ -95,7 +351,6 @@ class JointOperation2(Operation2):
             hingelines = sketch_result.genericfromls()[hingelayer]
             hingelayer_ii = layerdef.getlayer_ii(joint_def.joint_layer)
     
-    #        holes,allgeoms,hingelayer = popupcad.algorithms.points.jointholes(sketch_result,layerdef)
             safe_sections = []
             allgeoms2 = [geom.outputshapely() for geom in hingelines]
             allgeoms3 = [Laminate(layerdef) for item in allgeoms2]
@@ -108,21 +363,14 @@ class JointOperation2(Operation2):
                 unsafe = Laminate.unaryoperation(allgeoms4[:ii]+allgeoms4[ii+1:],'union')
                 safe_sections.append(lam.difference(unsafe.buffer(safe_buffer1,resolution = self.resolution)))
             safe = Laminate.unaryoperation(safe_sections,'union')
-    #        safe = safe_sections[0]
             unsafe = Laminate.unaryoperation(allgeoms4,'union').difference(safe.buffer(safe_buffer2,resolution = self.resolution))
             unsafe2 = unsafe.unarylayeroperation('union',[hingelayer],sublaminate_layers).buffer(safe_buffer3,resolution = self.resolution)
     
             
-    #        buffered = sketch_result.buffer(hinge_gap,resolution = self.resolution)
             buffered2 = sketch_result.buffer(split_buffer,resolution = self.resolution)
-    #        self_index = design.operation_index(self.id)
-    #        last = design.operations[self_index-1].output[0].csg
             parent_id,parent_output_index = self.operation_links['parent'][0]
             parent_index = design.operation_index(parent_id)
             last = design.operations[parent_index].output[parent_output_index].csg
-    #        separated = last.difference(buffered)
-    #        sep2 = Laminate(layerdef)
-    #        sep2[hingelayer_ii]=separated[hingelayer_ii]
             
             split1 = last.difference(unsafe2)
             split2 = split1.difference(buffered2)
@@ -140,8 +388,6 @@ class JointOperation2(Operation2):
                     if not geom.intersection(body).isEmpty():
                         connections[line].append(body_generic)
                         connections2[line].append(body)
-    #                if not not connections2[line]:
-    #                    connections2[line].append(geom)
             for line,geoms in connections2.items():
                 connections2[line]=Laminate.unaryoperation(geoms,'union')
         
