@@ -82,6 +82,9 @@ class MainWidget(qg.QDialog):
         
         self.operation_list = DraggableTreeWidget()
         self.operation_list.linklist(self.operations)
+
+        self.fixed = DraggableTreeWidget()
+        self.fixed.linklist(self.operations)
         
         self.table= Table()
         self.table.setRowCount(0)
@@ -124,16 +127,28 @@ class MainWidget(qg.QDialog):
         layout = qg.QVBoxLayout()
         layout.addWidget(qg.QLabel('Device'))
         layout.addWidget(self.operation_list)
+        layout.addWidget(qg.QLabel('Fixed Region'))
+        layout.addWidget(self.fixed)
         layout.addWidget(self.table)
         layout.addLayout(sublayout1)
         layout.addLayout(sublayout2)
         self.setLayout(layout)
 
         if jointop!=None:
-            op_ref,output_ii = jointop.operation_links['parent'][0]
-            op_ii = design.operation_index(op_ref)
-            
-            self.operation_list.selectIndeces([(op_ii,output_ii)])
+            try:
+                op_ref,output_ii = jointop.operation_links['parent'][0]
+                op_ii = design.operation_index(op_ref)
+                self.operation_list.selectIndeces([(op_ii,output_ii)])
+            except(IndexError,KeyError):
+                pass
+
+            try:
+                fixed_ref,fixed_output_ii = jointop.operation_links['fixed'][0]
+                fixed_ii = design.operation_index(fixed_ref)
+                self.fixed.selectIndeces([(fixed_ii,fixed_output_ii)])
+            except(IndexError,KeyError):
+                pass
+
             for item in jointop.joint_defs:
                 sketch = self.design.sketches[item.sketch]
                 joint_layer = self.design.return_layer_definition().getlayer(item.joint_layer)
@@ -207,6 +222,7 @@ class MainWidget(qg.QDialog):
             jointdefs.append(JointDef(sketch.id,joint_layer.id,[item.id for item in sublaminate_layers],width))
         operation_links = {}
         operation_links['parent'] = self.operation_list.currentRefs()
+        operation_links['fixed'] = self.fixed.currentRefs()
         return operation_links,jointdefs
         
 
