@@ -66,7 +66,6 @@ class GenericPoly(GenericShapeBase):
             path.closeSubpath()
         return path        
     def triangles3(self):
-        import popupcad
         cdt = self.toCDT3()
         cdt.Triangulate()
         return [tri.toList() for tri in cdt.GetTriangles()]

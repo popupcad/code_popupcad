@@ -24,6 +24,7 @@ class GenericLaminate(popupCADFile):
         if identical:
             new.id = self.id
         return new
+        
     def toLaminate(self):
         from popupcad.filetypes.laminate import Laminate
         new = Laminate(self.layerdef)
@@ -31,6 +32,8 @@ class GenericLaminate(popupCADFile):
             geoms = [item.outputshapely() for item in self.geoms[layer]]
             new.replacelayergeoms(layer,geoms)
         return new
+    def layers(self):
+        return self.layerdef.layers
         
 if __name__=='__main__':
     import PySide.QtGui as qg
