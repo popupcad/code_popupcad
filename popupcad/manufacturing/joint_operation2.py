@@ -386,17 +386,22 @@ class JointOperation2(Operation2):
             buffered2 = sketch_result.buffer(split_buffer,resolution = self.resolution)
             parent_id,parent_output_index = self.operation_links['parent'][0]
             parent_index = design.operation_index(parent_id)
-            last = design.operations[parent_index].output[parent_output_index].csg
+            parent = design.operations[parent_index].output[parent_output_index].csg
+
+            fixed_id,fixed_output_index = self.operation_links['fixed'][0]
+            fixed_index = design.operation_index(fixed_id)
+            fixed = design.operations[fixed_index].output[fixed_output_index].csg
             
-            split1 = last.difference(unsafe2)
+            split1 = parent.difference(unsafe2)
             split2 = split1.difference(buffered2)
             bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.genericfromls(),layerdef)
-            
+
             bodies_generic = [item.genericfromls() for item in bodies]
             bodies_generic = [GenericLaminate(layerdef,item) for item in bodies_generic]
             
             connections = {}
             connections2 = {}
+            
             for line,geom in zip(hingelines,safe_sections):
                 connections[line]=[]
                 connections2[line]=[]
@@ -406,7 +411,12 @@ class JointOperation2(Operation2):
                         connections2[line].append(body)
             for line,geoms in connections2.items():
                 connections2[line]=Laminate.unaryoperation(geoms,'union')
-        
+
+            self.fixed_bodies = []
+            for body,body_generic in zip(bodies,bodies_generic):
+                if not fixed.intersection(body).isEmpty():
+                    self.fixed_bodies.append(body_generic)
+                    
         self.connections = [(key,connections[key]) for key in hingelines]
         
         laminates = [sketch_result,safe,unsafe2,split1,split2]+bodies+list(connections2.values())
