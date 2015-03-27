@@ -135,20 +135,22 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
                         self.addItem(temp)
 #                        self.setFocusItem(temp.editchild)
                         temp.editmode()
-                        self.nextgeometry = None
+                        
+#                        self.nextgeometry = None
                     elif self.nextgeometry==DrawingPoint:
                         temp = self.nextgeometry(DrawnPoint())
                         self.addItem(temp)
                         self.setFocusItem(temp)
                         temp.setPos(pos)
                         temp.updatescale()
-                        self.nextgeometry = None
+                        self.childfinished()
+#                        self.nextgeometry = None
                     else:
                         self.temp = self.nextgeometry()
                         self.addItem(self.temp)
                         self.setFocusItem(self.temp)
                         self.temp.mousepress(pos)
-                        self.nextgeometry = None
+#                        self.nextgeometry = None
         else:
             super(GraphicsScene,self).mousePressEvent(event)
             self.leavingeditmode.emit()

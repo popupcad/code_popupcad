@@ -89,7 +89,7 @@ class Dialog(qg.QDialog):
 class ScrapOperation2(Operation2):
     name = 'Scrap Operation'
     valuenames = ['device buffer']
-    show = ['keepout']
+    show = []
     defaults = [1.]
 
     def copy(self):

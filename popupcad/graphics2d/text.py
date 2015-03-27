@@ -100,6 +100,8 @@ class GenericText(object):
 
 
 class TextParent(qg.QGraphicsPathItem,Common):
+    isDeletable = True
+
     def __init__(self,generic,*args,**kwargs):
         super(TextParent,self).__init__(*args,**kwargs)
         self.generic = generic            
@@ -137,7 +139,11 @@ class TextParent(qg.QGraphicsPathItem,Common):
         self.editchild.setTextInteractionFlags(qc.Qt.NoTextInteraction)
         self.generic.text = self.editchild.toPlainText()
         self.editchild.removefromscene()
+        if self.generic.text=='':
+            self.harddelete()
         self.refreshview()
+#        self.scene().savesnapshot.emit()
+
         
     def refreshview(self):
         self.setPath(self.generic.genpath())

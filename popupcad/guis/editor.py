@@ -194,7 +194,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
         self.viewactions.append({'text':'Zoom Fit','kwargs':{'triggered':self.view_2d.zoomToFit,'shortcut': qc.Qt.CTRL+qc.Qt.Key_F}})
         self.viewactions.append({'text':'Screenshot','kwargs':{'triggered':self.sceneview.screenShot,'shortcut': qc.Qt.CTRL+qc.Qt.Key_R}})
-        self.viewactions.append({'text':'3D Screenshot','kwargs':{'triggered':self.view_3d.screenshot}})
+        self.viewactions.append({'text':'3D Screenshot','kwargs':{'triggered':self.screenshot_3d}})
 
         self.tools1 = []
         self.tools1.append({'text':'Cleanup','kwargs':{'icon':Icon('cleanup'),'triggered':lambda:self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)}})
@@ -504,6 +504,15 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
                 
     def save_joint_def(self):
         self.design.save_joint_def()
+
+    def screenshot_3d(self):
+        time = popupcad.basic_functions.return_formatted_time()
+        filename = os.path.normpath(os.path.join(popupcad.exportdir,'3D_screenshot_'+time+'.png'))
+#        self.view_3d.view.initializeGL()
+#        self.view_3d.view.update()
+        self.view_3d.view.grabFrameBuffer().save(filename)
+        
+
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(Icon('popupcad'))

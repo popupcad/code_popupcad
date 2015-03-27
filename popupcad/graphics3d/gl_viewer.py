@@ -31,9 +31,9 @@ class GLObjectViewer(qg.QWidget):
         self.slider.setValue(self.view.z_zoom)
         self.slider.valueChanged.connect(self.view.update_zoom)
         self.setLayout(layout)
-    def screenshot(self):
-        self.view.screenshot()
-
+#    def screenshot(self):
+#        self.view.screenshot()
+#
 
 class GLViewWidget(gl.GLViewWidget):
     def __init__(self,*args,**kwargs):
@@ -55,13 +55,9 @@ class GLViewWidget(gl.GLViewWidget):
         g = gl.GLGridItem()
         g.scale(2,2,1)
         self.addItem(g)
-    def screenshot(self):
-        import popupcad
-        import os
-        time = popupcad.basic_functions.return_formatted_time()
-        filename = os.path.normpath(os.path.join(popupcad.exportdir,'3D_screenshot_'+time+'.png'))
-
-        self.grabFrameBuffer().save(filename)
+#    def screenshot(self):
+#        import popupcad
+#        import os
 
         
     def update_object(self,zvalue,tris,layers):
