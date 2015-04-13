@@ -270,6 +270,6 @@ class Design(popupCADFile):
             try:
                 filename = os.path.normpath(os.path.join(self.filename()+'.joints',))
                 with open(filename,'w') as f:
-                    yaml.dump((op.connections,op.fixed_bodies),f)
+                    yaml.dump((op.bodies_generic,op.connections,op.fixed_bodies,op.all_joint_props),f)
             except AttributeError:
                 pass
