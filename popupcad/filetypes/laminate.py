@@ -152,6 +152,6 @@ class Laminate(IterableLaminate):
 
     def to_generic_laminate(self):
         from popupcad.filetypes.genericlaminate import GenericLaminate
-        new = GenericLaminate(self.layerdef,self.genericfromls)
+        new = GenericLaminate(self.layerdef,self.genericfromls())
         return new
         

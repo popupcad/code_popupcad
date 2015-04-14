@@ -7,7 +7,7 @@ Created on Tue Feb 10 12:56:59 2015
 from popupcad.filetypes.popupcad_file import popupCADFile
 
 class GenericLaminate(popupCADFile):
-    filetypes = {'laminate':'Shape File'}
+    filetypes = {'laminate':'Laminate File'}
     defaultfiletype = 'laminate'
     filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 

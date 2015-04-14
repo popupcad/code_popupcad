@@ -146,6 +146,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
 #        self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
         self.fileactions.append({'text':"Save Joint Defs",'kwargs':{'triggered':self.save_joint_def}})      
+        self.fileactions.append({'text':"Export Laminate",'kwargs':{'triggered':self.export_laminate}})      
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
         self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})     
         def dummy(action):
@@ -510,8 +511,13 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 #        self.view_3d.view.initializeGL()
 #        self.view_3d.view.update()
         self.view_3d.view.grabFrameBuffer().save(filename)
-        
 
+    def export_laminate(self):
+        ii,jj = self.operationeditor.currentIndeces2()[0]
+        output = self.design.operations[ii].output[jj]
+        generic = output.csg.to_generic_laminate()
+        generic.saveAs()
+        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(Icon('popupcad'))
