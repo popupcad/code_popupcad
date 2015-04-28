@@ -66,17 +66,28 @@ class GLViewWidget(gl.GLViewWidget):
         self.zvalue = zvalue
         self.build_object()
 
+        for item in self.meshitems:
+            self.addItem(item)
+        self.update_layer_z()
+
     def update_zoom(self,value):
         self.z_zoom = value
-        self.build_object()
+        self.update_layer_z()
+        
+    def update_layer_z(self):
+        for layer,item in zip(self.layers,self.meshitems):
+            item.resetTransform()
+            z = self.zvalue[layer]*self.z_zoom
+            item.translate(0,0,z)
         
     def build_object(self):
         self.clear()
 #        self.add_grid()
+        self.meshitems = []
         for layer in self.layers:
             tri = numpy.array(self.tris[layer])
             if len(tri)>0:
-                z = numpy.ones((tri.shape[0],tri.shape[1],1))*self.zvalue[layer]*self.z_zoom
+                z = numpy.zeros((tri.shape[0],tri.shape[1],1))
                 tri = numpy.concatenate((tri,z),2)
                 color = layer.color
 #                print(color)
@@ -85,7 +96,8 @@ class GLViewWidget(gl.GLViewWidget):
                     for jj in range(3):
                         colors[ii,jj] = color
                 m = gl.GLMeshItem(vertexes = tri,vertexColors = colors,edgeColor = (1,1,1,1))
-                self.addItem(m)
+                self.meshitems.append(m)
+#                self.addItem(m)
 
     def add_default_item(self):
         verts = numpy.empty((36, 3, 3), dtype=numpy.float32)
@@ -99,6 +111,7 @@ class GLViewWidget(gl.GLViewWidget):
                            drawEdges=True, edgeColor=(1, 1, 0, 1))
         m2.translate(-5, 5, 0)
         self.addItem(m2)
+        
     def sizeHint(self):
         return qc.QSize(300,300)
         
