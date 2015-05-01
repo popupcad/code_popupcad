@@ -75,9 +75,9 @@ class GenericPoly(GenericShapeBase):
         obj = customshapely.ShapelyPolygon(exterior_p,interiors_p)
         return obj
     def addvertex_exterior(self,vertex,special = False):
-        if len(self.exterior)>2:
+        if len(self.get_exterior())>2:
             if special:
-                a = [v.getpos() for v in self.exterior]
+                a = [v.getpos() for v in self.get_exterior()]
                 b = list(zip(a,a[1:]+a[:1]))
                 c = numpy.array(b)
                 d = numpy.array(vertex.getpos())
@@ -85,10 +85,10 @@ class GenericPoly(GenericShapeBase):
                 f = e.reshape(-1,4)
                 g = (f**2).sum(1)
                 h = g.argmin()
-                self.exterior.insert(h+1,vertex)
+                self.insert_exterior_vertex(h+1,vertex)
                 self.update_handles()
                 return
-        self.exterior.append(vertex)
+        self.append_exterior_vertex(vertex)
         self.update_handles()
     def segments(self):
         return self.segments_closed()

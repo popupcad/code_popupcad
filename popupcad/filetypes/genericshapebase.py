@@ -43,12 +43,12 @@ class GenericShapeBase(popupCADFile):
         popupcad.lastshapedir = directory
 
     def isValid(self):
-        notempty = len(self.exterior)>0
+        notempty = len(self.get_exterior())>0
         return notempty
 
     def copy_data(self,new_type,identical = True):
-        exterior = [vertex.copy(identical) for vertex in self.exterior]
-        interiors = [[vertex.copy(identical) for vertex in interior] for interior in self.interiors]
+        exterior = [vertex.copy(identical) for vertex in self.get_exterior()]
+        interiors = [[vertex.copy(identical) for vertex in interior] for interior in self.get_interiors()]
         new = new_type(exterior,interiors,self.is_construction())
         new.setmoveable(self.is_moveable())
         if identical:
@@ -60,8 +60,8 @@ class GenericShapeBase(popupCADFile):
         return self.copy_data(type(self),identical)
 
     def upgrade(self,identical = True):
-        exterior = [vertex.upgrade(identical) for vertex in self.exterior]
-        interiors = [[vertex.upgrade(identical) for vertex in interior] for interior in self.interiors]
+        exterior = [vertex.upgrade(identical) for vertex in self.get_exterior()]
+        interiors = [[vertex.upgrade(identical) for vertex in interior] for interior in self.get_interiors()]
         new = type(self)(exterior,interiors,self.is_construction())
         new.setmoveable(self.is_moveable())
         if identical:
@@ -92,30 +92,30 @@ class GenericShapeBase(popupCADFile):
             return self.construction
 
     def exteriorpoints(self):
-        return [vertex.getpos() for vertex in self.exterior]        
+        return [vertex.getpos() for vertex in self.get_exterior()]        
         
     def interiorpoints(self):
-        return [[vertex.getpos() for vertex in interior] for interior in self.interiors]
+        return [[vertex.getpos() for vertex in interior] for interior in self.get_interiors()]
         
     def vertices(self):
-        vertices = self.exterior[:]
-        [vertices.extend(interior) for interior in self.interiors]
+        vertices = self.get_exterior()[:]
+        [vertices.extend(interior) for interior in self.get_interiors()]
         return vertices
 
     def points(self):
         return [vertex.getpos() for vertex in self.vertices()]        
 
     def segments_closed(self):
-        points = self.exterior
+        points = self.get_exterior()
         segments = list(zip(points,points[1:]+points[:1]))
-        for points in self.interiors:
+        for points in self.get_interiors():
             segments.extend(list(zip(points,points[1:]+points[:1])))
         return segments
 
     def segments_open(self):
-        points = self.exterior
+        points = self.get_exterior()
         segments = list(zip(points[:-1],points[1:]))
-        for points in self.interiors:
+        for points in self.get_interiors():
             segments.extend(list(zip(points[:-1],points[1:])))
         return segments
         
@@ -252,8 +252,8 @@ class GenericShapeBase(popupCADFile):
         except AttributeError:
             pass
 
-        exterior = [vertex.gen_interactive() for vertex in self.exterior]
-        interiors = [[vertex.gen_interactive() for vertex in interior] for interior in self.interiors]
+        exterior = [vertex.gen_interactive() for vertex in self.get_exterior()]
+        interiors = [[vertex.gen_interactive() for vertex in interior] for interior in self.get_interiors()]
 
         handles = exterior[:]
         [handles.extend(interior) for interior in interiors]
@@ -294,11 +294,11 @@ class GenericShapeBase(popupCADFile):
             
     def shape_is_equal(self,other):
         if type(self)==type(other):
-            if len(self.exterior)==len(other.exterior) and len(self.interiors)==len(other.interiors):
-                for point1,point2 in zip(self.exterior,other.exterior):
+            if len(self.get_exterior())==len(other.get_exterior()) and len(self.get_interiors())==len(other.get_interiors()):
+                for point1,point2 in zip(self.get_exterior(),other.get_exterior()):
                     if not point1.is_equal(point2,self.tolerance):
                         return False
-                for interior1,interior2 in zip(self.interiors,other.interiors):
+                for interior1,interior2 in zip(self.get_interiors(),other.get_interiors()):
                     if len(interior1)!=len(interior2):
                         return False
                     for point1,point2 in zip(interior1,interior2):
@@ -308,18 +308,23 @@ class GenericShapeBase(popupCADFile):
         return False
 
     def shift(self,dxdy):
-        [item.shift(dxdy) for item in self.exterior]
-        [item.shift(dxdy) for interior in self.interiors for item in interior]
+        [item.shift(dxdy) for item in self.get_exterior()]
+        [item.shift(dxdy) for interior in self.get_interiors() for item in interior]
 
     def constrained_shift(self,dxdy,constraintsystem):
-        a = [(item,dxdy) for item in self.exterior]
-        a.extend([(item,dxdy) for interior in self.interiors for item in interior])
+        a = [(item,dxdy) for item in self.get_exterior()]
+        a.extend([(item,dxdy) for interior in self.get_interiors() for item in interior])
         constraintsystem.constrained_shift(a)
+
     def flip(self):
-        self.exterior = self.exterior[::-1]
-        self.interiors = [interior[::-1] for interior in self.interiors]
+        self.exterior = self.get_exterior()[::-1]
+        self.interiors = [interior[::-1] for interior in self.get_interiors()]
 
     def hollow(self):
         return self
     def fill(self):
         return self
+    def insert_exterior_vertex(self,ii,vertex):
+        self.exterior.insert(ii,vertex)
+    def append_exterior_vertex(self,vertex):
+        self.exterior.append(vertex)

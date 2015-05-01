@@ -80,12 +80,12 @@ class Proto(Common):
 
 class ProtoMultiPoint(Proto):
     def addhandle(self,handle):
-        if not self.generic.exterior:
+        if not self.generic.get_exterior():
             self.generic.addvertex_exterior(handle.get_generic())
             self.temphandle = None
         else:
-            if handle.pos().toTuple() != self.generic.exterior[-1].getpos():
-                if self.checkdist(handle.pos().toTuple(),self.generic.exterior[-1].getpos()):
+            if handle.pos().toTuple() != self.generic.get_exterior()[-1].getpos():
+                if self.checkdist(handle.pos().toTuple(),self.generic.get_exterior()[-1].getpos()):
                     self.generic.addvertex_exterior(handle.get_generic())
                     self.temphandle = None
         
@@ -108,20 +108,20 @@ class ProtoMultiPoint(Proto):
 
         self.updateshape()
     def mousedoubleclick(self,point):
-        if len(self.generic.exterior)>2:
+        if len(self.generic.get_exterior())>2:
             self.finish_definition()
             self.updateshape()
         
 
 class ProtoTwoPoint(Proto):
     def addhandle(self,handle):
-        if len(self.generic.exterior)==0:
+        if len(self.generic.get_exterior())==0:
             self.generic.addvertex_exterior(handle.get_generic())
             self.temphandle = None
             return True
-        elif len(self.generic.exterior)==1:
-            if handle.pos().toTuple() != self.generic.exterior[-1].getpos():
-                if self.checkdist(handle.pos().toTuple(),self.generic.exterior[-1].getpos()):
+        elif len(self.generic.get_exterior())==1:
+            if handle.pos().toTuple() != self.generic.get_exterior()[-1].getpos():
+                if self.checkdist(handle.pos().toTuple(),self.generic.get_exterior()[-1].getpos()):
                     self.generic.addvertex_exterior(handle.get_generic())
                     self.temphandle = None
                     return True
@@ -138,7 +138,7 @@ class ProtoTwoPoint(Proto):
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
             
-        if len(self.generic.exterior)==0:
+        if len(self.generic.get_exterior())==0:
             self.addhandle(self.temphandle)
             a = ShapeVertex()
             a.setpos(point.toTuple())
@@ -148,7 +148,7 @@ class ProtoTwoPoint(Proto):
             self.updateshape()
             return
             
-        elif len(self.generic.exterior)==1:
+        elif len(self.generic.get_exterior())==1:
             if self.addhandle(self.temphandle):
                 self.finish_definition()
                 self.updateshape()
