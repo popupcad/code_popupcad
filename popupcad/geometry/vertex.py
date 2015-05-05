@@ -152,7 +152,33 @@ class BaseVertex(object):
     def constrained_shift(self,dxdy,constraintsystem):
         constraintsystem.constrained_shift([(self,dxdy)])
 
+    @classmethod
+    def delistify(cls,id,x,y,static,is_moveable,is_construction):
+        new = cls()
+        new.id = id
+        new.setpos((x,y))
+        new.static = static
+        new.setmoveable(is_moveable)
+        new.set_construction(is_construction)
+        return new
+
+    def listify(self):
+        x,y = self.getpos()
+        output = [self.id,x,y,self.static,self.is_moveable(),self.is_construction()]
+        return output
+
+    def vertex_representer(dumper,v):
+        output = dumper.represent_sequence(v.yaml_node_name,v.listify())
+        return output
+    
+    @classmethod
+    def vertex_constructor(cls,loader, node):
+        list1 = loader.construct_sequence(node)
+        new = cls.delistify(*list1)
+        return new
+
 class ShapeVertex(BaseVertex):
+    yaml_node_name = u'!shape_vertex'
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex
         iv = InteractiveShapeVertex(self)
@@ -160,6 +186,7 @@ class ShapeVertex(BaseVertex):
         return iv
 
 class DrawnPoint(ShapeVertex):
+    yaml_node_name = u'!drawn_point'
     def exteriorpoints(self):
         return [self.getpos()]
     def interiorpoints(self):
@@ -193,8 +220,8 @@ class DrawnPoint(ShapeVertex):
         p = ShapelyPoint(*self.getpos())
         return p
 
-
 class ReferenceVertex(BaseVertex):
+    yaml_node_name = u'!reference_vertex'
     def __init__(self,*args,**kwargs):
         super(ReferenceVertex,self).__init__(*args,**kwargs)
         self.setstatic(True)
