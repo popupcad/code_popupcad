@@ -84,7 +84,7 @@ class GraphicsView(qg.QGraphicsView):
         self.lastdrag = qg.QGraphicsView.DragMode.RubberBandDrag
         self.restoredrag()
 
-    def zoomToFit(self):
+    def zoomToFit(self,buffer = .1):
         scene = self.scene()
 #        for item in scene.items():
 #            item.resetTransform()
@@ -99,10 +99,10 @@ class GraphicsView(qg.QGraphicsView):
             w = scene_rect.width()
             h = scene_rect.height()
             
-            scene_rect.setLeft(scene_rect.left() - w*.1)
-            scene_rect.setRight(scene_rect.right() + w*.1)
-            scene_rect.setTop(scene_rect.top() - h*.1)
-            scene_rect.setBottom(scene_rect.bottom() + h*.1)
+            scene_rect.setLeft(scene_rect.left() - w*buffer)
+            scene_rect.setRight(scene_rect.right() + w*buffer)
+            scene_rect.setTop(scene_rect.top() - h*buffer)
+            scene_rect.setBottom(scene_rect.bottom() + h*buffer)
 
         scene.setSceneRect(scene_rect)    
         self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)

@@ -233,7 +233,7 @@ class Design(popupCADFile):
 #        operations2 = self.network().sortedallchildrenofnodes(operations)
 #        for op in operations2:
         for op in self.operations:
-            print(self._basename,op,self.operations.index(op))
+#            print(self._basename,op,self.operations.index(op))
             op.generate(self)
 
     def network(self):

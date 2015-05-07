@@ -33,3 +33,9 @@ class SimpleSceneDialog(qg.QDialog):
         for item in items:
             self.scene.addItem(item)
 
+if __name__ == "__main__":
+    import sys
+    app = qg.QApplication(sys.argv)
+    window = SimpleSceneDialog(None,[])
+    window.show()
+    sys.exit(app.exec_())
