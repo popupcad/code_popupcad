@@ -98,23 +98,25 @@ class GenericFile(object):
     def buildfilters(cls,*args):
         return buildfilters(*args)
         
-    def updatefilename(self,filename,selectedfilter):
+    def updatefilename(self,filename):
         import os
         try:
             del self.filename
         except AttributeError:
             pass
         self.dirname,self._basename = os.path.split(filename)
-        self.selectedfilter = selectedfilter
         self.setlastdir(self.dirname)
+
+    def updatefilter(self,selectedfilter):
+        self.selectedfilter = selectedfilter
         
     @classmethod
     def load_yaml(cls,filename):
         import yaml
         with open(filename,'r') as f:
             obj1 = yaml.load(f)
-#            return obj1.upgrade()
-            return obj1
+        obj1.updatefilename(filename)
+        return obj1
 
     @classmethod
     def open_filename(cls,parent = None,openmethod = None,**openmethodkwargs):
@@ -124,7 +126,7 @@ class GenericFile(object):
                 design = cls.load_yaml(filename)
             else:
                 design = openmethod(filename,**openmethodkwargs)
-            design.updatefilename(filename,selectedfilter)
+            design.updatefilter(selectedfilter)
             return filename, design
         else:
             return None,None
@@ -136,9 +138,6 @@ class GenericFile(object):
             
     def save(self,parent = None,savemethod = None,**savemethodkwargs):
         try:
-            
-            self.parent_program_name = self.get_parent_program_name()
-            self.parent_program_version = self.get_parent_program_version()
             if savemethod == None:
                 return self.save_yaml(self.filename())
             else:
@@ -166,11 +165,7 @@ class GenericFile(object):
         if not filename:
             return False
         else:
-            self.updatefilename(filename,selectedfilter)
-
-            self.parent_program_name = self.get_parent_program_name()
-            self.parent_program_version = self.get_parent_program_version()
-
+            self.updatefilter(selectedfilter)
             if savemethod == None:
                 return self.save_yaml(self.filename())
             else:
@@ -182,6 +177,9 @@ class GenericFile(object):
             
     def save_yaml(self,filename,identical = True):
         import yaml
+        self.updatefilename(filename)
+        self.parent_program_name = self.get_parent_program_name()
+        self.parent_program_version = self.get_parent_program_version()
         new = self.copy(identical)
         with open(filename,'w') as f:        
             yaml.dump(new,f)
