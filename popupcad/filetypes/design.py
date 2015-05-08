@@ -9,6 +9,9 @@ from popupcad.filetypes.popupcad_file import popupCADFile
 from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph
 import PySide.QtGui as qg
 
+class UpgradeError(Exception):
+    pass
+
 class NoOperation(Exception):
     def __init__(self):
         Exception.__init__(self,'No Parent Operation')
@@ -56,49 +59,67 @@ class Design(popupCADFile):
     def op_from_ref(self,ref):
         return self.operations[self.operation_index(ref)]
 
-    def replace_op_refs(self,oldref,newref):
+    def replace_op_refs_force(self,oldref,newref):
         failed_ops=[]
-
+        for op in self.operations:
+            try:
+                op.replace_op_refs(oldref,newref)
+            except AttributeError:
+                failed_ops.append(op)
+        return failed_ops
+        
+    def replace_op_refs_inner(self,oldref,newref):
         self.network()
         
         oldop = self.op_from_ref(oldref[0])
         newop = self.op_from_ref(newref[0])
-        ii = self.operations.index(newop)
-        jjs = [self.operations.index(item) for item in oldop.allchildren()]
-        jj = min(jjs)        
         
         if oldop in newop.allchildren():
+            error_string = str(oldop)+' is a child of '+str(newop)
+            raise(UpgradeError(error_string))
+            
+        if newop in oldop.allchildren():
+            error_string = str(newop)+' is a child of '+str(oldop)
+            raise(UpgradeError(error_string))
+
+        ii = self.operations.index(newop)
+        jjs = [self.operations.index(item) for item in oldop.allchildren()]
+        if not not jjs:
+            jj = min(jjs)        
+            if ii>jj:
+                error_string = str(newop)+' is below a child of '+str(oldop)+'. Please move up.'
+                raise(UpgradeError(error_string))
+
+        for op in self.operations:
+            failed_ops = self.replace_op_refs_force(oldref,newref)
+        if not not failed_ops:
+            error_string = 'Some operations cannot be updated'
+            message_string = 'Please update manually.'
+            s = 'This is due to the following operations:\n'
+            for child in failed_ops[:-1]:
+                s+='{0},\n'.format(str(child))
+            s+='{0}'.format(str(failed_ops[-1]))
+            raise(UpgradeError(error_string,message_string,s))
+                
+    def replace_op_refs(self,oldref,newref):
+        try:
+            self.replace_op_refs_inner(oldref,newref)
+        except UpgradeError as ex:
             m = qg.QMessageBox()
-            m.setIcon(m.Information)
-            m.setText(str(oldop)+' is a child of '+str(newop))
+            m.setIcon(m.Warning)
+            m.setText(ex.args[0])
+            try:
+                m.setInformativeText(ex.args[1])
+            except IndexError:
+                pass
+            try:
+                m.setDetailedText(ex.args[2])
+            except IndexError:
+                pass
             m.exec_()
-        elif newop in oldop.allchildren():
-            m = qg.QMessageBox()
-            m.setIcon(m.Information)
-            m.setText(str(newop)+' is a child of '+str(oldop))
-            m.exec_()
-        elif ii>jj:
-            m = qg.QMessageBox()
-            m.setIcon(m.Information)
-            m.setText(str(newop)+' is below a child of '+str(oldop)+'. Please move up.')
-            m.exec_()
-        else:
-            for op in self.operations:
-                try:
-                    op.replace_op_refs(oldref,newref)
-                except AttributeError:
-                    failed_ops.append(op)
-            if not not failed_ops:
-                m = qg.QMessageBox()
-                m.setIcon(m.Warning)
-                m.setText('Some operations cannot be updated')
-                m.setInformativeText('Please update manually.')
-                s = 'This is due to the following operations:\n'
-                for child in failed_ops[:-1]:
-                    s+='{0},\n'.format(str(child))
-                s+='{0}'.format(str(failed_ops[-1]))
-                m.setDetailedText(s)
-                m.exec_()
+
+            
+        
 
     def prioroperations(self,op):
         priorindex = self.operation_index(op.id)
@@ -124,9 +145,18 @@ class Design(popupCADFile):
         self.copy_file_params(new,identical)
         return new    
 
+    def upgrade_operations(self):
+        samesame = False
+        operations_old = self.operations
+        while not samesame:
+            operations_new = [item.upgrade() for item in operations_old]
+            samesame = operations_old == operations_new
+            operations_old = operations_new
+        return operations_new
+        
     def upgrade(self,identical = True):
         new = Design()
-        new.operations = [operation.upgrade() for operation in self.operations]
+        new.operations = self.upgrade_operations()
         new.define_layers(self.return_layer_definition())
         if identical:
             new.id=self.id
@@ -173,7 +203,12 @@ class Design(popupCADFile):
         self.operations.extend(newoperations)
 
         for old,new in replacements:
-            self.replace_op_refs(old,new)
+#            self.replace_op_refs(old,new)
+            failed = self.replace_op_refs_force(old,new)
+            check_failures = set(failed)-set(ops_to_remove)
+            if not not check_failures:
+                raise(UpgradeError('Some operations could not be upgraded.  loss of data may have occurred'))
+                    
         for op in ops_to_remove:
             self.operations.pop(self.operations.index(op))
 
