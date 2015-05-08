@@ -315,7 +315,7 @@ class Constraint(object):
         return new
 
     def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+        return self
 
     def edit(self):
         pass

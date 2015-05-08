@@ -163,5 +163,3 @@ class CustomSupport4(Operation2):
         d = OperationOutput(modified_device,'device',self)
         self.output = [d,s,c]
 
-    def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)

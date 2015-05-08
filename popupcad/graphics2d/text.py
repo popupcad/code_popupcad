@@ -30,7 +30,7 @@ class GenericText(object):
         return new
 
     def upgrade(self,*args,**kwargs):
-        return self.copy()
+        return self
         
     def isValid(self):
         return True

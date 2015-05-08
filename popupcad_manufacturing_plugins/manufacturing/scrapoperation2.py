@@ -143,5 +143,3 @@ class ScrapOperation2(Operation2):
         c = OperationOutput(removable_down ,'removable_down',self)
         self.output = [a,a,b,c]                
     
-    def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)

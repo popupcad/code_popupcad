@@ -123,7 +123,7 @@ class BaseVertex(object):
         return self.copy_values(new,identical)
 
     def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+        return self
         
     def copy_values(self,new,identical=False):
         new.setpos(self.getpos())

@@ -48,7 +48,7 @@ class Laminate(IterableLaminate):
         new = type(self)(self.layerdef)
         new.layer_sequence = self.layer_sequence.copy()
     def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+        return self
     def layers(self):
         return self.layerdef.layers
     def isEmpty(self):

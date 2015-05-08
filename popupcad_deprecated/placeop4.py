@@ -263,9 +263,6 @@ class PlaceOperation4(Operation):
             self.editdata(*dialog.acceptdata)
             editedsignal.emit(self)
 
-    def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
-
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     sys.exit(app.exec_())    

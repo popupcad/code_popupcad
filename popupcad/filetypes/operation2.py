@@ -64,7 +64,7 @@ class Operation2(Node,UserData,ClassTools):
         return newop
 
     def upgrade(self,*args,**kwargs):
-        return self.copy(*args,**kwargs)
+        return self
     
     def getoutputref(self):
         try:
