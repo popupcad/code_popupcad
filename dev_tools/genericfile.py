@@ -167,7 +167,7 @@ class GenericFile(object):
         else:
             self.updatefilter(selectedfilter)
             if savemethod == None:
-                return self.save_yaml(self.filename())
+                return self.save_yaml(filename)
             else:
                 return savemethod(self.filename(),**savemethodkwargs)
 
