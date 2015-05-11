@@ -204,6 +204,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.tools1.append({'text':'Joints','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.joint_operation2.JointOperation2)}})
         self.tools1.append({'text':'Flatten','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.flatten.Flatten)}})
         self.tools1.append({'text':'Cross-Section','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.cross_section.CrossSection)}})
+        self.tools1.append({'text':'Sub-Operation','kwargs':{'triggered':lambda:self.newoperation(popupcad.manufacturing.sub_operation.SubOperation)}})
 
         self.operationactions = []        
         self.operationactions.append({'text':'&SketchOp','kwargs':{'icon':Icon('polygons'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_S,'triggered':lambda:self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})

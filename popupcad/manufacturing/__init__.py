@@ -24,6 +24,7 @@ from . import shiftflip2
 from . import nulloperation
 from . import simplify
 from . import simplify2
+from . import sub_operation
 from . import cleanup
 from . import jointop
 from . import joint_operation2
