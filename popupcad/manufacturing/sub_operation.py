@@ -16,9 +16,206 @@ from popupcad.filetypes.laminate import Laminate
 import popupcad_manufacturing_plugins
 from popupcad.widgets.table_editor import Table,SingleListWidget,MultiListWidget,Delegate
 
+def set_float_data_init(ini = 0.0):
+    def set_float_data(variable):
+        item = qg.QTableWidgetItem()
+        if variable!=None:
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,variable)
+        else:
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,ini)
+        return item
+    return set_float_data
+
+def set_single_item_list(variable):
+    item = qg.QTableWidgetItem()
+    if variable!=None:
+        item.setData(qc.Qt.ItemDataRole.UserRole,variable)
+        item.setData(qc.Qt.ItemDataRole.DisplayRole,str(variable))
+    return item
+
+def set_multi_item_list(variable):
+    item = qg.QTableWidgetItem()
+    if variable!=None:
+        item.setData(qc.Qt.ItemDataRole.UserRole,variable)
+        item.setData(qc.Qt.ItemDataRole.DisplayRole,str(variable))
+    else:
+        item.setData(qc.Qt.ItemDataRole.UserRole,[])
+        item.setData(qc.Qt.ItemDataRole.DisplayRole,str([]))
+    return item
+
+def set_editor_data_user(index,editor):
+    d = index.data(qc.Qt.ItemDataRole.UserRole)
+    editor.setData(d)
+    
+def set_editor_data_plain(index,editor):
+    d = index.data()
+    editor.setText(str(d))
+    
+def expand_editor_rect_init(bottom = 0,left = 0,right = 0):
+    def expand_editor_rect(editor,option):
+        rect = option.rect
+        rect.setBottom(rect.bottom()+bottom)
+        rect.setLeft(rect.left()-left)
+        rect.setRight(rect.right()+right)
+        editor.setGeometry(rect)
+    return expand_editor_rect
+
+def set_model_data_single_list(editor,model,index,delegate):
+    try:
+        value = editor.selectedItems()[0].customdata
+        model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
+        model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
+    except IndexError:
+        pass
+    
+def set_model_data_multi_list(editor,model,index,delegate):
+    values = [item.customdata for item in editor.selectedItems()]
+    model.setData(index, str(values), qc.Qt.ItemDataRole.EditRole)        
+    model.setData(index, values, qc.Qt.ItemDataRole.UserRole)        
+    
+def set_model_data_plain(editor,model,index,delegate):
+    super(Delegate,delegate).setModelData(editor,model,index)
+
+
+def get_main_widget(parent):
+    main_widget = parent.parent().parent()
+    return main_widget
+    
+def get_sketches(parent):
+    main_widget = get_main_widget(parent)
+    return main_widget.sketches
+
+def get_layers(parent):
+    main_widget = get_main_widget(parent)
+    return main_widget.layers
+    
+def build_single_list_editor_init(get_list):
+    def build_single_list_editor(parent,delegate):
+        editor = SingleListWidget(get_list(parent),parent)
+        editor.editingFinished.connect(delegate.commitAndCloseEditor)
+        return editor
+    return build_single_list_editor
+
+def build_multi_list_editor_init(get_list):
+    def build_multi_list_editor(parent,delegate):
+        editor = MultiListWidget(get_list(parent),parent)
+        editor.editingFinished.connect(delegate.commitAndCloseEditor)
+        return editor
+    return build_multi_list_editor
+
+def build_float_editor_init(bottom = -1e-6,top=1e-6,decimals = 6):
+    def build_float_editor(parent,delegate):
+        editor = qg.QLineEdit(parent)
+        val = qg.QDoubleValidator(bottom,top,decimals, editor)
+        editor.setValidator(val)
+        return editor
+    return build_float_editor
+    
+class Element(object):
+    pass
+
+class SingleItemList(Element):
+    def __init__(self,name,get_list):
+        self.name = name
+        self.get_list = get_list
+    def set_data(self,*args,**kwargs):
+        return set_single_item_list(*args,**kwargs)
+    def set_editor_data(self,*args,**kwargs):
+        return set_editor_data_user(*args,**kwargs)
+    def set_editor_rect(self,*args,**kwargs):
+        return (expand_editor_rect_init(bottom = 100))(*args,**kwargs)
+    def set_model_data(self,*args,**kwargs):
+        return set_model_data_single_list(*args,**kwargs)
+    def build_editor(self,*args,**kwargs):
+        return (build_single_list_editor_init(self.get_list))(*args,**kwargs)
+        
+class MultiItemList(Element):
+    def __init__(self,name,get_list):
+        self.name = name
+        self.get_list = get_list
+    def set_data(self,*args,**kwargs):
+        return set_multi_item_list(*args,**kwargs)
+    def set_editor_data(self,*args,**kwargs):
+        return set_editor_data_user(*args,**kwargs)
+    def set_editor_rect(self,*args,**kwargs):
+        return (expand_editor_rect_init(bottom = 100))(*args,**kwargs)
+    def set_model_data(self,*args,**kwargs):
+        return set_model_data_multi_list(*args,**kwargs)
+    def build_editor(self,*args,**kwargs):
+        return (build_multi_list_editor_init(self.get_list))(*args,**kwargs)
+
+class FloatElement(Element):
+    def __init__(self,name):
+        self.name = name
+    def set_data(self,*args,**kwargs):
+        return (set_float_data_init())(*args,**kwargs)
+    def set_editor_data(self,*args,**kwargs):
+        return set_editor_data_plain(*args,**kwargs)
+    def set_editor_rect(self,*args,**kwargs):
+        return (expand_editor_rect_init())(*args,**kwargs)
+    def set_model_data(self,*args,**kwargs):
+        return set_model_data_plain(*args,**kwargs)
+    def build_editor(self,*args,**kwargs):
+        return (build_float_editor_init())(*args,**kwargs)
+
 class JointDef(object):
     column_count = 7
-    header_labels = ['joint sketch','joint layer','sublaminate layers','hinge width','stiffness','damping','preload_angle']
+    elements = []
+    elements.append(SingleItemList('joint sketch',get_sketches))
+    elements.append(SingleItemList('joint layer',get_layers))
+    elements.append(MultiItemList('sublaminate layers',get_layers))
+    elements.append(FloatElement('hinge width'))
+    elements.append(FloatElement('stiffness'))
+    elements.append(FloatElement('damping'))
+    elements.append(FloatElement('preload'))
+    
+#    header_labels = ['joint sketch','joint layer','sublaminate layers','hinge width','stiffness','damping','preload_angle']
+#    set_data_fun = {}
+#    set_data_fun['joint sketch'] = set_single_item_list
+#    set_data_fun['joint layer'] = set_single_item_list
+#    set_data_fun['sublaminate layers'] = set_multi_item_list
+#    set_data_fun['hinge width'] = set_float_data_init()
+#    set_data_fun['stiffness'] = set_float_data_init()
+#    set_data_fun['damping'] = set_float_data_init()
+#    set_data_fun['preload_angle'] = set_float_data_init()
+#
+#    set_editor_data_fun = {}
+#    set_editor_data_fun['joint sketch'] = set_editor_data_user
+#    set_editor_data_fun['joint layer'] = set_editor_data_user
+#    set_editor_data_fun['sublaminate layers'] = set_editor_data_user
+#    set_editor_data_fun['hinge width'] = set_editor_data_plain
+#    set_editor_data_fun['stiffness'] = set_editor_data_plain
+#    set_editor_data_fun['damping'] = set_editor_data_plain
+#    set_editor_data_fun['preload_angle'] = set_editor_data_plain
+#
+#    set_editor_rect_fun = {}
+#    set_editor_rect_fun['joint sketch'] = expand_editor_rect_init(bottom = 100)
+#    set_editor_rect_fun['joint layer'] = expand_editor_rect_init(bottom = 100)
+#    set_editor_rect_fun['sublaminate layers'] = expand_editor_rect_init(bottom = 100)
+#    set_editor_rect_fun['hinge width'] = expand_editor_rect_init()
+#    set_editor_rect_fun['stiffness'] = expand_editor_rect_init()
+#    set_editor_rect_fun['damping'] = expand_editor_rect_init()
+#    set_editor_rect_fun['preload_angle'] = expand_editor_rect_init()
+#
+#    set_model_data_fun = {}
+#    set_model_data_fun['joint sketch'] = set_model_data_single_list
+#    set_model_data_fun['joint layer'] = set_model_data_single_list
+#    set_model_data_fun['sublaminate layers'] = set_model_data_multi_list
+#    set_model_data_fun['hinge width'] = set_model_data_plain
+#    set_model_data_fun['stiffness'] = set_model_data_plain
+#    set_model_data_fun['damping'] = set_model_data_plain
+#    set_model_data_fun['preload_angle'] = set_model_data_plain
+#
+#    build_editor_fun = {}
+#    build_editor_fun['joint sketch'] = build_single_list_editor_init(get_sketches)
+#    build_editor_fun['joint layer'] = build_single_list_editor_init(get_layers)
+#    build_editor_fun['sublaminate layers'] = build_multi_list_editor_init(get_layers)
+#    build_editor_fun['hinge width'] = build_float_editor_init()
+#    build_editor_fun['stiffness'] = build_float_editor_init()
+#    build_editor_fun['damping'] = build_float_editor_init()
+#    build_editor_fun['preload_angle'] = build_float_editor_init()
+
+
     def __init__(self,sketch,joint_layer,sublaminate_layers,width,stiffness,damping,preload_angle):
         self.sketch = sketch
         self.joint_layer = joint_layer
@@ -27,134 +224,51 @@ class JointDef(object):
         self.stiffness = stiffness
         self.damping = damping
         self.preload_angle = preload_angle
-    @staticmethod
-    def row_add(sketch = None,joint_layer = None,sublaminate_layers = None,width = None,stiffness = None, damping = None,preload_angle = None):
+
+    @classmethod
+    def row_add(cls,*args):
         items = []
-        item = qg.QTableWidgetItem()
-        if sketch!=None:
-            item.setData(qc.Qt.ItemDataRole.UserRole,sketch)
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(sketch))
-        items.append(item)
-        
-        item = qg.QTableWidgetItem()
-        if joint_layer!=None:
-            item.setData(qc.Qt.ItemDataRole.UserRole,joint_layer)
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(joint_layer))
-        items.append(item)
-    
-        item = qg.QTableWidgetItem()
-        if sublaminate_layers!=None:
-            item.setData(qc.Qt.ItemDataRole.UserRole,sublaminate_layers)
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(sublaminate_layers))
-        else:
-            item.setData(qc.Qt.ItemDataRole.UserRole,[])
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,str([]))
-        items.append(item)
-
-        item = qg.QTableWidgetItem()
-        if width!=None:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,width)
-        else:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,0.0)
-        items.append(item)
-
-        item = qg.QTableWidgetItem()
-        if stiffness!=None:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,stiffness)
-        else:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,0.0)
-        items.append(item)
-
-        item = qg.QTableWidgetItem()
-        if damping!=None:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,damping)
-        else:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,0.0)
-        items.append(item)
-
-        item = qg.QTableWidgetItem()
-        if preload_angle!=None:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,preload_angle)
-        else:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,0.0)
-        items.append(item)
+        for element,value in zip(cls.elements,args):
+            items.append(element.set_data(value))                
         return items
-    @staticmethod
-    def create_editor(parent,option,index,delegate):
-        if index.column() == 0:
-            editor = SingleListWidget(parent.parent().parent().sketches,parent)
-            editor.editingFinished.connect(delegate.commitAndCloseEditor)
-            return editor
-        elif index.column() == 1:
-            editor = SingleListWidget(parent.parent().parent().layers,parent)
-            editor.editingFinished.connect(delegate.commitAndCloseEditor)
-            return editor
-        elif index.column() == 2:
-            editor = MultiListWidget(parent.parent().parent().layers,parent)
-            editor.editingFinished.connect(delegate.commitAndCloseEditor)
-            return editor
-        elif index.column() in [3,4,5,6]:
-            editor = qg.QLineEdit(parent)
-            val = qg.QDoubleValidator(-1e6, 1e6, 6, editor)
-            editor.setValidator(val)
-            return editor
-        else:
-            return super(Delegate,delegate).createEditor(parent, option, index)
 
-    @staticmethod
-    def update_editor_geometry(editor, option, index):
-        if index.column() in [0,1,2]:
-            rect = option.rect
-            rect.setBottom(rect.bottom()+100)
-            editor.setGeometry(rect)
-        else:
-            editor.setGeometry(option.rect)
+    @classmethod
+    def row_add_empty(cls):
+        items = []
+        for element in cls.elements:
+            items.append(element.set_data(None))                
+        return items
         
-    @staticmethod
-    def set_editor_data(editor, index,delegate):
-        if index.column() == 0:
-            d = index.data(qc.Qt.ItemDataRole.UserRole)
-            editor.setData(d)
-        elif index.column() == 1:
-            d = index.data(qc.Qt.ItemDataRole.UserRole)
-            editor.setData(d)
-        elif index.column() == 2:
-            d = index.data(qc.Qt.ItemDataRole.UserRole)
-            editor.setData(d)
-        elif index.column() in [3,4,5,6]:
-            d = index.data()
-            editor.setText(str(d))
-        else:
-            return super(Delegate,delegate).setEditorData(editor, index)
+    @classmethod
+    def create_editor(cls,parent,option,index,delegate):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.build_editor(parent,delegate)
 
-    @staticmethod
-    def set_model_data(editor, model, index,delegate):
-        if index.column() == 0:
-            try:
-                value = editor.selectedItems()[0].customdata
-                model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
-                model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
-            except IndexError:
-                pass
-        elif index.column() == 1:
-            try:
-                value = editor.selectedItems()[0].customdata
-                model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
-                model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
-            except IndexError:
-                pass
-        elif index.column() == 2:
-            values = [item.customdata for item in editor.selectedItems()]
-            model.setData(index, str(values), qc.Qt.ItemDataRole.EditRole)        
-            model.setData(index, values, qc.Qt.ItemDataRole.UserRole)        
-        else:
-            return super(Delegate,delegate).setModelData(editor, model, index)
-            
+    @classmethod
+    def update_editor_geometry(cls,editor, option, index):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.set_editor_rect(editor,option)
         
+    @classmethod
+    def set_editor_data(cls,editor, index,delegate):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.set_editor_data(index,editor)        
+
+    @classmethod
+    def set_model_data(cls,editor, model, index,delegate):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.set_model_data(editor,model,index,delegate)  
+    @classmethod
+    def header_labels(cls):
+        return [element.name for element in cls.elements]    
         
 class MainWidget(qg.QDialog):
-    def __init__(self,design,sketches,layers,operations,jointop=None,*args,**kwargs):
-        super(MainWidget,self).__init__(*args,**kwargs)
+    def __init__(self,design,sketches,layers,operations,jointop=None):
+        super(MainWidget,self).__init__()
         self.design = design
         self.sketches = sketches
         self.layers = layers
@@ -173,7 +287,7 @@ class MainWidget(qg.QDialog):
         button_up = qg.QPushButton('up')
         button_down = qg.QPushButton('down')
 
-        button_add.pressed.connect(self.table.row_add)
+        button_add.pressed.connect(self.table.row_add_empty)
         button_remove.pressed.connect(self.table.row_remove)
         button_up.pressed.connect(self.table.row_shift_up)
         button_down.pressed.connect(self.table.row_shift_down)
@@ -225,7 +339,9 @@ class MainWidget(qg.QDialog):
                 joint_layer = self.design.return_layer_definition().getlayer(item.joint_layer)
                 sublaminate_layers = [self.design.return_layer_definition().getlayer(item2) for item2 in item.sublaminate_layers]
                 self.table.row_add(sketch,joint_layer,sublaminate_layers,item.width,item.stiffness,item.damping,item.preload_angle)
-
+        else:
+            self.table.row_add_empty()
+            
     def acceptdata(self):
         from popupcad.manufacturing.joint_operation2 import JointDef
         jointdefs = []
@@ -272,122 +388,6 @@ class SubOperation(Operation2):
         dialog = MainWidget(design,design.sketches.values(),design.return_layer_definition().layers,design.prioroperations(self),self)
         return dialog
 
-    def sketchrefs(self):
-        return [item.sketch for item in self.joint_defs]
-    
-    def subdesignrefs(self):
-        return []
-    
-    
-    def gen_geoms(self,joint_def,layerdef,design):
-        hinge_gap = joint_def.width*popupcad.internal_argument_scaling
-#        safe_buffer1 = .5*hinge_gap
-#        safe_buffer2 = .5*hinge_gap
-#        safe_buffer3 = .5*hinge_gap
-        split_buffer = .1*hinge_gap
-
-        stiffness = joint_def.stiffness
-        damping = joint_def.damping
-        preload_angle = joint_def.preload_angle
-
-        sublaminate_layers = [layerdef.getlayer(item) for item in joint_def.sublaminate_layers]
-        hingelayer = layerdef.getlayer(joint_def.joint_layer)        
-
-        operationgeom = design.sketches[joint_def.sketch].output_csg()
-        sketch_result = Laminate(design.return_layer_definition())
-        sketch_result.replacelayergeoms(hingelayer,operationgeom)
-        hingelines = sketch_result.genericfromls()[hingelayer]
-
-        buffered_split= sketch_result.buffer(split_buffer,resolution = self.resolution)
-
-        allgeoms4 = []
-        for geom in hingelines:
-            geom = geom.outputshapely()
-            laminate = Laminate(layerdef)
-            for layer in sublaminate_layers:
-                laminate.replacelayergeoms(layer,[geom])
-            allgeoms4.append(laminate.buffer(hinge_gap,resolution = self.resolution))
-            
-        joint_props = [(stiffness,damping,preload_angle) for item in hingelines]
-        return allgeoms4, buffered_split,hingelines,joint_props
-        
-    def generate(self,design):
-        safe_buffer1 = .5*popupcad.internal_argument_scaling
-        safe_buffer2 = .5*popupcad.internal_argument_scaling
-        safe_buffer3 = .5*popupcad.internal_argument_scaling
-#        split_buffer = .1
-        
-        parent_id,parent_output_index = self.operation_links['parent'][0]
-        parent_index = design.operation_index(parent_id)
-        parent = design.operations[parent_index].output[parent_output_index].csg
-
-        fixed_id,fixed_output_index = self.operation_links['fixed'][0]
-        fixed_index = design.operation_index(fixed_id)
-        fixed = design.operations[fixed_index].output[fixed_output_index].csg
-
-        
+    def operate(self,design):
         layerdef = design.return_layer_definition()
-
-        allgeoms = []
-        allhingelines = []
-        buffered_splits = []
-        all_joint_props = []
-        for joint_def in self.joint_defs:
-            allgeoms4,buffered_split,hingelines,joint_props= self.gen_geoms(joint_def,layerdef,design)
-            allgeoms.extend(allgeoms4)
-            allhingelines.extend(hingelines)
-            buffered_splits.append(buffered_split)
-            all_joint_props.extend(joint_props)
-            
-        safe_sections = []
-        for ii in range(len(allgeoms)):
-            unsafe = Laminate.unaryoperation(allgeoms[:ii]+allgeoms[ii+1:],'union')
-            unsafe_buffer = unsafe.buffer(safe_buffer1,resolution = self.resolution)
-            safe_sections.append(allgeoms[ii].difference(unsafe_buffer))
-            
-        safe = Laminate.unaryoperation(safe_sections,'union')
-        buffered_splits2 = Laminate.unaryoperation(buffered_splits,'union')
-        safe_buffer = safe.buffer(safe_buffer2,resolution = self.resolution)
-        unsafe = Laminate.unaryoperation(allgeoms,'union').difference(safe_buffer)
-#            unsafe2 = unsafe.unarylayeroperation('union',[hingelayer],sublaminate_layers)
-        unsafe2 = unsafe.buffer(safe_buffer3,resolution = self.resolution)
-        
-        split1 = parent.difference(unsafe2)
-#        for item in buffered_splits:
-#            split1 = split1.difference(item)
-#        split2 = split1
-        split2 = split1.difference(buffered_splits2)
-        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.genericfromls(),layerdef)
-
-        bodies_generic = [item.genericfromls() for item in bodies]
-        bodies_generic = [GenericLaminate(layerdef,item) for item in bodies_generic]
-        
-        connections = {}
-        connections2 = {}
-        
-        for line,geom in zip(allhingelines,safe_sections):
-            connections[line]=[]
-            connections2[line]=[]
-            for body,body_generic in zip(bodies,bodies_generic):
-                if not geom.intersection(body).isEmpty():
-                    connections[line].append(body_generic)
-                    connections2[line].append(body)
-        for line,geoms in connections2.items():
-            connections2[line]=Laminate.unaryoperation(geoms,'union')
-
-        self.fixed_bodies = []
-        for body,body_generic in zip(bodies,bodies_generic):
-            if not fixed.intersection(body).isEmpty():
-                self.fixed_bodies.append(body_generic)
-                    
-        self.bodies_generic = bodies_generic                    
-        self.connections = [(key,connections[key]) for key in allhingelines]
-        self.all_joint_props = all_joint_props
-        
-        laminates = [safe,unsafe2,split1,split2]+bodies+list(connections2.values())
-#        laminates = [safe,unsafe2,split1,split2]+bodies
-        self.output = []
-        for ii,item in enumerate(laminates):
-            self.output.append(OperationOutput(item,'Body {0:d}'.format(ii),self))
-        self.output.insert(0,self.output[0])
-
+        return Laminate(layerdef)

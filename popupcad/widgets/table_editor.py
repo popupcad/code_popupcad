@@ -77,7 +77,7 @@ class Table(qg.QTableWidget):
         self.setColumnCount(data_class.column_count)
         self.setShowGrid(False)
         self.setAlternatingRowColors(True)
-        self.setHorizontalHeaderLabels(data_class.header_labels)
+        self.setHorizontalHeaderLabels(data_class.header_labels())
         self.resizeColumnsToContents()
         self.reset_min_width()
         self.setItemDelegate(Delegate(data_class))
@@ -103,6 +103,13 @@ class Table(qg.QTableWidget):
         ii = self.rowCount()
         self.setRowCount(ii+1)
         items = self.data_class.row_add(*args,**kwargs)
+        for jj,item in enumerate(items):
+            self.setItem(ii,jj,item)
+        self.reset_min_width()
+    def row_add_empty(self,*args,**kwargs):
+        ii = self.rowCount()
+        self.setRowCount(ii+1)
+        items = self.data_class.row_add_empty(*args,**kwargs)
         for jj,item in enumerate(items):
             self.setItem(ii,jj,item)
         self.reset_min_width()
