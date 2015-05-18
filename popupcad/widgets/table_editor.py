@@ -108,6 +108,11 @@ class Table(qg.QTableWidget):
             [self.setItem(ii+1,jj,item) for item,jj in zip(items_above,range(cols))]
             [self.setItem(ii,jj,item) for item,jj in zip(items_below,range(cols))]
         self.setCurrentCell(ii+1,kk)
+    def reset(self):
+        for ii in range(self.rowCount()):
+            self.removeRow(0)
+    def export_data(self):
+        return [[self.item(ii,jj).data(qc.Qt.ItemDataRole.UserRole) for jj in range(self.data_class.column_count())] for ii in range(self.rowCount()) ]
 
 class Delegate(qg.QStyledItemDelegate):
     def __init__(self, data_class,parent=None):
@@ -219,7 +224,7 @@ class SingleItemListElement(Element):
         except IndexError:
             pass
     def build_editor(self,parent,delegate):
-            editor = SingleListWidget(self.get_list(parent),parent)
+            editor = SingleListWidget(self.get_list(),parent)
             editor.editingFinished.connect(delegate.commitAndCloseEditor)
             return editor
         
@@ -241,7 +246,7 @@ class MultiItemListElement(Element):
         model.setData(index, str(values), qc.Qt.ItemDataRole.EditRole)        
         model.setData(index, values, qc.Qt.ItemDataRole.UserRole)        
     def build_editor(self,parent,delegate):
-        editor = MultiListWidget(self.get_list(parent),parent)
+        editor = MultiListWidget(self.get_list(),parent)
         editor.editingFinished.connect(delegate.commitAndCloseEditor)
         return editor
 
@@ -265,4 +270,31 @@ class FloatElement(Element):
         val = qg.QDoubleValidator(self.bottom,self.top,self.decimals,editor)
         editor.setValidator(val)
         return editor
+        
+class TableControl(qg.QWidget):
+    def __init__(self,table,*args,**kwargs):
+        super(TableControl,self).__init__(*args,**kwargs)
+        main_layout = qg.QHBoxLayout()
+
+        button_add = qg.QPushButton('+')
+        button_remove = qg.QPushButton('-')
+        button_up = qg.QPushButton('up')
+        button_down = qg.QPushButton('down')
+
+        button_add.pressed.connect(table.row_add_empty)
+        button_remove.pressed.connect(table.row_remove)
+        button_up.pressed.connect(table.row_shift_up)
+        button_down.pressed.connect(table.row_shift_down)
+
+        sublayout1 = qg.QVBoxLayout()
+        sublayout1.addWidget(button_add)
+        sublayout1.addWidget(button_remove)
+        sublayout1.addStretch()
+        sublayout1.addWidget(button_up)
+        sublayout1.addWidget(button_down)
+
+        main_layout.addWidget(table)
+        main_layout.addLayout(sublayout1)
+        self.setLayout(main_layout)
+        
         

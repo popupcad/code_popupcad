@@ -16,12 +16,6 @@ from popupcad.filetypes.laminate import Laminate
 import popupcad_manufacturing_plugins
 from popupcad.widgets.table_editor import Table,SingleItemListElement,MultiItemListElement,FloatElement,Row
 
-def get_sketches(parent):
-    return parent.parent().parent().sketches
-
-def get_layers(parent):
-    return parent.parent().parent().layers
-
 class JointRow(Row):
     def __init__(self,get_sketches,get_layers):
         elements = []
@@ -58,7 +52,7 @@ class MainWidget(qg.QDialog):
         self.fixed = DraggableTreeWidget()
         self.fixed.linklist(self.operations)
         
-        self.table= Table(JointRow(get_sketches,get_layers))
+        self.table= Table(JointRow(self.get_sketches,self.get_layers))
 
         button_add = qg.QPushButton('Add')
         button_remove = qg.QPushButton('Remove')
@@ -119,6 +113,12 @@ class MainWidget(qg.QDialog):
                 self.table.row_add(sketch,joint_layer,sublaminate_layers,item.width,item.stiffness,item.damping,item.preload_angle)
         else:
             self.table.row_add_empty()
+
+    def get_sketches(self):
+        return self.sketches
+    
+    def get_layers(self):
+        return self.layers
             
     def acceptdata(self):
         jointdefs = []

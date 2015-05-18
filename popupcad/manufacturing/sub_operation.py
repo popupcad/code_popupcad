@@ -8,13 +8,10 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
 import PySide.QtGui as qg
 import PySide.QtCore as qc
-from popupcad.filetypes.operationoutput import OperationOutput
-from popupcad.filetypes.genericlaminate import GenericLaminate
 from popupcad.filetypes.operation2 import Operation2
-import popupcad
 from popupcad.filetypes.laminate import Laminate
-import popupcad_manufacturing_plugins
-from popupcad.widgets.table_editor import Table,SingleItemListElement,MultiItemListElement,FloatElement,Row
+from popupcad.widgets.table_editor import Table,SingleItemListElement,Row,TableControl
+from  popupcad.widgets.listmanager import SketchListManager,DesignListManager
 
 def get_sketches(parent):
     return parent.parent().parent().sketches
@@ -22,16 +19,25 @@ def get_sketches(parent):
 def get_layers(parent):
     return parent.parent().parent().layers
 
-class JointRow(Row):
+class InputData(object):
+    def __init__(self,ref1,ref2):
+        self.ref1 = ref1
+        self.ref2 = ref2
+class OutputData(object):
+    def __init__(self,ref1):
+        self.ref1 = ref1
+        
+class InputRow(Row):
     def __init__(self,get_sketches,get_layers):
         elements = []
-        elements.append(SingleItemListElement('joint sketch',get_sketches))
-        elements.append(SingleItemListElement('joint layer',get_layers))
-        elements.append(MultiItemListElement('sublaminate layers',get_layers))
-        elements.append(FloatElement('hinge width'))
-        elements.append(FloatElement('stiffness'))
-        elements.append(FloatElement('damping'))
-        elements.append(FloatElement('preload'))
+        elements.append(SingleItemListElement('to replace',get_sketches))
+        elements.append(SingleItemListElement('replace with',get_layers))
+        self.elements = elements
+
+class OutputRow(Row):
+    def __init__(self,get_sketches):
+        elements = []
+        elements.append(SingleItemListElement('output',get_sketches))
         self.elements = elements
         
 class JointDef(object):
@@ -52,30 +58,13 @@ class MainWidget(qg.QDialog):
         self.layers = layers
         self.operations = operations
         
-        self.operation_list = DraggableTreeWidget()
-        self.operation_list.linklist(self.operations)
+        self.designwidget = DesignListManager(design)
 
-        self.fixed = DraggableTreeWidget()
-        self.fixed.linklist(self.operations)
+        self.input_table= Table(InputRow(self.get_subdesign_operations,self.get_operations))
+        self.output_table= Table(OutputRow(self.get_subdesign_operations))
         
-        self.table= Table(JointRow(get_sketches,get_layers))
-
-        button_add = qg.QPushButton('Add')
-        button_remove = qg.QPushButton('Remove')
-        button_up = qg.QPushButton('up')
-        button_down = qg.QPushButton('down')
-
-        button_add.pressed.connect(self.table.row_add_empty)
-        button_remove.pressed.connect(self.table.row_remove)
-        button_up.pressed.connect(self.table.row_shift_up)
-        button_down.pressed.connect(self.table.row_shift_down)
-
-        sublayout1 = qg.QHBoxLayout()
-        sublayout1.addWidget(button_add)
-        sublayout1.addWidget(button_remove)
-        sublayout1.addStretch()
-        sublayout1.addWidget(button_up)
-        sublayout1.addWidget(button_down)
+        self.input_control = TableControl(self.input_table,self)
+        self.output_control = TableControl(self.output_table,self)
 
         button_ok = qg.QPushButton('Ok')
         button_cancel = qg.QPushButton('Cancel')
@@ -88,60 +77,59 @@ class MainWidget(qg.QDialog):
         sublayout2.addWidget(button_cancel)
 
         layout = qg.QVBoxLayout()
-        layout.addWidget(qg.QLabel('Device'))
-        layout.addWidget(self.operation_list)
-        layout.addWidget(qg.QLabel('Fixed Region'))
-        layout.addWidget(self.fixed)
-        layout.addWidget(self.table)
-        layout.addLayout(sublayout1)
+        layout.addWidget(self.designwidget)
+        layout.addWidget(self.input_control)
+        layout.addWidget(self.output_control)
         layout.addLayout(sublayout2)
         self.setLayout(layout)
 
         if jointop!=None:
-            try:
-                op_ref,output_ii = jointop.operation_links['parent'][0]
-                op_ii = design.operation_index(op_ref)
-                self.operation_list.selectIndeces([(op_ii,output_ii)])
-            except(IndexError,KeyError):
-                pass
+            subdesign = design.subdesigns[jointop.design_links['source']]
+            for ii in range(self.designwidget.itemlist.count()):
+                item = self.designwidget.itemlist.item(ii)
+                if item.value==subdesign:
+                    item.setSelected(True)
+            for item in jointop.input_list:
+                self.input_table.row_add(subdesign.op_from_ref(item.ref1[0]),design.op_from_ref(item.ref2[0]))
+            for item in jointop.output_list:
+                self.output_table.row_add(subdesign.op_from_ref(item.ref1[0]))
 
-            try:
-                fixed_ref,fixed_output_ii = jointop.operation_links['fixed'][0]
-                fixed_ii = design.operation_index(fixed_ref)
-                self.fixed.selectIndeces([(fixed_ii,fixed_output_ii)])
-            except(IndexError,KeyError):
-                pass
+        self.designwidget.itemlist.itemSelectionChanged.connect(self.input_table.reset)
+        self.designwidget.itemlist.itemSelectionChanged.connect(self.output_table.reset)
+    def get_operations(self):
+        return self.operations
+    def get_subdesign_operations(self):
+        return self.subdesign().operations
+#        return []
+    def subdesign(self):
+        try:
+            return self.designwidget.itemlist.selectedItems()[0].value
+        except IndexError:
+            return None
 
-            for item in jointop.joint_defs:
-                sketch = self.design.sketches[item.sketch]
-                joint_layer = self.design.return_layer_definition().getlayer(item.joint_layer)
-                sublaminate_layers = [self.design.return_layer_definition().getlayer(item2) for item2 in item.sublaminate_layers]
-                self.table.row_add(sketch,joint_layer,sublaminate_layers,item.width,item.stiffness,item.damping,item.preload_angle)
-        else:
-            self.table.row_add_empty()
-            
     def acceptdata(self):
-        jointdefs = []
-        for ii in range(self.table.rowCount()):
-            sketch = self.table.item(ii,0).data(qc.Qt.ItemDataRole.UserRole)
-            joint_layer = self.table.item(ii,1).data(qc.Qt.ItemDataRole.UserRole)
-            sublaminate_layers = self.table.item(ii,2).data(qc.Qt.ItemDataRole.UserRole)
-            width = (self.table.item(ii,3).data(qc.Qt.ItemDataRole.UserRole))
-            stiffness = (self.table.item(ii,4).data(qc.Qt.ItemDataRole.UserRole))
-            damping = (self.table.item(ii,5).data(qc.Qt.ItemDataRole.UserRole))
-            preload_angle = (self.table.item(ii,6).data(qc.Qt.ItemDataRole.UserRole))
-            jointdefs.append(JointDef(sketch.id,joint_layer.id,[item.id for item in sublaminate_layers],width,stiffness,damping,preload_angle))
-        operation_links = {}
-        operation_links['parent'] = self.operation_list.currentRefs()
-        operation_links['fixed'] = self.fixed.currentRefs()
-        return operation_links,jointdefs
+        
+        input_list = []
+        data = self.input_table.export_data()
+        for op1,op2 in data:
+            input_list.append(InputData((op1.id,0),(op2.id,0)))
+
+        output_list= []
+        data = self.output_table.export_data()
+        for op1, in data:
+            output_list.append(OutputData((op1.id,0)))
+            
+        design_links = {}
+        design_links['source'] = self.subdesign().id
+        
+        return design_links,input_list,output_list
         
 
 class SubOperation(Operation2):
     resolution = 2
     name = 'Sub-Operation'
     def copy(self):
-        new = type(self)(self.operation_links,self.joint_defs)
+        new = type(self)(self.design_links.copy(),self.input_list.copy(),self.output_list.copy())
         new.id = self.id
         new.customname = self.customname
         return new
@@ -151,10 +139,20 @@ class SubOperation(Operation2):
         self.editdata(*args)
         self.id = id(self)
         
-    def editdata(self,operation_links,joint_defs):  
-        self.operation_links = operation_links
-        self.joint_defs = joint_defs
+    def editdata(self,design_links,input_list,output_list):  
+        super(SubOperation,self).editdata({},{},design_links)
+        self.design_links = design_links
+        self.input_list = input_list
+        self.output_list = output_list
+
+    def replace_op_refs(self,refold,refnew):
+        for item in self.input_list:
+            if item.ref2 ==refold:
+                item.ref2 = refnew
         self.clear_output()
+
+    def parentrefs(self):
+        return [item.ref2[0] for item in self.input_list]
 
     @classmethod
     def buildnewdialog(cls,design,currentop):
@@ -166,5 +164,7 @@ class SubOperation(Operation2):
         return dialog
 
     def operate(self,design):
+        subdesign = design.subdesigns[self.design_links['source']].copy(identical = False)
+        subdesign.reprocessoperations()
         layerdef = design.return_layer_definition()
         return Laminate(layerdef)
