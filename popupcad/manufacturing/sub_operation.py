@@ -23,16 +23,17 @@ def get_layers(parent):
     return parent.parent().parent().layers
 
 class JointRow(Row):
-    column_count = 7
-    elements = []
-    elements.append(SingleItemListElement('joint sketch',get_sketches))
-    elements.append(SingleItemListElement('joint layer',get_layers))
-    elements.append(MultiItemListElement('sublaminate layers',get_layers))
-    elements.append(FloatElement('hinge width'))
-    elements.append(FloatElement('stiffness'))
-    elements.append(FloatElement('damping'))
-    elements.append(FloatElement('preload'))
-
+    def __init__(self,get_sketches,get_layers):
+        elements = []
+        elements.append(SingleItemListElement('joint sketch',get_sketches))
+        elements.append(SingleItemListElement('joint layer',get_layers))
+        elements.append(MultiItemListElement('sublaminate layers',get_layers))
+        elements.append(FloatElement('hinge width'))
+        elements.append(FloatElement('stiffness'))
+        elements.append(FloatElement('damping'))
+        elements.append(FloatElement('preload'))
+        self.elements = elements
+        
 class JointDef(object):
     def __init__(self,sketch,joint_layer,sublaminate_layers,width,stiffness,damping,preload_angle):
         self.sketch = sketch
@@ -43,7 +44,6 @@ class JointDef(object):
         self.damping = damping
         self.preload_angle = preload_angle
 
-        
 class MainWidget(qg.QDialog):
     def __init__(self,design,sketches,layers,operations,jointop=None):
         super(MainWidget,self).__init__()
@@ -58,7 +58,7 @@ class MainWidget(qg.QDialog):
         self.fixed = DraggableTreeWidget()
         self.fixed.linklist(self.operations)
         
-        self.table= Table(JointRow)
+        self.table= Table(JointRow(get_sketches,get_layers))
 
         button_add = qg.QPushButton('Add')
         button_remove = qg.QPushButton('Remove')

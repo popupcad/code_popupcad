@@ -44,7 +44,7 @@ class Table(qg.QTableWidget):
     def __init__(self,data_class):
         super(Table,self).__init__()
         self.setRowCount(0)
-        self.setColumnCount(data_class.column_count)
+        self.setColumnCount(data_class.column_count())
         self.setShowGrid(False)
         self.setAlternatingRowColors(True)
         self.setHorizontalHeaderLabels(data_class.header_labels())
@@ -132,49 +132,45 @@ class Delegate(qg.QStyledItemDelegate):
         return self.data_class.set_model_data(editor,model,index,self)
 
 class Row(object):
-    column_count = 0
-    elements = []
+    def __init__(self):
+        self.elements = []
 
-    @classmethod
-    def row_add(cls,*args):
+    def column_count(self):
+        return len(self.elements)
+        
+    def row_add(self,*args):
         items = []
-        for element,value in zip(cls.elements,args):
+        for element,value in zip(self.elements,args):
             items.append(element.set_data(value))                
         return items
 
-    @classmethod
-    def row_add_empty(cls):
+    def row_add_empty(self):
         items = []
-        for element in cls.elements:
+        for element in self.elements:
             items.append(element.set_data(None))                
         return items
         
-    @classmethod
-    def create_editor(cls,parent,option,index,delegate):
+    def create_editor(self,parent,option,index,delegate):
         ii = index.column()
-        element = cls.elements[ii]
+        element = self.elements[ii]
         return element.build_editor(parent,delegate)
 
-    @classmethod
-    def update_editor_geometry(cls,editor, option, index):
+    def update_editor_geometry(self,editor, option, index):
         ii = index.column()
-        element = cls.elements[ii]
+        element = self.elements[ii]
         return element.set_editor_rect(editor,option)
         
-    @classmethod
-    def set_editor_data(cls,editor, index,delegate):
+    def set_editor_data(self,editor, index,delegate):
         ii = index.column()
-        element = cls.elements[ii]
+        element = self.elements[ii]
         return element.set_editor_data(index,editor)        
 
-    @classmethod
-    def set_model_data(cls,editor, model, index,delegate):
+    def set_model_data(self,editor, model, index,delegate):
         ii = index.column()
-        element = cls.elements[ii]
+        element = self.elements[ii]
         return element.set_model_data(editor,model,index,delegate)  
-    @classmethod
-    def header_labels(cls):
-        return [element.name for element in cls.elements]    
+    def header_labels(self):
+        return [element.name for element in self.elements]    
 
 class Element(object):
     def __init__(self):
