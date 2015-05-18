@@ -7,36 +7,6 @@ Created on Mon May 11 19:20:36 2015
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 
-class DataClass(object):
-    column_count = 1
-    header_labels = ['string data']
-    @staticmethod
-    def row_add(stringdata = None):
-        items = []
-        item = qg.QTableWidgetItem()
-        if stringdata!=None:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,stringdata)
-        else:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,'stringdata')
-        items.append(item)
-
-    @staticmethod
-    def create_editor(parent,option,index,delegate):
-        return super(Delegate,delegate).createEditor(parent, option, index)
-
-    @staticmethod
-    def update_editor_geometry(editor, option, index):
-        editor.setGeometry(option.rect)
-        
-    @staticmethod
-    def set_editor_data(editor, index,delegate):
-        return super(Delegate,delegate).setEditorData(editor, index)
-
-    @staticmethod
-    def set_model_data(editor, model, index,delegate):
-        return super(Delegate,delegate).setModelData(editor, model, index)
-            
-
 class ListWidgetItem(qg.QListWidgetItem):
     def __init__(self,data):
         self.customdata = data
@@ -160,3 +130,143 @@ class Delegate(qg.QStyledItemDelegate):
         
     def setModelData(self, editor, model, index):
         return self.data_class.set_model_data(editor,model,index,self)
+
+class Row(object):
+    column_count = 0
+    elements = []
+
+    @classmethod
+    def row_add(cls,*args):
+        items = []
+        for element,value in zip(cls.elements,args):
+            items.append(element.set_data(value))                
+        return items
+
+    @classmethod
+    def row_add_empty(cls):
+        items = []
+        for element in cls.elements:
+            items.append(element.set_data(None))                
+        return items
+        
+    @classmethod
+    def create_editor(cls,parent,option,index,delegate):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.build_editor(parent,delegate)
+
+    @classmethod
+    def update_editor_geometry(cls,editor, option, index):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.set_editor_rect(editor,option)
+        
+    @classmethod
+    def set_editor_data(cls,editor, index,delegate):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.set_editor_data(index,editor)        
+
+    @classmethod
+    def set_model_data(cls,editor, model, index,delegate):
+        ii = index.column()
+        element = cls.elements[ii]
+        return element.set_model_data(editor,model,index,delegate)  
+    @classmethod
+    def header_labels(cls):
+        return [element.name for element in cls.elements]    
+
+class Element(object):
+    def __init__(self):
+        self.expand_bottom = 0
+        self.expand_top = 0
+        self.expand_left = 0
+        self.expand_right = 0
+
+    def set_editor_rect(self,editor,option):
+        rect = option.rect
+        rect.setTop(rect.top()-self.expand_top)
+        rect.setBottom(rect.bottom()+self.expand_bottom)
+        rect.setLeft(rect.left()-self.expand_left)
+        rect.setRight(rect.right()+self.expand_right)
+        editor.setGeometry(rect)
+        
+    def set_model_data(self,editor,model,index,delegate):
+        super(Delegate,delegate).setModelData(editor,model,index)
+
+    def set_data(self,variable):
+        item = qg.QTableWidgetItem()
+        if variable!=None:
+            item.setData(qc.Qt.ItemDataRole.UserRole,variable)
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(variable))
+        else:
+            item.setData(qc.Qt.ItemDataRole.UserRole,self.ini)
+            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(self.ini))
+        return item
+        
+
+class SingleItemListElement(Element):
+    def __init__(self,name,get_list,ini = None):
+        super(SingleItemListElement,self).__init__()
+        self.name = name
+        self.get_list = get_list
+        self.expand_bottom = 100
+        self.ini = ini
+    def set_editor_data(self,index,editor):
+        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        editor.setData(d)
+    def set_model_data(self,editor,model,index,delegate):
+        try:
+            value = editor.selectedItems()[0].customdata
+            model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
+            model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
+        except IndexError:
+            pass
+    def build_editor(self,parent,delegate):
+            editor = SingleListWidget(self.get_list(parent),parent)
+            editor.editingFinished.connect(delegate.commitAndCloseEditor)
+            return editor
+        
+class MultiItemListElement(Element):
+    def __init__(self,name,get_list,ini = None):
+        super(MultiItemListElement,self).__init__()
+        self.name = name
+        self.get_list = get_list
+        self.expand_bottom = 100
+        if ini != None:
+            self.ini = ini
+        else:
+            self.ini = []
+    def set_editor_data(self,index,editor):
+        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        editor.setData(d)
+    def set_model_data(self,editor,model,index,delegate):
+        values = [item.customdata for item in editor.selectedItems()]
+        model.setData(index, str(values), qc.Qt.ItemDataRole.EditRole)        
+        model.setData(index, values, qc.Qt.ItemDataRole.UserRole)        
+    def build_editor(self,parent,delegate):
+        editor = MultiListWidget(self.get_list(parent),parent)
+        editor.editingFinished.connect(delegate.commitAndCloseEditor)
+        return editor
+
+class FloatElement(Element):
+    def __init__(self,name,ini = 0.,bottom = -1e-6,top=1e-6,decimals = 6):
+        super(FloatElement,self).__init__()
+        self.name = name
+        self.ini = ini
+        self.bottom = bottom
+        self.top = top
+        self.decimals = decimals
+    def set_editor_data(self,index,editor):
+        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        editor.setText(str(d))
+    def set_model_data(self,editor,model,index,delegate):
+        value = editor.text()
+        model.setData(index, value, qc.Qt.ItemDataRole.EditRole)        
+        model.setData(index, float(value), qc.Qt.ItemDataRole.UserRole)        
+    def build_editor(self,parent,delegate):
+        editor = qg.QLineEdit(parent)
+        val = qg.QDoubleValidator(self.bottom,self.top,self.decimals,editor)
+        editor.setValidator(val)
+        return editor
+        

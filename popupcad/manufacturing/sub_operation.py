@@ -14,208 +14,26 @@ from popupcad.filetypes.operation2 import Operation2
 import popupcad
 from popupcad.filetypes.laminate import Laminate
 import popupcad_manufacturing_plugins
-from popupcad.widgets.table_editor import Table,SingleListWidget,MultiListWidget,Delegate
+from popupcad.widgets.table_editor import Table,SingleItemListElement,MultiItemListElement,FloatElement,Row
 
-def set_float_data_init(ini = 0.0):
-    def set_float_data(variable):
-        item = qg.QTableWidgetItem()
-        if variable!=None:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,variable)
-        else:
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,ini)
-        return item
-    return set_float_data
-
-def set_single_item_list(variable):
-    item = qg.QTableWidgetItem()
-    if variable!=None:
-        item.setData(qc.Qt.ItemDataRole.UserRole,variable)
-        item.setData(qc.Qt.ItemDataRole.DisplayRole,str(variable))
-    return item
-
-def set_multi_item_list(variable):
-    item = qg.QTableWidgetItem()
-    if variable!=None:
-        item.setData(qc.Qt.ItemDataRole.UserRole,variable)
-        item.setData(qc.Qt.ItemDataRole.DisplayRole,str(variable))
-    else:
-        item.setData(qc.Qt.ItemDataRole.UserRole,[])
-        item.setData(qc.Qt.ItemDataRole.DisplayRole,str([]))
-    return item
-
-def set_editor_data_user(index,editor):
-    d = index.data(qc.Qt.ItemDataRole.UserRole)
-    editor.setData(d)
-    
-def set_editor_data_plain(index,editor):
-    d = index.data()
-    editor.setText(str(d))
-    
-def expand_editor_rect_init(bottom = 0,left = 0,right = 0):
-    def expand_editor_rect(editor,option):
-        rect = option.rect
-        rect.setBottom(rect.bottom()+bottom)
-        rect.setLeft(rect.left()-left)
-        rect.setRight(rect.right()+right)
-        editor.setGeometry(rect)
-    return expand_editor_rect
-
-def set_model_data_single_list(editor,model,index,delegate):
-    try:
-        value = editor.selectedItems()[0].customdata
-        model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
-        model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
-    except IndexError:
-        pass
-    
-def set_model_data_multi_list(editor,model,index,delegate):
-    values = [item.customdata for item in editor.selectedItems()]
-    model.setData(index, str(values), qc.Qt.ItemDataRole.EditRole)        
-    model.setData(index, values, qc.Qt.ItemDataRole.UserRole)        
-    
-def set_model_data_plain(editor,model,index,delegate):
-    super(Delegate,delegate).setModelData(editor,model,index)
-
-
-def get_main_widget(parent):
-    main_widget = parent.parent().parent()
-    return main_widget
-    
 def get_sketches(parent):
-    main_widget = get_main_widget(parent)
-    return main_widget.sketches
+    return parent.parent().parent().sketches
 
 def get_layers(parent):
-    main_widget = get_main_widget(parent)
-    return main_widget.layers
-    
-def build_single_list_editor_init(get_list):
-    def build_single_list_editor(parent,delegate):
-        editor = SingleListWidget(get_list(parent),parent)
-        editor.editingFinished.connect(delegate.commitAndCloseEditor)
-        return editor
-    return build_single_list_editor
+    return parent.parent().parent().layers
 
-def build_multi_list_editor_init(get_list):
-    def build_multi_list_editor(parent,delegate):
-        editor = MultiListWidget(get_list(parent),parent)
-        editor.editingFinished.connect(delegate.commitAndCloseEditor)
-        return editor
-    return build_multi_list_editor
-
-def build_float_editor_init(bottom = -1e-6,top=1e-6,decimals = 6):
-    def build_float_editor(parent,delegate):
-        editor = qg.QLineEdit(parent)
-        val = qg.QDoubleValidator(bottom,top,decimals, editor)
-        editor.setValidator(val)
-        return editor
-    return build_float_editor
-    
-class Element(object):
-    pass
-
-class SingleItemList(Element):
-    def __init__(self,name,get_list):
-        self.name = name
-        self.get_list = get_list
-    def set_data(self,*args,**kwargs):
-        return set_single_item_list(*args,**kwargs)
-    def set_editor_data(self,*args,**kwargs):
-        return set_editor_data_user(*args,**kwargs)
-    def set_editor_rect(self,*args,**kwargs):
-        return (expand_editor_rect_init(bottom = 100))(*args,**kwargs)
-    def set_model_data(self,*args,**kwargs):
-        return set_model_data_single_list(*args,**kwargs)
-    def build_editor(self,*args,**kwargs):
-        return (build_single_list_editor_init(self.get_list))(*args,**kwargs)
-        
-class MultiItemList(Element):
-    def __init__(self,name,get_list):
-        self.name = name
-        self.get_list = get_list
-    def set_data(self,*args,**kwargs):
-        return set_multi_item_list(*args,**kwargs)
-    def set_editor_data(self,*args,**kwargs):
-        return set_editor_data_user(*args,**kwargs)
-    def set_editor_rect(self,*args,**kwargs):
-        return (expand_editor_rect_init(bottom = 100))(*args,**kwargs)
-    def set_model_data(self,*args,**kwargs):
-        return set_model_data_multi_list(*args,**kwargs)
-    def build_editor(self,*args,**kwargs):
-        return (build_multi_list_editor_init(self.get_list))(*args,**kwargs)
-
-class FloatElement(Element):
-    def __init__(self,name):
-        self.name = name
-    def set_data(self,*args,**kwargs):
-        return (set_float_data_init())(*args,**kwargs)
-    def set_editor_data(self,*args,**kwargs):
-        return set_editor_data_plain(*args,**kwargs)
-    def set_editor_rect(self,*args,**kwargs):
-        return (expand_editor_rect_init())(*args,**kwargs)
-    def set_model_data(self,*args,**kwargs):
-        return set_model_data_plain(*args,**kwargs)
-    def build_editor(self,*args,**kwargs):
-        return (build_float_editor_init())(*args,**kwargs)
-
-class JointDef(object):
+class JointRow(Row):
     column_count = 7
     elements = []
-    elements.append(SingleItemList('joint sketch',get_sketches))
-    elements.append(SingleItemList('joint layer',get_layers))
-    elements.append(MultiItemList('sublaminate layers',get_layers))
+    elements.append(SingleItemListElement('joint sketch',get_sketches))
+    elements.append(SingleItemListElement('joint layer',get_layers))
+    elements.append(MultiItemListElement('sublaminate layers',get_layers))
     elements.append(FloatElement('hinge width'))
     elements.append(FloatElement('stiffness'))
     elements.append(FloatElement('damping'))
     elements.append(FloatElement('preload'))
-    
-#    header_labels = ['joint sketch','joint layer','sublaminate layers','hinge width','stiffness','damping','preload_angle']
-#    set_data_fun = {}
-#    set_data_fun['joint sketch'] = set_single_item_list
-#    set_data_fun['joint layer'] = set_single_item_list
-#    set_data_fun['sublaminate layers'] = set_multi_item_list
-#    set_data_fun['hinge width'] = set_float_data_init()
-#    set_data_fun['stiffness'] = set_float_data_init()
-#    set_data_fun['damping'] = set_float_data_init()
-#    set_data_fun['preload_angle'] = set_float_data_init()
-#
-#    set_editor_data_fun = {}
-#    set_editor_data_fun['joint sketch'] = set_editor_data_user
-#    set_editor_data_fun['joint layer'] = set_editor_data_user
-#    set_editor_data_fun['sublaminate layers'] = set_editor_data_user
-#    set_editor_data_fun['hinge width'] = set_editor_data_plain
-#    set_editor_data_fun['stiffness'] = set_editor_data_plain
-#    set_editor_data_fun['damping'] = set_editor_data_plain
-#    set_editor_data_fun['preload_angle'] = set_editor_data_plain
-#
-#    set_editor_rect_fun = {}
-#    set_editor_rect_fun['joint sketch'] = expand_editor_rect_init(bottom = 100)
-#    set_editor_rect_fun['joint layer'] = expand_editor_rect_init(bottom = 100)
-#    set_editor_rect_fun['sublaminate layers'] = expand_editor_rect_init(bottom = 100)
-#    set_editor_rect_fun['hinge width'] = expand_editor_rect_init()
-#    set_editor_rect_fun['stiffness'] = expand_editor_rect_init()
-#    set_editor_rect_fun['damping'] = expand_editor_rect_init()
-#    set_editor_rect_fun['preload_angle'] = expand_editor_rect_init()
-#
-#    set_model_data_fun = {}
-#    set_model_data_fun['joint sketch'] = set_model_data_single_list
-#    set_model_data_fun['joint layer'] = set_model_data_single_list
-#    set_model_data_fun['sublaminate layers'] = set_model_data_multi_list
-#    set_model_data_fun['hinge width'] = set_model_data_plain
-#    set_model_data_fun['stiffness'] = set_model_data_plain
-#    set_model_data_fun['damping'] = set_model_data_plain
-#    set_model_data_fun['preload_angle'] = set_model_data_plain
-#
-#    build_editor_fun = {}
-#    build_editor_fun['joint sketch'] = build_single_list_editor_init(get_sketches)
-#    build_editor_fun['joint layer'] = build_single_list_editor_init(get_layers)
-#    build_editor_fun['sublaminate layers'] = build_multi_list_editor_init(get_layers)
-#    build_editor_fun['hinge width'] = build_float_editor_init()
-#    build_editor_fun['stiffness'] = build_float_editor_init()
-#    build_editor_fun['damping'] = build_float_editor_init()
-#    build_editor_fun['preload_angle'] = build_float_editor_init()
 
-
+class JointDef(object):
     def __init__(self,sketch,joint_layer,sublaminate_layers,width,stiffness,damping,preload_angle):
         self.sketch = sketch
         self.joint_layer = joint_layer
@@ -225,46 +43,6 @@ class JointDef(object):
         self.damping = damping
         self.preload_angle = preload_angle
 
-    @classmethod
-    def row_add(cls,*args):
-        items = []
-        for element,value in zip(cls.elements,args):
-            items.append(element.set_data(value))                
-        return items
-
-    @classmethod
-    def row_add_empty(cls):
-        items = []
-        for element in cls.elements:
-            items.append(element.set_data(None))                
-        return items
-        
-    @classmethod
-    def create_editor(cls,parent,option,index,delegate):
-        ii = index.column()
-        element = cls.elements[ii]
-        return element.build_editor(parent,delegate)
-
-    @classmethod
-    def update_editor_geometry(cls,editor, option, index):
-        ii = index.column()
-        element = cls.elements[ii]
-        return element.set_editor_rect(editor,option)
-        
-    @classmethod
-    def set_editor_data(cls,editor, index,delegate):
-        ii = index.column()
-        element = cls.elements[ii]
-        return element.set_editor_data(index,editor)        
-
-    @classmethod
-    def set_model_data(cls,editor, model, index,delegate):
-        ii = index.column()
-        element = cls.elements[ii]
-        return element.set_model_data(editor,model,index,delegate)  
-    @classmethod
-    def header_labels(cls):
-        return [element.name for element in cls.elements]    
         
 class MainWidget(qg.QDialog):
     def __init__(self,design,sketches,layers,operations,jointop=None):
@@ -280,7 +58,7 @@ class MainWidget(qg.QDialog):
         self.fixed = DraggableTreeWidget()
         self.fixed.linklist(self.operations)
         
-        self.table= Table(JointDef)
+        self.table= Table(JointRow)
 
         button_add = qg.QPushButton('Add')
         button_remove = qg.QPushButton('Remove')
@@ -343,16 +121,15 @@ class MainWidget(qg.QDialog):
             self.table.row_add_empty()
             
     def acceptdata(self):
-        from popupcad.manufacturing.joint_operation2 import JointDef
         jointdefs = []
         for ii in range(self.table.rowCount()):
             sketch = self.table.item(ii,0).data(qc.Qt.ItemDataRole.UserRole)
             joint_layer = self.table.item(ii,1).data(qc.Qt.ItemDataRole.UserRole)
             sublaminate_layers = self.table.item(ii,2).data(qc.Qt.ItemDataRole.UserRole)
-            width = float(self.table.item(ii,3).data(qc.Qt.ItemDataRole.DisplayRole))
-            stiffness = float(self.table.item(ii,4).data(qc.Qt.ItemDataRole.DisplayRole))
-            damping = float(self.table.item(ii,5).data(qc.Qt.ItemDataRole.DisplayRole))
-            preload_angle = float(self.table.item(ii,6).data(qc.Qt.ItemDataRole.DisplayRole))
+            width = (self.table.item(ii,3).data(qc.Qt.ItemDataRole.UserRole))
+            stiffness = (self.table.item(ii,4).data(qc.Qt.ItemDataRole.UserRole))
+            damping = (self.table.item(ii,5).data(qc.Qt.ItemDataRole.UserRole))
+            preload_angle = (self.table.item(ii,6).data(qc.Qt.ItemDataRole.UserRole))
             jointdefs.append(JointDef(sketch.id,joint_layer.id,[item.id for item in sublaminate_layers],width,stiffness,damping,preload_angle))
         operation_links = {}
         operation_links['parent'] = self.operation_list.currentRefs()
