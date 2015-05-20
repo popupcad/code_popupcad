@@ -50,7 +50,6 @@ class GenericShapeBase(popupCADFile):
         exterior = [vertex.copy(identical) for vertex in self.get_exterior()]
         interiors = [[vertex.copy(identical) for vertex in interior] for interior in self.get_interiors()]
         new = new_type(exterior,interiors,self.is_construction())
-        new.setmoveable(self.is_moveable())
         if identical:
             new.id = self.id
         self.copy_file_params(new,identical)
@@ -63,21 +62,10 @@ class GenericShapeBase(popupCADFile):
         exterior = [vertex.upgrade(identical) for vertex in self.get_exterior()]
         interiors = [[vertex.upgrade(identical) for vertex in interior] for interior in self.get_interiors()]
         new = type(self)(exterior,interiors,self.is_construction())
-        new.setmoveable(self.is_moveable())
         if identical:
             new.id = self.id
         self.copy_file_params(new,identical)
         return new
-
-    def setmoveable(self,test):
-        self.moveable = test
-
-    def is_moveable(self):
-        try:
-            return self.moveable
-        except AttributeError:
-            self.moveable = True
-            return self.moveable
 
     def get_exterior(self):
         return self.exterior
@@ -142,7 +130,6 @@ class GenericShapeBase(popupCADFile):
         self.exterior = exterior
         self.interiors = interiors
         self._basename = self.genbasename()
-        self.setmoveable(True)
         
         self.exterior, self.interiors = self.condition_points(self.exterior, self.interiors )
 

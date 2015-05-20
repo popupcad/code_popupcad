@@ -4,7 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from dev_tools.constraints import SymbolicLine
+from popupcad.filetypes.constraints import SymbolicLine
 
 class Line(object):
     def __init__(self,v1,v2):
@@ -18,9 +18,6 @@ class Line(object):
     def constrained_shift(self,dxdy,constraintsystem):
         constraintsystem.constrained_shift([(self.vertex1,dxdy),(self.vertex2,dxdy)])
 
-    def is_moveable(self):
-        return True
-        
     def constraints_ref(self):
         try:
             return self._constraints_ref

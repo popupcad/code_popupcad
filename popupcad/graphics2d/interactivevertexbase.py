@@ -101,25 +101,20 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
 #        return super(InteractiveVertexBase,self).itemChange(change,value)
         
     def mousePressEvent(self,event):
-        if self.generic.is_moveable():
-            self.changed_trigger = True
+        self.changed_trigger = True
         self.updatestate(self.states.state_pressed)
         self.scene().itemclicked.emit(self.get_generic())
         super(InteractiveVertexBase,self).mousePressEvent(event)
 
 
     def mouseMoveEvent(self,event):
-        if self.generic.is_moveable():
-            if self.changed_trigger:
-                self.changed_trigger = False
-                self.scene().savesnapshot.emit()
-            dp = event.scenePos() - event.lastScenePos()
-            self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
-            self.updateshape()
+        if self.changed_trigger:
+            self.changed_trigger = False
+            self.scene().savesnapshot.emit()
+        dp = event.scenePos() - event.lastScenePos()
+        self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
+        self.updateshape()
 
-#        if self.generic.is_moveable():
-#            super(InteractiveVertexBase,self).mouseMoveEvent(event)
-            
     def mouseReleaseEvent(self,event):
         super(InteractiveVertexBase,self).mouseReleaseEvent(event)    
         self.updatestate(self.states.state_hover)

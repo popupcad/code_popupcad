@@ -16,7 +16,7 @@ from popupcad.graphics2d.static import Static,StaticLine
 from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,ProtoRect2Point
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
-import dev_tools.constraints as constraints
+import popupcad.filetypes.constraints as constraints
 from popupcad.filetypes.sketch import Sketch
 from popupcad.widgets.listeditor import ListEditor,ListSelector
 from popupcad.supportfiles import Icon
@@ -259,32 +259,39 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         from popupcad.filetypes.genericshapes import GenericLine
         self.undoredo.savesnapshot()
         items = []
+        new_constraints = []
+        
         for item in self.scene.selectedItems():
             if isinstance(item,ReferenceInteractiveVertex):
                 generic = item.get_generic()
                 newgeneric = generic.copy_values(DrawnPoint(),False)
-                newgeneric.setmoveable(False)
                 newitem = newgeneric.gen_interactive()
                 self.scene.addItem(newitem)
                 items.append(newgeneric)
                 item.setSelected(False)
                 newitem.setSelected(True)
+                new_constraints.append(constraints.fixed.new(newgeneric))
 
             elif isinstance(item,ReferenceInteractiveEdge):
                 generic = item.get_generic()
                 v1 = generic.vertex1.copy_values(ShapeVertex(),False)
                 v2 = generic.vertex2.copy_values(ShapeVertex(),False)
-                v1.setmoveable(False)
-                v2.setmoveable(False)
+                new_constraints.append(constraints.fixed.new(v1,v2))
 
                 l = GenericLine([v1,v2],[],construction = True)
-                l.setmoveable(False)
 
-                i = l.outputinteractive()
-                self.scene.addItem(i)
+                a = l.outputinteractive()
+#                b = v1.gen_interactive()
+#                c = v2.gen_interactive()
+                self.scene.addItem(a)
+#                self.scene.addItem(b)
+#                self.scene.addItem(c)
+                
                 item.setSelected(False)
-                i.setSelected(True)
-                items.append(i.selectableedges[0].get_generic())
+                a.setSelected(True)
+#                b.setSelected(True)
+#                c.setSelected(True)
+                items.append(a.selectableedges[0].get_generic())
 
             elif isinstance(item,InteractiveVertex):
                 items.append(item.get_generic())
@@ -299,10 +306,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             elif isinstance(item,StaticDrawingPoint):
                 items.append(item.get_generic())
                                          
-        constraint = constraintclass.new(*items)
-        if constraint !=None:
+        new_constraints .append(constraintclass.new(*items))
+        for constraint in new_constraints:
             self.sketch.constraintsystem.add_constraint(constraint)
-            self.refreshconstraints()
+        self.refreshconstraints()
 
     def refreshconstraints_button(self):
 #        self.undoredo.savesnapshot()

@@ -84,7 +84,6 @@ for path in subdirectories:
         os.mkdir(path)
 
 from . import algorithms
-from . import constraints
 from . import filetypes
 from popupcad.filetypes.programsettings import ProgramSettings
 try:
@@ -100,11 +99,11 @@ from . import materials
 from . import supportfiles
 from . import widgets
 
-#import yaml
-#from .geometry.vertex import ShapeVertex,DrawnPoint,ReferenceVertex
-#yaml.add_representer(ShapeVertex, ShapeVertex.vertex_representer)
-#yaml.add_constructor(ShapeVertex.yaml_node_name, ShapeVertex.vertex_constructor)
-#yaml.add_representer(DrawnPoint, DrawnPoint.vertex_representer)
-#yaml.add_constructor(DrawnPoint.yaml_node_name, DrawnPoint.vertex_constructor)
-#yaml.add_representer(ReferenceVertex, ReferenceVertex.vertex_representer)
-#yaml.add_constructor(ReferenceVertex.yaml_node_name, ReferenceVertex.vertex_constructor)
+import yaml
+from .geometry.vertex import ShapeVertex,DrawnPoint,ReferenceVertex
+yaml.add_representer(ShapeVertex, ShapeVertex.vertex_representer)
+yaml.add_constructor(ShapeVertex.yaml_node_name, ShapeVertex.vertex_constructor)
+yaml.add_representer(DrawnPoint, DrawnPoint.vertex_representer)
+yaml.add_constructor(DrawnPoint.yaml_node_name, DrawnPoint.vertex_constructor)
+yaml.add_representer(ReferenceVertex, ReferenceVertex.vertex_representer)
+yaml.add_constructor(ReferenceVertex.yaml_node_name, ReferenceVertex.vertex_constructor)

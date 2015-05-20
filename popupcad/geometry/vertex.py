@@ -7,10 +7,10 @@ Please see LICENSE.txt for full license.
    
 import numpy
     
-from dev_tools.constraints import SymbolicVertex
+from popupcad.filetypes.constraints import SymbolicVertex
 
 class BaseVertex(object):
-    editable = ['pos','static','construction']
+    editable = ['pos']
     deletable = []
     
     roundvalue = 5
@@ -18,36 +18,9 @@ class BaseVertex(object):
 
         self.id = id(self)
         self._pos = None
-        self.setstatic(False)
-        self.set_construction(True)
-        self.setmoveable(True)
 
         if position !=None:
             self.setpos(position)
-    def set_construction(self,test):
-        self.construction = test
-    def is_construction(self):
-        try:
-            return self.construction
-        except AttributeError:
-            self.construction = True
-            return self.construction
-
-    def setstatic(self,test):
-        self.static = test
-
-    def is_static(self):
-        return self.static
-
-    def setmoveable(self,test):
-        self.moveable = test
-
-    def is_moveable(self):
-        try:
-            return self.moveable
-        except AttributeError:
-            self.moveable = True
-            return self.moveable
 
     def constraints_ref(self):
         try:
@@ -127,9 +100,6 @@ class BaseVertex(object):
         
     def copy_values(self,new,identical=False):
         new.setpos(self.getpos())
-        new.static = self.static
-        new.setmoveable(self.is_moveable())
-        new.set_construction(self.is_construction())
         
         if identical:
             new.id = self.id
@@ -153,18 +123,15 @@ class BaseVertex(object):
         constraintsystem.constrained_shift([(self,dxdy)])
 
     @classmethod
-    def delistify(cls,id,x,y,static,is_moveable,is_construction):
+    def delistify(cls,id,x,y):
         new = cls()
         new.id = id
         new.setpos((x,y))
-        new.static = static
-        new.setmoveable(is_moveable)
-        new.set_construction(is_construction)
         return new
 
     def listify(self):
         x,y = self.getpos()
-        output = [self.id,x,y,self.static,self.is_moveable(),self.is_construction()]
+        output = [self.id,x,y]
         return output
 
     def vertex_representer(dumper,v):
@@ -178,7 +145,7 @@ class BaseVertex(object):
         return new
 
 class ShapeVertex(BaseVertex):
-    yaml_node_name = u'!shape_vertex'
+    yaml_node_name = u'!ShapeVertex'
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex
         iv = InteractiveShapeVertex(self)
@@ -186,7 +153,12 @@ class ShapeVertex(BaseVertex):
         return iv
 
 class DrawnPoint(ShapeVertex):
-    yaml_node_name = u'!drawn_point'
+    editable = ShapeVertex.editable+['construction']
+    yaml_node_name = u'!DrawnPoint'
+    def __init__(self):
+        super(DrawnPoint,self).__init__()
+        self.set_construction(True)
+
     def exteriorpoints(self):
         return [self.getpos()]
     def interiorpoints(self):
@@ -220,11 +192,41 @@ class DrawnPoint(ShapeVertex):
         p = ShapelyPoint(*self.getpos())
         return p
 
+    def is_construction(self):
+        try:
+            return self.construction
+        except AttributeError:
+            self.construction = True
+            return self.construction
+
+    def set_construction(self,test):
+        self.construction = test
+
+    def copy_values(self,new,identical=False):
+        new.setpos(self.getpos())
+        new.set_construction(self.is_construction())
+        
+        if identical:
+            new.id = self.id
+        return new            
+
+    @classmethod
+    def delistify(cls,id,x,y,is_construction):
+        new = cls()
+        new.id = id
+        new.setpos((x,y))
+        new.set_construction(is_construction)
+        return new
+
+    def listify(self):
+        x,y = self.getpos()
+        output = [self.id,x,y,self.is_construction()]
+        return output
+
 class ReferenceVertex(BaseVertex):
-    yaml_node_name = u'!reference_vertex'
+    yaml_node_name = u'!ReferenceVertex'
     def __init__(self,*args,**kwargs):
         super(ReferenceVertex,self).__init__(*args,**kwargs)
-        self.setstatic(True)
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
         iv = ReferenceInteractiveVertex(self)

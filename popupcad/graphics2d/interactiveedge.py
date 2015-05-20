@@ -182,8 +182,7 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         self.updatestate(self.states.state_neutral)
         self.setZValue(self.z_below)
     def mousePressEvent(self,event):
-        if self.generic.is_moveable():
-            self.changed_trigger = True
+        self.changed_trigger = True
         self.updatestate(self.states.state_pressed)
         if self.ItemIsSelectable==(self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge,self).mousePressEvent(event)
@@ -191,13 +190,12 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
     def mouseMoveEvent(self,event):
         if self.connectedinteractive.mode!=None:
             if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
-                if self.generic.is_moveable():
-                    if self.changed_trigger:
-                        self.changed_trigger = False
-                        self.scene().savesnapshot.emit()
-                    dp = event.scenePos() - event.lastScenePos()
-                    self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
-                    self.updateshape()
+                if self.changed_trigger:
+                    self.changed_trigger = False
+                    self.scene().savesnapshot.emit()
+                dp = event.scenePos() - event.lastScenePos()
+                self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
+                self.updateshape()
                 try:
                     self.connectedinteractive.updateshape()
                 except AttributeError:

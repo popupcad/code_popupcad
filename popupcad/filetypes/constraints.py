@@ -14,7 +14,7 @@ import scipy.optimize as opt
 import popupcad
 from dev_tools.enum import enum
 
-internal_argument_scaling = 1
+internal_argument_scaling = popupcad.internal_argument_scaling
 
 
 class Variable(sympy.Symbol):
@@ -74,7 +74,7 @@ class ConstraintSystem(object):
         self.generated_variables = self.regenerate_inner()
         
     def regenerate_inner(self):
-        from popupcad.geometry.vertex import BaseVertex
+        from popupcad.geometry.vertex import BaseVertex,ReferenceVertex
         from popupcad.geometry.line import Line
         
         if len(self.constraints)>0:
@@ -84,13 +84,12 @@ class ConstraintSystem(object):
                 
                 staticvertices = []
                 for item in objects:
-                    if isinstance(item,BaseVertex):
-                        if item.is_static():
-                            staticvertices.append(item)
+                    if isinstance(item,ReferenceVertex):
+                        staticvertices.append(item)
                     elif isinstance(item,Line):
-                        if item.vertex1.is_static():
+                        if isinstance(item.vertex1,ReferenceVertex):
                             staticvertices.append(item.vertex1)
-                        if item.vertex2.is_static():
+                        if isinstance(item.vertex2,ReferenceVertex):
                             staticvertices.append(item.vertex2)
                 constants = []
                 for item in staticvertices:
@@ -282,7 +281,7 @@ class Constraint(object):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
         self.id = id(self)
-        self.init_symbolics()
+#        self.init_symbolics()
 #        self.generate_equations()
 
     def init_symbolics(self):
@@ -405,9 +404,9 @@ class ValueConstraint(Constraint):
         self.value = value
 
         self.id = id(self)
-        self.init_symbolics()
+#        self.init_symbolics()
 
-        self.generate_equations()
+#        self.generate_equations()
 
     @classmethod
     def new(cls,*objects):
@@ -442,8 +441,8 @@ class fixed(Constraint,AtLeastOnePoint):
         self.segment_ids = []
         self.values = values
         self.id = id(self)
-        self.init_symbolics()
-        self.generate_equations()
+#        self.init_symbolics()
+#        self.generate_equations()
 
     @classmethod
     def new(cls,*objects):
@@ -629,7 +628,6 @@ class PointLine(ValueConstraint,ExactlyOnePointOneLine):
             l1 = v1.dot(v1)**.5
             eq = l1 - self.value*internal_argument_scaling
             return [eq]  
-        return [x]
 class LineMidpoint(Constraint,ExactlyOnePointOneLine):
     name = 'Line Midpoint'
     def equations(self):

@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
+from . import constraints
 from . import classtools
 from . import design
 from . import popupcad_file

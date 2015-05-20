@@ -11,7 +11,6 @@ import popupcad
 packages = []
 packages.append('popupcad')
 packages.append('popupcad.algorithms')
-#packages.append('popupcad.constraints')
 packages.append('popupcad.deprecated')
 packages.append('popupcad.filetypes')
 packages.append('popupcad.geometry')

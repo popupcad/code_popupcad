@@ -175,19 +175,17 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
             self.hidechildren(self.handles())
 
     def mouseMoveEvent(self,event):
-        if self.generic.is_moveable():
-            if self.changed_trigger:
-                self.changed_trigger = False
-                self.scene().savesnapshot.emit()
-            dp = event.scenePos() - event.lastScenePos()
-            
-            self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
-            self.updateshape()
+        if self.changed_trigger:
+            self.changed_trigger = False
+            self.scene().savesnapshot.emit()
+        dp = event.scenePos() - event.lastScenePos()
+        
+        self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
+        self.updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
 
     def mousePressEvent(self,event):
-        if self.generic.is_moveable():
-            self.changed_trigger = True
+        self.changed_trigger = True
         if self.mode == self.modes.mode_edit:
             add = (event.modifiers() & qc.Qt.KeyboardModifierMask.ControlModifier)!=0
             if add:

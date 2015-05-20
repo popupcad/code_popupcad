@@ -4,7 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from dev_tools.constraints import ConstraintSystem
+from popupcad.filetypes.constraints import ConstraintSystem
 import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
 

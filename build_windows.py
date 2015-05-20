@@ -24,7 +24,6 @@ iconfile = os.path.normpath(os.path.join(popupcad.supportfiledir,'printapede.ico
 packages = []
 packages.append('popupcad')
 packages.append('popupcad.algorithms')
-#packages.append('popupcad.constraints')
 packages.append('popupcad.filetypes')
 packages.append('popupcad.geometry')
 packages.append('popupcad.graphics2d')
@@ -38,7 +37,6 @@ packages.append('dev_tools')
 packages.append('pypoly2tri')
 packages.append('popupcad_manufacturing_plugins')
 packages.append('popupcad_deprecated')
-
 packages.append("scipy.integrate.vode")
 packages.append("scipy.integrate.lsoda")
 packages.append("scipy.sparse.csgraph._validation")
