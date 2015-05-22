@@ -167,10 +167,10 @@ class Design(popupCADFile):
         for key,value in self.subdesigns.items():
             new.subdesigns[key]=value.upgrade(identical = True)
         self.copy_file_params(new,identical)
-        new.upgrade_operations()
+        new.upgrade_operations2()
         return new    
 
-    def upgrade_operations(self):
+    def upgrade_operations2(self):
         from popupcad.manufacturing.sketchoperation2 import SketchOperation2
         from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
         from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
