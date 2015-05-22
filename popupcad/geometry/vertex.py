@@ -134,6 +134,7 @@ class BaseVertex(object):
         output = [self.id,x,y]
         return output
 
+    @staticmethod
     def vertex_representer(dumper,v):
         output = dumper.represent_sequence(v.yaml_node_name,v.listify())
         return output
