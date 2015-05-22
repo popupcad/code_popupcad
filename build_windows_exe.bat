@@ -1,1 +1,0 @@
-python build_windows.py build_exe
