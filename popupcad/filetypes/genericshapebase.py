@@ -262,15 +262,6 @@ class GenericShapeBase(popupCADFile):
             self.update_handles()
             return self._exteriorhandles
 
-    def toCDT3(self):
-        from pypoly2tri.shapes import Point
-        from pypoly2tri.cdt import CDT
-        exterior = [Point(*point) for point in self.exteriorpoints()]
-        interiors = [[Point(*point) for point in interior] for interior in self.interiorpoints()]
-        cdt = CDT(exterior)
-        [cdt.AddHole(interior) for interior in interiors]
-        return cdt
-    
     def triangles3(self):
         return []
 

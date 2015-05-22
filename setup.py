@@ -22,7 +22,7 @@ packages.append('popupcad.materials')
 packages.append('popupcad.supportfiles')
 packages.append('popupcad.widgets')
 
-packages.append('pypoly2tri')
+#packages.append('pypoly2tri')
 packages.append('dev_tools')
 packages.append('popupcad_manufacturing_plugins')
 packages.append('popupcad_deprecated')
