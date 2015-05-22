@@ -180,30 +180,29 @@ class GenericShape(GenericShapeBase):
 
         return obj
 
-    def toCDT2(self):
-        from p2t import Point,CDT
-        exterior = [Point(*point) for point in self.exteriorpoints()]
-        interiors = [[Point(*point) for point in interior] for interior in self.interiorpoints()]
-        cdt = CDT(exterior)
-        [cdt.add_hole(interior) for interior in interiors]
-        return cdt
-
-    def toCDT3(self):
-        from pypoly2tri.shapes import Point
-        from pypoly2tri.cdt import CDT
+    def triangles3(self):
+        try:
+            use_poly2tri = True
+            from p2t import Point
+            from p2t import CDT
+        except ImportError:
+            try:
+                from pypoly2tri.shapes import Point
+                from pypoly2tri.cdt import CDT
+                use_poly2tri = False
+            except ImportError:
+                return []
         exterior = [Point(*point) for point in self.exteriorpoints()]
         interiors = [[Point(*point) for point in interior] for interior in self.interiorpoints()]
         cdt = CDT(exterior)
         [cdt.AddHole(interior) for interior in interiors]
-        return cdt
-        
-    def triangles3(self):
-        if self.shapetype==self.shapetypes.polygon:
-            cdt = self.toCDT3()
+        if not use_poly2tri:
             cdt.Triangulate()
-            return [tri.toList() for tri in cdt.GetTriangles()]
+            tris = [tri.toList() for tri in cdt.GetTriangles()]
         else:
-            return []
+            triangles = cdt.triangulate()
+            tris = [[(tri.a.x,tri.a.y),(tri.b.x,tri.b.y),(tri.c.x,tri.c.y)] for tri in triangles]
+        return tris
             
     def lines(self):
         lines = []
