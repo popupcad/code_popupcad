@@ -37,7 +37,21 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
                 tb = sys.exc_info()[2]
                 exception_string = traceback.format_exception(type(ex), ex, tb)
                 [self.error_log.appendText(item) for item in exception_string]
+
+                m = qg.QMessageBox()
+                m.setIcon(m.Warning)
+                m.setText(ex.args[0])
+                try:
+                    m.setInformativeText(str(ex.args[1]))
+                except IndexError:
+                    pass
+                try:
+                    m.setDetailedText(str(ex.args[2]))
+                except IndexError:
+                    pass
+                m.exec_()
                 raise
+
         return log
         
     def __init__(self, parent=None,**kwargs):
@@ -358,6 +372,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def showcurrentoutput_inner(self,ii,jj):
         try:
+            self.sceneview.deleteall()
+            self.view_3d.view.clear()
             operationoutput = self.design.operations[ii].output[jj]
             selectedlayers=[item for item in self.design.return_layer_definition().layers if item in self.layerlistwidget.selectedData()]
             self.show2dgeometry3(operationoutput,selectedlayers)
@@ -485,7 +501,11 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         newop.operation_links['unary'].append((operation_ref,output_index))
         self.reprocessoperations()
     def upgrade(self):
-        self.load_design(self.design.upgrade())
+        try:
+            self.load_design(self.design.upgrade())
+        except popupcad.filetypes.design.UpgradeError as ex:
+            print(ex)
+            raise
         if self.act_autoreprocesstoggle.isChecked():
             self.reprocessoperations()
         self.view_2d.zoomToFit() 

@@ -11,7 +11,7 @@ Please see LICENSE.txt for full license.
 #from . import manufacturingplugin
 from . import autoweb4
 from . import customsupport4
-from . import cutop2
+#from . import cutop2
 #from . import autoweb3
 from . import identifybodies2
 #from . import identifybodies
@@ -24,7 +24,7 @@ from . import supportcandidate4
 #from . import identifyrigidbodies
 #from . import supportcandidate3
 #from . import toolclearance2
-from . import toolclearance3
+#from . import toolclearance3
 #from . import keepout2
 #from . import outersheet2
 #from . import removability

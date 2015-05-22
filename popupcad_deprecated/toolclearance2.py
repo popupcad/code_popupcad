@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
-from popupcad_manufacturing_plugins.manufacturing.toolclearance3 import ToolClearance3
+from popupcad_deprecated.toolclearance3 import ToolClearance3
 
 class ToolClearance2(MultiValueOperation2):
     name = 'ToolClearance'

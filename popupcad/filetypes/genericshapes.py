@@ -67,14 +67,14 @@ class GenericPoly(GenericShapeBase):
         return path        
     def triangles3(self):
         try:
-            use_poly2tri = True
-            from p2t import Point
-            from p2t import CDT
+            from pypoly2tri.shapes import Point
+            from pypoly2tri.cdt import CDT
+            use_poly2tri = False
         except ImportError:
             try:
-                from pypoly2tri.shapes import Point
-                from pypoly2tri.cdt import CDT
-                use_poly2tri = False
+                use_poly2tri = True
+                from p2t import Point
+                from p2t import CDT
             except ImportError:
                 return []
         exterior = [Point(*point) for point in self.exteriorpoints()]
