@@ -11,7 +11,7 @@ from popupcad.filetypes.laminate import Laminate
 #from popupcad.filetypes.layer import Layer
 #from popupcad.filetypes.sketch import Sketch
 import popupcad.widgets
-from popupcad.filetypes.operation2 import Operation2
+from popupcad.filetypes.operation2 import Operation2,LayerBasedOperation
 #from popupcad.filetypes.design import NoOperation
 #import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.listmanager import SketchListManager
@@ -69,7 +69,7 @@ class Dialog(qg.QDialog):
         layer_links = [item.customdata.id for item in self.outputlayerselector.selectedItems()]
         return sketch_links,layer_links
 
-class SimpleSketchOp(Operation2):
+class SimpleSketchOp(Operation2,LayerBasedOperation):
     name = 'Sketch Operation'
     def copy(self):
         new = type(self)(self.sketch_links,self.layer_links)
@@ -104,3 +104,8 @@ class SimpleSketchOp(Operation2):
         sketch = design.sketches[self.sketch_links['sketch'][0]]
         dialog = Dialog(self,design,design.prioroperations(self),self.layer_links,sketch)
         return dialog
+
+    def switch_layer_defs(self,layerdef_old,layerdef_new):
+        new = self.copy()
+        new.layer_links = self.convert_layer_links(self.layer_links,layerdef_old,layerdef_new)
+        return new

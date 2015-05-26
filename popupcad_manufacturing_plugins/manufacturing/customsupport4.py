@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad
-from popupcad.filetypes.operation2 import Operation2
+from popupcad.filetypes.operation2 import Operation2,LayerBasedOperation
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
@@ -111,7 +111,7 @@ class Dialog(qg.QDialog):
         sketch_links = {'sketch':[sketchid]}
         return operation_links,sketch_links,layer_links,float(self.support_width.text()),float(self.support_out.text()),float(self.hole_radius.text()),float(self.cut_width.text())
 
-class CustomSupport4(Operation2):
+class CustomSupport4(Operation2,LayerBasedOperation):
     name = 'Custom Support'
     outputtypes = enum(device = 201,supports = 202,cuts = 203)    
     
@@ -163,3 +163,8 @@ class CustomSupport4(Operation2):
         d = OperationOutput(modified_device,'device',self)
         self.output = [d,s,c]
 
+    def switch_layer_defs(self,layerdef_old,layerdef_new):
+        new = self.copy()
+        new.layer_links = self.convert_layer_links(self.layer_links,layerdef_old,layerdef_new)
+        return new
+        

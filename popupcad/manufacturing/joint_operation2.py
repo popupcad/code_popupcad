@@ -10,7 +10,7 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.genericlaminate import GenericLaminate
-from popupcad.filetypes.operation2 import Operation2
+from popupcad.filetypes.operation2 import Operation2,LayerBasedOperation
 import popupcad
 from popupcad.filetypes.laminate import Laminate
 import popupcad_manufacturing_plugins
@@ -37,6 +37,8 @@ class JointDef(object):
         self.stiffness = stiffness
         self.damping = damping
         self.preload_angle = preload_angle
+    def copy(self):
+        new = type(self)(self.sketch,self.joint_layer,self.sublaminate_layers,self.width,self.stiffness,self.damping,self.preload_angle)
 
 class MainWidget(qg.QDialog):
     def __init__(self,design,sketches,layers,operations,jointop=None):
@@ -136,13 +138,13 @@ class MainWidget(qg.QDialog):
         operation_links['fixed'] = self.fixed.currentRefs()
         return operation_links,jointdefs
 
-class JointOperation2(Operation2):
+class JointOperation2(Operation2,LayerBasedOperation):
     name = 'Joint Definition'
     resolution = 2
     
     name = 'Joint Operation'
     def copy(self):
-        new = type(self)(self.operation_links,self.joint_defs)
+        new = type(self)(self.operation_links,[item.copy() for item in self.joint_defs])
         new.id = self.id
         new.customname = self.customname
         return new
@@ -285,3 +287,9 @@ class JointOperation2(Operation2):
             self.output.append(OperationOutput(item,'Body {0:d}'.format(ii),self))
         self.output.insert(0,self.output[0])
 
+    def switch_layer_defs(self,layerdef_old,layerdef_new):
+        new = self.copy()
+        for joint_def in new.joint_defs:
+            joint_def.joint_layer = new.convert_layer_links([joint_def.joint_layer],layerdef_old,layerdef_new)[0]
+            joint_def.sublaminate_layers = new.convert_layer_links([joint_def.sublaminate_layers],layerdef_old,layerdef_new)[0]
+        return new

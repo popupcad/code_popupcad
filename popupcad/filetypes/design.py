@@ -118,9 +118,6 @@ class Design(popupCADFile):
                 pass
             m.exec_()
 
-            
-        
-
     def prioroperations(self,op):
         priorindex = self.operation_index(op.id)
         prioroperations = self.operations[:priorindex]
@@ -308,3 +305,8 @@ class Design(popupCADFile):
                     yaml.dump((op.bodies_generic,op.connections,op.fixed_bodies,op.all_joint_props),f)
             except AttributeError:
                 pass
+
+    def copy_yaml(self,identical = True):
+        import yaml
+        new = yaml.load(yaml.dump(self.copy(identical)))
+        return new

@@ -163,8 +163,31 @@ class SubOperation(Operation2):
         dialog = MainWidget(design,design.sketches.values(),design.return_layer_definition().layers,design.prioroperations(self),self)
         return dialog
 
-    def operate(self,design):
-        subdesign = design.subdesigns[self.design_links['source']].copy(identical = False)
+    def generate(self,design):
+        subdesign = design.subdesigns[self.design_links['source']].copy_yaml(identical = False)
+        layerdef_old = subdesign.return_layer_definition()
+        layerdef_new = design.return_layer_definition()
+        new_operations = []
+        for operation in subdesign.operations:
+            try:
+                operation = operation.switch_layer_defs(layerdef_old,layerdef_new)
+            except AttributeError:
+                pass
+            new_operations.append(operation)
+        subdesign.sketches.update(design.sketches)
+        subdesign.operations = new_operations
+        subdesign.operations = new_operations
+        for input_data in self.input_list:
+            from_ref = input_data.ref1
+            to_ref = input_data.ref2
+            op_to_insert = design.op_from_ref(to_ref[0])
+            subdesign.operations.insert(0,op_to_insert)
+            subdesign.replace_op_refs_force(from_ref,to_ref)
+        subdesign.define_layers(layerdef_new)
         subdesign.reprocessoperations()
-        layerdef = design.return_layer_definition()
-        return Laminate(layerdef)
+        subdesign.save_yaml('test.cad')
+        self.output = []
+        for output_data in self.output_list:
+            self.output.extend(subdesign.op_from_ref(output_data.ref1[0]).output)
+#        layerdef = design.return_layer_definition()
+#        return Laminate(layerdef)

@@ -10,6 +10,7 @@ from popupcad.filetypes.userdata import UserData
 from popupcad.filetypes.classtools import ClassTools
 from popupcad.filetypes.operationoutput import OperationOutput
 
+
          
 class Operation2(Node,UserData,ClassTools):
     name = 'Operation'
@@ -91,3 +92,8 @@ class Operation2(Node,UserData,ClassTools):
             self.editdata(*dialog.acceptdata())
             editedsignal.emit(self)        
      
+class LayerBasedOperation(object):
+    @staticmethod
+    def convert_layer_links(layer_links,layerdef_old,layerdef_new):
+        layer_links_new = [layer2.id for layer1,layer2 in zip(layerdef_old.layers,layerdef_new.layers) if layer1.id in layer_links]
+        return layer_links_new

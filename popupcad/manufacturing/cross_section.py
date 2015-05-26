@@ -13,7 +13,7 @@ from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.design import NoOperation
 
 class Dialog(qg.QDialog):
-    def __init__(self,design,operations,sketch = None,opref = None):
+    def __init__(self,design,operations,operation_index,sketch = None):
         super(Dialog,self).__init__()
         SketchListManager(design)
         self.optree = DraggableTreeWidget()
@@ -42,10 +42,7 @@ class Dialog(qg.QDialog):
                 item.setSelected(True)
                 
         try:
-            if opref != None: 
-                id, jj = opref
-                ii = design.operation_index(id)
-                self.optree.selectIndeces([(ii,jj)])
+            self.optree.selectIndeces([operation_index])
         except NoOperation:
             pass
                 
@@ -130,11 +127,16 @@ class CrossSection(Operation2):
             
     @classmethod
     def buildnewdialog(cls,design,currentop):
-        opref = design.operations[currentop].id,0
-        dialog = Dialog(design,design.operations,opref = opref)
+#        opref = design.operations[currentop].id,0
+        dialog = Dialog(design,design.operations,(currentop,0))
         return dialog
     def buildeditdialog(self,design):
+        op_ref,output_index = self.operation_links['source'][0]
+        try:
+            op_index = design.operation_index(op_ref)
+        except NoOperation:
+            op_index = None
+
         sketch = design.sketches[self.sketch_links['cross_section'][0]]
-        opref = self.operation_links['source'][0]
-        dialog = Dialog(design,design.prioroperations(self),sketch,opref)
+        dialog = Dialog(design,design.prioroperations(self),(op_index,output_index),sketch)
         return dialog

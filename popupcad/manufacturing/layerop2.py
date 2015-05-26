@@ -5,14 +5,13 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.operation2 import Operation2
+from popupcad.filetypes.operation2 import Operation2,LayerBasedOperation
 import PySide.QtGui as qg
 from popupcad.filetypes.listwidgetitem import ListWidgetItem
 from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildItem
 
 
 class Dialog(qg.QDialog):
-            
     def __init__(self,operations,layerlist,index0=0,selectedop = None,selectedunary = None,selectedpair = None,selectedoutput = None,outputref = 0):
         super(Dialog,self).__init__()
 
@@ -104,7 +103,7 @@ class Dialog(qg.QDialog):
         operation_links = {'parent':self.operationselector.currentRefs()}
         return operation_links,function,unary_layer_links,pair_layer_links,output_layer_links
         
-class LayerOp2(Operation2):
+class LayerOp2(Operation2,LayerBasedOperation):
     name = 'Layer Op'
     function = None
     pairoperationtypes = ['difference','symmetric_difference']    
@@ -151,3 +150,11 @@ class LayerOp2(Operation2):
         operationindex = design.operation_index(operation_ref) 
         ii = self.displayorder.index(self.function)
         return Dialog(design.prioroperations(self),design.return_layer_definition().layers,ii,operationindex,self.unary_layer_links,self.pair_layer_links,self.output_layer_links,output_index)
+
+    def switch_layer_defs(self,layerdef_old,layerdef_new):
+        new = self.copy()
+        new.unary_layer_links = self.convert_layer_links(self.unary_layer_links,layerdef_old,layerdef_new)
+        new.pair_layer_links = self.convert_layer_links(self.pair_layer_links,layerdef_old,layerdef_new)
+        new.output_layer_links = self.convert_layer_links(self.output_layer_links,layerdef_old,layerdef_new)
+        return new
+        
