@@ -163,6 +163,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"Export Laminate",'kwargs':{'triggered':self.export_laminate}})      
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
         self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})     
+        self.fileactions.append({'text':"Render Icons",'kwargs':{'triggered':self.gen_icons}})     
         def dummy(action):
             action.setEnabled(sys.platform=='win32' and getattr(sys,'frozen',False))
         self.fileactions.append({'text':"Update...",'kwargs':{'triggered':self.download_installer},'prepmethod':dummy})      
@@ -538,6 +539,15 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         output = self.design.operations[ii].output[jj]
         generic = output.csg.to_generic_laminate()
         generic.saveAs()
+
+    def gen_icons(self):
+        import pydevtools.popupcad_tools.generate_popupcad_images as sub
+        import yaml
+        widget = sub.Widget((400,300))        
+        design2 = yaml.load(yaml.dump(self.design.copy()))
+        design2.reprocessoperations()
+        widget.load_directory(design2.filename())
+        widget.render_design(design2,design2.dirname)
         
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
