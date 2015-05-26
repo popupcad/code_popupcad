@@ -10,7 +10,6 @@ from popupcad.filetypes.popupcad_file import popupCADFile
 class ProgramSettings(popupCADFile):
     filetypes = {'popupcad':'CAD Design'}
     defaultfiletype = 'popupcad'
-    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
 #    display = ['*']
     editable = ['*']
@@ -19,6 +18,8 @@ class ProgramSettings(popupCADFile):
 #    editable = ['inkscape_path','pstoedit_path','nominal_width','nominal_height']
     
     def __init__(self):
+        super(ProgramSettings,self).__init__()
+        
         self.inkscape_path = 'C:\Program Files (x86)\Inkscape\inkscape.exe'
         self.pstoedit_path = 'C:\Program Files\pstoedit\pstoedit.exe'
         self.toolbar_icon_size = 36

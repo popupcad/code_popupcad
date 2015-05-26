@@ -11,7 +11,7 @@ from popupcad.filetypes.popupcad_file import popupCADFile
 class Sketch(popupCADFile):
     filetypes = {'sketch':'Sketch File'}
     defaultfiletype = 'sketch'
-    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
+    
     @classmethod
     def lastdir(cls):
         return popupcad.lastsketchdir
@@ -24,8 +24,6 @@ class Sketch(popupCADFile):
         super(Sketch,self).__init__()
         self.operationgeometry = []
         self.constraintsystem = ConstraintSystem()
-        self.id = id(self)
-        self._basename = self.genbasename()
 
     def copy(self,identical = True):
         new = type(self)()

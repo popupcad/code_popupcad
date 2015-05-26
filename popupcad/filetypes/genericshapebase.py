@@ -25,7 +25,6 @@ class NotSimple(Exception):
 class GenericShapeBase(popupCADFile):
     filetypes = {'shape':'Shape File'}
     defaultfiletype = 'shape'
-    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
     display = ['construction','exterior','interiors']
     editable = ['construction']
@@ -33,6 +32,21 @@ class GenericShapeBase(popupCADFile):
     tolerance = 10.**-(roundvalue-1)
     shapetypes = enum(line = 'line',polyline = 'polyline',polygon = 'polygon',circle = 'circle',rect2point = 'rect2point')
     deletable = []
+
+    def __init__(self,exterior,interiors,construction = False,test_shapely = False):
+        super(GenericShapeBase,self).__init__()
+        self.exterior = exterior
+        self.interiors = interiors
+        
+        self.exterior, self.interiors = self.condition_points(self.exterior, self.interiors )
+
+        self.construction = construction
+        if test_shapely:
+            shapely = self.outputshapely()
+            if not shapely.is_simple:
+                raise(NotSimple)
+            if not shapely.is_valid:
+                raise(ShapeInvalid)
 
     @classmethod
     def lastdir(cls):
@@ -124,22 +138,6 @@ class GenericShapeBase(popupCADFile):
     def properties(self):
         from dev_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
-        
-    def __init__(self,exterior,interiors,construction = False,test_shapely = False):
-        self.id = id(self)
-        self.exterior = exterior
-        self.interiors = interiors
-        self._basename = self.genbasename()
-        
-        self.exterior, self.interiors = self.condition_points(self.exterior, self.interiors )
-
-        self.construction = construction
-        if test_shapely:
-            shapely = self.outputshapely()
-            if not shapely.is_simple:
-                raise(NotSimple)
-            if not shapely.is_valid:
-                raise(ShapeInvalid)
         
     def addvertex_exterior(self,vertex,special = False):
         self.exterior.append(vertex)

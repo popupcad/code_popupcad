@@ -10,22 +10,13 @@ class FileMissing(Exception):
     def __init__(self,filename):
         super(FileMissing,self).__init__('Child File Missing:{filename}'.format(filename=filename) )
 
-def buildfilters(filetypes,defaultfiletype):
-    filters = {}
-    for filetype,name in filetypes.items():
-        filters[filetype] = '{0}(*.{1})'.format(name,filetype)
-    filterstring = ''.join([item+';;' for item in filters.values()])
-    selectedfilter=filters[defaultfiletype]
-    return filters,filterstring,selectedfilter
-
-
 class GenericFile(object):
     filetypes = {'file':'Generic File'}
     defaultfiletype = 'file'
     _lastdir = '.'
     def __init__(self):
         self.id = id(self)
-        self._basename = self.genbasename()
+        self.set_basename(self.genbasename())
         
     def get_basename(self):
         try:
@@ -90,14 +81,16 @@ class GenericFile(object):
     def set_basename(self,basename):
         self._basename = basename
 
-    def _buildfilters(*args):
-        return buildfilters(*args)
-    filters,filterstring,selectedfilter = buildfilters(filetypes,defaultfiletype)
-    
     @classmethod
-    def buildfilters(cls,*args):
-        return buildfilters(*args)
+    def buildfilters(cls):
+        filters = {}
+        for filetype,name in cls.filetypes.items():
+            filters[filetype] = '{0}(*.{1})'.format(name,filetype)
+        filterstring = ''.join([item+';;' for item in filters.values()])
+        selectedfilter=filters[cls.defaultfiletype]
+        return filterstring,selectedfilter
         
+            
     def updatefilename(self,filename):
         import os
         try:
@@ -107,8 +100,9 @@ class GenericFile(object):
         self.dirname,self._basename = os.path.split(filename)
         self.setlastdir(self.dirname)
 
-    def updatefilter(self,selectedfilter):
-        self.selectedfilter = selectedfilter
+#    @classmethod
+#    def updatefilter(cls,selectedfilter):
+#        cls.selectedfilter = selectedfilter
         
     @classmethod
     def load_yaml(cls,filename):
@@ -120,21 +114,22 @@ class GenericFile(object):
 
     @classmethod
     def open_filename(cls,parent = None,openmethod = None,**openmethodkwargs):
-        filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent,'Open',cls.lastdir(),filter = cls.filterstring,selectedFilter = cls.selectedfilter)
+        filterstring,selectedfilter = cls.buildfilters()
+        filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent,'Open',cls.lastdir(),filter = filterstring,selectedFilter = selectedfilter)
         if filename:
             if openmethod == None:
-                design = cls.load_yaml(filename)
+                object1 = cls.load_yaml(filename)
             else:
-                design = openmethod(filename,**openmethodkwargs)
-            design.updatefilter(selectedfilter)
-            return filename, design
+                object1 = openmethod(filename,**openmethodkwargs)
+#            object1.updatefilter(selectedfilter)
+            return filename, object1
         else:
             return None,None
             
     @classmethod
     def open(cls,*args,**kwargs):
-        filename,design = cls.open_filename(*args,**kwargs)
-        return design
+        filename,object1 = cls.open_filename(*args,**kwargs)
+        return object1
             
     def save(self,parent = None,savemethod = None,**savemethodkwargs):
         try:
@@ -161,11 +156,12 @@ class GenericFile(object):
                 
             tempfilename = os.path.normpath(os.path.join(self.lastdir(),basename))                
             
-        filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename,filter = self.filterstring,selectedFilter = self.selectedfilter)
+        filterstring,selectedfilter = self.buildfilters()
+        filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename,filter = filterstring,selectedFilter = selectedfilter)
         if not filename:
             return False
         else:
-            self.updatefilter(selectedfilter)
+#            self.updatefilter(selectedfilter)
             if savemethod == None:
                 return self.save_yaml(filename)
             else:

@@ -9,7 +9,6 @@ from popupcad.filetypes.popupcad_file import popupCADFile
 class GenericLaminate(popupCADFile):
     filetypes = {'laminate':'Laminate File'}
     defaultfiletype = 'laminate'
-    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
     def __init__(self,layerdef,geoms):
         super(GenericLaminate,self).__init__()

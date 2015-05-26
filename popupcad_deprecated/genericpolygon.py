@@ -12,7 +12,24 @@ from popupcad.filetypes.genericshapebase import GenericShapeBase
 from popupcad.filetypes.genericshapes import GenericCircle,GenericLine,GenericPoly,GenericPolyline,GenericTwoPointRect
     
 class GenericShape(GenericShapeBase):
+    def __init__(self,exterior,interiors,shapetype,construction = False,test_shapely = False):
+        from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid
+        self.id = id(self)
+        self.exterior = exterior
+        self.interiors = interiors
+        self.shapetype = shapetype
+        self._basename = self.genbasename()
 
+        self.exterior, self.interiors = self.condition_points(self.exterior, self.interiors )
+
+        self.construction = construction
+        if test_shapely:
+            shapely = self.outputshapely()
+            if not shapely.is_simple:
+                raise(NotSimple)
+            if not shapely.is_valid:
+                raise(ShapeInvalid)
+                
     def copy(self,identical = True):
         exterior = [vertex.copy(identical) for vertex in self.exterior]
         interiors = [[vertex.copy(identical) for vertex in interior] for interior in self.interiors]
@@ -60,24 +77,7 @@ class GenericShape(GenericShapeBase):
             return self.generaterect2pointpath
         else:
             raise(Exception('no path defined for this type'))        
-    
-    def __init__(self,exterior,interiors,shapetype,construction = False,test_shapely = False):
-        from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid
-        self.id = id(self)
-        self.exterior = exterior
-        self.interiors = interiors
-        self.shapetype = shapetype
-        self._basename = self.genbasename()
 
-        self.exterior, self.interiors = self.condition_points(self.exterior, self.interiors )
-
-        self.construction = construction
-        if test_shapely:
-            shapely = self.outputshapely()
-            if not shapely.is_simple:
-                raise(NotSimple)
-            if not shapely.is_valid:
-                raise(ShapeInvalid)
         
     def addvertex_exterior(self,vertex):
         self.exterior.append(vertex)

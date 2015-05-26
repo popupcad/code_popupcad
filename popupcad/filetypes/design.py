@@ -19,7 +19,6 @@ class NoOperation(Exception):
 class Design(popupCADFile):
     filetypes = {'cad':'CAD Design'}
     defaultfiletype = 'cad'
-    filters,filterstring,selectedfilter = popupCADFile.buildfilters(filetypes,defaultfiletype)
 
     @classmethod
     def lastdir(cls):
@@ -36,7 +35,6 @@ class Design(popupCADFile):
         self.id = id(self)
         self.sketches = {}
         self.subdesigns = {}
-        self._basename = self.genbasename()
     
     def define_layers(self,layerdef):
         self._layerdef = layerdef
