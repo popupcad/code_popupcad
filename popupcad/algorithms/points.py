@@ -168,63 +168,6 @@ def convert_to_3d(listin):
     a = d.T
     return a.tolist()
 
-def jointholes(sketch_result,layerdef):
-    import popupcad
-    import operator
-    import math
-    from popupcad.filetypes.laminate import Laminate
-    generic = sketch_result.genericfromls()
-    for key,value in generic.items():
-        if not not value:
-            allgeoms = value
-            hingelayer = key
-    allpoints = []
-    for geom in allgeoms:
-        allpoints.extend(geom.exteriorpoints())
-    allpoints.sort()
-    commonpoints = []
-    
-    for ii,point1 in enumerate(allpoints[1:-1]):
-        point0 = allpoints[ii]
-        point2 = allpoints[ii+2]
-        a = popupcad.algorithms.points.twopointsthesame(point1,point2,1e-5)
-        b = popupcad.algorithms.points.twopointsthesame(point0,point1,1e-5)
-        if ii==0:
-            if b:
-                commonpoints.append(point1)
-            elif a:
-                commonpoints.append(point1)
-        else:
-            if (a and (not b)):
-                commonpoints.append(point1)
-
-    shapelys = []
-    for point in commonpoints:
-        lineset = {}
-        for item in allgeoms:
-            points = numpy.array(item.exteriorpoints())
-            points -= point
-            l = (points[:,0]**2+points[:,1]**2)**.5
-            test = l<1e-5
-            if True in test:
-                ii = 1-test.nonzero()[0][0]
-                lineset[item] = math.atan2(points[ii,1],points[ii,0])
-        q_s = sorted(lineset.items(),key = operator.itemgetter(1))
-        gaps = [item1[1]-item0[1] for item0,item1 in zip(q_s[:-1],q_s[1:])] + [2*math.pi+q_s[0][1]-q_s[-1][1]]
-        min_gap = min(gaps)
-        bufferval = 1.1/math.sin(min_gap/2)
-#            print(gaps,min_gap,bufferval)
-        shapely = popupcad.geometry.vertex.DrawnPoint(position = point).outputshapely()
-        shapely = shapely.buffer(bufferval*popupcad.internal_argument_scaling)
-        shapelys.append(shapely)
-    shapelys = popupcad.geometry.customshapely.multiinit(*shapelys)
-#        generics = [popupcad.geometry.vertex.DrawnPoint(position = point) for point in commonpoints]
-#        shapelys = [item.outputshapely() for item in generics]
-#        layer = Layer(shapelys)
-    holes = Laminate(layerdef)
-    holes.replacelayergeoms(hingelayer,shapelys)
-    return holes,allgeoms,hingelayer 
-
 
 if __name__=='__main__':
 #    print(colinear([[0,0],[1,1]],[[.1,.1+.9e-3],[.9,.9]],1e-3))

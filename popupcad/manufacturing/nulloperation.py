@@ -5,20 +5,22 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 from popupcad.filetypes.laminate import Laminate
 
-class NullOp(Operation):
+class NullOp(Operation2):
     name = 'None'
 
-    attr_init = tuple()
-    attr_init_k = tuple()
-    attr_copy = 'id','customname'
-
-    def __init__(self,*args):
+    def __init__(self):
         super(NullOp,self).__init__()
-        self.editdata(*args)
+        self.editdata({},{},{})
         self.id = id(self)
+
+    def copy(self):
+        new = type(self)()
+        new.id = self.id
+        new.customname = self.customname
+        return new
 
     def operate(self,design):
         laminate = Laminate(design.return_layer_definition())

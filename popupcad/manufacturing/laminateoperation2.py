@@ -79,10 +79,7 @@ class LaminateOperation2(Operation2):
     unaryoperationtypes = ['union','intersection']    
     pairoperationtypes = ['difference','symmetric_difference']
     displayorder = unaryoperationtypes + pairoperationtypes
-    attr_init = 'operation_links','function'
-    attr_init_k = tuple()
-    attr_copy = 'id','customname'
-    
+
     def __init__(self,*args,**kwargs):
         super(LaminateOperation2,self).__init__()
         self.editdata(*args,**kwargs)
@@ -92,6 +89,12 @@ class LaminateOperation2(Operation2):
         super(LaminateOperation2,self).editdata(operation_links,{},{})
         self.operation_links = operation_links
         self.function = function
+
+    def copy(self):
+        new = type(self)(self.operation_links.copy(),self.function)
+        new.id = self.id
+        new.customname = self.customname
+        return new
 
     def operate(self,design):
         if len(self.operation_links['unary'])>0:

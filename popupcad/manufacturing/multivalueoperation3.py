@@ -87,10 +87,6 @@ class MultiValueOperation3(Operation2):
     show = ['keepout']
     defaults = [0.]
 
-    attr_init = 'operation_links','values','keepout_type'
-    attr_init_k = tuple()
-    attr_copy = 'id','customname'
-    
     keepout_types = enum.enum(laser_keepout = 301,mill_keepout = 302,mill_flip_keepout = 303)
     keepout_type_default = keepout_types.laser_keepout
     
@@ -99,6 +95,12 @@ class MultiValueOperation3(Operation2):
         self.id = id(self)
 
         self.editdata(*args)
+
+    def copy(self):
+        new = type(self)(self.operation_links.copy(),self.values.copy(),self.keepout_type)
+        new.id = self.id
+        new.customname = self.customname
+        return new
 
     def editdata(self,operation_links,values,keepout_type):
         super(MultiValueOperation3,self).editdata(operation_links,{},{})

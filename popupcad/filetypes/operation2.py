@@ -7,16 +7,10 @@ Please see LICENSE.txt for full license.
 
 from dev_tools.acyclicdirectedgraph import Node
 from popupcad.filetypes.userdata import UserData
-from popupcad.filetypes.classtools import ClassTools
 from popupcad.filetypes.operationoutput import OperationOutput
 
-
-         
-class Operation2(Node,UserData,ClassTools):
+class Operation2(Node,UserData):
     name = 'Operation'
-    attr_init = tuple()
-    attr_init_k = tuple()
-    attr_copy = tuple()
     
     def __init__(self):
         Node.__init__(self)
@@ -59,10 +53,6 @@ class Operation2(Node,UserData,ClassTools):
                 list1[list1.index(refold)]=refnew
         self.clear_output()
 
-    def copy(self):
-        newop = self.init_copy(self.attr_init,self.attr_init_k)
-        newop.copyattrs(self,self.attr_copy)
-        return newop
     def replace_sketch_refs(self,refold,refnew):
         for key,list1 in self.sketch_links.items():
             while refold in list1:

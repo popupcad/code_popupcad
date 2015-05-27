@@ -110,10 +110,6 @@ class LayerOp2(Operation2,LayerBasedOperation):
     unaryoperationtypes = ['union','intersection']   
     displayorder = unaryoperationtypes + pairoperationtypes
 
-    attr_init = 'operation_links','function','unary_layer_links','pair_layer_links','output_layer_links'
-    attr_init_k = tuple()
-    attr_copy = 'id','customname'
-    
     def __init__(self,*args,**kwargs):
         super(LayerOp2,self).__init__()
         self.editdata(*args,**kwargs)
@@ -125,6 +121,12 @@ class LayerOp2(Operation2,LayerBasedOperation):
         self.unary_layer_links = unary_layer_links        
         self.pair_layer_links = pair_layer_links
         self.output_layer_links = output_layer_links
+        
+    def copy(self):
+        new = type(self)(self.operation_links.copy(),self.function,self.unary_layer_links.copy(),self.pair_layer_links.copy(), self.output_layer_links.copy())
+        new.id = self.id
+        new.customname = self.customname
+        return new
 
     def operate(self,design):
         operation_ref,output_index = self.operation_links['parent'][0]
