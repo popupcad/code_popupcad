@@ -63,6 +63,11 @@ class Operation2(Node,UserData,ClassTools):
         newop = self.init_copy(self.attr_init,self.attr_init_k)
         newop.copyattrs(self,self.attr_copy)
         return newop
+    def replace_sketch_refs(self,refold,refnew):
+        for key,list1 in self.sketch_links.items():
+            while refold in list1:
+                list1[list1.index(refold)]=refnew
+        self.clear_output()
 
     def upgrade(self,*args,**kwargs):
         return self

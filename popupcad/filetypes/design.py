@@ -66,6 +66,15 @@ class Design(popupCADFile):
                 failed_ops.append(op)
         return failed_ops
         
+    def replace_sketch_refs_force(self,oldref,newref):
+        failed_ops=[]
+        for op in self.operations:
+            try:
+                op.replace_sketch_refs(oldref,newref)
+            except AttributeError:
+                failed_ops.append(op)
+        return failed_ops
+        
     def replace_op_refs_inner(self,oldref,newref):
         self.network()
         

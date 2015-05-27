@@ -23,11 +23,24 @@ class InputData(object):
     def __init__(self,ref1,ref2):
         self.ref1 = ref1
         self.ref2 = ref2
+
+class SketchData(object):
+    def __init__(self,ref1,ref2):
+        self.ref1 = ref1
+        self.ref2 = ref2
+
 class OutputData(object):
     def __init__(self,ref1):
         self.ref1 = ref1
         
 class InputRow(Row):
+    def __init__(self,get_sketches,get_layers):
+        elements = []
+        elements.append(SingleItemListElement('to replace',get_sketches))
+        elements.append(SingleItemListElement('replace with',get_layers))
+        self.elements = elements
+
+class SketchRow(Row):
     def __init__(self,get_sketches,get_layers):
         elements = []
         elements.append(SingleItemListElement('to replace',get_sketches))
@@ -61,8 +74,10 @@ class MainWidget(qg.QDialog):
         self.designwidget = DesignListManager(design)
 
         self.input_table= Table(InputRow(self.get_subdesign_operations,self.get_operations))
+        self.sketch_table= Table(SketchRow(self.get_subdesign_sketches,self.get_sketches))
         self.output_table= Table(OutputRow(self.get_subdesign_operations))
         
+        self.sketch_control = TableControl(self.sketch_table,self)
         self.input_control = TableControl(self.input_table,self)
         self.output_control = TableControl(self.output_table,self)
 
@@ -78,6 +93,7 @@ class MainWidget(qg.QDialog):
 
         layout = qg.QVBoxLayout()
         layout.addWidget(self.designwidget)
+        layout.addWidget(self.sketch_control)
         layout.addWidget(self.input_control)
         layout.addWidget(self.output_control)
         layout.addLayout(sublayout2)
@@ -93,6 +109,8 @@ class MainWidget(qg.QDialog):
                 self.input_table.row_add(subdesign.op_from_ref(item.ref1[0]),design.op_from_ref(item.ref2[0]))
             for item in jointop.output_list:
                 self.output_table.row_add(subdesign.op_from_ref(item.ref1[0]))
+            for item in jointop.sketch_list:
+                self.sketch_table.row_add(subdesign.sketches[item.ref1],design.sketches[item.ref2])
 
         self.designwidget.itemlist.itemSelectionChanged.connect(self.input_table.reset)
         self.designwidget.itemlist.itemSelectionChanged.connect(self.output_table.reset)
@@ -100,6 +118,10 @@ class MainWidget(qg.QDialog):
         return self.operations
     def get_subdesign_operations(self):
         return self.subdesign().operations
+    def get_sketches(self):
+        return self.design.sketches.values()
+    def get_subdesign_sketches(self):
+        return self.subdesign().sketches.values()
 #        return []
     def subdesign(self):
         try:
@@ -109,6 +131,11 @@ class MainWidget(qg.QDialog):
 
     def acceptdata(self):
         
+        sketch_list = []
+        data = self.sketch_table.export_data()
+        for sketch1,sketch2 in data:
+            sketch_list.append(SketchData(sketch1.id,sketch2.id))
+
         input_list = []
         data = self.input_table.export_data()
         for op1,op2 in data:
@@ -122,14 +149,14 @@ class MainWidget(qg.QDialog):
         design_links = {}
         design_links['source'] = self.subdesign().id
         
-        return design_links,input_list,output_list
+        return design_links,sketch_list,input_list,output_list
         
 
 class SubOperation(Operation2):
     resolution = 2
     name = 'Sub-Operation'
     def copy(self):
-        new = type(self)(self.design_links.copy(),self.input_list.copy(),self.output_list.copy())
+        new = type(self)(self.design_links.copy(),self.sketch_list.copy(),self.input_list.copy(),self.output_list.copy())
         new.id = self.id
         new.customname = self.customname
         return new
@@ -139,8 +166,9 @@ class SubOperation(Operation2):
         self.editdata(*args)
         self.id = id(self)
         
-    def editdata(self,design_links,input_list,output_list):  
+    def editdata(self,design_links,sketch_list,input_list,output_list):  
         super(SubOperation,self).editdata({},{},design_links)
+        self.sketch_list = sketch_list
         self.design_links = design_links
         self.input_list = input_list
         self.output_list = output_list
@@ -164,7 +192,13 @@ class SubOperation(Operation2):
         return dialog
 
     def generate(self,design):
-        subdesign = design.subdesigns[self.design_links['source']].copy_yaml(identical = False)
+#        import yaml
+        subdesign_orig = design.subdesigns[self.design_links['source']]
+#        subdesign1 = subdesign_orig.copy()
+#        stream = yaml.dump(subdesign1)
+#        subdesign = yaml.load(stream)
+        subdesign = subdesign_orig.copy_yaml()
+        
         layerdef_old = subdesign.return_layer_definition()
         layerdef_new = design.return_layer_definition()
         new_operations = []
@@ -176,13 +210,17 @@ class SubOperation(Operation2):
             new_operations.append(operation)
         subdesign.sketches.update(design.sketches)
         subdesign.operations = new_operations
-        subdesign.operations = new_operations
         for input_data in self.input_list:
             from_ref = input_data.ref1
             to_ref = input_data.ref2
             op_to_insert = design.op_from_ref(to_ref[0])
             subdesign.operations.insert(0,op_to_insert)
             subdesign.replace_op_refs_force(from_ref,to_ref)
+        for sketch_data in self.sketch_list:
+            from_ref = sketch_data.ref1
+            to_ref = sketch_data.ref2
+            subdesign.replace_sketch_refs_force(from_ref,to_ref)
+            
         subdesign.define_layers(layerdef_new)
         subdesign.reprocessoperations()
         subdesign.save_yaml('test.cad')
