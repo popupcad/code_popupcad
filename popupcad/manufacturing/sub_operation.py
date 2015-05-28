@@ -192,11 +192,7 @@ class SubOperation(Operation2):
         return dialog
 
     def generate(self,design):
-#        import yaml
         subdesign_orig = design.subdesigns[self.design_links['source']]
-#        subdesign1 = subdesign_orig.copy()
-#        stream = yaml.dump(subdesign1)
-#        subdesign = yaml.load(stream)
         subdesign = subdesign_orig.copy_yaml()
         
         layerdef_old = subdesign.return_layer_definition()
@@ -223,9 +219,6 @@ class SubOperation(Operation2):
             
         subdesign.define_layers(layerdef_new)
         subdesign.reprocessoperations()
-        subdesign.save_yaml('test.cad')
         self.output = []
         for output_data in self.output_list:
             self.output.extend(subdesign.op_from_ref(output_data.ref1[0]).output)
-#        layerdef = design.return_layer_definition()
-#        return Laminate(layerdef)

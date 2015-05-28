@@ -313,7 +313,3 @@ class Design(popupCADFile):
             except AttributeError:
                 pass
 
-    def copy_yaml(self,identical = True):
-        import yaml
-        new = yaml.load(yaml.dump(self.copy(identical)))
-        return new
