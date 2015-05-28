@@ -10,15 +10,15 @@ import PySide.QtCore as qc
 import popupcad
 from popupcad.geometry.vertex import ShapeVertex,DrawnPoint
 from popupcad.graphics2d.interactivevertex import InteractiveVertex,ReferenceInteractiveVertex,DrawingPoint,StaticDrawingPoint,InteractiveVertexBase
-from popupcad.graphics2d.interactiveedge import InteractiveEdge,ReferenceInteractiveEdge,EdgeBase
+from popupcad.graphics2d.interactiveedge import InteractiveEdge,ReferenceInteractiveEdge
 from popupcad.graphics2d.interactive import Interactive, InteractiveLine
-from popupcad.graphics2d.static import Static,StaticLine
+from popupcad.graphics2d.static import StaticLine
 from popupcad.graphics2d.proto import ProtoLine,ProtoPath,ProtoCircle,ProtoPoly,ProtoRect2Point
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
 import popupcad.filetypes.constraints as constraints
 from popupcad.filetypes.sketch import Sketch
-from popupcad.widgets.listeditor import ListEditor,ListSelector
+from popupcad.widgets.listeditor import ListEditor
 from popupcad.supportfiles import Icon
 import numpy
 from popupcad.widgets.widgetcommon import WidgetCommon
@@ -46,23 +46,13 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         if self.selectops:
             self.optree.linklist(self.operations)
 
-
         self.undoredo = UndoRedo(self.get_current_sketch,self.loadsketch)
         self.loadsketch(sketch)
         self.undoredo.restartundoqueue()
-
         self.createActions()        
-        
-#        if self.selectops:
-#            if ii!=None:
-#                ii = ii+1
-#            else:
-#                ii = 0
-#            self.optree.setCurrentIndeces(ii,jj)
-        
         self.load_references()
-
         self.connectSignals()
+
     def connectSignals(self):
         self.setWindowModality(qc.Qt.WindowModality.ApplicationModal)
         self.setAttribute(qc.Qt.WA_DeleteOnClose)
@@ -281,16 +271,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 l = GenericLine([v1,v2],[],construction = True)
 
                 a = l.outputinteractive()
-#                b = v1.gen_interactive()
-#                c = v2.gen_interactive()
                 self.scene.addItem(a)
-#                self.scene.addItem(b)
-#                self.scene.addItem(c)
                 
                 item.setSelected(False)
                 a.setSelected(True)
-#                b.setSelected(True)
-#                c.setSelected(True)
                 items.append(a.selectableedges[0].get_generic())
 
             elif isinstance(item,InteractiveVertex):
@@ -312,13 +296,10 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.refreshconstraints()
 
     def refreshconstraints_button(self):
-#        self.undoredo.savesnapshot()
         self.refreshconstraints()
     def constraint_deleted(self):
-#        self.undoredo.savesnapshot()
         self.refreshconstraints()
     def refreshconstraints(self):
-#        self.undoredo.savesnapshot()
         self.sketch.constraintsystem.regenerate()
         self.sketch.constraintsystem.update()
 
@@ -341,7 +322,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         return vertices
 
     def cleanupconstraints(self):
-#        self.sketch.constraintsystem.update()
         self.sketch.constraintsystem.cleanup()
         self.constraint_editor.refresh()
         self.sketch.constraintsystem.regenerate()
@@ -373,6 +353,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.sketch.constraintsystem.link_vertex_builder(self.buildvertices)
         
     def showvertices(self):
+        if self.act_view_vertices.isChecked():
+            self.scene.cancelcreate()
         self.scene.showvertices(self.act_view_vertices.isChecked())
         self.scene.updatevertices()
 
@@ -464,7 +446,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         genericlines = gj.getjoints(items)
         [self.scene.addItem(line) for line in genericlines]
         
-
     def showconstraint(self,row):
         item = self.constraint_editor.item(row)
         self.showconstraint_item(item)
@@ -570,7 +551,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             item.harddelete()
         for item in newgenerics:
             self.scene.addItem(item.outputinteractive())
-
+#    def toggle_construction(self):
+#        for item in self.scene.items():
                 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
