@@ -9,7 +9,7 @@ import sys
 import popupcad
 
 if __name__ == "__main__":
-    args = sys.argv.copy()
+    args = list(sys.argv)
     args.append('--deprecated')
     program = popupcad.filetypes.program.Program(*args)
     sys.exit(program.app.exec_())

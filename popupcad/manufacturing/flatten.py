@@ -6,7 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.operation import Operation
+from popupcad.filetypes.operation2 import Operation2
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
@@ -50,7 +50,7 @@ class Dialog(qg.QDialog):
         generic = self.design.op_from_ref(ref).output[ii].generic_geometry_2d()
         return ref,ii,generic
         
-class Flatten(Operation):
+class Flatten(Operation2):
     name = 'Flatten'
     def __init__(self,*args):
         super(Flatten,self).__init__()
