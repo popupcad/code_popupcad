@@ -179,9 +179,8 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
             self.changed_trigger = False
             self.scene().savesnapshot.emit()
         dp = event.scenePos() - event.lastScenePos()
-        
         self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
-        self.updateshape()
+        self.scene().updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
 
     def mousePressEvent(self,event):

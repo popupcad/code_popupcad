@@ -628,6 +628,7 @@ class PointLine(ValueConstraint,ExactlyOnePointOneLine):
             l1 = v1.dot(v1)**.5
             eq = l1 - self.value*internal_argument_scaling
             return [eq]  
+            
 class LineMidpoint(Constraint,ExactlyOnePointOneLine):
     name = 'Line Midpoint'
     def equations(self):

@@ -113,8 +113,8 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
             self.scene().savesnapshot.emit()
         dp = event.scenePos() - event.lastScenePos()
         self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
-        self.updateshape()
-
+        self.scene().updateshape()
+        
     def mouseReleaseEvent(self,event):
         super(InteractiveVertexBase,self).mouseReleaseEvent(event)    
         self.updatestate(self.states.state_hover)

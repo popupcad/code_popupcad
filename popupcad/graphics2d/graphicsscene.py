@@ -82,6 +82,13 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
     def setsketch(self,sketch):
         self._sketch = sketch
 
+    def updateshape(self):
+        for item in self.items():
+            try:
+                item.updateshape()
+            except AttributeError:
+                pass        
+
     def screenShot(self):
         import os
         import popupcad
@@ -174,7 +181,8 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         if self.temp!=None:
             self.temp.mousedoubleclick(pos)
         else:
-            super(GraphicsScene,self).mouseDoubleClickEvent(event)
+            if not self.constraints_on:
+                super(GraphicsScene,self).mouseDoubleClickEvent(event)
 
     def childfinished(self):
         self.newpolygon.emit()
@@ -202,6 +210,10 @@ class GraphicsScene(qg.QGraphicsScene,SVGOutputSupport):
         self.removecontrolpoints()
         if self.constraints_on:            
             for item in self.items():
+                try:
+                    item.updatemode(item.modes.mode_defined)
+                except AttributeError:
+                    pass
                 try:
                     for child in item.children():
                         if not child in self.items():

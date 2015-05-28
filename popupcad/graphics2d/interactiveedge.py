@@ -195,11 +195,12 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
                     self.scene().savesnapshot.emit()
                 dp = event.scenePos() - event.lastScenePos()
                 self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
-                self.updateshape()
-                try:
-                    self.connectedinteractive.updateshape()
-                except AttributeError:
-                    pass                
+#                self.updateshape()
+#                try:
+#                    self.connectedinteractive.updateshape()
+#                except AttributeError:
+#                    pass          
+                self.scene().updateshape()
 
     def mouseReleaseEvent(self,event):
         self.updatestate(self.states.state_hover)

@@ -302,13 +302,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def refreshconstraints(self):
         self.sketch.constraintsystem.regenerate()
         self.sketch.constraintsystem.update()
-
-        for item in self.scene.items():
-            try:
-                item.updateshape()
-            except AttributeError:
-                pass
-        
+        self.scene.updateshape()
         self.constraint_editor.refresh()
 
     def buildvertices(self):

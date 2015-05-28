@@ -37,10 +37,6 @@ class InteractiveVertex(InteractiveVertexBase):
         if self.connectedinteractive.mode!=None:
             if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
                 super(InteractiveVertex,self).mouseMoveEvent(event)
-                try:
-                    self.connectedinteractive.updateshape()
-                except AttributeError:
-                    pass                
         
     def mousePressEvent(self,event):
         remove = (event.modifiers() & (qc.Qt.KeyboardModifierMask.ControlModifier))!=0 and (event.modifiers() & (qc.Qt.KeyboardModifierMask.ShiftModifier))
