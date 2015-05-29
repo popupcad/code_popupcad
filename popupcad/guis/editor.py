@@ -138,7 +138,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         
         time = popupcad.basic_functions.return_formatted_time()
         filename = os.path.normpath(os.path.join(popupcad.backupdir,'autosave_'+time+'.cad'))
-        self.design.save_yaml(filename)
+        self.design.save_yaml(filename,update_filename = False)
         
     @loggable
     def importscripts(self):

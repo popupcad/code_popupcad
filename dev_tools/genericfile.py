@@ -100,10 +100,6 @@ class GenericFile(object):
         self.dirname,self._basename = os.path.split(filename)
         self.setlastdir(self.dirname)
 
-#    @classmethod
-#    def updatefilter(cls,selectedfilter):
-#        cls.selectedfilter = selectedfilter
-        
     @classmethod
     def load_yaml(cls,filename):
         import yaml
@@ -121,7 +117,6 @@ class GenericFile(object):
                 object1 = cls.load_yaml(filename)
             else:
                 object1 = openmethod(filename,**openmethodkwargs)
-#            object1.updatefilter(selectedfilter)
             return filename, object1
         else:
             return None,None
@@ -161,7 +156,6 @@ class GenericFile(object):
         if not filename:
             return False
         else:
-#            self.updatefilter(selectedfilter)
             if savemethod == None:
                 return self.save_yaml(filename)
             else:
@@ -171,9 +165,10 @@ class GenericFile(object):
         import os
         return os.path.normpath(os.path.join(self.dirname,self.get_basename()))              
             
-    def save_yaml(self,filename,identical = True):
+    def save_yaml(self,filename,identical = True,update_filename = True):
         import yaml
-        self.updatefilename(filename)
+        if update_filename:
+            self.updatefilename(filename)
         self.parent_program_name = self.get_parent_program_name()
         self.parent_program_version = self.get_parent_program_version()
         new = self.copy(identical)
