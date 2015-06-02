@@ -5,8 +5,6 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.userdata import UserData
-import popupcad
-import numpy
 
 class OperationOutput(UserData):
     def __init__(self,csg,name,parent = None):

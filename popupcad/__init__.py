@@ -8,13 +8,11 @@ Please see LICENSE.txt for full license.
 
 import sys
 
-
 from shapely import speedups
 #necessary for homebrewed libgeos which does not work with speedups for some reason.
 if not sys.platform == 'darwin':
     if speedups.available:
         speedups.enable()
-
 import os
 
 from . import basic_functions
@@ -33,12 +31,14 @@ flip_y = True
 user_home_dir = os.path.expanduser('~')
 
 internal_argument_scaling = 1e3
+view_scaling = 1e3
 
 inkscape_mm_conversion = 1./282.22293
 coreldraw_mm_conversion = 1./264.581 
 
 zoom_max = 1.
 zoom_min = 1e-6
+zoom_scale_factor = 1.2
 
 version = basic_functions.return_formatted_time(specificity = 'day',small_separator = '.',big_separator='.')
 
