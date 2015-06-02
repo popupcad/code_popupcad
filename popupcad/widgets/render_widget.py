@@ -14,12 +14,12 @@ class RenderWidget(qg.QWidget):
     def __init__(self,rect_size):
         super(RenderWidget,self).__init__()
 
-        self.gs = popupcad.graphics2d.graphicsscene.GraphicsScene()
-        self.gv = popupcad.graphics2d.graphicsview.GraphicsView(self.gs)
+        gs = popupcad.graphics2d.graphicsscene.GraphicsScene()
+        gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1,1,1,1)))
+        self.gv = popupcad.graphics2d.graphicsview.GraphicsView(gs)
         self.gv.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
 #        self.gv.setRenderHint(qg.QPainter.RenderHint.HighQualityAntialiasing,True)
 #        self.gv.setRenderHint(qg.QPainter.RenderHint.SmoothPixmapTransform,True)
-        self.gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1,1,1,1)))
 #        self.gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1,1,1,0.1)))
 #        self.gs.setBackgroundBrush(qg.QBrush())
 
@@ -60,30 +60,30 @@ class RenderWidget(qg.QWidget):
         display_geometry = output.csg.to_generic_laminate().to_static() 
         for layer in layers:
             for geom in display_geometry[layer]:
-                self.gs.addItem(geom)
+                self.gv.scene().addItem(geom)
 
     def raster(self,dest,filename,filetype = 'PNG'):
-        e = self.gs.sceneRect()
+        e = self.gv.scene().sceneRect()
         f = self.gv.mapFromScene(e.bottomLeft())
         g = self.gv.mapFromScene(e.topRight())
         rect = qc.QRect(f,g)
         im = qg.QImage(rect.width(),rect.height(),qg.QImage.Format.Format_ARGB32)
         painter = qg.QPainter(im)
         painter.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
-        self.gs.render(painter)
+        self.gv.scene().render(painter)
         filename = '{0}.{1}'.format(filename,filetype.lower())
         full_path = os.path.normpath(os.path.join(dest,filename))
         im.mirrored().save(full_path, filetype.upper())
         painter.end()
         
     def clear(self):
-        for item in self.gs.items():
-            self.gs.removeItem(item)
+        for item in self.gv.scene().items():
+            self.gv.scene().removeItem(item)
     
-    def render_design(self,d,dest,filetype):
+    def render_design(self,d,dest,filetype='png'):
         for ii,op in enumerate(d.operations):
             for jj,out in enumerate(op.output):
-                self.gs.clear()
+                self.gv.scene().clear()
                 self.add_item_dict(out,d.return_layer_definition().layers)
                 self.gv.zoomToFit(buffer = 0)
                 filename = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
@@ -101,11 +101,11 @@ if __name__ == "__main__":
     rect_size = 400,300
     app = qg.QApplication(sys.argv)
     widget = RenderWidget(rect_size)
-#    widget.show()
-    path = 'C:\\Users\\danaukes\\Desktop\\118391752.cad'
-    d = popupcad.filetypes.design.Design.load_yaml(path)
-    d.reprocessoperations()
-    widget.render_design(d,destination)
+    widget.show()
+#    path = 'C:\\Users\\danaukes\\Desktop\\118391752.cad'
+#    d = popupcad.filetypes.design.Design.load_yaml(path)
+#    d.reprocessoperations()
+#    widget.render_design(d,destination)
 #    for dirname, dirnames, filenames in os.walk(source):
 #        filenames2 = glob.glob(os.path.normpath(os.path.join(dirname,filter1)))
 #        relpath = os.path.relpath(dirname,source)
@@ -154,10 +154,10 @@ if __name__ == "__main__":
 ##                    widget = Widget(rect_size)
 ##                    widget.show()
 #                    self= widget
-#                    for item in self.gs.items():
-#                        self.gs.removeItem(item)
-#                    self.gs.clear()
-#                    self.gs.update()
+#                    for item in self.gv.scene().items():
+#                        self.gv.scene().removeItem(item)
+#                    self.gv.scene().clear()
+#                    self.gv.scene().update()
 #                    self.gv.resetCachedContent()
 #                    self.add_item_dict(out,d.return_layer_definition().layers)
 #                    self.gv.zoomToFit(buffer = 0)

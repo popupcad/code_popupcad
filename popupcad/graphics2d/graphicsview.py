@@ -9,12 +9,9 @@ import PySide.QtGui as qg
 import popupcad
 
 class GraphicsView(qg.QGraphicsView):
-#    zoom_max = popupcad.zoom_max
-#    zoom_min = popupcad.zoom_min
-    scale_factor = 1.2
-    def __init__(self,*args,**kwargs):
+    def __init__(self,scene,*args,**kwargs):
         super(GraphicsView,self).__init__(*args,**kwargs)
-#        self.setMinimumWidth(200)
+        self.setScene(scene)
         self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
 #        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.IntersectsItemShape)
         self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.ContainsItemShape)
@@ -40,9 +37,9 @@ class GraphicsView(qg.QGraphicsView):
     def wheelEvent(self,event):
         super(GraphicsView,self).wheelEvent(event)
         if event.delta()<0:
-            zoom = 1./self.scale_factor
+            zoom = 1./popupcad.zoom_scale_factor
         else:
-            zoom = self.scale_factor
+            zoom = popupcad.zoom_scale_factor
 
         newzoom = zoom*self.zoom()
 
@@ -53,18 +50,6 @@ class GraphicsView(qg.QGraphicsView):
             
         self.scale(zoom,zoom)
 
-#    def mousePressEvent(self, event):
-#        super(GraphicsView,self).mousePressEvent(event)
-#
-#    def mouseMoveEvent(self, event):
-#        super(GraphicsView,self).mouseMoveEvent(event)
-#
-#    def mouseReleaseEvent(self, event):
-#        super(GraphicsView,self).mouseReleaseEvent(event)
-#
-#    def mouseDoubleClickEvent(self,event):
-#        super(GraphicsView,self).mouseDoubleClickEvent(event)
-    
     def turn_off_drag(self):
         self.lastdrag = self.dragMode()
         self.setDragMode(qg.QGraphicsView.DragMode.NoDrag)
@@ -86,12 +71,8 @@ class GraphicsView(qg.QGraphicsView):
 
     def zoomToFit(self,buffer = .1):
         scene = self.scene()
-#        for item in scene.items():
-#            item.resetTransform()
         self.resetTransform()
         scene_rect = scene.itemsBoundingRect()
-#        scene.setSceneRect()
-#        scene_rect = scene.sceneRect()
         if scene_rect.width()==0 and scene_rect.height()==0:
             v = popupcad.internal_argument_scaling
             scene_rect = qc.QRect(-50*v,-50*v,100*v,100*v)

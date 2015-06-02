@@ -68,8 +68,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 
     @loggable
     def safe_init(self,parent=None,**kwargs):
-        self.sceneview = popupcad.graphics2d.graphicsscene.GraphicsScene()
-        self.view_2d = popupcad.graphics2d.graphicsview.GraphicsView(self.sceneview)
+        self.scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
+        self.view_2d = popupcad.graphics2d.graphicsview.GraphicsView(self.scene)
         self.view_2d.scrollhand()
         self.setCentralWidget(self.view_2d)
 
@@ -106,7 +106,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.setWindowTitle('Editor')
         self.operationeditor.signal_edit.connect(self.editoperation) 
         self.newfile()
-#        self.sceneview.highlightbody.connect(self.highlightbody)
         self.operationadded.connect(self.newoperationslot)
         self.operationedited.connect(self.editedoperationslot)
 
@@ -204,7 +203,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.viewactions.append({'prepmethod':dummy,'text':'Error Log','kwargs':{'triggered':lambda:self.showhide2(self.error_log,self.act_view_errors)}})
 
         self.viewactions.append({'text':'Zoom Fit','kwargs':{'triggered':self.view_2d.zoomToFit,'shortcut': qc.Qt.CTRL+qc.Qt.Key_F}})
-        self.viewactions.append({'text':'Screenshot','kwargs':{'triggered':self.sceneview.screenShot,'shortcut': qc.Qt.CTRL+qc.Qt.Key_R}})
+        self.viewactions.append({'text':'Screenshot','kwargs':{'triggered':self.scene.screenShot,'shortcut': qc.Qt.CTRL+qc.Qt.Key_R}})
         self.viewactions.append({'text':'3D Screenshot','kwargs':{'triggered':self.screenshot_3d}})
 
         self.tools1 = []
@@ -307,7 +306,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.design = design
         self.operationeditor.blockSignals(True)
         self.layerlistwidget.blockSignals(True)
-        self.sceneview.deleteall()      
+        self.scene.deleteall()      
         self.clear3dgeometry()
         
         self.operationeditor.setnetworkgenerator(self.design.network)
@@ -368,7 +367,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def showcurrentoutput_inner(self,ii,jj):
         try:
-            self.sceneview.deleteall()
+            self.scene.deleteall()
             self.view_3d.view.clear()
             operationoutput = self.design.operations[ii].output[jj]
             selectedlayers=[item for item in self.design.return_layer_definition().layers if item in self.layerlistwidget.selectedData()]
@@ -380,10 +379,10 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def show2dgeometry3(self,operationoutput,selectedlayers,):
         display_geometry_2d = operationoutput.display_geometry_2d()
-        self.sceneview.deleteall()
+        self.scene.deleteall()
         for layer in selectedlayers[::1]:
             for geom in display_geometry_2d[layer]:
-                self.sceneview.addItem(geom)
+                self.scene.addItem(geom)
                 geom.setselectable(True)
 
     @loggable
