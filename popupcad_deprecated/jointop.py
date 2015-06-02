@@ -6,11 +6,9 @@ Created on Sat Dec 13 14:41:02 2014
 """
 
 from popupcad.filetypes.operationoutput import OperationOutput
-from popupcad.filetypes.genericlaminate import GenericLaminate
 from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
 import popupcad
 from popupcad.filetypes.laminate import Laminate
-import popupcad_manufacturing_plugins
 
 class JointOp(SimpleSketchOp):
     name = 'Joint Definition'
@@ -52,7 +50,7 @@ class JointOp(SimpleSketchOp):
         
         split1 = last.difference(unsafe2)
         split2 = split1.difference(buffered2)
-        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.to_generic_laminate())
+        bodies= popupcad.algorithms.body_detection.find(split2.to_generic_laminate())
         
         bodies_generic = [item.to_generic_laminate() for item in bodies]
         

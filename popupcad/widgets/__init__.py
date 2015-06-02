@@ -20,3 +20,4 @@ from . import materialselection
 from . import materialselection2
 from . import simplescene
 from . import widgetcommon
+from . import render_widget

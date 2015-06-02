@@ -313,3 +313,13 @@ class Design(popupCADFile):
             except AttributeError:
                 pass
 
+    def render_image(self,filetype = 'PNG',destination = None,size = (400,300)):
+        from popupcad.widgets.render_widget import RenderWidget
+        widget = RenderWidget(size)
+        if destination==None:
+            destination = self.dirname
+        self.reprocessoperations()
+        widget.render_design(self,destination,filetype)
+
+        
+        

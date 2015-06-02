@@ -10,7 +10,7 @@ from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
 import shapely.geometry as sg
 import numpy
-from popupcad_manufacturing_plugins.algorithms.bodydetection import find_minimum_xy,sort_lams
+import popupcad
 
 class IdentifyRigidBodies2(MultiValueOperation3):
     name = 'Identify Rigid Bodies'
@@ -90,8 +90,8 @@ class IdentifyRigidBodies2(MultiValueOperation3):
         
 #        print(rigid_bodies)
 
-        values = [tuple((numpy.array([find_minimum_xy(geom) for geom in body])).min(0)) for body in rigid_bodies]
-        rigid_bodies = sort_lams(rigid_bodies,values)
+        values = [tuple((numpy.array([popupcad.algorithms.body_detection.find_minimum_xy(geom) for geom in body])).min(0)) for body in rigid_bodies]
+        rigid_bodies = popupcad.algorithms.body_detection.sort_lams(rigid_bodies,values)
 
         new_csgs = []
         for rigid_body in rigid_bodies:

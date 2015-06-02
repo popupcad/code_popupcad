@@ -7,8 +7,7 @@ Please see LICENSE.txt for full license.
 
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operationoutput import OperationOutput
-import popupcad_manufacturing_plugins
-
+import popupcad
 
 class IdentifyBodies2(MultiValueOperation3):
     name = 'Identify Bodies'
@@ -23,7 +22,7 @@ class IdentifyBodies2(MultiValueOperation3):
         generic = operation_output.generic_geometry_2d()
         layerdef = design.return_layer_definition()
 
-        laminates = popupcad_manufacturing_plugins.algorithms.bodydetection.find(generic,layerdef)            
+        laminates = popupcad.algorithms.body_detection.find(generic,layerdef)            
         
         self.output = []
         for ii,item in enumerate(laminates):

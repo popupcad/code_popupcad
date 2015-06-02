@@ -9,11 +9,9 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.filetypes.operationoutput import OperationOutput
-from popupcad.filetypes.genericlaminate import GenericLaminate
 from popupcad.filetypes.operation2 import Operation2,LayerBasedOperation
 import popupcad
 from popupcad.filetypes.laminate import Laminate
-import popupcad_manufacturing_plugins
 from popupcad.widgets.table_editor import Table,SingleItemListElement,MultiItemListElement,FloatElement,Row
 
 class JointRow(Row):
@@ -254,7 +252,7 @@ class JointOperation2(Operation2,LayerBasedOperation):
 #            split1 = split1.difference(item)
 #        split2 = split1
         split2 = split1.difference(buffered_splits2)
-        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.to_generic_laminate())
+        bodies= popupcad.algorithms.body_detection.find(split2.to_generic_laminate())
 
         bodies_generic = [item.to_generic_laminate() for item in bodies]
         

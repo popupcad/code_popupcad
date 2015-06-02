@@ -115,11 +115,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.backuptimer.setInterval(popupcad.backup_timeout)
         self.backuptimer.timeout.connect(self.autosave)
         self.backuptimer.start()
-        try:
-            import popupcad_manufacturing_plugins
-            popupcad_manufacturing_plugins.initialize(self,self.design)
-        except ImportError:
-            print('Manufacturing Plugin Not Found')
 
         self.set_nominal_size()
         self.move_center()

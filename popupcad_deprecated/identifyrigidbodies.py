@@ -10,8 +10,8 @@ from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.laminate import Laminate
 import shapely.geometry as sg
 import numpy
-from popupcad_manufacturing_plugins.algorithms.bodydetection import find_minimum_xy,sort_lams
 from popupcad_manufacturing_plugins.manufacturing.identifyrigidbodies2 import IdentifyRigidBodies2
+import popupcad
 
 class IdentifyRigidBodies(MultiValueOperation2):
     name = 'Identify Rigid Bodies'
@@ -28,7 +28,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
         layerdef = design.return_layer_definition()
 
         layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
-        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
+#        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
 #        csg_dict = dict([(geom.id,geom.outputshapely()) for layer,geoms in generic.items() for geom in geoms])
 
         layerdef = design.return_layer_definition()
@@ -90,8 +90,8 @@ class IdentifyRigidBodies(MultiValueOperation2):
         
 #        print(rigid_bodies)
 
-        values = [tuple((numpy.array([find_minimum_xy(geom) for geom in body])).min(0)) for body in rigid_bodies]
-        rigid_bodies = sort_lams(rigid_bodies,values)
+        values = [tuple((numpy.array([popupcad.algorithms.body_detection.find_minimum_xy(geom) for geom in body])).min(0)) for body in rigid_bodies]
+        rigid_bodies = popupcad.algorithms.body_detection.sort_lams(rigid_bodies,values)
 
         new_csgs = []
         for rigid_body in rigid_bodies:
