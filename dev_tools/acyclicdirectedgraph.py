@@ -4,10 +4,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-
-
 import numpy
-import yaml
 
 class Node(object):
     '''
@@ -26,21 +23,7 @@ class Node(object):
         return self.network.itemparents(self.network.B,self)
     def allchildren(self):
         return self.network.itemchildren(self.network.B,self)
-    def minmaxindex(self,sequence):
-        return self.network.minmaxindex(self,sequence)
-    def sortedallchildrensequence(self):
-        return self.network.sortedallchildrensequence(self)
             
-class CustomNode(Node):
-    '''Child of Node class that can hold data'''
-    def __init__(self,data):
-        super(CustomNode,self).__init__()
-        self.data = data
-    def __str__(self):
-        return str(self.data)
-    def __repr__(self):
-        return str(self.data)
-
 class Data(object):
     '''Generic Data structure which is held by a custom node'''
     def __init__(self,name):
@@ -99,32 +82,6 @@ class AcyclicDirectedGraph(object):
                 return False
         return True
 
-    def minmaxindex(self,node,sequence):
-        '''returns the minimum and maximum position in a sequence any given node can reside in to keep a sequence correctly ordered'''
-        allparents = self.allparents()
-        allchildren = self.allchildren()
-        
-        parentindeces = [sequence.index(parent) for parent in allparents[node] if parent in sequence]
-        childindeces = [sequence.index(child) for child in allchildren[node] if child in sequence]
-
-        i_max = 0
-        i_min = len(sequence)-1
-        if len(parentindeces)>0:
-            i_max = max(parentindeces)+1
-        if len(childindeces)>0:
-            i_min = min(childindeces)-1
-        return i_max,i_min
-                
-    def addnode(self,node):
-        '''add a node to the network'''
-        if isinstance(node,Node):
-            node.setnetwork(self)
-        n=node
-        self.nodes.append(n)
-        self.cleannodes()
-        
-        self.buildAB()
-        
     def cleannodes(self):
         '''remove duplicate nodes and rebuild internal connection matrix'''
 #        self.nodes = sorted(list(set(self.nodes)))
@@ -144,23 +101,14 @@ class AcyclicDirectedGraph(object):
         self.nodes.extend(nodes)
         self.cleannodes()
 
-    def addconnection(self,parent,child):
-        '''add a connection to the network and recalculate internal stuff'''
-        self.addsingleconnection(parent,child)
-        self.cleanconnections()
-
-    def addsingleconnection(self,parent,child):
-        '''just add the connection to the network, don't recalculate anything'''
-        if parent in self.nodes and child in self.nodes:
-            if parent in self.allchildren_item(child):
-                raise(Exception('the parent is a child'))
-            else:
-                self.connections.append((parent,child))
-        
     def addconnections(self,connections):
         '''add a list of connections to the network and recalculate internal stuff'''
         for parent,child in connections:
-            self.addsingleconnection(parent,child)
+            if parent in self.nodes and child in self.nodes:
+                if parent in self.allchildren_item(child):
+                    raise(Exception('the parent is a child'))
+                else:
+                    self.connections.append((parent,child))
         self.cleanconnections()
 
     def buildAB(self):
@@ -192,7 +140,6 @@ class AcyclicDirectedGraph(object):
             lastB = B
             B = B.dot(A)+B
         return lastB
-
     def parents(self):
         '''return the direct parents of nodes'''
         parents = {}
@@ -217,7 +164,6 @@ class AcyclicDirectedGraph(object):
         for child in self.nodes:
             parents[child] = self.itemchildren(self.B,child)
         return parents
-
     def parents_item(self,child):
         '''return the direct parents of nodes'''
         return self.itemparents(self.A,child)
@@ -247,58 +193,5 @@ class AcyclicDirectedGraph(object):
         itemparents = [self.reverseindex[item] for item in itemparents ]
         return itemparents
             
-    def fixsequence(self,sequence):
-        '''given an input sequence, return a correctly-ordered sequence which contains all necessary parents.'''
-        extendedlist = self.buildfullsequence(sequence)
-        reverseindex = dict([(ii,item) for ii,item in enumerate(extendedlist)])
-        
-        subA,subB = self.generatesubmatrices(extendedlist)
-
-        currentindeces = []
-        for ii,item in enumerate(extendedlist):
-            temp = subB.copy()
-            temp[:,currentindeces]=1
-            temp[currentindeces,:]=1
-            nextrows = sum(temp,0)==len(currentindeces)
-            nextrows = nextrows.nonzero()[0].tolist()
-            currentindeces.extend(nextrows)
-            if len(currentindeces)>=len(extendedlist):
-                break
-        sequence  = [reverseindex[item] for item in currentindeces]
-
-        if len(set(extendedlist) - set(sequence))>0:
-            raise(Exception('Invalid Sequence'))
-
-        return sequence
-        
-    def buildfullsequence(self,sequence):
-        '''for a given sequence, return a sequence which contains all necessary parent nodes'''
-        extendedlist = []
-        [extendedlist.extend(self.itemparents(self.B,item)) for item in sequence]
-        extendedlist = (list(set(extendedlist+sequence)))
-        return extendedlist
-
-    def generatesubmatrices(self,sequence):
-        '''return connection submatrices consisting just of nodes and connections in the given sequence.'''
-        iis = [self.forwardindex[item] for item in sequence]
-        subA = self.A[iis,:][:,iis]
-        subB = self.B[iis,:][:,iis]
-        return subA,subB        
-
-    def sortedallchildrensequence(self,node):
-        '''return a correctly ordered sequence of a node and all its children'''
-        newsequence = self.fixsequence([node]+self.itemchildren(self.B,node))
-        ii = newsequence.index(node)
-        return newsequence[ii:]    
-
-    def sortedallchildrenofnodes(self,nodes):
-        '''return a correctly ordered sequence of nodes and all their children'''
-
-        allchildren = [child for node in nodes for child in self.itemchildren(self.B,node)]
-        newsequence = self.fixsequence(nodes+allchildren)
-        iis = [newsequence.index(node)for node in nodes]
-        ii = min(iis)
-        return newsequence[ii:]    
-
 if __name__=='__main__':
     pass
