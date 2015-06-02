@@ -90,6 +90,16 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.emit_item_change = True
         self.master_refreshing = False
         self.refreshing = False
+#        self.setContextMenuPolicy(qc.Qt.CustomContextMenu)
+#        self.customContextMenuRequested.connect(self.onCustomContextMenu)
+
+    def onCustomContextMenu(self,point):
+        index = self.indexAt(point)
+        if index.isValid():
+            menu = qg.QMenu()
+            action1 =qg.QAction('asdf',menu)
+            menu.addAction(action1)
+            menu.exec_(self.mapToGlobal(point))
 
     def currentOperationOutputIndex(self):
         debugprint('currentOperationOutputIndex')
@@ -306,7 +316,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
             else:
                 indeces.append((item.userdata.id,0))
         return indeces    
-    
+        
 class DirectedDraggableTreeWidget(DraggableTreeWidget):
     def setnetworkgenerator(self,generator):
         debugprint('setnetworkgenerator_p')
@@ -377,8 +387,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         debugprint('enable_p')
         super(DirectedDraggableTreeWidget,self).enable()
         self.blockSignals(False)
-        
-
+    
 def edituserdata(userdata):
     userdata.edit()
 
