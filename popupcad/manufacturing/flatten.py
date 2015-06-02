@@ -47,7 +47,7 @@ class Dialog(qg.QDialog):
         
     def acceptdata(self):
         ref,ii= self.le1.currentRefs()[0]
-        generic = self.design.op_from_ref(ref).output[ii].generic_geometry_2d()
+        generic = self.design.op_from_ref(ref).output[ii].generic_laminate()
         return ref,ii,generic
         
 class Flatten(Operation2):
@@ -76,7 +76,7 @@ class Flatten(Operation2):
         layerdef = design.return_layer_definition()
         csg = Laminate(layerdef)
         for layer in layerdef.layers:
-            shapelygeoms = [geom.outputshapely() for geom in self.generic[layer]] 
+            shapelygeoms = [geom.outputshapely() for geom in self.generic.geoms[layer]] 
             csg.insertlayergeoms(layer,shapelygeoms)
         return csg
 

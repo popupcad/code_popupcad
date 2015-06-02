@@ -36,7 +36,6 @@ class IterableLaminate(object):
         laminateout = Laminate(self.layerdef)
         laminateout[:] = self[::-1]
         return laminateout
-        
 
 class Laminate(IterableLaminate):
     def __init__(self,layerdef):
@@ -59,7 +58,6 @@ class Laminate(IterableLaminate):
         self.layer_sequence[layer].add_geoms(geoms)
     def getlayer(self,ref):
         return self.layerdef.getlayer(ref)
-
     def union(self,ls2):
         return self.binaryoperation(ls2,'union')        
     def difference(self,ls2):
@@ -76,7 +74,6 @@ class Laminate(IterableLaminate):
         return popupcad.algorithms.morphology.cleanup(self,value,resolution = 1)
     def simplify(self,tolerance,**kwargs):
         return self.valueoperation('simplify',tolerance,preserve_topology=True) 
-        
     def binaryoperation(self,ls2,function):
         self = self
         lsout = Laminate(self.layerdef)

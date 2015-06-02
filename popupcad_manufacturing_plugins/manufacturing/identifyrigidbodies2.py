@@ -23,11 +23,11 @@ class IdentifyRigidBodies2(MultiValueOperation3):
         
         from popupcad.materials.materials import Rigid
 
-        generic = design.op_from_ref(operation_ref).output[output_index].generic_geometry_2d()
+        generic = design.op_from_ref(operation_ref).output[output_index].generic_laminate()
         
         layerdef = design.return_layer_definition()
 
-        layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
+        layer_dict = dict([(geom.id,layer) for layer,geoms in generic.geoms.items() for geom in geoms])
 #        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
 #        csg_dict = dict([(geom.id,geom.outputshapely()) for layer,geoms in generic.items() for geom in geoms])
 
@@ -38,10 +38,10 @@ class IdentifyRigidBodies2(MultiValueOperation3):
         source_geoms= [{'id':None,'csg':sg.Polygon()}]
         for layer in layerdef.layers:
             if isinstance(layer,Rigid):
-                rigid_geoms.extend(generic[layer])
+                rigid_geoms.extend(generic.geoms[layer])
                 while not not source_geoms: 
                     source_geom = source_geoms.pop()
-                    new_geoms = [dict([('csg',geom.outputshapely()),('id',geom.id)]) for geom in generic[layer]]
+                    new_geoms = [dict([('csg',geom.outputshapely()),('id',geom.id)]) for geom in generic.geoms[layer]]
                     for new_geom in new_geoms:
                         connection = source_geom['csg'].intersection(new_geom['csg'])
                         if not (connection.is_empty):
@@ -51,7 +51,7 @@ class IdentifyRigidBodies2(MultiValueOperation3):
                 new_source_geoms = []
                 while not not source_geoms: 
                     source_geom = source_geoms.pop()
-                    layer_geoms = [geom.outputshapely() for geom in generic[layer]]
+                    layer_geoms = [geom.outputshapely() for geom in generic.geoms[layer]]
                     for layer_geom in layer_geoms:
                         new_geom = source_geom['csg'].intersection(layer_geom)
                         if not (new_geom.is_empty):

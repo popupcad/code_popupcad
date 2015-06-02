@@ -414,11 +414,11 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             ii,jj = -1,0
             self.operationeditor.selectIndeces([(ii,jj)])
 
-        generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
+        generic_laminate = self.design.operations[ii].output[jj].generic_laminate()
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
-            geoms = [item.outputstatic(brush_color = (1,1,1,0)) for item in generic_geometry_2d[layer]]
+            geoms = [item.outputstatic(brush_color = (1,1,1,0)) for item in generic_laminate.geoms[layer]]
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(basename,*win.acceptdata())
 
@@ -437,11 +437,11 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             ii,jj = -1,0
             self.operationeditor.selectIndeces([(ii,jj)])
 
-        generic_geometry_2d = self.design.operations[ii].output[jj].generic_geometry_2d()
+        generic_laminate = self.design.operations[ii].output[jj].generic_laminate()
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
-            geoms = [item.outputstatic(brush_color=layer.color) for item in generic_geometry_2d[layer]]
+            geoms = [item.outputstatic(brush_color=layer.color) for item in generic_laminate.geoms[layer]]
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(basename,*win.acceptdata())
 
@@ -536,13 +536,14 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         generic.saveAs()
 
     def gen_icons(self):
-        import pydevtools.popupcad_tools.generate_popupcad_images as sub
-        import yaml
-        widget = sub.Widget((400,300))        
-        design2 = yaml.load(yaml.dump(self.design.copy()))
-        design2.reprocessoperations()
-        widget.load_directory(design2.filename())
-        widget.render_design(design2,design2.dirname)
+        self.design.render_image()
+#        import pydevtools.popupcad_tools.generate_popupcad_images as sub
+#        import yaml
+#        widget = sub.Widget((400,300))        
+#        design2 = yaml.load(yaml.dump(self.design.copy()))
+#        design2.reprocessoperations()
+#        widget.load_directory(design2.filename())
+#        widget.render_design(design2,design2.dirname)
         
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

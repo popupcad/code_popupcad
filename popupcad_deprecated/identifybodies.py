@@ -33,11 +33,11 @@ class IdentifyBodies(MultiValueOperation2):
 
     def generate(self,design):
         
-        generic = design.op_from_ref(self.operation_link1).output[self.getoutputref()].generic_geometry_2d()
+        generic = design.op_from_ref(self.operation_link1).output[self.getoutputref()].generic_laminate()
         layerdef = design.return_layer_definition()
 
-        layer_dict = dict([(geom.id,layer) for layer,geoms in generic.items() for geom in geoms])
-        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
+        layer_dict = dict([(geom.id,layer) for layer,geoms in generic.geoms.items() for geom in geoms])
+        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.geoms.items() for geom in geoms])
         geom_dict_whole = geom_dict.copy()
         
         laminates = []

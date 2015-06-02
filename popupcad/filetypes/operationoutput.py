@@ -15,12 +15,13 @@ class OperationOutput(UserData):
         self.name = name
         self.parent = parent
         
-    def generic_geometry_2d(self):        
+
+    def generic_laminate(self):        
         try:
-            return self._generic_geometry_2d
+            return self._generic_laminate
         except AttributeError:
-            self._generic_geometry_2d = self.csg.to_generic_laminate().geoms
-            return self._generic_geometry_2d
+            self._generic_laminate = self.csg.to_generic_laminate()
+            return self._generic_laminate
 
     def controlpoints(self):
         try:
@@ -44,7 +45,7 @@ class OperationOutput(UserData):
             return self._control_polygons
 
     def update_controls(self):
-        self._controlpoints, self._controllines,self._control_polygons = self.getcontrols(self.generic_geometry_2d())
+        self._controlpoints, self._controllines,self._control_polygons = self.getcontrols(self.generic_laminate())
         
     @staticmethod
     def getcontrols(genericgeometry):
@@ -54,7 +55,7 @@ class OperationOutput(UserData):
         unique_geoms = []
         all_geoms = []
         lines = []
-        for layer, geoms in genericgeometry.items():
+        for layer, geoms in genericgeometry.geoms.items():
             all_geoms.extend(geoms)
             for geom in geoms:
                 p = geom.points()
@@ -87,24 +88,12 @@ class OperationOutput(UserData):
         try:
             return self._display_geometry_2d
         except AttributeError:
-            self._display_geometry_2d = {}
-            for layer,geometry in self.generic_geometry_2d().items():
-                displaygeometry = [geom.outputstatic(brush_color = layer.color) for geom in geometry]
-                self._display_geometry_2d[layer] = displaygeometry
+            self._display_geometry_2d = self.generic_laminate().to_static()
             return self._display_geometry_2d
-
+            
     def tris(self):
-        import popupcad.algorithms.points as points
         try:
             return self.alltriangles
         except AttributeError:
-            self.alltriangles = {}
-            for layer,geoms in self.generic_geometry_2d().items():
-                triangles = []
-                for geom in geoms:
-                    try:
-                        triangles.extend(geom.triangles3())
-                    except AttributeError:
-                        pass
-                self.alltriangles[layer] = triangles
+            self.alltriangles = self.generic_laminate().to_triangles()
             return self.alltriangles

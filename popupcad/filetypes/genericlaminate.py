@@ -32,6 +32,26 @@ class GenericLaminate(popupCADFile):
             new.replacelayergeoms(layer,geoms)
         return new
 
+    def to_static(self):
+        display_geometry_2d = {}
+        for layer,geometry in self.geoms.items():
+            displaygeometry = [geom.outputstatic(brush_color = layer.color) for geom in geometry]
+            display_geometry_2d[layer] = displaygeometry
+        return display_geometry_2d
+
+    def to_triangles(self):
+        alltriangles = {}
+        for layer,geoms in self.geoms.items():
+            triangles = []
+            for geom in geoms:
+                try:
+                    triangles.extend(geom.triangles3())
+                except AttributeError:
+                    pass
+            alltriangles[layer] = triangles
+        return alltriangles
+        
+
     def layers(self):
         return self.layerdef.layers
         

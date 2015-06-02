@@ -57,12 +57,12 @@ class RenderWidget(qg.QWidget):
         self.directory_name.setText(path)
     
     def add_item_dict(self,output,layers):
-        display_geometry = output.display_geometry_2d()        
+        display_geometry = output.csg.to_generic_laminate().to_static() 
         for layer in layers:
             for geom in display_geometry[layer]:
                 self.gs.addItem(geom)
 
-    def render_image(self,dest,ii,jj,filetype = 'PNG'):
+    def raster(self,dest,filename,filetype = 'PNG'):
         e = self.gs.sceneRect()
         f = self.gv.mapFromScene(e.bottomLeft())
         g = self.gv.mapFromScene(e.topRight())
@@ -71,7 +71,7 @@ class RenderWidget(qg.QWidget):
         painter = qg.QPainter(im)
         painter.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
         self.gs.render(painter)
-        filename = '{0:02.0f}_{1:02.0f}.{2}'.format(ii,jj,filetype.lower())
+        filename = '{0}.{1}'.format(filename,filetype.lower())
         full_path = os.path.normpath(os.path.join(dest,filename))
         im.mirrored().save(full_path, filetype.upper())
         painter.end()
@@ -86,7 +86,8 @@ class RenderWidget(qg.QWidget):
                 self.gs.clear()
                 self.add_item_dict(out,d.return_layer_definition().layers)
                 self.gv.zoomToFit(buffer = 0)
-                self.render_image(dest,ii,jj,filetype)
+                filename = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
+                self.raster(dest,filename,filetype)
 
 
         
@@ -160,7 +161,7 @@ if __name__ == "__main__":
 #                    self.gv.resetCachedContent()
 #                    self.add_item_dict(out,d.return_layer_definition().layers)
 #                    self.gv.zoomToFit(buffer = 0)
-#                    self.render_image(local_file_dir,ii,jj)
+#                    self.raster(local_file_dir,ii,jj)
 #        except(Exception) as ex:
 #            print(ex)
 

@@ -18,4 +18,3 @@ except ImportError:
 if __name__ == "__main__":
     program = popupcad.filetypes.program.Program(plugins,*sys.argv)
     sys.exit(program.app.exec_())
-    

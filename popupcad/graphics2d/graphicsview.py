@@ -9,8 +9,8 @@ import PySide.QtGui as qg
 import popupcad
 
 class GraphicsView(qg.QGraphicsView):
-    zoom_max = popupcad.zoom_max
-    zoom_min = popupcad.zoom_min
+#    zoom_max = popupcad.zoom_max
+#    zoom_min = popupcad.zoom_min
     scale_factor = 1.2
     def __init__(self,*args,**kwargs):
         super(GraphicsView,self).__init__(*args,**kwargs)
@@ -46,10 +46,10 @@ class GraphicsView(qg.QGraphicsView):
 
         newzoom = zoom*self.zoom()
 
-        if newzoom>self.zoom_max:
-            zoom=self.zoom_max/self.zoom()
-        elif newzoom<self.zoom_min:
-            zoom=self.zoom_min/self.zoom()
+        if newzoom>popupcad.zoom_max:
+            zoom=popupcad.zoom_max/self.zoom()
+        elif newzoom<popupcad.zoom_min:
+            zoom=popupcad.zoom_min/self.zoom()
             
         self.scale(zoom,zoom)
 
@@ -108,11 +108,11 @@ class GraphicsView(qg.QGraphicsView):
         self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)
 
         currentzoom = self.zoom()
-        if currentzoom>self.zoom_max:
-            dz = self.zoom_max/currentzoom
+        if currentzoom>popupcad.zoom_max:
+            dz = popupcad.zoom_max/currentzoom
             self.scale(dz,dz)
-        elif currentzoom<self.zoom_min:
-            dz = self.zoom_min/currentzoom
+        elif currentzoom<popupcad.zoom_min:
+            dz = popupcad.zoom_min/currentzoom
             self.scale(dz,dz)
         
     def resetTransform(self):
