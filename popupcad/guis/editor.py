@@ -423,7 +423,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
-            geoms = [item.outputstatic(color = (1,1,1,1)) for item in generic_geometry_2d[layer]]
+            geoms = [item.outputstatic(brush_color = (1,1,1,0)) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(basename,*win.acceptdata())
 
@@ -446,7 +446,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
             scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
-            geoms = [item.outputstatic(color=layer.color) for item in generic_geometry_2d[layer]]
+            geoms = [item.outputstatic(brush_color=layer.color) for item in generic_geometry_2d[layer]]
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(basename,*win.acceptdata())
 

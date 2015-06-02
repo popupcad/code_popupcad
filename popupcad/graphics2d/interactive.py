@@ -43,7 +43,7 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
     pens = {}
     pens[modes.mode_defined] = qg.QPen(pendefinedcolor,linewidth, style,capstyle,joinstyle)        
     pens[modes.mode_edit] = qg.QPen(peneditcolor,linewidth, style,capstyle,joinstyle)        
-    pens[modes.mode_render] = qg.QPen(penrendercolor,linewidth, style,capstyle,joinstyle)        
+    pens[modes.mode_render] = qg.QPen(penrendercolor,1., style,capstyle,joinstyle)        
     pens[modes.mode_selectable_edges] =  qg.QPen(penselectioncolor,linewidth, style,capstyle,joinstyle)
 
     brushes = {}

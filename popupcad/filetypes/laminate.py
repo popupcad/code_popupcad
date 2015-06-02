@@ -140,7 +140,8 @@ class Laminate(IterableLaminate):
     def select(self,layer):
         return self.layer_sequence[layer]
 
-    def genericfromls(self):
+    def to_generic_laminate(self):
+        from popupcad.filetypes.genericlaminate import GenericLaminate
         genericgeometry = {}
         for layer in self.layerdef.layers:
             geometry = self.layer_sequence[layer].geoms
@@ -148,10 +149,6 @@ class Laminate(IterableLaminate):
             for geom in geometry:
                 genericgeoms.append(GenericShapeBase.genfromshapely(geom))
             genericgeometry[layer] = genericgeoms
-        return genericgeometry
-
-    def to_generic_laminate(self):
-        from popupcad.filetypes.genericlaminate import GenericLaminate
-        new = GenericLaminate(self.layerdef,self.genericfromls())
+        new = GenericLaminate(self.layerdef,genericgeometry)
         return new
         

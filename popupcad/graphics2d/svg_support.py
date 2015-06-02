@@ -96,19 +96,25 @@ class SVGOutputSupport(object):
         tempbrush = self.backgroundBrush()
         return tempmodes, selected,tempbrush
 
-    def prerender(self):
+    def prerender(self,scaling):
         self.setBackgroundBrush(qg.QBrush())
         for item in self.items():
             try:
                 item.updatemode(item.modes.mode_render)
             except AttributeError:
                 pass
+            pen = item.pen()
+            pen.setWidth(pen.width()/scaling)
+            item.setPen(pen)
             item.setSelected(False)
 
-    def loadprerenderstate(self,tempmodes,selected,tempbrush):
+    def loadprerenderstate(self,tempmodes,selected,tempbrush,scaling):
         for item in selected:
             item.setSelected(True)
         for item,mode in zip(self.items(),tempmodes):
+            pen = item.pen()
+            pen.setWidth(pen.width()*scaling)
+            item.setPen(pen)
             try:
                 item.updatemode(mode)
             except AttributeError:
@@ -117,7 +123,7 @@ class SVGOutputSupport(object):
 
     def renderprocess(self,basename,scaling,center,rotation,render_dxf,exportdir):
         state = self.saveprerenderstate()
-        self.prerender()
+        self.prerender(scaling)
         filename = os.path.normpath(os.path.join(exportdir,basename))
 #        self.updatescenerect()        
         self.setSceneRect(self.itemsBoundingRect())
@@ -151,8 +157,7 @@ class SVGOutputSupport(object):
 
         self.render(painter)
         painter.end()
-        
-        self.loadprerenderstate(*state)
+        self.loadprerenderstate(*(list(state)+[scaling]))
         self.update()
         if render_dxf:
             xshift = 0

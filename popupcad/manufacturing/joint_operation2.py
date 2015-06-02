@@ -39,6 +39,7 @@ class JointDef(object):
         self.preload_angle = preload_angle
     def copy(self):
         new = type(self)(self.sketch,self.joint_layer,self.sublaminate_layers,self.width,self.stiffness,self.damping,self.preload_angle)
+        return new
 
 class MainWidget(qg.QDialog):
     def __init__(self,design,sketches,layers,operations,jointop=None):
@@ -192,7 +193,7 @@ class JointOperation2(Operation2,LayerBasedOperation):
         operationgeom = design.sketches[joint_def.sketch].output_csg()
         sketch_result = Laminate(design.return_layer_definition())
         sketch_result.replacelayergeoms(hingelayer,operationgeom)
-        hingelines = sketch_result.genericfromls()[hingelayer]
+        hingelines = sketch_result.to_generic_laminate().geoms[hingelayer]
 
         buffered_split= sketch_result.buffer(split_buffer,resolution = self.resolution)
 
@@ -253,10 +254,9 @@ class JointOperation2(Operation2,LayerBasedOperation):
 #            split1 = split1.difference(item)
 #        split2 = split1
         split2 = split1.difference(buffered_splits2)
-        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.genericfromls(),layerdef)
+        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.to_generic_laminate())
 
-        bodies_generic = [item.genericfromls() for item in bodies]
-        bodies_generic = [GenericLaminate(layerdef,item) for item in bodies_generic]
+        bodies_generic = [item.to_generic_laminate() for item in bodies]
         
         connections = {}
         connections2 = {}

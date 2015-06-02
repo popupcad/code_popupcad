@@ -153,9 +153,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
         self.editactions.append({'text':'Cut','kwargs':{'triggered':self.cut_to_clipboard,'shortcut':qg.QKeySequence.Cut}})      
         self.editactions.append({'text':'Copy','kwargs':{'triggered':self.copy_to_clipboard,'shortcut':qg.QKeySequence.Copy}})      
         self.editactions.append({'text':'Paste','kwargs':{'triggered':self.paste_from_clipboard,'shortcut':qg.QKeySequence.Paste}})      
-        self.editactions.append(None)      
-        self.editactions.append({'text':'Group','kwargs':{'triggered':self.group,'shortcut':qc.Qt.CTRL+qc.Qt.Key_G}})      
-        self.editactions.append({'text':'Unroup','kwargs':{'triggered':self.ungroup,'shortcut':qc.Qt.CTRL+qc.Qt.Key_U}})      
 
         self.viewactions = []
         def dummy(action):
@@ -507,23 +504,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
                 ii,jj = selected_indeces[0]
                 self.load_references_inner(ii,jj)
 
-    def group(self):
-        from popupcad.graphics2d.grouper import Grouper
-        o = Grouper()        
-        selecteditems = self.scene.selectedItems()
-        associateditems = [vertex for item in selecteditems if hasattr(item,'handles') for vertex in item.handles()]
-        selecteditems+associateditems
-        o.addchildren(associateditems)
-        self.scene.addItem(o)
-        
-    def ungroup(self):
-        from popupcad.graphics2d.grouper import Grouper
-        for item in self.scene.selectedItems():
-            if isinstance(item,Grouper):
-                item.resetTransform()
-                item.setPos(0,0)
-                item.removegroupeditems()
-                item.softdelete()
     def flipdirection(self):
         selecteditems = self.scene.selectedItems()
         for item in selecteditems:

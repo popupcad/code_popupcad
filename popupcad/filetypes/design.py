@@ -175,7 +175,7 @@ class Design(popupCADFile):
         return new    
 
     def upgrade_operations2(self):
-        from popupcad.manufacturing.sketchoperation2 import SketchOperation2
+        from popupcad_deprecated.sketchoperation2 import SketchOperation2
         from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
         from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
         newoperations = []        

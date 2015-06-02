@@ -53,16 +53,6 @@ class OutputRow(Row):
         elements.append(SingleItemListElement('output',get_sketches))
         self.elements = elements
         
-class JointDef(object):
-    def __init__(self,sketch,joint_layer,sublaminate_layers,width,stiffness,damping,preload_angle):
-        self.sketch = sketch
-        self.joint_layer = joint_layer
-        self.sublaminate_layers = sublaminate_layers
-        self.width = width
-        self.stiffness = stiffness
-        self.damping = damping
-        self.preload_angle = preload_angle
-
 class MainWidget(qg.QDialog):
     def __init__(self,design,sketches,layers,operations,jointop=None):
         super(MainWidget,self).__init__()

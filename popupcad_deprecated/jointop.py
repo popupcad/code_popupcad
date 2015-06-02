@@ -27,7 +27,7 @@ class JointOp(SimpleSketchOp):
         sketch_result = self.operate(design)
 
         hingelayer = layerdef.getlayer(self.layer_links[0])        
-        hingelines = sketch_result.genericfromls()[hingelayer]
+        hingelines = sketch_result.to_generic_laminate().geoms[hingelayer]
         hingelayer_ii = layerdef.getlayer_ii(self.layer_links[0])
 
         safe_sections = []
@@ -52,10 +52,9 @@ class JointOp(SimpleSketchOp):
         
         split1 = last.difference(unsafe2)
         split2 = split1.difference(buffered2)
-        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.genericfromls(),layerdef)
+        bodies= popupcad_manufacturing_plugins.algorithms.bodydetection.find(split2.to_generic_laminate())
         
-        bodies_generic = [item.genericfromls() for item in bodies]
-        bodies_generic = [GenericLaminate(layerdef,item) for item in bodies_generic]
+        bodies_generic = [item.to_generic_laminate() for item in bodies]
         
         connections = {}
         connections2 = {}

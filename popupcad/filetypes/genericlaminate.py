@@ -24,13 +24,14 @@ class GenericLaminate(popupCADFile):
             new.id = self.id
         return new
         
-    def toLaminate(self):
+    def to_csg(self):
         from popupcad.filetypes.laminate import Laminate
         new = Laminate(self.layerdef)
         for ii,layer in enumerate(self.layerdef.layers):
             geoms = [item.outputshapely() for item in self.geoms[layer]]
             new.replacelayergeoms(layer,geoms)
         return new
+
     def layers(self):
         return self.layerdef.layers
         

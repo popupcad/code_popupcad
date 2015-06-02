@@ -206,7 +206,7 @@ class GenericShapeBase(popupCADFile):
         elif isinstance(obj,customshapely.ShapelyLineString):
             subclass= GenericPolyline
         elif isinstance(obj,customshapely.ShapelyPoint):
-            from popupcad.geometry.vertex import ShapeVertex, DrawnPoint
+            from popupcad.geometry.vertex import DrawnPoint
             s = DrawnPoint()
             s.setpos(exterior_p[0])
             return s
@@ -229,8 +229,6 @@ class GenericShapeBase(popupCADFile):
             return self._exteriorhandles,self._interiorhandles
         
     def update_handles(self):
-        import popupcad.graphics2d.interactivevertex
-
         try:
             for handle in self._handles:
                 handle.harddelete()

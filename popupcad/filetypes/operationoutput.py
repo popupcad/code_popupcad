@@ -19,7 +19,7 @@ class OperationOutput(UserData):
         try:
             return self._generic_geometry_2d
         except AttributeError:
-            self._generic_geometry_2d = self.csg.genericfromls()
+            self._generic_geometry_2d = self.csg.to_generic_laminate().geoms
             return self._generic_geometry_2d
 
     def controlpoints(self):
@@ -89,7 +89,7 @@ class OperationOutput(UserData):
         except AttributeError:
             self._display_geometry_2d = {}
             for layer,geometry in self.generic_geometry_2d().items():
-                displaygeometry = [geom.outputstatic(color = layer.color) for geom in geometry]
+                displaygeometry = [geom.outputstatic(brush_color = layer.color) for geom in geometry]
                 self._display_geometry_2d[layer] = displaygeometry
             return self._display_geometry_2d
 
