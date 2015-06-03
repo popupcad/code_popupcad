@@ -132,7 +132,7 @@ class Design(popupCADFile):
 
     def copy(self,identical = True):
         new = Design()
-        new.operations = [operation.copy() for operation in self.operations]
+        new.operations = [operation.copy_wrapper() for operation in self.operations]
         new.define_layers(self.return_layer_definition())
         if identical:
             new.id=self.id
@@ -144,19 +144,16 @@ class Design(popupCADFile):
             new.subdesigns[key]=value.copy(identical = True)
         self.copy_file_params(new,identical)
         return new    
-
-    def upgrade_operations(self):
-        samesame = False
-        operations_old = self.operations
-        while not samesame:
-            operations_new = [item.upgrade() for item in operations_old]
-            samesame = operations_old == operations_new
-            operations_old = operations_new
-        return operations_new
         
     def upgrade(self,identical = True):
         new = Design()
-        new.operations = self.upgrade_operations()
+        samesame = False
+        operations_old = self.operations
+        while not samesame:
+            operations_new = [item.upgrade_wrapper() for item in operations_old]
+            samesame = operations_old == operations_new
+            operations_old = operations_new
+        new.operations = operations_new
         new.define_layers(self.return_layer_definition())
         if identical:
             new.id=self.id

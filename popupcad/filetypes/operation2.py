@@ -59,6 +59,9 @@ class Operation2(Node,UserData):
                 list1[list1.index(refold)]=refnew
         self.clear_output()
 
+    def copy(self,*args,**kwargs):
+        return self
+
     def upgrade(self,*args,**kwargs):
         return self
     
@@ -86,7 +89,42 @@ class Operation2(Node,UserData):
         if dialog.exec_()==dialog.Accepted:
             self.editdata(*dialog.acceptdata())
             editedsignal.emit(self)        
-     
+            
+    def description_get(self):
+        try:
+            return self._description
+        except AttributeError:
+            self._description = ''
+            return self._description
+
+    def description_set(self,value):
+        self._description = value
+    
+    description = property(description_get,description_set)
+
+    def edit_description(self):
+        import PySide.QtGui as qg
+        result,ok = qg.QInputDialog.getText(None, 'description', 'label',text = self.description)
+        if ok:
+            self.description = result
+
+    def copy_internals(self,new):
+        new.id = self.id
+        new.customname = self.customname
+        new.description = self.description
+        return new
+
+    def copy_wrapper(self):
+        new = self.copy()
+        self.copy_internals(new)
+        return new
+        
+    def upgrade_wrapper(self):
+        new = self.upgrade()
+        self.copy_internals(new)
+        return new
+        
+
 class LayerBasedOperation(object):
     @staticmethod
     def convert_layer_links(layer_links,layerdef_old,layerdef_new):

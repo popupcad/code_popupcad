@@ -317,14 +317,17 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         item = self.itemAt(point)
         if index.isValid():
             menu = qg.QMenu()
-            action1 =qg.QAction('parents',menu,triggered = lambda:self.show_parents(item))
-            menu.addAction(action1)
+            menu.addAction(qg.QAction('parents',menu,triggered = lambda:self.show_parents(item)))
+            menu.addAction(qg.QAction('rename',menu,triggered = lambda:self.edit(index)))
+            menu.addAction(qg.QAction('edit description...',menu,triggered = item.userdata.edit_description))
             menu.exec_(self.mapToGlobal(point))
     
     def show_parents(self,item):
         self.tree_generator()
-        print(item.userdata.ancestors())
-        
+        m = qg.QMessageBox()
+        m.setText(str(item.userdata.ancestors()))
+        m.exec_()
+
     def set_tree_generator(self,generator):
         debugprint('set_tree_generator_p')
         self.tree_generator = generator
