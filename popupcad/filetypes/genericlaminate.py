@@ -63,6 +63,18 @@ class GenericLaminate(popupCADFile):
             items.extend(display_geometry[layer])
         return items        
         
+    def raster(self,filename,filetype = 'PNG',destination = None,gv=None,size = (400,300)):
+        if gv==None:
+            from popupcad.widgets.render_widget import RenderWidget
+            widget = RenderWidget(size)
+            gv = widget.gv
+            
+        gv.scene().clear()
+        [gv.scene().addItem(item) for item in self.to_static_sorted()]
+        gv.zoomToFit(buffer = 0)
+        gv.raster(destination,filename,filetype)
+        
+
 if __name__=='__main__':
     import PySide.QtGui as qg
     import sys

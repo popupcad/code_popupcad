@@ -152,7 +152,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"Save &As...",'kwargs':{'icon':Icon('saveas'),'shortcut':qg.QKeySequence.SaveAs,'statusTip':"Save the document under a new name",'triggered':self.saveAs}})
         self.fileactions.append({'text':"Upgrade",'kwargs':{'statusTip':"Upgrade the file",'triggered':self.upgrade}})
         self.fileactions.append({'text':'&Export to SVG','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG}})
-#        self.fileactions.append({'text':'&Export2','kwargs':{'icon':Icon('export'),'triggered':self.exportLayerSVG2}})
         self.fileactions.append({'text':"Save Joint Defs",'kwargs':{'triggered':self.save_joint_def}})      
         self.fileactions.append({'text':"Export Laminate",'kwargs':{'triggered':self.export_laminate}})      
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
@@ -420,29 +419,6 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             [scene.addItem(geom) for geom in geoms]
             scene.renderprocess(basename,*win.acceptdata())
 
-    def exportLayerSVG2(self):
-        from popupcad.graphics2d.svg_support import OutputSelection
-
-        win = OutputSelection()
-        accepted = win.exec_()
-        if not accepted:
-            return
-            
-        selected_indeces = self.operationeditor.currentIndeces2()
-        if len(selected_indeces)>0:
-            ii,jj = selected_indeces[0]
-        else:
-            ii,jj = -1,0
-            self.operationeditor.selectIndeces([(ii,jj)])
-
-        generic_laminate = self.design.operations[ii].output[jj].generic_laminate()
-        for layernum,layer in enumerate(self.design.return_layer_definition().layers[::1]):
-            basename = self.design.get_basename() + '_'+str(self.design.operations[ii])+'_layer{0:02d}.svg'.format(layernum+1)
-            scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
-            geoms = [item.outputstatic(brush_color=layer.color) for item in generic_laminate.geoms[layer]]
-            [scene.addItem(geom) for geom in geoms]
-            scene.renderprocess(basename,*win.acceptdata())
-
     def closeEvent(self, event):
         if self.checkSafe():
             self.error_log.close()
@@ -461,6 +437,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         elif temp== qg.QMessageBox.Cancel:
             return False
         return True            
+        
     def preferences(self):
         import dev_tools.propertyeditor
         pe = dev_tools.propertyeditor.PropertyEditor(popupcad.settings)

@@ -231,8 +231,6 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
         return self.handles()+self.selectableedges
         
     def customshape(self):
-        import popupcad
-#        print('customshape')
         path = self.path()
         s = qg.QPainterPathStroker()
         s.setWidth(10*self.scale)

@@ -155,6 +155,7 @@ class TextParent(qg.QGraphicsPathItem,Common):
         self.changed_trigger = True        
         self.scene().itemclicked.emit(self.generic)
         super(TextParent,self).mousePressEvent(event)      
+
     def mouseReleaseEvent(self,event):       
         if self.changed_trigger:
             self.changed_trigger = False

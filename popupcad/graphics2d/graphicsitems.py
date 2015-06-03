@@ -4,19 +4,18 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import PySide.QtCore as qc
-import PySide.QtGui as qg
-import numpy
-import popupcad.geometry
 
 class Common(object):
     z_value = 0
     isDeletable = False
+
     def allchildren(self):
         return self.childItems()
+        
     def softdelete(self):
         if self.isDeletable:
             self.harddelete()
+
     def harddelete(self):
         for child in self.allchildren():
             child.setParentItem(None)
@@ -32,22 +31,15 @@ class Common(object):
         except AttributeError:
             pass
 
-    def fullremove(self):
-        for child in self.allchildren():
-            child.setParentItem(None)
-            child.fullremove()
-            del child
-        self.setParentItem(None)
-        self.removefromscene()
     def constraintsystem(self):
-        return self.scene().sketch().constraintsystem
+        return self.scene().sketch.constraintsystem
+        
     def sketch(self):
-        return self.scene().sketch()
+        return self.scene().sketch
 
 
 class CommonShape(object):
     def create_selectable_edge_loop(self):
-#        from popupcad.graphics2d.interactiveedge import InteractiveEdge
         from popupcad.geometry.line import ShapeLine
         self.selectableedges = []
         exterior = self.generic.get_exterior()
@@ -56,7 +48,6 @@ class CommonShape(object):
             item = genericline.gen_interactive()
             self.selectableedges.append(item)  
     def create_selectable_edge_path(self):
-#        from popupcad.graphics2d.interactiveedge import InteractiveEdge
         from popupcad.geometry.line import ShapeLine
         self.selectableedges = []
         exterior = self.generic.get_exterior()
@@ -70,10 +61,4 @@ class CommonShape(object):
         path = self.painterpath()
         self.setPath(path)
         self.update()
-
-        
-#class Rect2Point(CommonShape):
-#    def create_selectable_edges(self):
-#        self.create_selectable_edge_path()
-#            
 

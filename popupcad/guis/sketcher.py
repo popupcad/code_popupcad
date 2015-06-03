@@ -334,7 +334,8 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
     def loadsketch(self,sketch):
         self.sketch = sketch.copy()
         self.scene.deleteall()
-        self.scene.setsketch(self.sketch)
+        self.scene.sketch = self.sketch
+        
         for item in self.sketch.operationgeometry:
             newitem = item.outputinteractive()
             self.scene.addItem(newitem)
@@ -517,6 +518,7 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             item.harddelete()
         for item in newgenerics:
             self.scene.addItem(item.outputinteractive())
+
     def fill(self):
         selecteditems = self.scene.selectedItems()
         newgenerics = []
@@ -525,8 +527,6 @@ class Sketcher(qg.QMainWindow,WidgetCommon):
             item.harddelete()
         for item in newgenerics:
             self.scene.addItem(item.outputinteractive())
-#    def toggle_construction(self):
-#        for item in self.scene.items():
                 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

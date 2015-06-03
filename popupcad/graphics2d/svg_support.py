@@ -84,6 +84,13 @@ class OutputSelection(qg.QDialog):
         self.dirbox.setText(directorypath)
         
 class SVGOutputSupport(object):
+    def screenShot(self):
+        win = OutputSelection()
+        accepted = win.exec_()
+        if accepted:
+            time = popupcad.basic_functions.return_formatted_time()
+            self.renderprocess('2D_screenshot_'+time+'.svg',*win.acceptdata())
+
     def saveprerenderstate(self):
         tempmodes = []
         for item in self.items():

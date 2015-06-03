@@ -9,15 +9,30 @@ import os
 import popupcad
 import PySide.QtGui as qg
 import PySide.QtCore as qc
+from popupcad.graphics2d.graphicsscene import popupCADObjectSupport
+from popupcad.graphics2d.graphicsview import ZoomHandling,ImagingSupport
+class GS(popupCADObjectSupport,qg.QGraphicsScene):
+    def __init__(self):
+        qg.QGraphicsScene.__init__(self)
+        popupCADObjectSupport.__init__(self)
+
+class GV(ZoomHandling,ImagingSupport,qg.QGraphicsView):
+    def __init__(self,scene):
+        qg.QGraphicsView.__init__(self)
+        ZoomHandling.__init__(self,scene)
+        ImagingSupport.__init__(self,scene)
+
 
 class RenderWidget(qg.QWidget):
     def __init__(self,rect_size):
         super(RenderWidget,self).__init__()
 
-        gs = popupcad.graphics2d.graphicsscene.GraphicsScene()
+#        gs = popupcad.graphics2d.graphicsscene.GraphicsScene()
+        gs = GS()
 #        gs = qg.QGraphicsScene()
         gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1,1,1,1)))
-        self.gv = popupcad.graphics2d.graphicsview.GraphicsView(gs)
+#        self.gv = popupcad.graphics2d.graphicsview.GraphicsView(gs)
+        self.gv = GV(gs)
         self.gv.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
 #        self.gv.setRenderHint(qg.QPainter.RenderHint.HighQualityAntialiasing,True)
 #        self.gv.setRenderHint(qg.QPainter.RenderHint.SmoothPixmapTransform,True)

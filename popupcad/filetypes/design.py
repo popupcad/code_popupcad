@@ -81,16 +81,16 @@ class Design(popupCADFile):
         oldop = self.op_from_ref(oldref[0])
         newop = self.op_from_ref(newref[0])
         
-        if oldop in newop.allchildren():
+        if oldop in newop.decendents():
             error_string = str(oldop)+' is a child of '+str(newop)
             raise(UpgradeError(error_string))
             
-        if newop in oldop.allchildren():
+        if newop in oldop.decendents():
             error_string = str(newop)+' is a child of '+str(oldop)
             raise(UpgradeError(error_string))
 
         ii = self.operations.index(newop)
-        jjs = [self.operations.index(item) for item in oldop.allchildren()]
+        jjs = [self.operations.index(item) for item in oldop.decendents()]
         if not not jjs:
             jj = min(jjs)        
             if ii>jj:
@@ -302,9 +302,6 @@ class Design(popupCADFile):
 
         for ii,op in enumerate(self.operations):
             for jj,out in enumerate(op.output):
-                gv.scene().clear()
-                [gv.scene().addItem(item) for item in out.generic_laminate().to_static_sorted()]
-                gv.zoomToFit(buffer = 0)
                 filename = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
-                gv.raster(destination,filename,filetype)
+                out.generic_laminate().raster(filename,filetype,destination,gv)
         
