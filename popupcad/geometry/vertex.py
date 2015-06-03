@@ -233,3 +233,11 @@ class ReferenceVertex(BaseVertex):
         iv = ReferenceInteractiveVertex(self)
         iv.updateshape()
         return iv
+
+import yaml
+yaml.add_representer(ShapeVertex, ShapeVertex.vertex_representer)
+yaml.add_constructor(ShapeVertex.yaml_node_name, ShapeVertex.vertex_constructor)
+yaml.add_representer(DrawnPoint, DrawnPoint.vertex_representer)
+yaml.add_constructor(DrawnPoint.yaml_node_name, DrawnPoint.vertex_constructor)
+yaml.add_representer(ReferenceVertex, ReferenceVertex.vertex_representer)
+yaml.add_constructor(ReferenceVertex.yaml_node_name, ReferenceVertex.vertex_constructor)

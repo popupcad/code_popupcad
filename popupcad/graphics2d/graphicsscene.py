@@ -223,3 +223,8 @@ class GraphicsScene(popupCADObjectSupport,SVGOutputSupport,SketcherSupport,qg.QG
         popupCADObjectSupport.__init__(self)
         SketcherSupport.__init__(self)
 #        self.update()        
+class SimpleGraphicsScene(popupCADObjectSupport,qg.QGraphicsScene):
+    def __init__(self):
+        qg.QGraphicsScene.__init__(self)
+        popupCADObjectSupport.__init__(self)
+        

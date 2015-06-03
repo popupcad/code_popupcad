@@ -304,4 +304,15 @@ class Design(popupCADFile):
             for jj,out in enumerate(op.output):
                 filename = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
                 out.generic_laminate().raster(filename,filetype,destination,gv)
-        
+
+    def build_documentation(self):
+        import os
+        from popupcad.filetypes.design_documentation import DesignDocumentation
+        base = os.path.splitext(self.get_basename())[0]
+        subdir = os.path.normpath(os.path.join(self.dirname,base))
+        if not os.path.exists(subdir):
+            os.mkdir(subdir)
+        self.raster(destination=subdir)
+        new = DesignDocumentation.build(self)
+        file = os.path.normpath(os.path.join(subdir,base+'.'+new.defaultfiletype))
+        new.save_yaml(file)

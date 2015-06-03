@@ -145,3 +145,9 @@ class GraphicsView(ZoomHandling,ImagingSupport,MouseModes,qg.QGraphicsView):
     def sizeHint(self):
         return qc.QSize(400,300)
         
+
+class SimpleGraphicsView(ZoomHandling,ImagingSupport,qg.QGraphicsView):
+    def __init__(self,scene):
+        qg.QGraphicsView.__init__(self)
+        ZoomHandling.__init__(self,scene)
+        ImagingSupport.__init__(self,scene)

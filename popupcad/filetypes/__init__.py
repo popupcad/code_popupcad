@@ -8,6 +8,7 @@ Please see LICENSE.txt for full license.
 from . import constraints
 from . import classtools
 from . import design
+from . import design_documentation
 from . import popupcad_file
 from . import genericshapebase
 from . import genericshapes

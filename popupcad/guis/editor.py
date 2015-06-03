@@ -157,6 +157,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.fileactions.append({'text':"Regen ID",'kwargs':{'triggered':self.regen_id,}})      
         self.fileactions.append({'text':"Preferences...",'kwargs':{'triggered':self.preferences}})     
         self.fileactions.append({'text':"Render Icons",'kwargs':{'triggered':self.gen_icons}})     
+        self.fileactions.append({'text':"Build Documentation",'kwargs':{'triggered':self.build_documentation}})     
         def dummy(action):
             action.setEnabled(sys.platform=='win32' and getattr(sys,'frozen',False))
         self.fileactions.append({'text':"Update...",'kwargs':{'triggered':self.download_installer},'prepmethod':dummy})      
@@ -519,7 +520,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 #        design2.reprocessoperations()
 #        widget.load_directory(design2.filename())
 #        widget.render_design(design2,design2.dirname)
-        
+    def build_documentation(self):
+        self.design.build_documentation()        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(Icon('popupcad'))
