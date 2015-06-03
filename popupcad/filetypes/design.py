@@ -293,13 +293,21 @@ class Design(popupCADFile):
             except AttributeError:
                 pass
 
-    def render_image(self,filetype = 'PNG',destination = None,size = (400,300)):
-        from popupcad.widgets.render_widget import RenderWidget
-        widget = RenderWidget(size)
+    def raster(self,filetype = 'PNG',destination = None,gv=None,size = (400,300)):
+        if gv==None:
+            from popupcad.widgets.render_widget import RenderWidget
+            widget = RenderWidget(size)
+            gv = widget.gv
+            
         if destination==None:
             destination = self.dirname
         self.reprocessoperations()
-        widget.render_design(self,destination,filetype)
 
-        
+        for ii,op in enumerate(self.operations):
+            for jj,out in enumerate(op.output):
+                gv.scene().clear()
+                [gv.scene().addItem(item) for item in out.generic_laminate().to_static_sorted()]
+                gv.zoomToFit(buffer = 0)
+                filename = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
+                gv.raster(destination,filename,filetype)
         

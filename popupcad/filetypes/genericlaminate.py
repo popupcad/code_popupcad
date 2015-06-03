@@ -54,6 +54,14 @@ class GenericLaminate(popupCADFile):
 
     def layers(self):
         return self.layerdef.layers
+
+    def to_static_sorted(self):
+        items = []
+        display_geometry = self.to_static() 
+        layers = self.layerdef.layers
+        for layer in layers:
+            items.extend(display_geometry[layer])
+        return items        
         
 if __name__=='__main__':
     import PySide.QtGui as qg

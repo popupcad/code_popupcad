@@ -117,3 +117,17 @@ class GraphicsView(qg.QGraphicsView):
     def sizeHint(self):
         return qc.QSize(400,300)
         
+    def raster(self,dest,filename,filetype = 'PNG'):
+        import os
+        e = self.scene().sceneRect()
+        f = self.mapFromScene(e.bottomLeft())
+        g = self.mapFromScene(e.topRight())
+        rect = qc.QRect(f,g)
+        im = qg.QImage(rect.width(),rect.height(),qg.QImage.Format.Format_ARGB32)
+        painter = qg.QPainter(im)
+        painter.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
+        self.scene().render(painter)
+        filename = '{0}.{1}'.format(filename,filetype.lower())
+        full_path = os.path.normpath(os.path.join(dest,filename))
+        im.mirrored().save(full_path, filetype.upper())
+        painter.end()        

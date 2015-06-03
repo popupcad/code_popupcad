@@ -57,40 +57,12 @@ class RenderWidget(qg.QWidget):
     def load_directory(self,path):
         self.directory_name.setText(path)
     
-    def add_item_dict(self,output,layers):
-        display_geometry = output.csg.to_generic_laminate().to_static() 
-        for layer in layers:
-            for geom in display_geometry[layer]:
-                self.gv.scene().addItem(geom)
-
-    def raster(self,dest,filename,filetype = 'PNG'):
-        e = self.gv.scene().sceneRect()
-        f = self.gv.mapFromScene(e.bottomLeft())
-        g = self.gv.mapFromScene(e.topRight())
-        rect = qc.QRect(f,g)
-        im = qg.QImage(rect.width(),rect.height(),qg.QImage.Format.Format_ARGB32)
-        painter = qg.QPainter(im)
-        painter.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
-        self.gv.scene().render(painter)
-        filename = '{0}.{1}'.format(filename,filetype.lower())
-        full_path = os.path.normpath(os.path.join(dest,filename))
-        im.mirrored().save(full_path, filetype.upper())
-        painter.end()
-        
     def clear(self):
         for item in self.gv.scene().items():
             self.gv.scene().removeItem(item)
     
     def render_design(self,d,dest,filetype='png'):
-        for ii,op in enumerate(d.operations):
-            for jj,out in enumerate(op.output):
-                self.gv.scene().clear()
-                self.add_item_dict(out,d.return_layer_definition().layers)
-                self.gv.zoomToFit(buffer = 0)
-                filename = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
-                self.raster(dest,filename,filetype)
-
-
+        d.raster(destination = dest, filetype = filetype,gv = self.gv)
         
 if __name__ == "__main__":
     import sys

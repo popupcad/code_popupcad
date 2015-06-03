@@ -95,3 +95,4 @@ class OperationOutput(UserData):
         except AttributeError:
             self.alltriangles = self.generic_laminate().to_triangles()
             return self.alltriangles
+

@@ -534,7 +534,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         generic.saveAs()
 
     def gen_icons(self):
-        self.design.render_image()
+        self.design.raster()
 #        import pydevtools.popupcad_tools.generate_popupcad_images as sub
 #        import yaml
 #        widget = sub.Widget((400,300))        
