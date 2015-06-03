@@ -176,9 +176,6 @@ class JointOperation2(Operation2,LayerBasedOperation):
     
     def gen_geoms(self,joint_def,layerdef,design):
         hinge_gap = joint_def.width*popupcad.internal_argument_scaling
-#        safe_buffer1 = .5*hinge_gap
-#        safe_buffer2 = .5*hinge_gap
-#        safe_buffer3 = .5*hinge_gap
         split_buffer = .1*hinge_gap
 
         stiffness = joint_def.stiffness
@@ -210,7 +207,6 @@ class JointOperation2(Operation2,LayerBasedOperation):
         safe_buffer1 = .5*popupcad.internal_argument_scaling
         safe_buffer2 = .5*popupcad.internal_argument_scaling
         safe_buffer3 = .5*popupcad.internal_argument_scaling
-#        split_buffer = .1
         
         parent_id,parent_output_index = self.operation_links['parent'][0]
         parent_index = design.operation_index(parent_id)
@@ -244,13 +240,9 @@ class JointOperation2(Operation2,LayerBasedOperation):
         buffered_splits2 = Laminate.unaryoperation(buffered_splits,'union')
         safe_buffer = safe.buffer(safe_buffer2,resolution = self.resolution)
         unsafe = Laminate.unaryoperation(allgeoms,'union').difference(safe_buffer)
-#            unsafe2 = unsafe.unarylayeroperation('union',[hingelayer],sublaminate_layers)
         unsafe2 = unsafe.buffer(safe_buffer3,resolution = self.resolution)
         
         split1 = parent.difference(unsafe2)
-#        for item in buffered_splits:
-#            split1 = split1.difference(item)
-#        split2 = split1
         split2 = split1.difference(buffered_splits2)
         bodies= popupcad.algorithms.body_detection.find(split2.to_generic_laminate())
 
@@ -279,7 +271,6 @@ class JointOperation2(Operation2,LayerBasedOperation):
         self.all_joint_props = all_joint_props
         
         laminates = [safe,unsafe2,split1,split2]+bodies+list(connections2.values())
-#        laminates = [safe,unsafe2,split1,split2]+bodies
         self.output = []
         for ii,item in enumerate(laminates):
             self.output.append(OperationOutput(item,'Body {0:d}'.format(ii),self))

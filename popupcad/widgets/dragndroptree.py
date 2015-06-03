@@ -303,7 +303,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 else:
                     item = self.topLevelItem(ii).child(jj-1)
                 self.setItemSelected(item,True)
-                
 
     def currentRefs(self):
         debugprint('currentrefs')
@@ -326,7 +325,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         if not (self.refreshing or self.master_refreshing):
             debugprint('myrowsinserted_p')
             network = self.networkgenerator()
-            if not network.subsequencecomplete(self.allData()):
+            if not network.sequence_complete_valid(self.allData()):
                 self.refresh()
                 raise(Exception('Item cannot be moved. This would move a parent operation below a child.'))
             else:
@@ -335,7 +334,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
     def linklist(self,masterlist):
         debugprint('linklist_p')
 #        network = self.networkgenerator()
-#        if network.subsequencecomplete(masterlist):
+#        if network.sequence_complete_valid(masterlist):
 #            super(DirectedDraggableTreeWidget,self).linklist(masterlist)
 #        else:
 #            raise(Exception('invalid sequence of operations'))
@@ -388,13 +387,11 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         super(DirectedDraggableTreeWidget,self).enable()
         self.blockSignals(False)
     
-def edituserdata(userdata):
-    userdata.edit()
-
-class DummyClass(UserData,Node):
-    pass
-
 if __name__=='__main__':
+    def edituserdata(userdata):
+        userdata.edit()
+    class DummyClass(UserData,Node):
+        pass
     import sys
 
     list1 = [DummyClass(str(ii)) for ii in range(5)]

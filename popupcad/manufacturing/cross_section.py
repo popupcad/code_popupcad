@@ -127,7 +127,6 @@ class CrossSection(Operation2):
             
     @classmethod
     def buildnewdialog(cls,design,currentop):
-#        opref = design.operations[currentop].id,0
         dialog = Dialog(design,design.operations,(currentop,0))
         return dialog
     def buildeditdialog(self,design):

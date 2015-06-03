@@ -120,9 +120,9 @@ class DirectedDraggableListWidget(DraggableListWidget):
     def rowsMovedCheck(self,sourceindex,rowstart,rowend,destindex,deststart):
 #        print(sourceindex, rowstart,rowend,destindex,deststart)
 #        items = [self.item(ii) for ii in range(self.model().rowCount())]
-#        print(self.network.sequencevalid(self.allItems()))
+#        print(self.network.sequence_complete_valid(self.allItems()))
         network = self.networkgenerator()
-        if not network.sequencevalid(self.allData()):
+        if not network.sequence_complete_valid(self.allData()):
             if rowstart<deststart:
                 item = self.takeItem(deststart-1)
                 self.insertItem(rowstart,item)
