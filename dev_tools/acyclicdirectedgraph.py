@@ -15,25 +15,15 @@ class Node(object):
         self.network = None
     def setnetwork(self,network):
         self.network = network
-    def parents(self):
-        return self.network.itemparents(self.network.A,self)
-    def children(self):
-        return self.network.itemchildren(self.network.A,self)
+#    def parents(self):
+#        return self.network.itemparents(self.network.A,self)
+#    def children(self):
+#        return self.network.itemchildren(self.network.A,self)
     def allparents(self):
         return self.network.itemparents(self.network.B,self)
     def allchildren(self):
         return self.network.itemchildren(self.network.B,self)
             
-class Data(object):
-    '''Generic Data structure which is held by a custom node'''
-    def __init__(self,name):
-        super(Data,self).__init__()
-        self.name = name
-    def __str__(self):
-        return self.name
-    def __repr__(self):
-        return self.name
-
 class AcyclicDirectedGraph(object):
     '''Graph which holds the methods for an acyclic directed graph'''
     def __init__(self,nodes=None,connections=None):
@@ -82,24 +72,14 @@ class AcyclicDirectedGraph(object):
                 return False
         return True
 
-    def cleannodes(self):
-        '''remove duplicate nodes and rebuild internal connection matrix'''
-#        self.nodes = sorted(list(set(self.nodes)))
-        self.nodes = list(set(self.nodes))
-        self.buildAB()
-        
-    def cleanconnections(self):
-        '''remove duplicate connections and rebuild internal connection matrix'''
-        self.connections = list(set(self.connections))
-        self.buildAB()
-
     def addnodes(self,nodes):
         '''add a list of nodes to the network'''
         for node in nodes:
             if isinstance(node,Node):
                 node.setnetwork(self)
         self.nodes.extend(nodes)
-        self.cleannodes()
+        self.nodes = list(set(self.nodes))
+        self.buildAB()
 
     def addconnections(self,connections):
         '''add a list of connections to the network and recalculate internal stuff'''
@@ -109,7 +89,8 @@ class AcyclicDirectedGraph(object):
                     raise(Exception('the parent is a child'))
                 else:
                     self.connections.append((parent,child))
-        self.cleanconnections()
+        self.connections = list(set(self.connections))
+        self.buildAB()
 
     def buildAB(self):
         '''build internal representation of directed connections'''
