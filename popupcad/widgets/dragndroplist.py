@@ -114,15 +114,15 @@ class DirectedDraggableListWidget(DraggableListWidget):
         m = self.model()
         m.rowsMoved.connect(self.rowsMovedCheck)
 
-    def setnetworkgenerator(self,generator):
-        self.networkgenerator = generator
+    def set_tree_generator(self,generator):
+        self.tree_generator = generator
 
     def rowsMovedCheck(self,sourceindex,rowstart,rowend,destindex,deststart):
 #        print(sourceindex, rowstart,rowend,destindex,deststart)
 #        items = [self.item(ii) for ii in range(self.model().rowCount())]
-#        print(self.network.sequence_complete_valid(self.allItems()))
-        network = self.networkgenerator()
-        if not network.sequence_complete_valid(self.allData()):
+#        print(self.tree.sequence_complete_valid(self.allItems()))
+        tree = self.tree_generator()
+        if not tree.sequence_complete_valid(self.allData()):
             if rowstart<deststart:
                 item = self.takeItem(deststart-1)
                 self.insertItem(rowstart,item)
@@ -149,8 +149,8 @@ if __name__=='__main__':
     lw.linklist(list1)
     nodes = lw.allItems()
     connections = list(zip(nodes[:-1],nodes[1:]))
-    network = lambda:AcyclicDirectedGraph(nodes,connections[0:5])
-    lw.setnetworkgenerator(network)
+    tree = lambda:AcyclicDirectedGraph(nodes,connections[0:5])
+    lw.set_tree_generator(tree)
     lw.signal_edit.connect(edituserdata)
     lw.currentRowChanged.connect(rowchange)
 #

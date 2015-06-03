@@ -309,9 +309,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.scene.deleteall()      
         self.clear3dgeometry()
         
-        self.operationeditor.setnetworkgenerator(self.design.network)
+        self.operationeditor.set_tree_generator(self.design.build_tree)
         self.operationeditor.linklist(self.design.operations)
-#        self.operationeditor.setnetworkgenerator(self.design.network)
         
         self.updatelayerlist()
         self.layerlistwidget.selectAll()

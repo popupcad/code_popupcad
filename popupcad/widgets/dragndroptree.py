@@ -90,16 +90,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.emit_item_change = True
         self.master_refreshing = False
         self.refreshing = False
-#        self.setContextMenuPolicy(qc.Qt.CustomContextMenu)
-#        self.customContextMenuRequested.connect(self.onCustomContextMenu)
-
-    def onCustomContextMenu(self,point):
-        index = self.indexAt(point)
-        if index.isValid():
-            menu = qg.QMenu()
-            action1 =qg.QAction('asdf',menu)
-            menu.addAction(action1)
-            menu.exec_(self.mapToGlobal(point))
 
     def currentOperationOutputIndex(self):
         debugprint('currentOperationOutputIndex')
@@ -268,8 +258,8 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setDragDropMode(self.DragDropMode.InternalMove)
         self.setEditTriggers(self.EditTrigger.EditKeyPressed)
     
-#    def setnetworkgenerator(self,generator):
-#        debugprint('setnetworkgenerator')
+#    def set_tree_generator(self,generator):
+#        debugprint('set_tree_generator')
 #        pass
 
     def myRowsInserted(self,*args,**kwargs):
@@ -317,15 +307,33 @@ class DraggableTreeWidget(qg.QTreeWidget):
         return indeces    
         
 class DirectedDraggableTreeWidget(DraggableTreeWidget):
-    def setnetworkgenerator(self,generator):
-        debugprint('setnetworkgenerator_p')
-        self.networkgenerator = generator
+    def __init__(self,*args,**kwargs):
+        super(DirectedDraggableTreeWidget,self).__init__(*args,**kwargs)
+        self.setContextMenuPolicy(qc.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.onCustomContextMenu)
+
+    def onCustomContextMenu(self,point):
+        index = self.indexAt(point)
+        item = self.itemAt(point)
+        if index.isValid():
+            menu = qg.QMenu()
+            action1 =qg.QAction('parents',menu,triggered = lambda:self.show_parents(item))
+            menu.addAction(action1)
+            menu.exec_(self.mapToGlobal(point))
+    
+    def show_parents(self,item):
+        self.tree_generator()
+        print(item.userdata.ancestors())
+        
+    def set_tree_generator(self,generator):
+        debugprint('set_tree_generator_p')
+        self.tree_generator = generator
 
     def myRowsInserted(self,*args,**kwargs):
         if not (self.refreshing or self.master_refreshing):
             debugprint('myrowsinserted_p')
-            network = self.networkgenerator()
-            if not network.sequence_complete_valid(self.allData()):
+            tree = self.tree_generator()
+            if not tree.sequence_complete_valid(self.allData()):
                 self.refresh()
                 raise(Exception('Item cannot be moved. This would move a parent operation below a child.'))
             else:
@@ -333,8 +341,8 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
 
     def linklist(self,masterlist):
         debugprint('linklist_p')
-#        network = self.networkgenerator()
-#        if network.sequence_complete_valid(masterlist):
+#        tree = self.tree_generator()
+#        if tree.sequence_complete_valid(masterlist):
 #            super(DirectedDraggableTreeWidget,self).linklist(masterlist)
 #        else:
 #            raise(Exception('invalid sequence of operations'))
@@ -350,7 +358,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
                     rows.sort()
                     rows.reverse()
             
-            self.networkgenerator()
+            self.tree_generator()
             for ii in rows:    
                 children = self.masterlist[ii].allchildren()
                 if not children:
@@ -404,8 +412,8 @@ if __name__=='__main__':
     tw = DirectedDraggableTreeWidget()
     nodes = list1
     connections = list(zip(nodes[:-1],nodes[1:]))
-    networkgenerator = lambda:AcyclicDirectedGraph(nodes,connections[0:3])
-    tw.setnetworkgenerator(networkgenerator)
+    tree_generator = lambda:AcyclicDirectedGraph(nodes,connections[0:3])
+    tw.set_tree_generator(tree_generator)
     tw.linklist(list1)
     tw.signal_edit.connect(edituserdata)
     tw.show()

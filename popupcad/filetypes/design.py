@@ -76,7 +76,7 @@ class Design(popupCADFile):
         return failed_ops
         
     def replace_op_refs_inner(self,oldref,newref):
-        self.network()
+        self.build_tree()
         
         oldop = self.op_from_ref(oldref[0])
         newop = self.op_from_ref(newref[0])
@@ -130,10 +130,6 @@ class Design(popupCADFile):
         prioroperations = self.operations[:priorindex]
         return prioroperations
 
-    def layer_index(self,layer_ref):
-        indeces = dict([(layer.id,ii) for ii,layer in enumerate(self.return_layer_definition().layers)])
-        return indeces[layer_ref]
-        
     def copy(self,identical = True):
         new = Design()
         new.operations = [operation.copy() for operation in self.operations]
@@ -260,15 +256,14 @@ class Design(popupCADFile):
         for op in self.operations:
             op.generate(self)
 
-    def network(self):
-        nodes = [op for op in self.operations]
+    def build_tree(self):
         connections = []
         for child in self.operations:
             for parentref in child.parentrefs():
                 parent = self.op_from_ref(parentref)
                 connections.append((parent,child))
-        network = AcyclicDirectedGraph(nodes,connections)
-        return network
+        tree = AcyclicDirectedGraph(self.operations[:],connections)
+        return tree
 
     def cleanup_subdesigns(self):
         subdesignrefs  = []
