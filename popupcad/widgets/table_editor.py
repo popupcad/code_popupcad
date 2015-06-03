@@ -6,6 +6,7 @@ Created on Mon May 11 19:20:36 2015
 """
 import PySide.QtGui as qg
 import PySide.QtCore as qc
+from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
 class ListWidgetItem(qg.QListWidgetItem):
     def __init__(self,data):
@@ -26,7 +27,7 @@ class SingleListWidget(qg.QListWidget):
             item = self.item(ii)
             if item.customdata == data:
                 item.setSelected(True)
-
+                
 class MultiListWidget(qg.QListWidget):
     editingFinished = qc.Signal()
     def __init__(self,list1,*args,**kwargs):
@@ -248,6 +249,32 @@ class MultiItemListElement(Element):
     def build_editor(self,parent,delegate):
         editor = MultiListWidget(self.get_list(),parent)
         editor.editingFinished.connect(delegate.commitAndCloseEditor)
+        return editor
+
+class DraggableTreeElement(Element):
+    def __init__(self,name,get_list,ini = None):
+        super(DraggableTreeElement,self).__init__()
+        self.name = name
+        self.get_list = get_list
+        self.expand_bottom = 100
+        if ini != None:
+            self.ini = ini
+        else:
+            self.ini = []
+    def set_editor_data(self,index,editor):
+        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        editor.selectIndeces(d)
+    def set_model_data(self,editor,model,index,delegate):
+        try:
+            value = editor.currentIndeces2()
+            model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)        
+            model.setData(index, value, qc.Qt.ItemDataRole.UserRole)        
+        except IndexError:
+            pass
+    def build_editor(self,parent,delegate):
+        editor = DraggableTreeWidget(parent)
+        editor.linklist(self.get_list())
+#            editor.editingFinished.connect(delegate.commitAndCloseEditor)
         return editor
 
 class FloatElement(Element):

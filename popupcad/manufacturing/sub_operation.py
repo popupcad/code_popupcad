@@ -4,20 +4,11 @@ Created on Sat Dec 13 14:41:02 2014
 
 @author: danaukes
 """
-from popupcad.widgets.dragndroptree import DraggableTreeWidget
-
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.filetypes.operation2 import Operation2
-from popupcad.filetypes.laminate import Laminate
-from popupcad.widgets.table_editor import Table,SingleItemListElement,Row,TableControl
-from  popupcad.widgets.listmanager import SketchListManager,DesignListManager
-
-def get_sketches(parent):
-    return parent.parent().parent().sketches
-
-def get_layers(parent):
-    return parent.parent().parent().layers
+from popupcad.widgets.table_editor import Table,SingleItemListElement,Row,TableControl,DraggableTreeElement
+from  popupcad.widgets.listmanager import DesignListManager
 
 class InputData(object):
     def __init__(self,ref1,ref2):
@@ -36,8 +27,8 @@ class OutputData(object):
 class InputRow(Row):
     def __init__(self,get_sketches,get_layers):
         elements = []
-        elements.append(SingleItemListElement('to replace',get_sketches))
-        elements.append(SingleItemListElement('replace with',get_layers))
+        elements.append(DraggableTreeElement('to replace',get_sketches))
+        elements.append(DraggableTreeElement('replace with',get_layers))
         self.elements = elements
 
 class SketchRow(Row):
@@ -50,7 +41,7 @@ class SketchRow(Row):
 class OutputRow(Row):
     def __init__(self,get_sketches):
         elements = []
-        elements.append(SingleItemListElement('output',get_sketches))
+        elements.append(DraggableTreeElement('output',get_sketches))
         self.elements = elements
         
 class MainWidget(qg.QDialog):
@@ -96,9 +87,15 @@ class MainWidget(qg.QDialog):
                 if item.value==subdesign:
                     item.setSelected(True)
             for item in jointop.input_list:
-                self.input_table.row_add(subdesign.op_from_ref(item.ref1[0]),design.op_from_ref(item.ref2[0]))
+                index1 = self.subdesign().operation_index(item.ref1[0])
+                output1 = item.ref1[1]
+                index2 = self.design.operation_index(item.ref2[0])
+                output2 = item.ref2[1]
+                self.input_table.row_add([(index1,output1)],[(index2,output2)])
             for item in jointop.output_list:
-                self.output_table.row_add(subdesign.op_from_ref(item.ref1[0]))
+                index1 = self.subdesign().operation_index(item.ref1[0])
+                output1 = item.ref1[1]
+                self.output_table.row_add([(index1,output1)],[(index2,output2)])
             for item in jointop.sketch_list:
                 self.sketch_table.row_add(subdesign.sketches[item.ref1],design.sketches[item.ref2])
 
@@ -128,14 +125,22 @@ class MainWidget(qg.QDialog):
 
         input_list = []
         data = self.input_table.export_data()
-        for op1,op2 in data:
-            input_list.append(InputData((op1.id,0),(op2.id,0)))
+        for refs_from,refs_to in data:
+            op1_index,op1_output = refs_from[0]
+            op2_index,op2_output = refs_to[0]
+            op1_ref = self.subdesign().operations[op1_index].id
+            op2_ref = self.design.operations[op2_index].id
+            input_list.append(InputData((op1_ref,op1_output),(op2_ref,op2_output)))
 
         output_list= []
         data = self.output_table.export_data()
-        for op1, in data:
-            output_list.append(OutputData((op1.id,0)))
-            
+
+        for row in data:
+            for ref1 in row:
+                op1_index,op1_output = ref1[0]
+                op1_ref = self.subdesign().operations[op1_index].id
+                output_list.append(OutputData((op1_ref,op1_output)))
+
         design_links = {}
         design_links['source'] = self.subdesign().id
         
