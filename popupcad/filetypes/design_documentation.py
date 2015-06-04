@@ -24,12 +24,14 @@ My name is {{{{page.name}}}}
 
 My title is {{{{page.title}}}}
 
+[<img src="{{{{page.image_file}}}}" />]({{{{page.cad_file}}}})
+
 {{% for operation in page.operations %}}
 
-* [<img src="{{{{operation.image_file}}}}" height = "75px" />]({{{{operation.image_file}}}}) **{{{{ operation.name }}}}** {{{{operation.description}}}}
+* [<img src="{{{{operation.image_file}}}}" height = "75px" />]({{{{operation.image_file}}}}) **{{{{ operation.name }}}}** {{{{operation.description}}}} [{{{{operation.cut_file}}}}]({{{{operation.cut_file}}}})
 
 {{% for output in operation.outputs %}}
-  * [<img src="{{{{output.image_file}}}}" height = "50px" />]({{{{output.image_file}}}}) **{{{{output.name}}}}** {{{{output.description}}}}
+  * [<img src="{{{{output.image_file}}}}" height = "50px" />]({{{{output.image_file}}}}) **{{{{output.name}}}}** {{{{output.description}}}} [{{{{output.cut_file}}}}]({{{{output.cut_file}}}})
 
 {{% endfor %}}
 {{% endfor %}}
@@ -60,25 +62,28 @@ def process_output(output,ii,jj,destination):
     filename_in = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
     filename_out = output.generic_laminate().raster(filename_in,'png',destination)
     name = str(output)
-    return {'name':name,'image_file':filename_out,'description':output.description}
+    return {'name':name,'image_file':filename_out,'description':output.description,'cut_file':'cut-dummy.svg'}
 
 
 class OperationDocumentation(Documentation):
     yaml_node_name = u'Operation'
-    export_keys = ['name','description','image_file','outputs']
+    export_keys = ['name','description','image_file','cut_file','outputs']
     @classmethod
     def build(cls,operation,ii,destination):
         outputs = []
-        image_file = process_output(operation.output[0],ii,0,destination)['image_file']
+        out0 = process_output(operation.output[0],ii,0,destination)
+        image_file = out0['image_file']
+        cut_file = out0['cut_file']
         for jj,out in enumerate(operation.output[1:]):
             outputs.append(process_output(out,ii,jj,destination))
-        return cls(str(operation),operation.description,image_file,outputs)
+        return cls(str(operation),operation.description,image_file,cut_file,outputs)
 
-    def __init__(self,name,description,image_file,outputs):
+    def __init__(self,name,description,image_file,cut_file,outputs):
         super(OperationDocumentation,self).__init__()
         self.name = name
         self.description = description
-        self.image_file = image_file,
+        self.image_file = image_file
+        self.cut_file = cut_file
         self.outputs = outputs
         
 class DesignDocumentation(popupCADFile,Documentation):
@@ -109,6 +114,8 @@ class DesignDocumentation(popupCADFile,Documentation):
         output['title']=self.title
         output['name']=self.name
         output['operations']=[item.dictify() for item in self.operations]
+        output['image_file']='00_00.png'
+        output['cad_file']='asdf.cad'
         return output
     def output(self):
         import yaml
