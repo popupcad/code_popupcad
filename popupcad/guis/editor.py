@@ -235,6 +235,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.showhide2(self.layerlistwidgetdock,self.act_view_layers)
         self.showhide2(self.error_log,self.act_view_errors)
 
+    def get_design(self):
+        return self.design
         
     @loggable
     def newoperation(self,operationclass):
@@ -310,6 +312,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.clear3dgeometry()
         
         self.operationeditor.set_tree_generator(self.design.build_tree)
+        self.operationeditor.set_get_design(self.get_design)
         self.operationeditor.linklist(self.design.operations)
         
         self.updatelayerlist()

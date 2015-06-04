@@ -315,14 +315,20 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
     def onCustomContextMenu(self,point):
         index = self.indexAt(point)
         item = self.itemAt(point)
-        if index.isValid():
+        if isinstance(item,ParentItem):
+#            if index.isValid():
             menu = qg.QMenu()
             menu.addAction(qg.QAction('parents',menu,triggered = lambda:self.show_parents(item)))
             menu.addAction(qg.QAction('children',menu,triggered = lambda:self.show_children(item)))
             menu.addAction(qg.QAction('rename',menu,triggered = lambda:self.edit(index)))
             menu.addAction(qg.QAction('edit description...',menu,triggered = item.userdata.edit_description))
+            menu.addAction(qg.QAction('set main image',menu,triggered = lambda:self.set_main_image(item)))
             menu.exec_(self.mapToGlobal(point))
-    
+
+    def set_main_image(self,item):
+        self.design = self.get_design()
+        if isinstance(item,ParentItem):
+            self.design.set_main_operation(self.currentRefs()[0])
     def show_parents(self,item):
         self.tree_generator()
         m = qg.QMessageBox()
@@ -338,6 +344,9 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
     def set_tree_generator(self,generator):
         debugprint('set_tree_generator_p')
         self.tree_generator = generator
+
+    def set_get_design(self,get_design):
+        self.get_design = get_design
 
     def myRowsInserted(self,*args,**kwargs):
         if not (self.refreshing or self.master_refreshing):

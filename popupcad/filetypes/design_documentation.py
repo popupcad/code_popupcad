@@ -96,13 +96,17 @@ class DesignDocumentation(popupCADFile,Documentation):
         title = design.get_basename()
         name = design.get_basename()
         operations = [OperationDocumentation.build(operation,ii,subdir) for ii,operation in enumerate(design.operations)]
-        return cls(title,name,operations)
         
-    def __init__(self,title,name,operations):
+        ii = design.operation_index(design.main_operation[0])
+        image_file = operations[ii].image_file
+        return cls(title,name,operations,image_file)
+        
+    def __init__(self,title,name,operations,image_file):
         super(DesignDocumentation,self).__init__()
         self.title = title
         self.name = name
         self.operations = operations
+        self.image_file = image_file
 
 
     def copy(self,identical=True):
@@ -114,7 +118,7 @@ class DesignDocumentation(popupCADFile,Documentation):
         output['title']=self.title
         output['name']=self.name
         output['operations']=[item.dictify() for item in self.operations]
-        output['image_file']='00_00.png'
+        output['image_file']=self.image_file
         output['cad_file']='asdf.cad'
         return output
     def output(self):

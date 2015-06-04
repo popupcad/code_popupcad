@@ -136,6 +136,7 @@ class Design(popupCADFile):
         new.define_layers(self.return_layer_definition())
         if identical:
             new.id=self.id
+        new.main_operation = self.main_operation
         new.sketches = {}
         for key,value in self.sketches.items():
             new.sketches[key]=value.copy(identical = True)
@@ -157,6 +158,7 @@ class Design(popupCADFile):
         new.define_layers(self.return_layer_definition())
         if identical:
             new.id=self.id
+        new.main_operation = self.main_operation
         new.sketches = {}
         for key,value in self.sketches.items():
             new.sketches[key]=value.upgrade(identical = True)
@@ -319,3 +321,5 @@ class Design(popupCADFile):
             f.writelines(new.output())
         #            yaml.dump(new.dictify2(),f)
 #        new.save_yaml(file)
+    def set_main_operation(self,op):
+        self.main_operation = op
