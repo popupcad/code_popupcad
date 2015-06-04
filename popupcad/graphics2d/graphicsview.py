@@ -94,7 +94,8 @@ class ImagingSupport(object):
         filename = '{0}.{1}'.format(filename,filetype.lower())
         full_path = os.path.normpath(os.path.join(dest,filename))
         im.mirrored().save(full_path, filetype.upper())
-        painter.end()      
+        painter.end()     
+        return filename
         
 class MouseModes(object):
     def __init__(self,scene):

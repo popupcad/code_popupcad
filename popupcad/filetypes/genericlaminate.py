@@ -72,8 +72,8 @@ class GenericLaminate(popupCADFile):
         gv.scene().clear()
         [gv.scene().addItem(item) for item in self.to_static_sorted()]
         gv.zoomToFit(buffer = 0)
-        gv.raster(destination,filename,filetype)
-        
+        filename_out = gv.raster(destination,filename,filetype)
+        return filename_out
 
 if __name__=='__main__':
     import PySide.QtGui as qg

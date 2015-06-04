@@ -221,7 +221,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.operationactions.append({'text':'&Dilate/Erode','kwargs':{'icon':Icon('bufferop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_B,'triggered':lambda:self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
         self.operationactions.append({'text':'&PlaceOp','kwargs':{'icon':Icon('placeop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_P,'triggered':lambda:self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
         self.operationactions.append({'text':'L&ocateOp','kwargs':{'icon':Icon('locate'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_O,'triggered':lambda:self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
-        self.operationactions.append({'text':'Shift/Flip','kwargs':{'icon':Icon('shiftflip'),'triggered':lambda:self.newoperation(popupcad.manufacturing.shiftflip2.ShiftFlip2)}})
+        self.operationactions.append({'text':'Shift/Flip','kwargs':{'icon':Icon('shiftflip'),'triggered':lambda:self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)}})
         self.operationactions.append({'text':'&LayerOp','kwargs':{'icon':Icon('layerop'),'shortcut': qc.Qt.CTRL+qc.Qt.SHIFT+qc.Qt.Key_L,'triggered':lambda:self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
         self.operationactions.append({'text':'More...','submenu':self.tools1,'kwargs':{}})
 

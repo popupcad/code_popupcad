@@ -96,3 +96,20 @@ class OperationOutput(UserData):
             self.alltriangles = self.generic_laminate().to_triangles()
             return self.alltriangles
 
+    def description_get(self):
+        try:
+            return self._description
+        except AttributeError:
+            self._description = ''
+            return self._description
+
+    def description_set(self,value):
+        self._description = value
+    
+    description = property(description_get,description_set)
+
+    def edit_description(self):
+        import PySide.QtGui as qg
+        result,ok = qg.QInputDialog.getText(None, 'description', 'label',text = self.description)
+        if ok:
+            self.description = result
