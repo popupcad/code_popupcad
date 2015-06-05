@@ -24,8 +24,8 @@ class ProgramSettings(popupCADFile):
         self.pstoedit_path = 'C:\Program Files\pstoedit\pstoedit.exe'
         self.toolbar_icon_size = 36
         self.id = id(self)
-        self.nominal_width = 1024
-        self.nominal_height = 768
+        self.nominal_width = 1280
+        self.nominal_height = 720
 #        self.deprecated_mode = False
 
     def copy(self,identical = True):

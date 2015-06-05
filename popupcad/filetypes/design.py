@@ -322,4 +322,11 @@ class Design(popupCADFile):
         #            yaml.dump(new.dictify2(),f)
 #        new.save_yaml(file)
     def set_main_operation(self,op):
-        self.main_operation = op
+        self._main_operation = op
+    def get_main_operation(self):
+        try:
+            return self._main_operation	
+        except AttributeError:
+            self._main_operation = self.operations[0]
+            return self._main_operation	
+    main_operation = property(get_main_operation,set_main_operation)
