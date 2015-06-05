@@ -61,6 +61,7 @@ class OutputSelection(qg.QDialog):
         self.Inkscape.setChecked(True)
         self.setLayout(layout3)
         self.RenderDXF.setEnabled(sys.platform=='win32')
+        
     def checkradio(self):
         if self.RenderDXF.isChecked():
             self.rotation.setText(str(0))
@@ -91,7 +92,8 @@ class SVGOutputSupport(object):
             time = popupcad.basic_functions.return_formatted_time()
             self.renderprocess('2D_screenshot_'+time+'.svg',*win.acceptdata())
 
-    def saveprerenderstate(self):
+    def renderprocess(self,basename,scaling,center,rotation,render_dxf,exportdir):
+#        save prerender state        
         tempmodes = []
         for item in self.items():
             try:
@@ -101,9 +103,8 @@ class SVGOutputSupport(object):
                 
         selected = self.selectedItems()
         tempbrush = self.backgroundBrush()
-        return tempmodes, selected,tempbrush
 
-    def prerender(self,scaling):
+#        prerender
         self.setBackgroundBrush(qg.QBrush())
         for item in self.items():
             try:
@@ -115,30 +116,12 @@ class SVGOutputSupport(object):
             item.setPen(pen)
             item.setSelected(False)
 
-    def loadprerenderstate(self,tempmodes,selected,tempbrush,scaling):
-        for item in selected:
-            item.setSelected(True)
-        for item,mode in zip(self.items(),tempmodes):
-            pen = item.pen()
-            pen.setWidth(pen.width()*scaling)
-            item.setPen(pen)
-            try:
-                item.updatemode(mode)
-            except AttributeError:
-                pass
-        self.setBackgroundBrush(tempbrush)
-
-    def renderprocess(self,basename,scaling,center,rotation,render_dxf,exportdir):
-        state = self.saveprerenderstate()
-        self.prerender(scaling)
         filename = os.path.normpath(os.path.join(exportdir,basename))
-#        self.updatescenerect()        
         self.setSceneRect(self.itemsBoundingRect())
         generator = qs.QSvgGenerator()
         generator.setFileName(filename)
         generator.setSize(qc.QSize(self.width(), self.height()))
         generator.setResolution(90.0/scaling)
-#        generator.setViewBox(self.sceneRect())
         generator.setTitle('SVG Generator Example Drawing')
         generator.setDescription('An SVG drawing created by the SVG Generator')
 
@@ -164,7 +147,20 @@ class SVGOutputSupport(object):
 
         self.render(painter)
         painter.end()
-        self.loadprerenderstate(*(list(state)+[scaling]))
+
+        for item in selected:
+            item.setSelected(True)
+        for item,mode in zip(self.items(),tempmodes):
+            pen = item.pen()
+            pen.setWidth(pen.width()*scaling)
+            item.setPen(pen)
+            try:
+                item.updatemode(mode)
+            except AttributeError:
+                pass
+        self.setBackgroundBrush(tempbrush)
+
+
         self.update()
         if render_dxf:
             xshift = 0
@@ -191,13 +187,9 @@ def svg_to_dxf_files(filenames,xshift=0,yshift=0):
         out1,err1 = run1.communicate()
         run2=subprocess.Popen(export_string_2.format(output_file,tempfilename),stdout = subprocess.PIPE,stderr = subprocess.PIPE)
         out2,err2 = run2.communicate()
-#        m = qg.QMessageBox(qg.QMessageBox.Icon.Information,'Convert Output',(out1+err1+out2+err2).decode())        
-#        m.exec_()
-        
     os.remove(tempfilename)
         
 if __name__=='__main__':
-    import sys
     app = qg.QApplication(sys.argv)
     win  = OutputSelection()
     win.exec_()
