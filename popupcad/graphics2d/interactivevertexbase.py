@@ -140,7 +140,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
 #        return pos
 
     def updateshape(self):
-        postuple = self.get_generic().getpos()
+        postuple = self.get_generic().getpos(scaling = popupcad.view_scaling)
         pos = qc.QPointF(*postuple)
         super(InteractiveVertexBase,self).setPos(pos)
 

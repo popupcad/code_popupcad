@@ -60,14 +60,14 @@ class BaseVertex(object):
         pos.round(self.roundvalue)
         self._pos = tuple(pos.tolist())
 
-    def getpos(self):
+    def getpos(self,scaling = 1):
         try:
             if self._pos==None:
                 self._pos = self.__pos
                 del self.__pos
-                return self._pos
+                return self.scale_tuple(self._pos,scaling)
             else:
-                return self._pos
+                return self.scale_tuple(self._pos,scaling)
         except AttributeError:
             try:
                 self._pos = self.__pos
@@ -75,7 +75,13 @@ class BaseVertex(object):
             except AttributeError:
                 self._pos = self._Vertex__pos
                 del self._Vertex__pos
-            return self._pos
+            return self.scale_tuple(self._pos,scaling)
+            
+    @staticmethod
+    def scale_tuple(tup,scale):
+        if scale !=1:
+            tup = tuple([item*scale for item in tup])
+        return tup
 
     def getpos3D(self):
         return (self._pos[0],self._pos[1],0)

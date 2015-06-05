@@ -93,19 +93,19 @@ class GenericShapeBase(popupCADFile):
             self.construction = False
             return self.construction
 
-    def exteriorpoints(self):
-        return [vertex.getpos() for vertex in self.get_exterior()]        
+    def exteriorpoints(self,scaling = 1):
+        return [vertex.getpos(scaling) for vertex in self.get_exterior()]        
         
-    def interiorpoints(self):
-        return [[vertex.getpos() for vertex in interior] for interior in self.get_interiors()]
+    def interiorpoints(self,scaling = 1):
+        return [[vertex.getpos(scaling) for vertex in interior] for interior in self.get_interiors()]
         
     def vertices(self):
         vertices = self.get_exterior()[:]
         [vertices.extend(interior) for interior in self.get_interiors()]
         return vertices
 
-    def points(self):
-        return [vertex.getpos() for vertex in self.vertices()]        
+    def points(self,scaling = 1):
+        return [vertex.getpos(scaling) for vertex in self.vertices()]        
 
     def segments_closed(self):
         points = self.get_exterior()
@@ -121,9 +121,9 @@ class GenericShapeBase(popupCADFile):
             segments.extend(list(zip(points[:-1],points[1:])))
         return segments
         
-    def segmentpoints(self):
+    def segmentpoints(self,scaling = 1):
         segments = self.segments()
-        segmentpoints = [(point1.getpos(),point2.getpos()) for point1,point2 in segments]
+        segmentpoints = [(point1.getpos(scaling),point2.getpos(scaling)) for point1,point2 in segments]
         return segmentpoints
 
     def painterpath(self):
@@ -166,10 +166,10 @@ class GenericShapeBase(popupCADFile):
         return exterior,interiors
         
     @classmethod
-    def remove_redundant_points(cls,points):
+    def remove_redundant_points(cls,points,scaling = 1):
         newpoints = []
         for point1,point2 in zip(points,points[1:]+points[0:1]):
-            if not cls.samepoint(point1.getpos(),point2.getpos()):
+            if not cls.samepoint(point1.getpos(scaling),point2.getpos(scaling)):
                 newpoints.append(point1)
         return newpoints
 

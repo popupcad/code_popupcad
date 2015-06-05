@@ -4,6 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
+import popupcad
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from . import modes
@@ -165,8 +166,8 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
         self.highlightededge.setLine(*args,**kwargs)
 
     def updateshape(self):
-        point1 = self.generic.vertex1.getpos()
-        point2 = self.generic.vertex2.getpos()
+        point1 = self.generic.vertex1.getpos(popupcad.view_scaling)
+        point2 = self.generic.vertex2.getpos(popupcad.view_scaling)
         self.setLine(point1[0],point1[1],point2[0],point2[1])
         
     def hoverEnterEvent(self,event):
