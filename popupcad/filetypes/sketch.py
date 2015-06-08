@@ -121,10 +121,14 @@ class Sketch(popupCADFile):
 #                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
                     elif isinstance(entity,LWPolyline):
                         from popupcad.filetypes.genericshapes import GenericPolyline
+                        from popupcad.filetypes.genericshapes import GenericPoly
                         import numpy
                         points = numpy.array(entity.points)
                         points *= popupcad.internal_argument_scaling
-                        generics.append(GenericPolyline.gen_from_point_lists(points.tolist(),[]))
+                        if entity.is_closed:
+                            generics.append(GenericPoly.gen_from_point_lists(points.tolist(),[]))
+                        else:
+                            generics.append(GenericPolyline.gen_from_point_lists(points.tolist(),[]))
                     elif isinstance(entity,Insert):
                         pass
                     elif isinstance(entity,Circle):
