@@ -109,7 +109,7 @@ setup_arguments['version'] = popupcad.version
 setup_arguments['description'] = popupcad.description
 setup_arguments['executables'] = []
 setup_arguments['executables'].append(Executable("popupcad.py", base=base,shortcutName=popupcad.program_name,shortcutDir="ProgramMenuFolder"))
-setup_arguments['executables'].append(Executable("popupcad_deprecated.py", base=base,shortcutName=popupcad.deprecated_program_name,shortcutDir="ProgramMenuFolder"))
+#setup_arguments['executables'].append(Executable("popupcad_deprecated.py", base=base,shortcutName=popupcad.deprecated_program_name,shortcutDir="ProgramMenuFolder"))
 #setup_arguments['executables'].append(Executable("upgrade_tool.py", base=base,shortcutName=popupcad.upgrade_tool_name,shortcutDir="ProgramMenuFolder"))
 setup_arguments['options'] = setup_options
 
