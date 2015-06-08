@@ -35,6 +35,7 @@ class Design(popupCADFile):
         self.id = id(self)
         self.sketches = {}
         self.subdesigns = {}
+#        self._main_operation = None
     
     def define_layers(self,layerdef):
         self._layerdef = layerdef
@@ -327,6 +328,10 @@ class Design(popupCADFile):
         try:
             return self._main_operation	
         except AttributeError:
-            self._main_operation = self.operations[0]
+            try:
+                self._main_operation = self.operations[0]
+            except IndexError:
+                self._main_operation = None
+                
             return self._main_operation	
     main_operation = property(get_main_operation,set_main_operation)
