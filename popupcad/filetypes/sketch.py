@@ -106,23 +106,37 @@ class Sketch(popupCADFile):
         if result:
             selected_layers = [item.data(qc.Qt.ItemDataRole.DisplayRole) for item in lw.selectedItems()]
             entities = dxf.entities
+            generics = []
             for entity in entities:
                 if entity.layer in selected_layers:
                     if isinstance(entity,Line):
-                        pass
+                        from popupcad.filetypes.genericshapes import GenericLine
+                        import numpy
+                        points = numpy.array([entity.start[:2],entity.end[:2]])
+                        points *= popupcad.internal_argument_scaling
+                        generics.append(GenericLine.gen_from_point_lists(points.tolist(),[]))
                     elif isinstance(entity,Arc):
                         pass
+#                        from popupcad.filetypes.genericshapes import GenericCircle
+#                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
                     elif isinstance(entity,LWPolyline):
-                        pass
+                        from popupcad.filetypes.genericshapes import GenericPolyline
+                        import numpy
+                        points = numpy.array(entity.points)
+                        points *= popupcad.internal_argument_scaling
+                        generics.append(GenericPolyline.gen_from_point_lists(points.tolist(),[]))
                     elif isinstance(entity,Insert):
                         pass
                     elif isinstance(entity,Circle):
                         pass
+#                        from popupcad.filetypes.genericshapes import GenericCircle
+#                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
                     elif isinstance(entity,Spline):
                         pass
                     else:
                         print(entity)
             new = cls()
+            new.addoperationgeometries(generics)
             return filename,new
         else:
             return None,None

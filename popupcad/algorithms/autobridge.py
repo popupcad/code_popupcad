@@ -6,6 +6,7 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.filetypes.genericshapes import GenericShapeBase
+from popupcad.filetypes.genericshapes import GenericPoly
 from scipy.spatial import Delaunay
 
 def joinedges(vertices):
@@ -34,7 +35,7 @@ def joinedges(vertices):
         
     polyindeces = cvx[:,0]
     polypoints=delaunay.points[polyindeces,:].tolist()
-    poly = GenericShapeBase.gengenericpoly(polypoints,[])
+    poly = GenericPoly.gen_from_point_lists(polypoints,[])
     return poly
 
 def autobridge(vertices):
@@ -42,5 +43,5 @@ def autobridge(vertices):
     from scipy.spatial import Delaunay
     d = Delaunay(vertices)
     polys=d.points[d.vertices].tolist()
-    genericpolys = [GenericShapeBase.gengenericpoly(poly,[]) for poly in polys]    
+    genericpolys = [GenericPoly.gen_from_point_lists(poly,[]) for poly in polys]    
     return genericpolys  

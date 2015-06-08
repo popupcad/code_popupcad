@@ -7,12 +7,12 @@ Please see LICENSE.txt for full license.
 
 
 import numpy
-from popupcad.filetypes.genericshapebase import GenericShapeBase
+from popupcad.filetypes.genericshapes import GenericPoly
 from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid
 import popupcad
 import PySide.QtGui as qg
 from popupcad.filetypes.popupcad_file import popupCADFile
-import shapely.geometry as sg
+#import shapely.geometry as sg
 import popupcad.geometry.customshapely as cs
 
 class Loop(object):
@@ -78,7 +78,7 @@ class Assembly(popupCADFile):
 
                         ints_c = [self.transform_loop(interior,R1,b1,R2,b2,scalefactor*popupcad.internal_argument_scaling) for interior in loops]
                         
-                        a = [GenericShapeBase.gengenericpoly(loop,[],test_shapely = False) for loop in ints_c]
+                        a = [GenericPoly.gen_from_point_lists(loop,[],test_shapely = False) for loop in ints_c]
                         b = [item.outputshapely() for item in a]
                         if cleanup>=0:
                             b = [item.simplify(cleanup*popupcad.internal_argument_scaling) for item in b]
@@ -87,7 +87,7 @@ class Assembly(popupCADFile):
                             c = c.symmetric_difference(item)
                         d = cs.multiinit(c)
                         e = cs.multiinit(*[item.buffer(bufferval*popupcad.internal_argument_scaling,resolution = popupcad.default_buffer_resolution) for item in d])
-                        f = [GenericShapeBase.genfromshapely(item) for item in e]
+                        f = [GenericPoly.gen_from_point_lists(item) for item in e]
                         self.geoms.extend(f)
                     except NotSimple:
                         pass

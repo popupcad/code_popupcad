@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.filetypes.genericshapes import GenericShapeBase
+from popupcad.filetypes.genericshapes import GenericShapeBase,GenericPoly
 from popupcad.filetypes.laminate import Laminate
 import numpy
 
@@ -21,7 +21,7 @@ def supportsheet(layerdef,lsin,value):
     maxx = allext[:,0].max()+value
     maxy = allext[:,1].max()+value
     exterior = [[minx,miny],[maxx,miny],[maxx,maxy],[minx,maxy]]
-    geom = GenericShapeBase.gengenericpoly(exterior,[])
+    geom = GenericPoly.gen_from_point_lists(exterior,[])
     geom = geom.outputshapely()
     ls = Laminate(layerdef)
     [ls.replacelayergeoms(layer,[geom]) for layer in layerdef.layers]

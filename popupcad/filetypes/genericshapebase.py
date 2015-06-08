@@ -216,10 +216,9 @@ class GenericShapeBase(popupCADFile):
         return subclass(exterior,interiors)
         
     @classmethod
-    def gengenericpoly(cls,exterior_p,interiors_p,**kwargs):
-        from popupcad.filetypes.genericshapes import GenericPoly
+    def gen_from_point_lists(cls,exterior_p,interiors_p,**kwargs):
         exterior,interiors = cls.buildvertices(exterior_p,interiors_p) 
-        return GenericPoly(exterior,interiors,**kwargs)
+        return cls(exterior,interiors,**kwargs)
 
     def genInteractiveVertices(self):
         try:
