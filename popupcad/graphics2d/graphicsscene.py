@@ -20,7 +20,7 @@ from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
 class popupCADObjectSupport(object):
     def __init__(self):
         pass
-    def removeitem(self,item):
+    def removeItem(self,item):
         if item in self.items():
             qg.QGraphicsScene.removeItem(self,item)
     def addItem(self,item):
