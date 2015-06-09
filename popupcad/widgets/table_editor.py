@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 11 19:20:36 2015
-
-@author: danaukes
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
 import PySide.QtCore as qc
