@@ -10,10 +10,12 @@ class UndoRedo(object):
         self.get_current_method = get_current_method
         self.load_method = load_method
 #        self.restartundoqueue()
+
     def restartundoqueue(self):
         file1 = self.get_current_method()
         self.undoqueue=[file1.copy()]
         self.index = 0
+
     def savesnapshot(self):
         file1 = self.get_current_method()
         self.undoqueue = self.undoqueue[:self.index+1]

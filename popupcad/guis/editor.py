@@ -442,11 +442,13 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             return False
         return True            
         
+    @loggable
     def preferences(self):
         import dev_tools.propertyeditor
         pe = dev_tools.propertyeditor.PropertyEditor(popupcad.settings)
         pe.show()
 
+    @loggable
     def replace(self):
         d = qg.QDialog()
         operationlist = popupcad.widgets.dragndroptree.DraggableTreeWidget()
@@ -466,6 +468,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         if result:
             self.design.replace_op_refs(self.operationeditor.currentRefs()[0],operationlist.currentRefs()[0])
         self.reprocessoperations()
+
+    @loggable
     def insert_and_replace(self):
         from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
         operation_ref,output_index = self.operationeditor.currentRefs()[0]
@@ -475,6 +479,8 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         self.design.replace_op_refs((operation_ref,output_index),(newop.id,0))
         newop.operation_links['unary'].append((operation_ref,output_index))
         self.reprocessoperations()
+
+    @loggable
     def upgrade(self):
         try:
             self.load_design(self.design.upgrade())
@@ -484,6 +490,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
         if self.act_autoreprocesstoggle.isChecked():
             self.reprocessoperations()
         self.view_2d.zoomToFit() 
+
     def get_update_link(self):
         import requests
         r = requests.get('http://www.popupcad.org/downloads/current')
@@ -495,12 +502,15 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             update_link = 'http://www.popupcad.org/download'
         return update_link
         
+    @loggable
     def download_installer(self):
         qg.QDesktopServices.openUrl(self.get_update_link())
                 
+    @loggable
     def save_joint_def(self):
         self.design.save_joint_def()
 
+    @loggable
     def screenshot_3d(self):
         time = popupcad.basic_functions.return_formatted_time()
         filename = os.path.normpath(os.path.join(popupcad.exportdir,'3D_screenshot_'+time+'.png'))
@@ -508,23 +518,21 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
 #        self.view_3d.view.update()
         self.view_3d.view.grabFrameBuffer().save(filename)
 
+    @loggable
     def export_laminate(self):
         ii,jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         generic = output.csg.to_generic_laminate()
         generic.saveAs()
 
+    @loggable
     def gen_icons(self):
         self.design.raster()
-#        import pydevtools.popupcad_tools.generate_popupcad_images as sub
-#        import yaml
-#        widget = sub.Widget((400,300))        
-#        design2 = yaml.load(yaml.dump(self.design.copy()))
-#        design2.reprocessoperations()
-#        widget.load_directory(design2.filename())
-#        widget.render_design(design2,design2.dirname)
+
+    @loggable
     def build_documentation(self):
         self.design.build_documentation()        
+        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     app.setWindowIcon(Icon('popupcad'))

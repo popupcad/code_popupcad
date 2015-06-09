@@ -76,7 +76,7 @@ class Design(popupCADFile):
                 failed_ops.append(op)
         return failed_ops
         
-    def replace_op_refs_inner(self,oldref,newref):
+    def replace_op_refs(self,oldref,newref):
         self.build_tree()
         
         oldop = self.op_from_ref(oldref[0])
@@ -109,23 +109,6 @@ class Design(popupCADFile):
             s+='{0}'.format(str(failed_ops[-1]))
             raise(UpgradeError(error_string,message_string,s))
                 
-    def replace_op_refs(self,oldref,newref):
-        try:
-            self.replace_op_refs_inner(oldref,newref)
-        except UpgradeError as ex:
-            m = qg.QMessageBox()
-            m.setIcon(m.Warning)
-            m.setText(ex.args[0])
-            try:
-                m.setInformativeText(ex.args[1])
-            except IndexError:
-                pass
-            try:
-                m.setDetailedText(ex.args[2])
-            except IndexError:
-                pass
-            m.exec_()
-
     def prioroperations(self,op):
         priorindex = self.operation_index(op.id)
         prioroperations = self.operations[:priorindex]
