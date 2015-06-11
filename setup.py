@@ -13,6 +13,7 @@ packages.append('popupcad')
 packages.append('dev_tools')
 packages.append('popupcad_manufacturing_plugins')
 packages.append('popupcad_deprecated')
+packages.append('pypoly2tri')
 
 package_data = {}
 package_data['popupcad'] = ['docs/*','docs/source/*','supportfiles/*']

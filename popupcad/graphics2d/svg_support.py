@@ -172,8 +172,8 @@ class SVGOutputSupport(object):
 
 def svg_to_dxf_files(filenames,xshift=0,yshift=0):
     import subprocess,os
-    inkscape_path = popupcad.settings.inkscape_path
-    pstoedit_path = popupcad.settings.pstoedit_path
+    inkscape_path = popupcad.local_settings.inkscape_path
+    pstoedit_path = popupcad.local_settings.pstoedit_path
 
     export_string_1 = '''"{0}"'''.format(inkscape_path) + ''' --export-area-page -P "{1}" "{0}"'''
     export_string_2 = '''"{0}" -xshift {1} -yshift {2} -dt -f '''.format(pstoedit_path,xshift*72/25.4,yshift*72/25.4)+'''"dxf:-polyaslines -mm" "{1}" "{0}"'''

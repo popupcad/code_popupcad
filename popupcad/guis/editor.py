@@ -429,7 +429,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
             event.accept()
         else:
             event.ignore()
-        popupcad.settings.save_yaml(popupcad.settings_filename)
+        popupcad.local_settings.save_yaml(popupcad.local_settings_filename)
 
     def checkSafe(self):
         temp = qg.QMessageBox.warning(self, "Modified Document",
@@ -445,7 +445,7 @@ class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
     @loggable
     def preferences(self):
         import dev_tools.propertyeditor
-        pe = dev_tools.propertyeditor.PropertyEditor(popupcad.settings)
+        pe = dev_tools.propertyeditor.PropertyEditor(popupcad.local_settings)
         pe.show()
 
     @loggable
