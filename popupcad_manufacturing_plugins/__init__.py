@@ -14,7 +14,7 @@ def initialize(program):
     scrap = []
     scrap.append({'text':'Sheet','kwargs':{'icon':Icon('outersheet'),'triggered':lambda:program.editor.newoperation(manufacturing.outersheet3.OuterSheet3)}})
     scrap.append({'text':'&Web','kwargs':{'icon':Icon('outerweb'),'triggered':lambda:program.editor.newoperation(manufacturing.autoweb4.AutoWeb4)}})
-    scrap.append({'text':'Scrap(Beta)','kwargs':{'icon':Icon('scrap'),'triggered':lambda:program.editor.newoperation(manufacturing.scrapoperation.ScrapOperation)}})
+    scrap.append({'text':'Scrap(Beta)','kwargs':{'icon':Icon('scrap'),'triggered':lambda:program.editor.newoperation(manufacturing.scrapoperation2.ScrapOperation2)}})
 
     supportactions= []
     supportactions.append({'text':'S&upport','kwargs':{'icon':Icon('autosupport'),'triggered':lambda:program.editor.newoperation(manufacturing.supportcandidate4.SupportCandidate4)}})
