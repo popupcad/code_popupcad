@@ -224,7 +224,9 @@ class DraggableTreeWidget(qg.QTreeWidget):
             if event.key()==qc.Qt.Key_Enter or event.key()==qc.Qt.Key_Return:
                 index = self.currentValidIndex(ii=-1)
                 userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
-                self.signal_edit.emit(userdata)   
+                item = self.itemFromIndex(index)
+                if isinstance(item,ParentItem):
+                    self.signal_edit.emit(userdata)   
             else:
                 super(DraggableTreeWidget,self).keyPressEvent(event)
 
@@ -240,7 +242,9 @@ class DraggableTreeWidget(qg.QTreeWidget):
         debugprint('itemDoubleClicked')
         if not (self.refreshing or self.master_refreshing):
             userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
-            self.signal_edit.emit(userdata)   
+            item = self.itemFromIndex(index)
+            if isinstance(item,ParentItem):
+                self.signal_edit.emit(userdata)   
         
     def disable(self):
         debugprint('disable')
@@ -318,9 +322,10 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         if isinstance(item,ParentItem):
 #            if index.isValid():
             menu = qg.QMenu()
+            menu.addAction(qg.QAction('edit...',menu,triggered = lambda:self.signal_edit.emit(item.userdata)))
+            menu.addAction(qg.QAction('rename...',menu,triggered = lambda:self.edit(index)))
             menu.addAction(qg.QAction('parents',menu,triggered = lambda:self.show_parents(item)))
             menu.addAction(qg.QAction('children',menu,triggered = lambda:self.show_children(item)))
-            menu.addAction(qg.QAction('rename',menu,triggered = lambda:self.edit(index)))
             menu.addAction(qg.QAction('edit description...',menu,triggered = item.userdata.edit_description))
             menu.addAction(qg.QAction('set main image',menu,triggered = lambda:self.set_main_image(item)))
             menu.exec_(self.mapToGlobal(point))

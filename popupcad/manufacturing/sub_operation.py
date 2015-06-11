@@ -95,7 +95,7 @@ class MainWidget(qg.QDialog):
             for item in jointop.output_list:
                 index1 = self.subdesign().operation_index(item.ref1[0])
                 output1 = item.ref1[1]
-                self.output_table.row_add([(index1,output1)],[(index2,output2)])
+                self.output_table.row_add([(index1,output1)])
             for item in jointop.sketch_list:
                 self.sketch_table.row_add(subdesign.sketches[item.ref1],design.sketches[item.ref2])
 
