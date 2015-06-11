@@ -25,6 +25,7 @@ else:
 supportfiledir = os.path.normpath(os.path.join(localpath,'supportfiles'))
 #licensedir = os.path.normpath(os.path.join(localpath,'../','licenses'))
 backgroundpath = os.path.normpath(os.path.join(supportfiledir,'background6.png'))
+iconfile = os.path.normpath(os.path.join(supportfiledir,'printapede.ico'))
 
 flip_y = True
 
