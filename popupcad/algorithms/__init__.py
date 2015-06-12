@@ -9,3 +9,4 @@ from . import body_detection
 from . import keepout
 from . import morphology
 from . import points
+from . import manufacturing_functions

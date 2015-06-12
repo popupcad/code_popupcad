@@ -51,7 +51,7 @@ class Dialog(qg.QDialog):
         return ref,ii,generic
         
 class Flatten(Operation2):
-    name = 'Flatten'
+    name = 'Freeze'
     def __init__(self,*args):
         super(Flatten,self).__init__()
         self.id = id(self)

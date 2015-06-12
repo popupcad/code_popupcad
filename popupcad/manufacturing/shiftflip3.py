@@ -4,10 +4,9 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-from popupcad.filetypes.laminate import Laminate
+import popupcad
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
-#import PySide.QtCore as qc
 import PySide.QtGui as qg
 
 class Dialog(qg.QDialog):
@@ -106,28 +105,4 @@ class ShiftFlip3(Operation2):
     def operate(self,design):
         operation_link1,outputref = self.operation_links['parent'][0]
         ls1 = design.op_from_ref(operation_link1).output[outputref].csg
-        lsout = Laminate(ls1.layerdef)
-        layers = ls1.layerdef.layers
-        step = 1
-
-        if self.flip:
-            step=-1
-
-        if self.rotate:
-            for layerout,layerin in zip(layers[self.shift:]+layers[:self.shift],layers[::step]):
-                lsout.replacelayergeoms(layerout,ls1.layer_sequence[layerin].geoms)
-
-        else:
-            if self.shift > 0:
-                outshift = self.shift
-                inshift = 0
-            elif self.shift <0:
-                outshift = 0
-                inshift = -self.shift
-            else:
-                outshift = 0
-                inshift = 0
-            for layerout,layerin in zip(layers[outshift:],layers[::step][inshift:]):
-                lsout.replacelayergeoms(layerout,ls1.layer_sequence[layerin].geoms)
-        return lsout
-        
+        return popupcad.algorithms.manufacturing_functions.shift_flip(ls1,self.shift,self.flip,self.rotate)

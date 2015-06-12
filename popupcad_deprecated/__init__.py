@@ -77,6 +77,7 @@ new_modules = []
 new_modules.append('popupcad.plugins')
 new_modules.append('popupcad.plugins.manufacturing')
 new_modules.append('popupcad.constraints')
+new_modules.append('popupcad.manufacturing.freeze')
 
 my_manufacturing_modules = []
 #my_manufacturing_modules.append('multivalueoperation2')
@@ -121,6 +122,7 @@ modules_remap.append(('popupcad.filetypes.genericshapes','popupcad.geometry.gene
 modules_remap.append(('popupcad.filetypes.genericshapebase','popupcad.geometry.genericshapebase'))
 modules_remap.append(('popupcad.filetypes.constraints','popupcad.constraints.constraints'))
 modules_remap.append(('popupcad.filetypes.constraints','dev_tools.constraints'))
+modules_remap.append(('popupcad.manufacturing.freeze','popupcad.manufacturing.flatten'))
 
 classes_remap = []
 classes_remap.append(('popupcad.geometry.vertex.ShapeVertex','popupcad.geometry.vertex.Vertex'))
@@ -129,6 +131,7 @@ classes_remap.append(('popupcad.filetypes.layerdef.LayerDef','popupcad.materials
 classes_remap.append(('popupcad.filetypes.layerdef.LayerDef','popupcad.materials.materials.LayerDef'))
 classes_remap.append(('popupcad.filetypes.layer.Layer','popupcad.filetypes.laminate.Layer'))
 classes_remap.append(('locateoperation2.LocateOperation2','popupcad.manufacturing.locateoperation2.LocateOperation'))
+classes_remap.append(('popupcad.manufacturing.freeze.Freeze','popupcad.manufacturing.flatten.Flatten'))
 
 
 #load_local('.','multivalueoperation2')

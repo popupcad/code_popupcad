@@ -8,7 +8,7 @@ from . import bufferop3
 from . import cleanup2
 from . import cleanup3
 from . import cross_section
-from . import flatten
+from . import freeze
 from . import joint_operation2
 from . import laminateoperation2
 from . import layerop2

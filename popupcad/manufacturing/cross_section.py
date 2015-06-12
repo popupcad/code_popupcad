@@ -9,8 +9,8 @@ import PySide.QtGui as qg
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.listmanager import SketchListManager
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
-from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.design import NoOperation
+import popupcad
 
 class Dialog(qg.QDialog):
     def __init__(self,design,operations,operation_index,sketch = None):
@@ -79,51 +79,11 @@ class CrossSection(Operation2):
         self.scale_value = scale_value
         
     def operate(self,design):
-        from popupcad.filetypes.genericshapes import GenericLine
-        import shapely.affinity as aff
-        import popupcad.algorithms.points as points
-        import popupcad
-        import shapely.geometry as sg
-        import numpy
-        
         parent_ref,parent_index  = self.operation_links['source'][0]
         parent = design.op_from_ref(parent_ref).output[parent_index].csg
-        
         sketch = design.sketches[self.sketch_links['cross_section'][0]]
-        
         layerdef = design.return_layer_definition()
-        laminate = Laminate(layerdef)
-        for item in sketch.operationgeometry:
-            if isinstance(item,GenericLine):
-                line = item
-                b = line.exteriorpoints()[0]
-                c = numpy.array(b)+numpy.array([1,0])
-                a = points.calctransformfrom2lines(line.exteriorpoints(),[b,c.tolist()],scale_x=1,scale_y=1)            
-                sketch_csg = sketch.output_csg()
-                
-                for layer in layerdef.layers:
-                    laminate.replacelayergeoms(layer,sketch_csg)
-                result = parent.intersection(laminate)
-                laminate2 = Laminate(layerdef)
-                for ii,layerid in enumerate(layerdef.layers):
-#                for ii,layer in enumerate(result):
-                    yshift = layerdef.zvalue[layerid] * self.scale_value
-                    layer = result.layer_sequence[layerid]
-                    thickness = layerid.thickness*popupcad.internal_argument_scaling*self.scale_value
-                    newgeoms = [item for item in layer.geoms]
-                    newgeoms = [aff.affine_transform(item,a) for item in newgeoms]
-#                    newgeoms = [item.buffer(bufferval) for item in newgeoms]
-                    newgeoms2 = []
-                    for geom in newgeoms:
-                        newgeom = sg.box(geom.coords[0][0],geom.coords[0][1],geom.coords[-1][0],geom.coords[-1][1]+thickness)
-                        newgeoms2.append(newgeom)
-                    newgeoms = newgeoms2
-                    newgeoms = [aff.translate(item,yoff = yshift) for item in newgeoms]
-                    newgeoms = popupcad.geometry.customshapely.multiinit(*newgeoms)
-                    laminate2[ii] = newgeoms
-                return laminate2
-
-        return laminate
+        return popupcad.algorithms.manufacturing_functions.cross_section(layerdef,sketch,parent,self.scale_value)
             
     @classmethod
     def buildnewdialog(cls,design,currentop):

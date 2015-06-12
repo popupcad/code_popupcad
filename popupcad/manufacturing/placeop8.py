@@ -11,13 +11,10 @@ import numpy
 import popupcad
 import popupcad.filetypes
 from popupcad.filetypes.operation2 import Operation2
-from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.design import NoOperation
 #from popupcad.filetypes.design import Design
-import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from dev_tools.enum import enum
-from popupcad.algorithms.points import calctransformfrom2lines    
 #from popupcad.filetypes.sketch import Sketch
 from  popupcad.widgets.listmanager import SketchListManager,DesignListManager
 
@@ -222,7 +219,6 @@ class PlaceOperation8(Operation2):
         self.scaley = scaley
 
     def operate(self,design):
-        import shapely.affinity as aff
         subdesign = design.subdesigns[self.design_links['subdesign'][0]]
 
         locateline = subdesign.findlocateline()
@@ -246,7 +242,7 @@ class PlaceOperation8(Operation2):
         elif self.transformtype_y==self.transformtypes.custom:
             scale_y = self.scaley
 
-        lsout = Laminate(design.return_layer_definition())
+
         step = 1
         if self.flip:
             step = -1
@@ -259,22 +255,11 @@ class PlaceOperation8(Operation2):
         else:
             outshift = 0
             inshift = 0
-            
-        for layerout,layerin in zip(design.return_layer_definition().layers[outshift:],subdesign.return_layer_definition().layers[::step][inshift:]):
-            newgeoms = []
-            for geom in sketch.operationgeometry:
-                if not geom.is_construction():
-                    for designgeom in designgeometry.layer_sequence[layerin].geoms:
-                        try:
-                            newgeoms.append(aff.affine_transform(designgeom,calctransformfrom2lines(locateline.exteriorpoints(),geom.exteriorpoints(),scale_x = scale_x,scale_y = scale_y)))
-                        except IndexError:
-                            pass
-            newgeoms = customshapely.unary_union_safe(newgeoms)
-            newgeoms = popupcad.geometry.customshapely.multiinit(newgeoms)
-            lsout.replacelayergeoms(layerout,newgeoms)
-            
-        return lsout
-        
+
+        layerdef = design.return_layer_definition()
+        layerdef_subdesign = subdesign.return_layer_definition()            
+        return popupcad.algorithms.manufacturing_functions.transform(layerdef,layerdef_subdesign,inshift,outshift,step,sketch,designgeometry,locateline,scale_x,scale_y)
+
     def fromQTransform(self,tin):
         tout = numpy.array([[tin.m11(),tin.m12(),tin.m13()],[tin.m21(),tin.m22(),tin.m23()],[tin.m31(),tin.m32(),tin.m33()]]).T
         return tout

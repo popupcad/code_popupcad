@@ -22,19 +22,7 @@ class Cleanup3(MultiValueOperation3):
         value = self.values[0]*popupcad.internal_argument_scaling
         res = int(self.values[1])       
         
-        ls2 = ls1.buffer(-value,resolution = res)        
-        ls3 = ls2.buffer(2*value,resolution = res)
-        ls4 = ls1.intersection(ls3)
-        
-        ls5 = ls1.buffer(value*10,resolution = res)
-        ls6 = ls5.difference(ls1)
-        ls7 = ls6.buffer(-value,resolution = res)        
-        ls8 = ls7.buffer(2*value,resolution = res)
-        ls9 = ls6.intersection(ls8)
-        ls9_1 = ls5.difference(ls9)
-        ls10 = ls4.symmetric_difference(ls9_1)
-        ls11 = ls1.symmetric_difference(ls10)
-        
+        ls11 = popupcad.algorithms.manufacturing_functions.cleanup3(ls1,value,res)
         return ls11
 
         

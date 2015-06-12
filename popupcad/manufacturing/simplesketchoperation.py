@@ -87,13 +87,10 @@ class SimpleSketchOp(Operation2,LayerBasedOperation):
         self.layer_links = layer_links
 
     def operate(self,design):
-        operationgeom = design.sketches[self.sketch_links['sketch'][0]].output_csg()
-#        operationgeom = popupcad.geometry.customshapely.multiinit(operationgeom)
-        layers = [design.return_layer_definition().getlayer(item) for item in self.layer_links]        
-        laminate = Laminate(design.return_layer_definition())
-        for layer in layers:
-            laminate.replacelayergeoms(layer,operationgeom)
-        return laminate
+        sketch = design.sketches[self.sketch_links['sketch'][0]]
+        layerdef = design.return_layer_definition()        
+        layers = [layerdef.getlayer(item) for item in self.layer_links]        
+        return popupcad.algorithms.manufacturing_functions.sketch_operation(sketch,layerdef,layers)
 
     @classmethod
     def buildnewdialog(cls,design,currentop):
