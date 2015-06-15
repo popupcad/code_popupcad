@@ -75,6 +75,16 @@ class DraggableTreeWidget(qg.QTreeWidget):
     signal_edit = qc.Signal(object)
     currentRowChanged = qc.Signal(int,int)
 
+    def parent_index(self,index):
+        if index.parent().isValid():
+            return index.parent()
+        else:
+            return index
+
+    def delete_index(self,index):
+        self.model().removeRow(index.row())
+        self.refreshmaster()
+
     def __init__(self,*args,**kwargs):
         debugprint('innit')
         
@@ -128,10 +138,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
     def currentRow(self,ii=-1):
         debugprint('currentRow')
         index = self.currentValidIndex(ii=ii)
-        if index.parent().isValid():
-            return index.parent().row()
-        else:
-            return index.row()
+        return self.parent_index(index).row()
         
     def linklist(self,masterlist):
         debugprint('linklist')
@@ -324,6 +331,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
             menu = qg.QMenu()
             menu.addAction(qg.QAction('edit...',menu,triggered = lambda:self.signal_edit.emit(item.userdata)))
             menu.addAction(qg.QAction('rename...',menu,triggered = lambda:self.edit(index)))
+            menu.addAction(qg.QAction('delete',menu,triggered = lambda:self.delete_indeces([index])))
             menu.addAction(qg.QAction('parents',menu,triggered = lambda:self.show_parents(item)))
             menu.addAction(qg.QAction('children',menu,triggered = lambda:self.show_children(item)))
             menu.addAction(qg.QAction('edit description...',menu,triggered = item.userdata.edit_description))
@@ -345,7 +353,7 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         m = qg.QMessageBox()
         m.setText(str(item.userdata.decendents()))
         m.exec_()
-
+        
     def set_tree_generator(self,generator):
         debugprint('set_tree_generator_p')
         self.tree_generator = generator
@@ -373,14 +381,16 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         super(DirectedDraggableTreeWidget,self).linklist(masterlist)
 
     def deleteCurrent(self):
-        debugprint('deletecurrent_p')
+        self.delete_indeces(self.selectedIndexes())
+    
+    def delete_indeces(self,indeces):
         if self.enabled:
             rows = []
-            for ii in self.selectedIndexes():
+            for ii in indeces:
                 if not ii.parent().isValid():
                     rows.append(ii.row())
-                    rows.sort()
-                    rows.reverse()
+            rows.sort()
+            rows.reverse()
             
             self.tree_generator()
             for ii in rows:    
