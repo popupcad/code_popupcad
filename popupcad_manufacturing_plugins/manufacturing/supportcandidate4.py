@@ -29,16 +29,10 @@ class SupportCandidate4(MultiValueOperation3):
         else:
             raise(Exception('keepout type'))
             
-        support=algorithms.web.autosupport(ls1,keepout,design.return_layer_definition(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling)
-        k2 = keepout.buffer(1e-5*popupcad.internal_argument_scaling)
-        k3 = k2.difference(keepout)
-#        return support
+        support,k3=algorithms.web.autosupport(ls1,keepout,design.return_layer_definition(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling,1e-5*popupcad.internal_argument_scaling)
         a = OperationOutput(support,'support',self)
         b = OperationOutput(keepout,'cut line',self)
         c = OperationOutput(k3,'cut area',self)
-#        d = OperationOutput(up_support ,'up_support',self)
-#        e = OperationOutput(down_support ,'down_support',self)
-#        self.output = [a,a,b,c,d,e]
         self.output = [a,a,b,c]                
     
 

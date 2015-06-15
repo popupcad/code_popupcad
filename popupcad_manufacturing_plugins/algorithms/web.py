@@ -54,7 +54,7 @@ def generate_web(robot,keepout,layerdef,value_outer,value_inner):
     outer_web, inner_elements = find_outer(buffered_web,minpoint)
     return robot_support, outer_web, inner_elements,buffered_keepout
 
-def autosupport(robot,keepout,layerdef,value_inner,value_gap):
+def autosupport(robot,keepout,layerdef,value_inner,value_gap,cut_out):
     import popupcad
     cleanup = 1e-3*popupcad.internal_argument_scaling
     buffered_keepout = keepout.buffer(value_inner)
@@ -64,6 +64,8 @@ def autosupport(robot,keepout,layerdef,value_inner,value_gap):
     buffered_invalidsupport = buffered_invalidsupport.buffer(value_gap+cleanup)
     valid_support = allsupport.difference(buffered_invalidsupport)
     buffered_valid_support = valid_support.buffer(cleanup)
-    return buffered_valid_support
+    k2 = keepout.buffer(cut_out)
+    k3 = k2.difference(keepout)
+    return buffered_valid_support,k3
 
 
