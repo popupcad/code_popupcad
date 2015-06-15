@@ -398,7 +398,6 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
     def joinedges(self):
         from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
-        from popupcad.filetypes.generic_shape_base import GenericShapeBase
         
         selecteditems = self.scene.selectedItems()
         genericvertices = []
@@ -409,9 +408,7 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
                 genericvertices.extend(item.get_generic().vertices())
         vertices2 = [vertex.getpos() for vertex in genericvertices]
         vertices2 = numpy.array(vertices2)        
-        polypoints = popupcad.algorithms.autobridge.joinedges(vertices2)
-        polypoints = (numpy.array(polypoints)*popupcad.view_scaling).tolist()
-        poly = GenericShapeBase.gengenericpoly(polypoints,[])
+        poly = popupcad.algorithms.autobridge.joinedges(vertices2)
         self.scene.addItem(poly.outputinteractive())
 
     def autobridge(self):
