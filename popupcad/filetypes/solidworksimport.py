@@ -8,7 +8,7 @@ Please see LICENSE.txt for full license.
 
 import numpy
 from popupcad.filetypes.genericshapes import GenericPoly
-from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid
+from popupcad.filetypes.genericshapebase import NotSimple,ShapeInvalid,GenericShapeBase
 import popupcad
 import PySide.QtGui as qg
 from popupcad.filetypes.popupcad_file import popupCADFile
@@ -87,7 +87,7 @@ class Assembly(popupCADFile):
                             c = c.symmetric_difference(item)
                         d = cs.multiinit(c)
                         e = cs.multiinit(*[item.buffer(bufferval*popupcad.internal_argument_scaling,resolution = popupcad.default_buffer_resolution) for item in d])
-                        f = [GenericPoly.gen_from_point_lists(item) for item in e]
+                        f = [GenericShapeBase.genfromshapely(item) for item in e]
                         self.geoms.extend(f)
                     except NotSimple:
                         pass

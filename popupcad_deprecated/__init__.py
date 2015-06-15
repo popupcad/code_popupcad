@@ -77,7 +77,7 @@ new_modules = []
 new_modules.append('popupcad.plugins')
 new_modules.append('popupcad.plugins.manufacturing')
 new_modules.append('popupcad.constraints')
-new_modules.append('popupcad.manufacturing.freeze')
+#new_modules.append('popupcad.manufacturing.freeze')
 
 my_manufacturing_modules = []
 #my_manufacturing_modules.append('multivalueoperation2')

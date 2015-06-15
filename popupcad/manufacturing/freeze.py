@@ -8,11 +8,8 @@ Please see LICENSE.txt for full license.
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2
 
-import PySide.QtCore as qc
 import PySide.QtGui as qg
-import dev_tools.enum as enum
-from popupcad.widgets.dragndroptree import DraggableTreeWidget,ParentItem,ChildItem
-from popupcad.filetypes.laminate import Laminate
+from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.filetypes.design import NoOperation
 
 class Dialog(qg.QDialog):
@@ -50,15 +47,15 @@ class Dialog(qg.QDialog):
         generic = self.design.op_from_ref(ref).output[ii].generic_laminate()
         return ref,ii,generic
         
-class Flatten(Operation2):
+class Freeze(Operation2):
     name = 'Freeze'
     def __init__(self,*args):
-        super(Flatten,self).__init__()
+        super(Freeze,self).__init__()
         self.id = id(self)
         self.editdata(*args)
 
     def editdata(self,operation_link1,outputref,generic):
-        super(Flatten,self).editdata()
+        super(Freeze,self).editdata()
         self.operation_link1 = operation_link1
         self.generic = generic
         self.outputref = outputref
