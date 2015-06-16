@@ -312,7 +312,7 @@ class Design(popupCADFile):
             return self._main_operation	
         except AttributeError:
             try:
-                self._main_operation = self.operations[0]
+                self._main_operation = self.operations[0].id,0
             except IndexError:
                 self._main_operation = None
                 

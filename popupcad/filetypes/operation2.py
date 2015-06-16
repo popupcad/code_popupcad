@@ -59,8 +59,8 @@ class Operation2(Node,UserData):
                 list1[list1.index(refold)]=refnew
         self.clear_output()
 
-    def copy(self,*args,**kwargs):
-        return self
+#    def copy(self,*args,**kwargs):
+#        return self
 
     def upgrade(self,*args,**kwargs):
         return self
