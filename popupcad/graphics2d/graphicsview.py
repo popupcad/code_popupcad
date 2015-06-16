@@ -11,9 +11,9 @@ import popupcad
 class ZoomHandling(object):
     def __init__(self,scene):
         self.setScene(scene)
-        self.resetTransform()
         self.zoomToFit()
-
+        self.setTransformationAnchor(self.NoAnchor)
+        
     def updatescaleables(self):
         for item in self.scene().items():
             try:
@@ -26,19 +26,21 @@ class ZoomHandling(object):
         if popupcad.flip_y:
             self.scale(1,-1)
         self.updatescaleables()                
+
     def fitInView(self,*args,**kwargs): 
         qg.QGraphicsView.fitInView(self,*args,**kwargs)
         self.updatescaleables()                
+
     def scale(self,*args,**kwargs):
         qg.QGraphicsView.scale(self,*args,**kwargs)
         self.updatescaleables()  
-    def zoomToFit(self,buffer = .1):
-        scene = self.scene()
-        self.resetTransform()
-        scene_rect = scene.itemsBoundingRect()
-        if scene_rect.width()==0 and scene_rect.height()==0:
-            v = popupcad.internal_argument_scaling
-            scene_rect = qc.QRect(-50*v,-50*v,100*v,100*v)
+
+    def create_fitted_scene_rect(self,buffer = .1):
+        scene_rect = self.scene().itemsBoundingRect()
+        if scene_rect.isEmpty():
+            width, height = popupcad.view_initial_size
+            s1 = popupcad.internal_argument_scaling
+            scene_rect = qc.QRect(-width/2*s1,-height/2*s1,width*s1,height*s1)
         else:
             w = scene_rect.width()
             h = scene_rect.height()
@@ -47,10 +49,14 @@ class ZoomHandling(object):
             scene_rect.setRight(scene_rect.right() + w*buffer)
             scene_rect.setTop(scene_rect.top() - h*buffer)
             scene_rect.setBottom(scene_rect.bottom() + h*buffer)
+        return scene_rect
 
-        scene.setSceneRect(scene_rect)    
-        self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)
+    def fit_scene_rect(self,buffer = .1):
+        scene_rect = self.create_fitted_scene_rect(buffer)
+        self.scene().setSceneRect(scene_rect)    
+        return scene_rect
 
+    def bound_zoom(self):
         currentzoom = self.zoom()
         if currentzoom>popupcad.zoom_max:
             dz = popupcad.zoom_max/currentzoom
@@ -58,10 +64,22 @@ class ZoomHandling(object):
         elif currentzoom<popupcad.zoom_min:
             dz = popupcad.zoom_min/currentzoom
             self.scale(dz,dz)
+        
+    def zoomToFit(self,buffer = .1):
+        self.resetTransform()
+        scene_rect = self.scene().itemsBoundingRect()
+        scene_rect = self.fit_scene_rect(buffer)
+        self.fit_scene_rect(buffer)        
+        self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)
+        self.bound_zoom()
+        
     def zoom(self):
         return self.transform().m11()
+        
     def wheelEvent(self,event):
-        qg.QGraphicsView.wheelEvent(self,event)
+        p1 = event.pos()
+        p2 = self.mapToScene(p1)
+        
         if event.delta()<0:
             zoom = 1./popupcad.zoom_scale_factor
         else:
@@ -75,6 +93,13 @@ class ZoomHandling(object):
             zoom=popupcad.zoom_min/self.zoom()
             
         self.scale(zoom,zoom)
+        p3 = self.mapToScene(p1)
+        
+        dx = (p3-p2).toTuple()
+        self.translate(*dx)
+#        p4 = self.mapToScene(p1)
+#        print(p1.toTuple(),p2.toTuple(),p3.toTuple(),p4.toTuple(),dx)
+        event.accept()
         
             
 class ImagingSupport(object):
@@ -152,3 +177,13 @@ class SimpleGraphicsView(ZoomHandling,ImagingSupport,qg.QGraphicsView):
         qg.QGraphicsView.__init__(self)
         ZoomHandling.__init__(self,scene)
         ImagingSupport.__init__(self,scene)
+        
+if __name__=='__main__':
+    import sys
+    app = qg.QApplication(sys.argv)
+    scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
+    widget = GraphicsView(scene)
+    item = qg.QGraphicsRectItem(0,0,1000,1000)
+    scene.addItem(item)
+    widget.show()
+    sys.exit(app.exec_())

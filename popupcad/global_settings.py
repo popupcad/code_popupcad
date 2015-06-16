@@ -34,6 +34,7 @@ coreldraw_mm_conversion = 1./264.581
 zoom_max = 1.
 zoom_min = 1e-6
 zoom_scale_factor = 1.2
+view_initial_size = 100,100
 
 version = basic_functions.return_formatted_time(specificity = 'day',small_separator = '.',big_separator='.')
 
