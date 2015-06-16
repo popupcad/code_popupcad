@@ -97,8 +97,6 @@ class ZoomHandling(object):
         
         dx = (p3-p2).toTuple()
         self.translate(*dx)
-#        p4 = self.mapToScene(p1)
-#        print(p1.toTuple(),p2.toTuple(),p3.toTuple(),p4.toTuple(),dx)
         event.accept()
         
             
