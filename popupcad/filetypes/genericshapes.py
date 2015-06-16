@@ -27,7 +27,7 @@ class GenericLine(GenericShapeBase):
         path.addPolygon(self.generateQPolygon(exterior))
         return path    
     def outputshapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.view_scaling)
+        exterior_p = self.exteriorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj
     def segments(self):
@@ -45,7 +45,7 @@ class GenericPolyline(GenericShapeBase):
         path.addPolygon(self.generateQPolygon(exterior))
         return path    
     def outputshapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.view_scaling)
+        exterior_p = self.exteriorpoints()
         obj = customshapely.ShapelyLineString(exterior_p)
         return obj        
     def segments(self):
@@ -90,8 +90,8 @@ class GenericPoly(GenericShapeBase):
             tris = [[(tri.a.x,tri.a.y),(tri.b.x,tri.b.y),(tri.c.x,tri.c.y)] for tri in triangles]
         return tris
     def outputshapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.view_scaling)
-        interiors_p = self.interiorpoints(scaling = popupcad.view_scaling)
+        exterior_p = self.exteriorpoints()
+        interiors_p = self.interiorpoints()
         obj = customshapely.ShapelyPolygon(exterior_p,interiors_p)
         return obj
     def addvertex_exterior(self,vertex,special = False):
@@ -171,7 +171,7 @@ class GenericCircle(GenericShapeBase):
         path.addEllipse(rect)        
         return path
     def outputshapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.view_scaling)
+        exterior_p = self.exteriorpoints()
         exterior = numpy.array(exterior_p)
         center = exterior[0]
         v = exterior[1]-exterior[0]
@@ -196,7 +196,7 @@ class GenericTwoPointRect(GenericShapeBase):
         path.addRect(rect)
         return path        
     def outputshapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.view_scaling)
+        exterior_p = self.exteriorpoints()
         corner1 = exterior_p[0]
         corner2 = (exterior_p[0][0],exterior_p[1][1])
         corner3 = exterior_p[1]

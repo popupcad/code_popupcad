@@ -23,6 +23,7 @@ class GenericText(object):
         self.fontsize = fontsize
         self.exteriors = []
         self.id  = id(self)
+
     def copy(self,identical=True):
         new = type(self)(self.text,self.pos,self.font, self.fontsize)
         if identical:
@@ -67,7 +68,8 @@ class GenericText(object):
 
         if exterior!=None:
             exteriors.append(exterior)
-        exteriors = [(numpy.array(exterior)+self.pos.getpos()).tolist() for exterior in exteriors]
+            
+        exteriors = [(numpy.array(item)+self.pos.getpos()).tolist() for item in exteriors]
         self.exteriors_p = exteriors
         self.exteriors = self.buildvertices(exteriors)
         self.path = p2
@@ -83,7 +85,6 @@ class GenericText(object):
         
     def outputshapely(self):
         import popupcad.geometry.customshapely as customshapely
-        import shapely.ops as so
         self.genpath()
         objs = [customshapely.ShapelyPolygon(exterior,[]) for exterior in self.exteriors_p]
         if len(objs)>1:
