@@ -127,8 +127,8 @@ class GenericShapeBase(popupCADFile):
         return segmentpoints
 
     def painterpath(self):
-        exterior = self.exteriorpoints()
-        interiors = self.interiorpoints()
+        exterior = self.exteriorpoints(scaling = popupcad.view_scaling)
+        interiors = self.interiorpoints(scaling = popupcad.view_scaling)
         return self.gen_painterpath(exterior,interiors)
             
     def gen_painterpath(self,exterior,interiors):
@@ -243,6 +243,9 @@ class GenericShapeBase(popupCADFile):
         self._interiorhandles = interiors
         self._handles = handles
 
+    def len_exterior(self):
+        return len(self.get_exterior())
+        
     def get_handles(self):
         try:
             return self._handles

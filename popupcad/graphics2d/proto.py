@@ -46,9 +46,6 @@ class Proto(Common):
             ep.append(self.temphandle.generic.getpos(scaling = popupcad.view_scaling))
         return ep
 
-    def toInteractive(self):
-        return self.generic
-
     def deltemphandle(self):
         if not not self.temphandle:
             self.temphandle.setParentItem(None)
@@ -61,8 +58,7 @@ class Proto(Common):
     def finish_definition(self):
         scene = self.scene()
         self.deltemphandle()
-        generic = self.toInteractive()
-        scene.addItem(generic.outputinteractive())
+        scene.addItem(self.generic.outputinteractive())
         self.harddelete()
         scene.childfinished()
 
@@ -74,27 +70,32 @@ class Proto(Common):
         pass
 
     def mousemove(self,point):
+        import numpy
+        point = tuple(numpy.array(point.toTuple())/popupcad.view_scaling)
+
         if not not self.temphandle:
-            self.temphandle.setPos(point)
+            self.temphandle.generic.setpos(point)
+            self.temphandle.updateshape()
         self.updateshape()
 
 class ProtoMultiPoint(Proto):
     def addhandle(self,handle):
-        if not self.generic.get_exterior():
+        if self.generic.len_exterior()==0:
             self.generic.addvertex_exterior(handle.get_generic())
             self.temphandle = None
         else:
-            if handle.pos().toTuple() != self.generic.get_exterior()[-1].getpos():
+            if handle.generic.getpos(scaling = popupcad.view_scaling) != self.generic.get_exterior()[-1].getpos(scaling = popupcad.view_scaling):
                 if self.checkdist(handle.generic.getpos(scaling = popupcad.view_scaling),self.generic.get_exterior()[-1].getpos(scaling = popupcad.view_scaling)):
                     self.generic.addvertex_exterior(handle.get_generic())
                     self.temphandle = None
         
     def mousepress(self,point):
         import numpy
+        point = tuple(numpy.array(point.toTuple())/popupcad.view_scaling)
+
         if not self.temphandle:
             a = ShapeVertex()
-            b = tuple(numpy.array(point.toTuple())*popupcad.view_scaling)
-            a.setpos(b)
+            a.setpos(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
@@ -103,28 +104,27 @@ class ProtoMultiPoint(Proto):
             self.addhandle(self.temphandle)
         if not self.temphandle:
             a = ShapeVertex()
-            b = tuple(numpy.array(point.toTuple())*popupcad.view_scaling)
-            a.setpos(b)
+            a.setpos(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
 
         self.updateshape()
+
     def mousedoubleclick(self,point):
-        if len(self.generic.get_exterior())>2:
+        if self.generic.len_exterior()>2:
             self.finish_definition()
             self.updateshape()
         
-
 class ProtoTwoPoint(Proto):
     def addhandle(self,handle):
-        if len(self.generic.get_exterior())==0:
+        if self.generic.len_exterior()==0:
             self.generic.addvertex_exterior(handle.get_generic())
             self.temphandle = None
             return True
-        elif len(self.generic.get_exterior())==1:
+        elif self.generic.len_exterior()==1:
             if handle.pos().toTuple() != self.generic.get_exterior()[-1].getpos():
-                if self.checkdist(handle.pos().toTuple(),self.generic.get_exterior()[-1].getpos()):
+                if self.checkdist(handle.generic.getpos(scaling = popupcad.view_scaling),self.generic.get_exterior()[-1].getpos(scaling = popupcad.view_scaling)):
                     self.generic.addvertex_exterior(handle.get_generic())
                     self.temphandle = None
                     return True
@@ -135,25 +135,26 @@ class ProtoTwoPoint(Proto):
             
     def mousepress(self,point):
         import numpy
+        point = tuple(numpy.array(point.toTuple())/popupcad.view_scaling)
+
         if not self.temphandle:
             a = ShapeVertex()
-            b = tuple(numpy.array(point.toTuple())*popupcad.view_scaling)
-            a.setpos(b)
+            a.setpos(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
             
-        if len(self.generic.get_exterior())==0:
+        if self.generic.len_exterior()==0:
             self.addhandle(self.temphandle)
             a = ShapeVertex()
-            a.setpos(point.toTuple())
+            a.setpos(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
             self.updateshape()
             return
             
-        elif len(self.generic.get_exterior())==1:
+        elif self.generic.len_exterior()==1:
             if self.addhandle(self.temphandle):
                 self.finish_definition()
                 self.updateshape()
@@ -168,7 +169,6 @@ class ProtoTwoPoint(Proto):
             return
         self.updateshape()
         
-
 class ProtoPoly(ProtoMultiPoint,CommonShape,qg.QGraphicsPathItem):
     shape_class = GenericPoly
 

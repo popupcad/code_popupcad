@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
+import popupcad
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.graphics2d.graphicsitems import Common
@@ -91,13 +92,6 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
         self.scale = scale
         self.setPen(self.querypen())
 
-#        print('customscale')
-#        self.updateshape()
-#    def boundingRect(self):
-#        rect = super(Interactive,self).boundingRect()
-#        a = self.boundingrectbuffer * self.scale
-#        rect.adjust(-a,-a,a,a)
-#        return rect
 
     def allchildren(self):
         return list(set(self.childItems()+self.handles()+self.selectableedges))
@@ -265,8 +259,8 @@ class InteractiveLine(Interactive):
         return self.shape().boundingRect()
 
     def updateshape(self):
-        from math import atan2,pi,sin,cos
-        (x1,y1),(x2,y2) = self.generic.exteriorpoints()
+        from math import atan2,pi
+        (x1,y1),(x2,y2) = self.generic.exteriorpoints(scaling = popupcad.view_scaling)
         dx = x2-x1
         dy = y2-y1
         l = ((dx)**2+(dy)**2)**.5
@@ -275,15 +269,11 @@ class InteractiveLine(Interactive):
         self.resetTransform()
         path = qg.QPainterPath()
         poly = qg.QPolygonF([qc.QPointF(0,0),qc.QPointF(l,0)])
-#        qg.QGraphicsLineItem.setLine(self,0,0,l,0)
         path.addPolygon(poly)
         self.setPath(path)
         self.rotate(d)
-#        r = (x1**2+y1**2)**.5
         xy = self.mapFromScene(x1,y1)
         self.translate(xy.x(),xy.y())
         self.update()
         self.updatechildhandles(self.handles()+self.selectableedges)
 
-#    def setBrush(self,*args,**kwargs):
-#        pass
