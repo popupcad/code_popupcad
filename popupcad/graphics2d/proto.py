@@ -26,7 +26,7 @@ class Proto(Common):
     def __init__(self,*args,**kwargs):
         super(Proto,self).__init__(*args,**kwargs)
         self.setZValue(self.z_value)
-        self.generic = self.shape_class([],[],False,False)
+        self.generic = self.shape_class([],[],False)
         self.temphandle= None        
         self.setAcceptHoverEvents(True)
         self.setFlag(self.ItemIsMovable,True)

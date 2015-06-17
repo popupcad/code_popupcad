@@ -39,8 +39,8 @@ class GenericText(object):
         text = self.text
         p = qg.QPainterPath()
         
-        font = qg.QFont(self.font, pointSize=self.fontsize*popupcad.internal_argument_scaling)
-        p.addText(qc.QPointF(0,1*self.fontsize*popupcad.internal_argument_scaling),font,text)
+        font = qg.QFont(self.font, pointSize=self.fontsize*popupcad.internal_argument_scaling*popupcad.view_scaling)
+        p.addText(qc.QPointF(0,1*self.fontsize*popupcad.internal_argument_scaling*popupcad.view_scaling),font,text)
 
         p2 = qg.QPainterPath()
         exteriors = []     
@@ -174,7 +174,7 @@ class TextItem(qg.QGraphicsTextItem,Common):
     def focusOutEvent(self, event):
         self.parent.finish_edit()
     def updatefont(self):
-        font = qg.QFont(self.generic.font, pointSize=self.generic.fontsize*popupcad.internal_argument_scaling)
+        font = qg.QFont(self.generic.font, pointSize=self.generic.fontsize*popupcad.internal_argument_scaling*popupcad.view_scaling)
         font.setStyleStrategy(font.ForceOutline)
         self.setFont(font)
         

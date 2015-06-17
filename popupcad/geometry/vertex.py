@@ -8,12 +8,13 @@ Please see LICENSE.txt for full license.
 import numpy
     
 from popupcad.filetypes.constraints import SymbolicVertex
+import popupcad
 
 class BaseVertex(object):
     editable = ['pos']
     deletable = []
     
-    roundvalue = 5
+    roundvalue = popupcad.geometry_round_value
     def __init__(self,position = None):
 
         self.id = id(self)

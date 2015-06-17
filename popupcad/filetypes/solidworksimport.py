@@ -78,7 +78,7 @@ class Assembly(popupCADFile):
 
                         ints_c = [self.transform_loop(interior,R1,b1,R2,b2,scalefactor*popupcad.internal_argument_scaling) for interior in loops]
                         
-                        a = [GenericPoly.gen_from_point_lists(loop,[],test_shapely = False) for loop in ints_c]
+                        a = [GenericPoly.gen_from_point_lists(loop,[]) for loop in ints_c]
                         b = [item.outputshapely() for item in a]
                         if cleanup>=0:
                             b = [item.simplify(cleanup*popupcad.internal_argument_scaling) for item in b]

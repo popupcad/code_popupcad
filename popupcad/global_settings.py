@@ -28,13 +28,17 @@ user_home_dir = os.path.expanduser('~')
 internal_argument_scaling = 1e0
 view_scaling = 1e3
 
+geometry_round_value = 8
+distinguishable_number_difference = 10**(-geometry_round_value)
+undistinguishable_number_difference = 10**(-geometry_round_value-1)
+
 inkscape_mm_conversion = 1./282.22293
 coreldraw_mm_conversion = 1./264.581 
 
 zoom_max = 1.
 zoom_min = 1e-6
 zoom_scale_factor = 1.2
-view_initial_size = 100,100
+view_initial_size = 10,10
 
 version = basic_functions.return_formatted_time(specificity = 'day',small_separator = '.',big_separator='.')
 

@@ -415,17 +415,14 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
         interactives = [item for item in self.scene.items() if isinstance(item,Interactive)]
         
         handles = []
-        [handles.extend(item.handles()) for item in interactives]
+        [handles.extend(item.generic.vertices()) for item in interactives]
         try:
-            handles.extend(self.controlpoints)        
+            handles.extend([item.get_generic() for item in self.controlpoints])        
         except AttributeError:
             pass
-        handles.extend([item for item in self.scene.items() if isinstance(item,DrawingPoint)])
-        vertices = []
-        for handle in handles:
-            scenepos = handle.scenePos()
-            vertices.append((scenepos.x(),scenepos.y()))
-        polys = popupcad.algorithms.autobridge.autobridge(vertices)
+        handles.extend([item.get_generic() for item in self.scene.items() if isinstance(item,DrawingPoint)])
+        handles = [handle.getpos() for handle in handles]
+        polys = popupcad.algorithms.autobridge.autobridge(handles)
         [self.scene.addItem(poly.outputinteractive()) for poly in polys]     
         
     def getjoints(self):

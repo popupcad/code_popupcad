@@ -41,13 +41,14 @@ class GenericShapeBase(popupCADFile):
         self.exterior, self.interiors = self.condition_points(self.exterior, self.interiors )
 
         self.construction = construction
-        if test_shapely:
-            shapely = self.outputshapely()
-            if not shapely.is_simple:
-                raise(NotSimple)
-            if not shapely.is_valid:
-                raise(ShapeInvalid)
 
+    def is_valid(self):
+        shapely = self.outputshapely()
+        if not shapely.is_simple:
+            raise(NotSimple)
+        if not shapely.is_valid:
+            raise(ShapeInvalid)
+        
     @classmethod
     def lastdir(cls):
         return popupcad.lastshapedir

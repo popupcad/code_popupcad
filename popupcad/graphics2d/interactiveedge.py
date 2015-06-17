@@ -189,13 +189,15 @@ class InteractiveEdge(qg.QGraphicsLineItem,EdgeBase):
             super(InteractiveEdge,self).mousePressEvent(event)
 
     def mouseMoveEvent(self,event):
+        import numpy
         if self.connectedinteractive.mode!=None:
             if self.connectedinteractive.mode==self.connectedinteractive.modes.mode_edit:
                 if self.changed_trigger:
                     self.changed_trigger = False
                     self.scene().savesnapshot.emit()
                 dp = event.scenePos() - event.lastScenePos()
-                self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
+                dp = tuple(numpy.array(dp.toTuple())/popupcad.view_scaling)
+                self.generic.constrained_shift(dp,self.constraintsystem())
 #                self.updateshape()
 #                try:
 #                    self.connectedinteractive.updateshape()

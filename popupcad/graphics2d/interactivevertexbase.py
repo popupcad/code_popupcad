@@ -109,11 +109,13 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
 
 
     def mouseMoveEvent(self,event):
+        import numpy
         if self.changed_trigger:
             self.changed_trigger = False
             self.scene().savesnapshot.emit()
         dp = event.scenePos() - event.lastScenePos()
-        self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
+        dp = tuple(numpy.array(dp.toTuple())/popupcad.view_scaling)
+        self.generic.constrained_shift(dp,self.constraintsystem())
         self.scene().updateshape()
         
     def mouseReleaseEvent(self,event):
@@ -124,7 +126,9 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem,Common):
         
 
     def setPos(self,pos):
-        self.generic.setpos(pos.toTuple())
+        import numpy
+        pos = tuple(numpy.array(pos.toTuple())/popupcad.view_scaling)
+        self.generic.setpos(pos)
         self.updateshape()
 
     def get_generic(self):

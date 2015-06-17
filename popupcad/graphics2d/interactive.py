@@ -169,11 +169,13 @@ class Interactive(Common,CommonShape,qg.QGraphicsPathItem):
             self.hidechildren(self.handles())
 
     def mouseMoveEvent(self,event):
+        import numpy
         if self.changed_trigger:
             self.changed_trigger = False
             self.scene().savesnapshot.emit()
         dp = event.scenePos() - event.lastScenePos()
-        self.generic.constrained_shift(dp.toTuple(),self.constraintsystem())
+        dp = tuple(numpy.array(dp.toTuple())/popupcad.view_scaling)
+        self.generic.constrained_shift(dp,self.constraintsystem())
         self.scene().updateshape()
         super(Interactive,self).mouseMoveEvent(event)                
 
