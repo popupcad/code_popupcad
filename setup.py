@@ -10,9 +10,23 @@ import popupcad
 
 packages = []
 packages.append('popupcad')
+packages.append('popupcad.algorithms')
+packages.append('popupcad.filetypes')
+packages.append('popupcad.geometry')
+packages.append('popupcad.graphics2d')
+packages.append('popupcad.graphics3d')
+packages.append('popupcad.guis')
+packages.append('popupcad.manufacturing')
+packages.append('popupcad.materials')
+packages.append('popupcad.widgets')
+
 packages.append('dev_tools')
 packages.append('popupcad_manufacturing_plugins')
+packages.append('popupcad_manufacturing_plugins.algorithms')
+packages.append('popupcad_manufacturing_plugins.manufacturing')
+
 packages.append('popupcad_deprecated')
+
 packages.append('pypoly2tri')
 
 package_data = {}
