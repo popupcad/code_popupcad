@@ -26,7 +26,7 @@ flip_y = True
 user_home_dir = os.path.expanduser('~')
 
 internal_argument_scaling = 1e3
-view_scaling = 1e3
+view_scaling = 1e0
 
 inkscape_mm_conversion = 1./282.22293
 coreldraw_mm_conversion = 1./264.581 
