@@ -65,8 +65,8 @@ class MainWidget(qg.QDialog):
         button_ok = qg.QPushButton('Ok')
         button_cancel = qg.QPushButton('Cancel')
 
-        button_ok.pressed.connect(self.accept)        
-        button_cancel.pressed.connect(self.reject)        
+        button_ok.clicked.connect(self.accept)        
+        button_cancel.clicked.connect(self.reject)        
 
         sublayout2 = qg.QHBoxLayout()
         sublayout2.addWidget(button_ok)

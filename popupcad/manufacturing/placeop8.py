@@ -94,9 +94,9 @@ class Dialog(qg.QDialog):
 #        layout3.addWidget(button3)
 
         button1 = qg.QPushButton('Ok')
-        button1.pressed.connect(self.accept)
+        button1.clicked.connect(self.accept)
         button2 = qg.QPushButton('Cancel')
-        button2.pressed.connect(self.reject)
+        button2.clicked.connect(self.reject)
 
         layout2 = qg.QHBoxLayout()
         layout2.addWidget(button1)

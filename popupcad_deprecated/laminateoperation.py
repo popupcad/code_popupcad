@@ -60,8 +60,8 @@ class Dialog(qg.QDialog):
 
         self.setLayout(layout)    
 
-        button1.pressed.connect(self.accept)
-        button2.pressed.connect(self.reject)
+        button1.clicked.connect(self.accept)
+        button2.clicked.connect(self.reject)
         
         self.le0.unary_selected.connect(lambda:self.pairlistwidget.setEnabled(False))
         self.le0.binary_selected.connect(lambda:self.pairlistwidget.setEnabled(True))

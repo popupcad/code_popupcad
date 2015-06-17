@@ -81,8 +81,8 @@ class Dialog(qg.QDialog):
 
         self.setLayout(layout)    
 
-        button1.pressed.connect(self.accept)
-        button2.pressed.connect(self.reject)
+        button1.clicked.connect(self.accept)
+        button2.clicked.connect(self.reject)
 
     def acceptdata(self):
         ii,kk = self.device_index.currentIndeces2()[0]

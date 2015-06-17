@@ -80,8 +80,8 @@ class Dialog(qg.QDialog):
 
         self.setLayout(layout)    
 
-        button1.pressed.connect(self.accept)
-        button2.pressed.connect(self.reject)
+        button1.clicked.connect(self.accept)
+        button2.clicked.connect(self.reject)
 
     def sizeHint(self):
         return qc.QSize(400,800)

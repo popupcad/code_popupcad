@@ -60,10 +60,10 @@ class MainWidget(qg.QDialog):
         button_up = qg.QPushButton('up')
         button_down = qg.QPushButton('down')
 
-        button_add.pressed.connect(self.table.row_add_empty)
-        button_remove.pressed.connect(self.table.row_remove)
-        button_up.pressed.connect(self.table.row_shift_up)
-        button_down.pressed.connect(self.table.row_shift_down)
+        button_add.clicked.connect(self.table.row_add_empty)
+        button_remove.clicked.connect(self.table.row_remove)
+        button_up.clicked.connect(self.table.row_shift_up)
+        button_down.clicked.connect(self.table.row_shift_down)
 
         sublayout1 = qg.QHBoxLayout()
         sublayout1.addWidget(button_add)
@@ -75,8 +75,8 @@ class MainWidget(qg.QDialog):
         button_ok = qg.QPushButton('Ok')
         button_cancel = qg.QPushButton('Cancel')
 
-        button_ok.pressed.connect(self.accept)        
-        button_cancel.pressed.connect(self.reject)        
+        button_ok.clicked.connect(self.accept)        
+        button_cancel.clicked.connect(self.reject)        
 
         sublayout2 = qg.QHBoxLayout()
         sublayout2.addWidget(button_ok)

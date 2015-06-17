@@ -308,10 +308,10 @@ class TableControl(qg.QWidget):
         button_up = qg.QPushButton('up')
         button_down = qg.QPushButton('down')
 
-        button_add.pressed.connect(table.row_add_empty)
-        button_remove.pressed.connect(table.row_remove)
-        button_up.pressed.connect(table.row_shift_up)
-        button_down.pressed.connect(table.row_shift_down)
+        button_add.clicked.connect(table.row_add_empty)
+        button_remove.clicked.connect(table.row_remove)
+        button_up.clicked.connect(table.row_shift_up)
+        button_down.clicked.connect(table.row_shift_down)
 
         sublayout1 = qg.QVBoxLayout()
         sublayout1.addWidget(button_add)

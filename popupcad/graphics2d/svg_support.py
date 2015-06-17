@@ -55,9 +55,9 @@ class OutputSelection(qg.QDialog):
         layout3.addLayout(layout4)
         layout3.addLayout(layout2)
         
-        self.dirbutton.pressed.connect(self.selectExport)
-        button1.pressed.connect(self.accept)
-        button2.pressed.connect(self.reject)
+        self.dirbutton.clicked.connect(self.selectExport)
+        button1.clicked.connect(self.accept)
+        button2.clicked.connect(self.reject)
         self.Inkscape.setChecked(True)
         self.setLayout(layout3)
         self.RenderDXF.setEnabled(sys.platform=='win32')

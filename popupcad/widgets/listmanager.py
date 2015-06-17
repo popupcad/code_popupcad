@@ -65,7 +65,7 @@ class ListManager(qg.QWidget):
         
     def buildButtonItem(self,name,method):
         button= qg.QPushButton(name)
-        button.pressed.connect(method)
+        button.clicked.connect(method)
         return button
 
     def widgets(self):

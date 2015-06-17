@@ -29,8 +29,8 @@ class MaterialSelection(qg.QDialog):
 
         self.ok_button = qg.QPushButton('&Ok',self)
         self.cancel_button= qg.QPushButton('&Cancel',self)
-        self.ok_button.pressed.connect(self.accept)
-        self.cancel_button.pressed.connect(self.reject)
+        self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
 
         l1= qg.QHBoxLayout()
         l1.addWidget(self.lw)

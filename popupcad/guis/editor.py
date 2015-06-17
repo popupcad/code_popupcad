@@ -462,8 +462,8 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon,qg.QMainWindow):
         layout3.addWidget(operationlist)        
         layout3.addLayout(layout2) 
         d.setLayout(layout3)
-        button1.pressed.connect(d.accept)
-        button2.pressed.connect(d.reject)
+        button1.clicked.connect(d.accept)
+        button2.clicked.connect(d.reject)
         result = d.exec_()
         if result:
             self.design.replace_op_refs(self.operationeditor.currentRefs()[0],operationlist.currentRefs()[0])

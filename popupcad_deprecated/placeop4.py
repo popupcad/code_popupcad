@@ -45,10 +45,10 @@ class Dialog(qg.QDialog):
         self.lineedit = qg.QLineEdit()
         self.lineedit.setReadOnly(True)
         button3 = qg.QPushButton('...')
-        button3.pressed.connect(self.getfile)
+        button3.clicked.connect(self.getfile)
 
         button_sketch = qg.QPushButton('Edit Sketch')
-        button_sketch.pressed.connect(self.opensketch)
+        button_sketch.clicked.connect(self.opensketch)
 
         self.radiobox_place= qg.QRadioButton('Place')
         self.radiobox_stretch = qg.QRadioButton('Stretch')
@@ -78,9 +78,9 @@ class Dialog(qg.QDialog):
         layout3.addWidget(button3)
 
         button1 = qg.QPushButton('Ok')
-        button1.pressed.connect(self.accept)
+        button1.clicked.connect(self.accept)
         button2 = qg.QPushButton('Cancel')
-        button2.pressed.connect(self.reject)
+        button2.clicked.connect(self.reject)
 
         layout2 = qg.QHBoxLayout()
         layout2.addWidget(button1)
