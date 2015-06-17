@@ -27,7 +27,7 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.manufacturing.nulloperation import NullOp
 from popupcad.graphics2d.text import TextParent
 
-class Sketcher(qg.QMainWindow,WidgetCommon):
+class Sketcher(WidgetCommon,qg.QMainWindow):
     showprop = qc.Signal(object)
     def __init__(self,parent,sketch,design = None,accept_method = None,selectops = False):
         

@@ -20,16 +20,23 @@ class WidgetCommon(object):
             window.hide()
 
     def set_nominal_size(self):
+#        buffer_x=14
+#        buffer_y=36
+#        self.resize(popupcad.local_settings.nominal_width-buffer_x,popupcad.local_settings.nominal_height-buffer_y)
+        pass
+    
+    def sizeHint(self):
         buffer_x=14
         buffer_y=36
-        self.resize(popupcad.local_settings.nominal_width-buffer_x,popupcad.local_settings.nominal_height-buffer_y)
-    
+        return qc.QSize(popupcad.local_settings.nominal_width-buffer_x,popupcad.local_settings.nominal_height-buffer_y)
+        
     def move_center(self):
-        window_rect = qg.QApplication.desktop().screen().rect()
-        x = (window_rect.width()-popupcad.local_settings.nominal_width)/2
-        y = (window_rect.height()-popupcad.local_settings.nominal_height)/2
-        self.move(qc.QPoint(x,y))
-
+#        window_rect = qg.QApplication.desktop().screen().rect()
+#        x = (window_rect.width()-popupcad.local_settings.nominal_width)/2
+#        y = (window_rect.height()-popupcad.local_settings.nominal_height)/2
+#        self.move(qc.QPoint(x,y))
+        pass
+    
     def buildToolbarMenu(self,actions,name):
         toolbar= qg.QToolBar(name)
 

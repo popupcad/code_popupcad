@@ -17,7 +17,7 @@ import popupcad
 from popupcad.filetypes.design import Design
 from popupcad.supportfiles import Icon
 
-class Editor(qg.QMainWindow,popupcad.widgets.widgetcommon.WidgetCommon):
+class Editor(popupcad.widgets.widgetcommon.WidgetCommon,qg.QMainWindow):
     '''
     Editor Class
 
