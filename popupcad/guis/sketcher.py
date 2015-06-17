@@ -530,7 +530,7 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
         dialog = qg.QDialog()
         x_num = qg.QSpinBox()
         x_num.setValue(2)
-        x_num.setMinimum(2)
+        x_num.setMinimum(1)
 
         x_val = qg.QDoubleSpinBox()
         x_val.setMinimum(0)
@@ -538,8 +538,8 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
         x_val.setValue(1)
 
         y_num = qg.QSpinBox()
-        y_num.setValue(2)
-        y_num.setMinimum(2)
+        y_num.setValue(1)
+        y_num.setMinimum(1)
 
         y_val = qg.QDoubleSpinBox()
         y_val.setValue(1)
