@@ -215,11 +215,11 @@ class PlaceOperation5(Operation):
             scale_x = 1.
             scale_y = 1.
         elif self.transformtype==self.transformtypes.stretch:
-            scale_x = None
+            scale_x = 1.
             scale_y = 1.
         if self.transformtype==self.transformtypes.scale:
-            scale_x = None
-            scale_y = None
+            scale_x = 1.
+            scale_y = 1.
         if self.transformtype==self.transformtypes.custom:
             scale_x = self.scalex
             scale_y = self.scaley
@@ -275,6 +275,35 @@ class PlaceOperation5(Operation):
         subdesign = design.subdesigns[self.subdesignid]
         dialog = Dialog(design,design.prioroperations(self),sketch = sketch,subdesign = subdesign, subopid = self.subopid, transformtype = self.transformtype,shift=self.shift,flip = self.flip,scalex = self.scalex,scaley = self.scaley)
         return dialog
+        
+    def upgrade(self,*args,**kwargs):
+        from popupcad_deprecated.placeop6 import PlaceOperation6
+
+        if self.transformtype==self.transformtypes.place:
+            scale_x = 1.
+            scale_y = 1.
+            transformtype_x = PlaceOperation6.transformtypes.custom
+            transformtype_y = PlaceOperation6.transformtypes.custom
+        elif self.transformtype==self.transformtypes.stretch:
+            scale_x = 1.
+            scale_y = 1.
+            transformtype_x = PlaceOperation6.transformtypes.scale
+            transformtype_y = PlaceOperation6.transformtypes.custom
+        if self.transformtype==self.transformtypes.scale:
+            scale_x = 1.
+            scale_y = 1.
+            transformtype_x = PlaceOperation6.transformtypes.scale
+            transformtype_y = PlaceOperation6.transformtypes.scale
+        if self.transformtype==self.transformtypes.custom:
+            scale_x = self.scalex
+            scale_y = self.scaley
+            transformtype_x = PlaceOperation6.transformtypes.custom
+            transformtype_y = PlaceOperation6.transformtypes.custom
+            
+        new = PlaceOperation6(self.sketchid,self.subdesignid, self.subopid,transformtype_x,transformtype_y,self.shift,self.flip,scale_x,scale_y)
+        new.customname = self.customname
+        new.id = self.id
+        return new
         
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

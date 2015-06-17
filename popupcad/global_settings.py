@@ -17,7 +17,6 @@ else:
 
 supportfiledir = os.path.normpath(os.path.join(localpath,'supportfiles'))
 documentation_directory = os.path.normpath(os.path.join(localpath,'docs'))
-#licensedir = os.path.normpath(os.path.join(localpath,'../','licenses'))
 backgroundpath = os.path.normpath(os.path.join(supportfiledir,'background6.png'))
 iconfile = os.path.normpath(os.path.join(supportfiledir,'printapede.ico'))
 

@@ -263,6 +263,15 @@ class PlaceOperation4(Operation):
             self.editdata(*dialog.acceptdata)
             editedsignal.emit(self)
 
+    def upgrade(self,*args,**kwargs):
+        from popupcad_deprecated.placeop5 import PlaceOperation5
+
+        new = PlaceOperation5(self.sketchid,self.subdesignid, self.subopid,self.transformtype,self.shift,self.flip,1.,1.)
+        new.customname = self.customname
+        new.id = self.id
+        return new
+
+
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     sys.exit(app.exec_())    

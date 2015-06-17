@@ -174,26 +174,28 @@ class Design(popupCADFile):
                     binary_links = [b]
                 operation_links = {'unary':unary_links,'binary':binary_links}
                 op2 = LaminateOperation2(operation_links,op0.function)
-                newoperations.append(op0)
+                op2.id = op0.id
+#                newoperations.append(op0)
                 newoperations.append(op1)
                 newoperations.append(op2)
-                replacements.append(((op0.id,0),(op2.id,0)))
-                ops_to_remove.append(op0)
+#                replacements.append(((op0.id,0),(op2.id,0)))
+#                ops_to_remove.append(op0)
             else:
                 newoperations.append(op0)
 
         self.operations.clear()
         self.operations.extend(newoperations)
 
-        for old,new in replacements:
+#        for old,new in replacements:
 #            self.replace_op_refs(old,new)
-            failed = self.replace_op_refs_force(old,new)
-            check_failures = set(failed)-set(ops_to_remove)
-            if not not check_failures:
-                raise(UpgradeError('Some operations could not be upgraded.  loss of data may have occurred',list(check_failures)))
+#            failed = self.replace_op_refs_force(old,new)
+#            check_failures = set(failed)-set(ops_to_remove)
+#            if not not check_failures:
+#                raise(UpgradeError('Some operations could not be upgraded.  loss of data may have occurred',list(check_failures)))
+            
                     
-        for op in ops_to_remove:
-            self.operations.pop(self.operations.index(op))
+#        for op in ops_to_remove:
+#            self.operations.pop(self.operations.index(op))
 
     def addoperation(self,operation):
         if not not self.operations:

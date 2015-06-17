@@ -292,6 +292,13 @@ class PlaceOperation6(Operation):
         subdesign = design.subdesigns[self.subdesignid]
         dialog = Dialog(design,design.prioroperations(self),sketch = sketch,subdesign = subdesign, subopid = self.subopid, transformtype_x = self.transformtype_x,transformtype_y = self.transformtype_y,shift=self.shift,flip = self.flip,scalex = self.scalex,scaley = self.scaley)
         return dialog
+    def upgrade(self):
+        from popupcad_deprecated.placeop7 import PlaceOperation7
+        new = PlaceOperation7(self.sketchid,self.subdesignid,(self.subopid,0),self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
+        new.customname = self.customname
+        new.id = self.id
+        return new
+        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     sys.exit(app.exec_())    
