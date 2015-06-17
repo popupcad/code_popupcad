@@ -51,7 +51,7 @@ class GenericPolyline(GenericShapeBase):
     def segments(self):
         return self.segments_open()
     def fill(self,identical = True):
-        return self.copy_data(GenericPoly,identical)
+        return GenericPoly(self.get_exterior(),self.get_interiors(),self.is_construction())
 
 class GenericPoly(GenericShapeBase):
     def outputinteractive(self):
@@ -147,7 +147,7 @@ class GenericPoly(GenericShapeBase):
         b = t['vertices'][t['triangles']]        
         return [tri.tolist() for tri in b]
     def hollow(self,identical = True):
-        return self.copy_data(GenericPolyline,identical)
+        return GenericPolyline(self.get_exterior(),self.get_interiors(),self.is_construction())
         
 
 class GenericCircle(GenericShapeBase):

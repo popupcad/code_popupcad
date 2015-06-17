@@ -64,9 +64,14 @@ class DrawingPoint(InteractiveVertexBase):
     z_above = 105
     def __init__(self,*args,**kwargs):
         super(DrawingPoint,self).__init__(*args,**kwargs)
+
     def refreshview(self):
         pass
 
+    def copy(self):
+        genericcopy = self.get_generic().copy(identical = False)
+        return genericcopy.outputinteractive()
+    
 class StaticDrawingPoint(InteractiveVertexBase):
     radius = 5
     z_below = 100

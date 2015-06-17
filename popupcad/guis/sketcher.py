@@ -153,6 +153,7 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
         self.editactions.append({'text':'Cut','kwargs':{'triggered':self.cut_to_clipboard,'shortcut':qg.QKeySequence.Cut}})      
         self.editactions.append({'text':'Copy','kwargs':{'triggered':self.copy_to_clipboard,'shortcut':qg.QKeySequence.Copy}})      
         self.editactions.append({'text':'Paste','kwargs':{'triggered':self.paste_from_clipboard,'shortcut':qg.QKeySequence.Paste}})      
+        self.editactions.append({'text':'Array','kwargs':{'triggered':self.array}})      
 
         self.viewactions = []
         def dummy(action):
@@ -525,6 +526,61 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
         for item in newgenerics:
             self.scene.addItem(item.outputinteractive())
                 
+    def array(self):
+        dialog = qg.QDialog()
+        x_num = qg.QSpinBox()
+        x_num.setValue(2)
+        x_num.setMinimum(2)
+
+        x_val = qg.QDoubleSpinBox()
+        x_val.setMinimum(0)
+        x_val.setMaximum(100000)
+        x_val.setValue(1)
+
+        y_num = qg.QSpinBox()
+        y_num.setValue(2)
+        y_num.setMinimum(2)
+
+        y_val = qg.QDoubleSpinBox()
+        y_val.setValue(1)
+        y_val.setMinimum(0)
+        y_val.setMaximum(100000)
+
+        button_ok= qg.QPushButton('Ok')
+        button_cancel= qg.QPushButton('Cancel')
+        sublayout1 = qg.QHBoxLayout()
+        sublayout1.addWidget(button_ok)
+        sublayout1.addWidget(button_cancel)
+
+        layout = qg.QVBoxLayout()
+        layout.addWidget(qg.QLabel('# in x'))
+        layout.addWidget(x_num)
+        layout.addWidget(qg.QLabel('x spacing'))
+        layout.addWidget(x_val)
+        layout.addWidget(qg.QLabel('# in y'))
+        layout.addWidget(y_num)
+        layout.addWidget(qg.QLabel('y spacing'))
+        layout.addWidget(y_val)
+        layout.addLayout(sublayout1)
+
+        dialog.setLayout(layout)
+        button_ok.clicked.connect(dialog.accept)
+        button_cancel.clicked.connect(dialog.reject)
+        copies = []
+        if dialog.exec_():
+            for ii in range(x_num.value()):
+                for jj in range(y_num.value()):
+                    if ii==jj==0:
+                        pass
+                    else:
+                        for item in self.scene.selectedItems():
+                            shift_val = (ii*x_val.value()*popupcad.internal_argument_scaling,jj*y_val.value()*popupcad.internal_argument_scaling)
+                            new = item.generic.copy()
+                            new.shift(shift_val)
+                            copies.append(new)
+        copies = [self.scene.addItem(item.outputinteractive()) for item in copies]
+        
+        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     mw = Sketcher(None,Sketch())
