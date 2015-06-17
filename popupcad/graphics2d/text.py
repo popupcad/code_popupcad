@@ -25,7 +25,7 @@ class GenericText(object):
         self.id  = id(self)
 
     def copy(self,identical=True):
-        new = type(self)(self.text,self.pos,self.font, self.fontsize)
+        new = type(self)(self.text,self.pos.copy(identical),self.font, self.fontsize)
         if identical:
             new.id = self.id
         return new
@@ -116,7 +116,9 @@ class TextParent(qg.QGraphicsPathItem,Common):
         self.setPen(self.pen)
         self.setBrush(self.brush)
         self.setPos(*self.generic.pos.getpos())
-        self.setFlag(self.ItemSendsGeometryChanges,True)        
+        self.setFlag(self.ItemSendsGeometryChanges,True)  
+        self.changed_trigger = False
+        
 #    def focusInEvent(self,*args,**kwargs):        
 #        self.editmode()
     def itemChange(self,change,value):
@@ -160,7 +162,12 @@ class TextParent(qg.QGraphicsPathItem,Common):
     def mouseReleaseEvent(self,event):       
         if self.changed_trigger:
             self.changed_trigger = False
-        super(TextParent,self).mouseReleaseEvent(event)      
+        super(TextParent,self).mouseReleaseEvent(event)    
+        
+    def copy(self):
+        genericcopy = self.generic.copy(identical = False)
+        return genericcopy.outputinteractive()
+        
 
 
 class TextItem(qg.QGraphicsTextItem,Common):
