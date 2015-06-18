@@ -21,10 +21,12 @@ import sys
 import os
 import popupcad
 
+
 def skip(app, what, name, obj, skip, options):
     if name == "__init__":
         return False
     return skip
+
 
 def setup(app):
     app.connect("autodoc-skip-member", skip)
@@ -200,22 +202,22 @@ htmlhelp_basename = 'popupCADdoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'popupCAD.tex', u'popupCAD Documentation',
-   u'Daniel M. Aukes', 'manual'),
+    ('index', 'popupCAD.tex', u'popupCAD Documentation',
+     u'Daniel M. Aukes', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -258,9 +260,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'popupCAD', u'popupCAD Documentation',
-   u'Daniel M. Aukes', 'popupCAD', 'One line description of project.',
-   'Miscellaneous'),
+    ('index', 'popupCAD', u'popupCAD Documentation',
+     u'Daniel M. Aukes', 'popupCAD', 'One line description of project.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -278,4 +280,3 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
-

@@ -13,23 +13,25 @@ from popupcad.filetypes.operation import Operation
 
 class LocateOperation(SketchOperation2):
     name = 'LocateOperation'
-    operationtypes = ['locate']    
+    operationtypes = ['locate']
 
-    def operate(self,design):
+    def operate(self, design):
         sketch = design.sketches[self.sketchid]
-        operationgeom = customshapely.unary_union_safe([item.outputshapely() for item in sketch.operationgeometry])
+        operationgeom = customshapely.unary_union_safe(
+            [item.outputshapely() for item in sketch.operationgeometry])
         lsout = Laminate(design.return_layer_definition())
         for layer in design.return_layer_definition().layers:
-            lsout.replacelayergeoms(layer,customshapely.multiinit(operationgeom))
+            lsout.replacelayergeoms(
+                layer,
+                customshapely.multiinit(operationgeom))
         return lsout
 
     def locationgeometry(self):
         return self.sketchid
 
-    def upgrade(self,*args,**kwargs):
+    def upgrade(self, *args, **kwargs):
         from popupcad.manufacturing.locateoperation3 import LocateOperation3
-        sketch_links = {'sketch':[self.sketchid]}
+        sketch_links = {'sketch': [self.sketchid]}
         new = LocateOperation3(sketch_links)
         new.id = self.id
         return new
-        

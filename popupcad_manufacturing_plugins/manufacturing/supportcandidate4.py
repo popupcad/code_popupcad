@@ -10,13 +10,14 @@ from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operationoutput import OperationOutput
 import popupcad_manufacturing_plugins.algorithms as algorithms
 
+
 class SupportCandidate4(MultiValueOperation3):
     name = 'Support Candidate'
-    valuenames = ['Support Gap','Keep-out Distance']
-    defaults = [0.,0.]
+    valuenames = ['Support Gap', 'Keep-out Distance']
+    defaults = [0., 0.]
 
-    def generate(self,design):
-        operation_ref,output_index = self.operation_links['parent'][0]
+    def generate(self, design):
+        operation_ref, output_index = self.operation_links['parent'][0]
         import popupcad
         ls1 = design.op_from_ref(operation_ref).output[output_index].csg
 
@@ -27,12 +28,11 @@ class SupportCandidate4(MultiValueOperation3):
         elif self.keepout_type == self.keepout_types.mill_flip_keepout:
             keepout = popupcad.algorithms.keepout.millflipkeepout(ls1)
         else:
-            raise(Exception('keepout type'))
-            
-        support,k3=algorithms.web.autosupport(ls1,keepout,design.return_layer_definition(),self.values[0]*popupcad.internal_argument_scaling,self.values[1]*popupcad.internal_argument_scaling,1e-5*popupcad.internal_argument_scaling)
-        a = OperationOutput(support,'support',self)
-        b = OperationOutput(keepout,'cut line',self)
-        c = OperationOutput(k3,'cut area',self)
-        self.output = [a,a,b,c]                
-    
+            raise Exception
 
+        support, k3 = algorithms.web.autosupport(ls1, keepout, design.return_layer_definition(), self.values[
+                                                 0] * popupcad.internal_argument_scaling, self.values[1] * popupcad.internal_argument_scaling, 1e-5 * popupcad.internal_argument_scaling)
+        a = OperationOutput(support, 'support', self)
+        b = OperationOutput(keepout, 'cut line', self)
+        c = OperationOutput(k3, 'cut area', self)
+        self.output = [a, a, b, c]

@@ -26,4 +26,3 @@ from . import solidworksimport
 from . import undoredo
 from . import userdata
 from . import validators
-

@@ -10,7 +10,8 @@ import sys
 
 from shapely import speedups
 
-#necessary for homebrewed libgeos which does not work with speedups for some reason.
+# necessary for homebrewed libgeos which does not work with speedups for
+# some reason.
 if sys.platform != 'darwin':
     if speedups.available:
         speedups.enable()
@@ -36,4 +37,3 @@ from . import manufacturing
 from . import materials
 from . import supportfiles
 from . import widgets
-

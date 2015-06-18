@@ -9,17 +9,18 @@ import PySide.QtGui as qg
 import sys
 
 from popupcad.filetypes.userdata import UserData
-from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph,Node
+from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph, Node
 
 
 class DraggableItem(qg.QListWidgetItem):
-    def __init__(self,data,*args,**kwargs):
 
-        super(DraggableItem,self).__init__(str(data),*args,**kwargs)
+    def __init__(self, data, *args, **kwargs):
+
+        super(DraggableItem, self).__init__(str(data), *args, **kwargs)
         self.userdata = data
-        self.setFlags(self.flags()|qc.Qt.ItemFlag.ItemIsEditable)
-        
-    def data(self,role):
+        self.setFlags(self.flags() | qc.Qt.ItemFlag.ItemIsEditable)
+
+    def data(self, role):
         if role == qc.Qt.ItemDataRole.DisplayRole:
             return str(self.userdata)
         elif role == qc.Qt.ItemDataRole.EditRole:
@@ -29,7 +30,7 @@ class DraggableItem(qg.QListWidgetItem):
         else:
             return
 
-    def setData(self,role,value):
+    def setData(self, role, value):
         if role == qc.Qt.ItemDataRole.EditRole:
             self.userdata.setcustomname(value)
             return True
@@ -37,24 +38,28 @@ class DraggableItem(qg.QListWidgetItem):
             self.userdata = value
             return True
         else:
-            return False   
-    def clone(self,*args,**kwargs):
-#        return type(self)(self.userdata)
-#        print('cloned')
-        return super(DraggableItem,self).clone(*args,**kwargs)
-        
-    def write(self,*args,**kwargs):
-#        return type(self)(self.userdata)
-#        print('written')
-        return super(DraggableItem,self).write(*args,**kwargs)
-        
-class DraggableDirectedItem(DraggableItem,Node):
-    pass        
+            return False
+
+    def clone(self, *args, **kwargs):
+        #        return type(self)(self.userdata)
+        #        print('cloned')
+        return super(DraggableItem, self).clone(*args, **kwargs)
+
+    def write(self, *args, **kwargs):
+        #        return type(self)(self.userdata)
+        #        print('written')
+        return super(DraggableItem, self).write(*args, **kwargs)
+
+
+class DraggableDirectedItem(DraggableItem, Node):
+    pass
+
 
 class DraggableListWidget(qg.QListWidget):
     signal_edit = qc.Signal(object)
+
     def __init__(self):
-        super(DraggableListWidget,self).__init__()
+        super(DraggableListWidget, self).__init__()
         self.setSelectionMode(self.SelectionMode.SingleSelection)
         self.setDragEnabled(True)
         self.setDropIndicatorShown(True)
@@ -64,95 +69,106 @@ class DraggableListWidget(qg.QListWidget):
         self.masterlist = []
         self.refresh()
 
-    def linklist(self,masterlist):
+    def linklist(self, masterlist):
         self.masterlist = masterlist
         self.refresh()
-        
-    def addData(self,item):    
-#        self.masterlist.append(item)
-#        self.refresh()
-        super(DraggableListWidget,self).addItem(DraggableDirectedItem(item))
+
+    def addData(self, item):
+        #        self.masterlist.append(item)
+        #        self.refresh()
+        super(DraggableListWidget, self).addItem(DraggableDirectedItem(item))
         self.refreshmaster()
-        
-    def allItems(self):    
+
+    def allItems(self):
         items = [self.item(ii) for ii in range(self.count())]
         return items
 
     def allData(self):
         return [item.userdata for item in self.allItems()]
-        
+
     def refreshmaster(self):
-        while len(self.masterlist)>0:
+        while len(self.masterlist) > 0:
             self.masterlist.pop()
         [self.masterlist.append(item.userdata) for item in self.allItems()]
         return self.masterlist
-            
+
     def refresh(self):
         self.clear()
-        [DraggableDirectedItem(item,self) for item in self.masterlist]
+        [DraggableDirectedItem(item, self) for item in self.masterlist]
 
-    def itemDoubleClicked(self,index):
-        userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
-        self.signal_edit.emit(userdata)        
+    def itemDoubleClicked(self, index):
+        userdata = self.model().data(index, qc.Qt.ItemDataRole.UserRole)
+        self.signal_edit.emit(userdata)
 
-    def keyPressEvent(self,event):
-        if event.key()==qc.Qt.Key_Delete:
+    def keyPressEvent(self, event):
+        if event.key() == qc.Qt.Key_Delete:
             rows = []
             for ii in self.selectedIndexes():
                 rows.append(ii.row())
                 rows.sort()
                 rows.reverse()
             for ii in rows:
-                self.model().removeRows(ii,1,qc.QModelIndex())
+                self.model().removeRows(ii, 1, qc.QModelIndex())
             self.refreshmaster()
         else:
-            super(DraggableListWidget,self).keyPressEvent(event)
-            
+            super(DraggableListWidget, self).keyPressEvent(event)
+
+
 class DirectedDraggableListWidget(DraggableListWidget):
+
     def __init__(self):
-        super(DirectedDraggableListWidget,self).__init__()
+        super(DirectedDraggableListWidget, self).__init__()
         m = self.model()
         m.rowsMoved.connect(self.rowsMovedCheck)
 
-    def set_tree_generator(self,generator):
+    def set_tree_generator(self, generator):
         self.tree_generator = generator
 
-    def rowsMovedCheck(self,sourceindex,rowstart,rowend,destindex,deststart):
-#        print(sourceindex, rowstart,rowend,destindex,deststart)
-#        items = [self.item(ii) for ii in range(self.model().rowCount())]
-#        print(self.tree.sequence_complete_valid(self.allItems()))
+    def rowsMovedCheck(
+            self,
+            sourceindex,
+            rowstart,
+            rowend,
+            destindex,
+            deststart):
+        #        print(sourceindex, rowstart,rowend,destindex,deststart)
+        #        items = [self.item(ii) for ii in range(self.model().rowCount())]
+        #        print(self.tree.sequence_complete_valid(self.allItems()))
         tree = self.tree_generator()
         if not tree.sequence_complete_valid(self.allData()):
-            if rowstart<deststart:
-                item = self.takeItem(deststart-1)
-                self.insertItem(rowstart,item)
+            if rowstart < deststart:
+                item = self.takeItem(deststart - 1)
+                self.insertItem(rowstart, item)
                 self.currentRowChanged.emit(rowstart)
-            elif rowstart>deststart:
+            elif rowstart > deststart:
                 pass
                 item = self.takeItem(deststart)
-                self.insertItem(rowstart,item)
+                self.insertItem(rowstart, item)
                 self.currentRowChanged.emit(rowstart)
         self.refreshmaster()
 
+
 def edituserdata(userdata):
     userdata.edit()
+
+
 def rowchange(data):
     print(data)
 
-if __name__=='__main__':
+if __name__ == '__main__':
     app = qg.QApplication(sys.argv)
-    
-    list1 = range(10)  
+
+    list1 = range(10)
     list1 = [UserData(str(item)) for item in list1]
 
     lw = DirectedDraggableListWidget()
     lw.linklist(list1)
     nodes = lw.allItems()
-    connections = list(zip(nodes[:-1],nodes[1:]))
-    tree = lambda:AcyclicDirectedGraph(nodes,connections[0:5])
+    connections = list(zip(nodes[:-1], nodes[1:]))
+    tree = lambda: AcyclicDirectedGraph(nodes, connections[0:5])
     lw.set_tree_generator(tree)
     lw.signal_edit.connect(edituserdata)
     lw.currentRowChanged.connect(rowchange)
 #
-    lw.show()    
+    lw.show()
     m = lw.model()

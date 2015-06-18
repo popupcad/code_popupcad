@@ -6,15 +6,16 @@ Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.userdata import UserData
 
+
 class OperationOutput(UserData):
-    def __init__(self,csg,name,parent = None):
-        super(OperationOutput,self).__init__()
+
+    def __init__(self, csg, name, parent=None):
+        super(OperationOutput, self).__init__()
         self.csg = csg
         self.name = name
         self.parent = parent
-        
 
-    def generic_laminate(self):        
+    def generic_laminate(self):
         try:
             return self._generic_laminate
         except AttributeError:
@@ -43,8 +44,9 @@ class OperationOutput(UserData):
             return self._control_polygons
 
     def update_controls(self):
-        self._controlpoints, self._controllines,self._control_polygons = self.getcontrols(self.generic_laminate())
-        
+        self._controlpoints, self._controllines, self._control_polygons = self.getcontrols(
+            self.generic_laminate())
+
     @staticmethod
     def getcontrols(genericgeometry):
         from popupcad.geometry.line import ReferenceLine
@@ -68,19 +70,22 @@ class OperationOutput(UserData):
                     break
             if is_unique:
                 unique_geoms.append(geom)
-            
 
         vertices = list(set(vertices))
-        controlpoints = [ReferenceVertex(position = p) for p in vertices]
+        controlpoints = [ReferenceVertex(position=p) for p in vertices]
 
         lines = list(set(lines))
-        lines2 = [(vertices.index(p1),vertices.index(p2)) for p1,p2 in lines]
-        controllines = [ReferenceLine(controlpoints[ii],controlpoints[jj]) for ii,jj in lines2]
+        lines2 = [(vertices.index(p1), vertices.index(p2)) for p1, p2 in lines]
+        controllines = [
+            ReferenceLine(
+                controlpoints[ii],
+                controlpoints[jj]) for ii,
+            jj in lines2]
         return controlpoints, controllines, unique_geoms
-            
-    def edit(self,*args,**kwargs):
-        if self.parent !=None:
-            self.parent.edit(*args,**kwargs)
+
+    def edit(self, *args, **kwargs):
+        if self.parent is not None:
+            self.parent.edit(*args, **kwargs)
 
     def display_geometry_2d(self):
         try:
@@ -88,7 +93,7 @@ class OperationOutput(UserData):
         except AttributeError:
             self._display_geometry_2d = self.generic_laminate().to_static()
             return self._display_geometry_2d
-            
+
     def tris(self):
         try:
             return self.alltriangles
@@ -103,13 +108,14 @@ class OperationOutput(UserData):
             self._description = ''
             return self._description
 
-    def description_set(self,value):
+    def description_set(self, value):
         self._description = value
-    
-    description = property(description_get,description_set)
+
+    description = property(description_get, description_set)
 
     def edit_description(self):
         import PySide.QtGui as qg
-        result,ok = qg.QInputDialog.getText(None, 'description', 'label',text = self.description)
+        result, ok = qg.QInputDialog.getText(
+            None, 'description', 'label', text=self.description)
         if ok:
             self.description = result

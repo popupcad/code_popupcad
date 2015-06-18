@@ -8,7 +8,7 @@ import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
 
 template = \
-'''---
+    '''---
 {0}
 ---
 
@@ -37,90 +37,111 @@ My title is {{{{page.title}}}}
 {{% endfor %}}
 '''
 
+
 class Documentation(object):
+
     def dictify(self):
-        return dict([(item,getattr(self,item)) for item in self.export_keys])
+        return dict([(item, getattr(self, item)) for item in self.export_keys])
 
 #    @classmethod
 #    def undictify(cls,item):
 #        new = cls()
-#        new.a=item['a']        
-#        new.b=item['b']        
+#        new.a=item['a']
+#        new.b=item['b']
 
     @staticmethod
-    def yaml_representer(dumper,v):
-        output = dumper.represent_mapping(v.yaml_node_name,v.dictify())
+    def yaml_representer(dumper, v):
+        output = dumper.represent_mapping(v.yaml_node_name, v.dictify())
         return output
-    
+
 #    @classmethod
 #    def yaml_constructor(cls,loader, node):
 #        dict1 = loader.construct_mapping(node)
 #        new = cls.undictify(dict1)
 #        return new
 
-def process_output(output,ii,jj,destination):
-    filename_in = '{0:02.0f}_{1:02.0f}'.format(ii,jj)
-    filename_out = output.generic_laminate().raster(filename_in,'png',destination)
+
+def process_output(output, ii, jj, destination):
+    filename_in = '{0:02.0f}_{1:02.0f}'.format(ii, jj)
+    filename_out = output.generic_laminate().raster(
+        filename_in,
+        'png',
+        destination)
     name = str(output)
-    return {'name':name,'image_file':filename_out,'description':output.description,'cut_file':'cut-dummy.svg'}
+    return {
+        'name': name,
+        'image_file': filename_out,
+        'description': output.description,
+        'cut_file': 'cut-dummy.svg'}
 
 
 class OperationDocumentation(Documentation):
     yaml_node_name = u'Operation'
-    export_keys = ['name','description','image_file','cut_file','outputs']
+    export_keys = ['name', 'description', 'image_file', 'cut_file', 'outputs']
+
     @classmethod
-    def build(cls,operation,ii,destination):
+    def build(cls, operation, ii, destination):
         outputs = []
-        out0 = process_output(operation.output[0],ii,0,destination)
+        out0 = process_output(operation.output[0], ii, 0, destination)
         image_file = out0['image_file']
         cut_file = out0['cut_file']
-        for jj,out in enumerate(operation.output[1:]):
-            outputs.append(process_output(out,ii,jj,destination))
-        return cls(str(operation),operation.description,image_file,cut_file,outputs)
+        for jj, out in enumerate(operation.output[1:]):
+            outputs.append(process_output(out, ii, jj, destination))
+        return cls(
+            str(operation),
+            operation.description,
+            image_file,
+            cut_file,
+            outputs)
 
-    def __init__(self,name,description,image_file,cut_file,outputs):
-        super(OperationDocumentation,self).__init__()
+    def __init__(self, name, description, image_file, cut_file, outputs):
+        super(OperationDocumentation, self).__init__()
         self.name = name
         self.description = description
         self.image_file = image_file
         self.cut_file = cut_file
         self.outputs = outputs
-        
-class DesignDocumentation(popupCADFile,Documentation):
-    filetypes = {'docu':'Design Documentation'}
+
+
+class DesignDocumentation(popupCADFile, Documentation):
+    filetypes = {'docu': 'Design Documentation'}
     defaultfiletype = 'docu'
     yaml_node_name = u'Documentation'
-    export_keys = ['title','name','operations']
+    export_keys = ['title', 'name', 'operations']
+
     @classmethod
-    def build(cls,design,subdir):
+    def build(cls, design, subdir):
         title = design.get_basename()
         name = design.get_basename()
-        operations = [OperationDocumentation.build(operation,ii,subdir) for ii,operation in enumerate(design.operations)]
-        
+        operations = [
+            OperationDocumentation.build(
+                operation, ii, subdir) for ii, operation in enumerate(
+                design.operations)]
+
         ii = design.operation_index(design.main_operation[0])
         image_file = operations[ii].image_file
-        return cls(title,name,operations,image_file)
-        
-    def __init__(self,title,name,operations,image_file):
-        super(DesignDocumentation,self).__init__()
+        return cls(title, name, operations, image_file)
+
+    def __init__(self, title, name, operations, image_file):
+        super(DesignDocumentation, self).__init__()
         self.title = title
         self.name = name
         self.operations = operations
         self.image_file = image_file
 
-
-    def copy(self,identical=True):
+    def copy(self, identical=True):
         new = type(self)(self.operations)
         return new
-        
+
     def dictify2(self):
         output = {}
-        output['title']=self.title
-        output['name']=self.name
-        output['operations']=[item.dictify() for item in self.operations]
-        output['image_file']=self.image_file
-        output['cad_file']='asdf.cad'
+        output['title'] = self.title
+        output['name'] = self.name
+        output['operations'] = [item.dictify() for item in self.operations]
+        output['image_file'] = self.image_file
+        output['cad_file'] = 'asdf.cad'
         return output
+
     def output(self):
         import yaml
         output = template.format(yaml.dump(self.dictify2()))

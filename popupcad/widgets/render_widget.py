@@ -12,14 +12,16 @@ import PySide.QtCore as qc
 from popupcad.graphics2d.graphicsscene import SimpleGraphicsScene
 from popupcad.graphics2d.graphicsview import SimpleGraphicsView
 
+
 class RenderWidget(qg.QWidget):
-    def __init__(self,rect_size):
-        super(RenderWidget,self).__init__()
+
+    def __init__(self, rect_size):
+        super(RenderWidget, self).__init__()
 
 #        gs = popupcad.graphics2d.graphicsscene.GraphicsScene()
         gs = SimpleGraphicsScene()
 #        gs = qg.QGraphicsScene()
-        gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1,1,1,1)))
+        gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1, 1, 1, 1)))
 #        self.gv = popupcad.graphics2d.graphicsview.GraphicsView(gs)
         self.gv = SimpleGraphicsView(gs)
         self.gv.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
@@ -27,7 +29,6 @@ class RenderWidget(qg.QWidget):
 #        self.gv.setRenderHint(qg.QPainter.RenderHint.SmoothPixmapTransform,True)
 #        self.gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1,1,1,0.1)))
 #        self.gs.setBackgroundBrush(qg.QBrush())
-
 
         self.directory_name = qg.QLineEdit()
         self.directory_button = qg.QPushButton('...')
@@ -45,37 +46,39 @@ class RenderWidget(qg.QWidget):
 
         self.directory_button.clicked.connect(self.select_directory)
         self.render_button.clicked.connect(self.render)
+
     def render(self):
         path = self.directory_name.text()
         d = popupcad.filetypes.design.Design.load_yaml(path)
         d.reprocessoperations()
-        directory,file = os.path.split(path)
-        self.render_design(d,directory)
-        
+        directory, file = os.path.split(path)
+        self.render_design(d, directory)
+
     def select_directory(self):
-        path,selected_filter = qg.QFileDialog.getOpenFileName(self,'',dir = self.directory_name.text(),filter = '*.cad')
+        path, selected_filter = qg.QFileDialog.getOpenFileName(
+            self, '', dir=self.directory_name.text(), filter='*.cad')
         print(path)
-        if path!='':
+        if path != '':
             self.load_directory(path)
 
-    def load_directory(self,path):
+    def load_directory(self, path):
         self.directory_name.setText(path)
-    
+
     def clear(self):
         for item in self.gv.scene().items():
             self.gv.scene().removeItem(item)
-    
-    def render_design(self,d,dest,filetype='png'):
-        d.raster(destination = dest, filetype = filetype,gv = self.gv)
-        
+
+    def render_design(self, d, dest, filetype='png'):
+        d.raster(destination=dest, filetype=filetype, gv=self.gv)
+
 if __name__ == "__main__":
     import sys
-    
+
     filter1 = '*.cad'
 #    source = 'C:/Users/danaukes/popupCAD_files/designs'
 #    source= os.path.normpath('C:/Users/danaukes/Desktop/source')
-    destination= os.path.normpath('C:/Users/danaukes/Desktop')
-    rect_size = 400,300
+    destination = os.path.normpath('C:/Users/danaukes/Desktop')
+    rect_size = 400, 300
     app = qg.QApplication(sys.argv)
     widget = RenderWidget(rect_size)
     widget.show()
@@ -99,13 +102,13 @@ if __name__ == "__main__":
 #                local_file_dir = os.path.normpath(os.path.join(local_dir,local_file))
 #                if not os.path.exists(local_file_dir):
 #                    os.mkdir(local_file_dir)
-#                widget.render_design(d,local_file_dir)    
+#                widget.render_design(d,local_file_dir)
 #            except(Exception) as ex:
 #                print(ex)
-                
+
 #    dirname = 'C:/Users/danaukes/popupCAD_files/designs'
-#    filenames2 = ['asdfasdf.cad']         
-##    for dirname, dirnames, filenames in os.walk(source):
+#    filenames2 = ['asdfasdf.cad']
+# for dirname, dirnames, filenames in os.walk(source):
 ##        filenames2 = glob.glob(os.path.normpath(os.path.join(dirname,filter1)))
 #    relpath = os.path.relpath(dirname,source)
 #    local_dir = os.path.normpath(os.path.join(destination,relpath))
@@ -121,15 +124,15 @@ if __name__ == "__main__":
 #            local_file_dir = os.path.normpath(os.path.join(local_dir,local_file))
 #            if not os.path.exists(local_file_dir):
 #                os.mkdir(local_file_dir)
-##            widget.render_design(d,local_file_dir)
+# widget.render_design(d,local_file_dir)
 ##            ii = 1
 ##            jj = 0
 ##            op = d.operations[ii]
-##            out = op.output[jj]                
+##            out = op.output[jj]
 #            for ii,op in enumerate(d.operations):
 #                for jj,out in enumerate(op.output):
 ##                    widget = Widget(rect_size)
-##                    widget.show()
+# widget.show()
 #                    self= widget
 #                    for item in self.gv.scene().items():
 #                        self.gv.scene().removeItem(item)

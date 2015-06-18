@@ -10,18 +10,20 @@ from popupcad.filetypes.operation2 import Operation2
 import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.listmanager import SketchListManager
 
+
 class Dialog(qg.QDialog):
-    def __init__(self,cls,design,sketch = None):
-        super(Dialog,self).__init__()
+
+    def __init__(self, cls, design, sketch=None):
+        super(Dialog, self).__init__()
         self.design = design
         self.cls = cls
 
         self.sketchwidget = SketchListManager(self.design)
         for ii in range(self.sketchwidget.itemlist.count()):
             item = self.sketchwidget.itemlist.item(ii)
-            if item.value==sketch:
+            if item.value == sketch:
                 item.setSelected(True)
-        
+
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')
         buttonlayout = qg.QHBoxLayout()
@@ -31,7 +33,7 @@ class Dialog(qg.QDialog):
         layout = qg.QVBoxLayout()
         layout.addWidget(self.sketchwidget)
         layout.addLayout(buttonlayout)
-        self.setLayout(layout)        
+        self.setLayout(layout)
 
         button1.clicked.connect(self.accept)
         button2.clicked.connect(self.reject)
@@ -43,8 +45,9 @@ class Dialog(qg.QDialog):
             return None
 
     def acceptdata(self):
-        sketch_links = {'sketch':[self.sketch().id]}
+        sketch_links = {'sketch': [self.sketch().id]}
         return sketch_links,
+
 
 class LocateOperation3(Operation2):
     name = 'Locate Operation'
@@ -54,35 +57,37 @@ class LocateOperation3(Operation2):
         new.id = self.id
         return new
 
-    def __init__(self,*args):
-        super(LocateOperation3,self).__init__()
+    def __init__(self, *args):
+        super(LocateOperation3, self).__init__()
         self.editdata(*args)
         self.id = id(self)
-        
-    def editdata(self,sketch_links):        
-        super(LocateOperation3,self).editdata({},sketch_links,{})
+
+    def editdata(self, sketch_links):
+        super(LocateOperation3, self).editdata({}, sketch_links, {})
 
     @classmethod
-    def buildnewdialog(cls,design,currentop):
-        dialog = Dialog(cls,design)
-        return dialog
-        
-    def buildeditdialog(self,design):
-        sketchid = self.sketch_links['sketch'][0]
-        sketch = design.sketches[sketchid]
-        dialog = Dialog(self,design,sketch)
+    def buildnewdialog(cls, design, currentop):
+        dialog = Dialog(cls, design)
         return dialog
 
-    def operate(self,design):
+    def buildeditdialog(self, design):
         sketchid = self.sketch_links['sketch'][0]
         sketch = design.sketches[sketchid]
-        operationgeom = customshapely.unary_union_safe([item.outputshapely() for item in sketch.operationgeometry])
+        dialog = Dialog(self, design, sketch)
+        return dialog
+
+    def operate(self, design):
+        sketchid = self.sketch_links['sketch'][0]
+        sketch = design.sketches[sketchid]
+        operationgeom = customshapely.unary_union_safe(
+            [item.outputshapely() for item in sketch.operationgeometry])
         lsout = Laminate(design.return_layer_definition())
         for layer in design.return_layer_definition().layers:
-            lsout.replacelayergeoms(layer,customshapely.multiinit(operationgeom))
+            lsout.replacelayergeoms(
+                layer,
+                customshapely.multiinit(operationgeom))
         return lsout
 
     def locationgeometry(self):
         sketchid = self.sketch_links['sketch'][0]
         return sketchid
-

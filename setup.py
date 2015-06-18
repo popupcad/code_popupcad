@@ -32,15 +32,15 @@ packages.append('pypoly2tri')
 
 package_data = {}
 
-package_data['popupcad'] = ['docs/*','docs/source/*','supportfiles/*']
+package_data['popupcad'] = ['docs/*', 'docs/source/*', 'supportfiles/*']
 
 setup(name=popupcad.program_name,
       version=popupcad.version,
-      classifiers=popupcad.classifiers,      
+      classifiers=popupcad.classifiers,
       description=popupcad.description,
       author=popupcad.author,
       author_email=popupcad.author_email,
       url=popupcad.url,
       packages=packages,
-      package_data = package_data
-     )
+      package_data=package_data
+      )
