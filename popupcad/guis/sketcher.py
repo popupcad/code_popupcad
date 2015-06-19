@@ -287,11 +287,13 @@ class Sketcher(WidgetCommon,qg.QMainWindow):
                 items.append(item.get_generic())
             elif isinstance(item,StaticDrawingPoint):
                 items.append(item.get_generic())
-                                         
-        new_constraints .append(constraintclass.new(*items))
-        for constraint in new_constraints:
-            self.sketch.constraintsystem.add_constraint(constraint)
-        self.refreshconstraints()
+
+        new_constraint = constraintclass.new(*items)
+        if new_constraint != None:
+            new_constraints.append(new_constraint)
+            for constraint in new_constraints:
+                self.sketch.constraintsystem.add_constraint(constraint)
+            self.refreshconstraints()
 
     def refreshconstraints_button(self):
         self.refreshconstraints()
