@@ -6,10 +6,16 @@ Please see LICENSE.txt for full license.
 """
 import shapely.geometry as sg
 
+
 def iscollection(item):
-    collections = [sg.MultiPolygon,sg.GeometryCollection,sg.MultiLineString,sg.multilinestring.MultiLineString]
-    iscollection = [isinstance(item,cls) for cls in collections]
+    collections = [
+        sg.MultiPolygon,
+        sg.GeometryCollection,
+        sg.MultiLineString,
+        sg.multilinestring.MultiLineString]
+    iscollection = [isinstance(item, cls) for cls in collections]
     return any(iscollection)
+
 
 def multiinit(*geoms):
     while any([iscollection(item) for item in geoms]):
@@ -23,46 +29,54 @@ def multiinit(*geoms):
     geoms2 = []
     for geom in geoms:
         if not geom.is_empty:
-            if isinstance(geom,sg.Polygon):
-                geoms2.append(ShapelyPolygon(geom.exterior,geom.interiors))
-            elif isinstance(geom,sg.LineString):
+            if isinstance(geom, sg.Polygon):
+                geoms2.append(ShapelyPolygon(geom.exterior, geom.interiors))
+            elif isinstance(geom, sg.LineString):
                 geoms2.append(ShapelyLineString(geom))
-            elif isinstance(geom,sg.Point):
+            elif isinstance(geom, sg.Point):
                 geoms2.append(ShapelyPoint(geom))
-            elif isinstance(geom,sg.MultiPoint):
+            elif isinstance(geom, sg.MultiPoint):
                 geoms2.extend([ShapelyPoint(item) for item in geom.geoms])
             else:
-                raise(Exception('unknown type: '+str(type(geom))))
+                raise Exception
                 geoms2.append(geom)
     for geom in geoms2:
         if geom.is_empty:
-            raise(Exception('Empty Polygon'))
+            raise Exception
     return geoms2
 
+
 class ShapelyLineString(sg.LineString):
+
     def genpoints_generic(self):
         coords = [coord for coord in self.coords]
-        return coords,[]
+        return coords, []
+
 
 class ShapelyPoint(sg.Point):
+
     def genpoints_generic(self):
         coords = [coord for coord in self.coords]
-        return coords,[]
-        
+        return coords, []
+
+
 class ShapelyPolygon(sg.Polygon):
+
     def genpoints_generic(self):
         exterior = [coord for coord in self.exterior.coords]
-        interiors = [[coord for coord in interior.coords] for interior in self.interiors]
-        return exterior,interiors
-        
+        interiors = [[coord for coord in interior.coords]
+                     for interior in self.interiors]
+        return exterior, interiors
+
+
 def unary_union_safe(listin):
-    '''try to perform a unary union.  if that fails, fall back to iterative union'''    
+    '''try to perform a unary union.  if that fails, fall back to iterative union'''
     import shapely
     import shapely.ops as so
 
     try:
         return so.unary_union(listin)
-    except (shapely.geos.TopologicalError,ValueError):
+    except (shapely.geos.TopologicalError, ValueError):
         print('Unary Union Failed.  Falling Back...')
         workinglist = listin[:]
         try:
@@ -71,9 +85,9 @@ def unary_union_safe(listin):
                 try:
                     newresult = result.union(item)
                     result = newresult
-                except (shapely.geos.TopologicalError,ValueError):
+                except (shapely.geos.TopologicalError, ValueError):
                     raise
             return result
         except IndexError:
-#            return sg.GeometryCollection()
+            #            return sg.GeometryCollection()
             raise

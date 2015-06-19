@@ -5,7 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
+
 def enum(**enums):
     e = type('Enum', (), enums)
     e.dict = enums
-    return  e
+    return e

@@ -8,71 +8,77 @@ import popupcad.geometry.customshapely as customshapely
 import shapely.geometry as sg
 import popupcad
 
+
 class Layer(object):
-    def __init__(self,geoms):
+
+    def __init__(self, geoms):
         self.geoms = geoms
 
-    def union(self,layer):
-        return self.binaryoperation(layer,'union')        
-    def difference(self,layer):
-        return self.binaryoperation(layer,'difference')        
-    def intersection(self,layer):
-        return self.binaryoperation(layer,'intersection')        
-    def symmetric_difference(self,layer):
-        return self.binaryoperation(layer,'symmetric_difference') 
-    def buffer(self,value,**kwargs):
+    def union(self, layer):
+        return self.binaryoperation(layer, 'union')
+
+    def difference(self, layer):
+        return self.binaryoperation(layer, 'difference')
+
+    def intersection(self, layer):
+        return self.binaryoperation(layer, 'intersection')
+
+    def symmetric_difference(self, layer):
+        return self.binaryoperation(layer, 'symmetric_difference')
+
+    def buffer(self, value, **kwargs):
         if not 'resolution' in kwargs:
             kwargs['resolution'] = popupcad.default_buffer_resolution
-        return self.valueoperation('buffer',value,**kwargs) 
+        return self.valueoperation('buffer', value, **kwargs)
 
-    def add_geoms(self,geoms):
+    def add_geoms(self, geoms):
         self.geoms.extend(geoms)
 
-    def promote(self,layerdef):
+    def promote(self, layerdef):
         from popupcad.filetypes.laminate import Laminate
         lsout = Laminate(layerdef)
         for layer in layerdef.layers:
-            lsout.replacelayergeoms(layer,self.geoms)
+            lsout.replacelayergeoms(layer, self.geoms)
         return lsout
 
     @classmethod
-    def unary_union(cls,layers):
+    def unary_union(cls, layers):
         geoms = [geom for layer in layers for geom in layer.geoms]
         result = customshapely.unary_union_safe(geoms)
         return cls(customshapely.multiinit(result))
-        
-    def binaryoperation(self,layer2,functionname):
+
+    def binaryoperation(self, layer2, functionname):
         sourcegeoms = self.geoms
         operationgeoms = layer2.geoms
 
-        if sourcegeoms ==[]:
+        if sourcegeoms == []:
             sourcegeom = sg.Polygon()
         else:
             sourcegeom = customshapely.unary_union_safe(sourcegeoms)
 
-        if operationgeoms ==[]:
+        if operationgeoms == []:
             operationgeom = sg.Polygon()
         else:
             operationgeom = customshapely.unary_union_safe(operationgeoms)
 
-        function = getattr(sourcegeom,functionname)
+        function = getattr(sourcegeom, functionname)
         newgeom = function(operationgeom)
 
         result = customshapely.unary_union_safe([newgeom])
         return type(self)(customshapely.multiinit(result))
 
-    def valueoperation(self,functionname,*args,**kwargs):
-        sourcegeoms  = self.geoms
+    def valueoperation(self, functionname, *args, **kwargs):
+        sourcegeoms = self.geoms
 
-        if sourcegeoms ==[]:
+        if sourcegeoms == []:
             sourcegeom = sg.Polygon()
         else:
             sourcegeom = customshapely.unary_union_safe(sourcegeoms)
 
-        function = getattr(sourcegeom,functionname)
-        newgeom = function(*args,**kwargs)
+        function = getattr(sourcegeom, functionname)
+        newgeom = function(*args, **kwargs)
         result = customshapely.unary_union_safe([newgeom])
         return type(self)(customshapely.multiinit(result))
 
     def isEmpty(self):
-        return len(self.geoms)==0
+        return len(self.geoms) == 0

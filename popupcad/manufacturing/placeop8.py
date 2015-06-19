@@ -16,19 +16,33 @@ from popupcad.filetypes.design import NoOperation
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from dev_tools.enum import enum
 #from popupcad.filetypes.sketch import Sketch
-from  popupcad.widgets.listmanager import SketchListManager,DesignListManager
+from popupcad.widgets.listmanager import SketchListManager, DesignListManager
+
 
 class Dialog(qg.QDialog):
-    def __init__(self,design,prioroperations,sketch = None, subdesign = None,subopref = None,transformtype_x = None,transformtype_y = None,shift = 0,flip = False,scalex = 1.,scaley = 1.):
-        super(Dialog,self).__init__()
 
-        if transformtype_x ==None:
-            self.transformtype_x = PlaceOperation8.transformtypes.scale            
+    def __init__(
+            self,
+            design,
+            prioroperations,
+            sketch=None,
+            subdesign=None,
+            subopref=None,
+            transformtype_x=None,
+            transformtype_y=None,
+            shift=0,
+            flip=False,
+            scalex=1.,
+            scaley=1.):
+        super(Dialog, self).__init__()
+
+        if transformtype_x is None:
+            self.transformtype_x = PlaceOperation8.transformtypes.scale
         else:
             self.transformtype_x = transformtype_x
 
-        if transformtype_y ==None:
-            self.transformtype_y = PlaceOperation8.transformtypes.scale            
+        if transformtype_y is None:
+            self.transformtype_y = PlaceOperation8.transformtypes.scale
         else:
             self.transformtype_y = transformtype_y
 
@@ -41,16 +55,16 @@ class Dialog(qg.QDialog):
 
         self.sketchwidget = SketchListManager(design)
 
-        self.radiobox_scale_x= qg.QRadioButton('Scale X')
-        self.radiobox_custom_x= qg.QRadioButton('Custom X')
-        self.radiobox_scale_y= qg.QRadioButton('Scale Y')
-        self.radiobox_custom_y= qg.QRadioButton('Custom Y')
+        self.radiobox_scale_x = qg.QRadioButton('Scale X')
+        self.radiobox_custom_x = qg.QRadioButton('Custom X')
+        self.radiobox_scale_y = qg.QRadioButton('Scale Y')
+        self.radiobox_custom_y = qg.QRadioButton('Custom Y')
 
-        self.x_scale_option=qg.QButtonGroup()
+        self.x_scale_option = qg.QButtonGroup()
         self.x_scale_option.addButton(self.radiobox_scale_x)
         self.x_scale_option.addButton(self.radiobox_custom_x)
 
-        self.y_scale_option=qg.QButtonGroup()
+        self.y_scale_option = qg.QButtonGroup()
         self.y_scale_option.addButton(self.radiobox_scale_y)
         self.y_scale_option.addButton(self.radiobox_custom_y)
 
@@ -59,21 +73,21 @@ class Dialog(qg.QDialog):
         self.scaley = qg.QLineEdit()
         self.scalex.setText(str(scalex))
         self.scaley.setText(str(scaley))
-#        custom_layout.addWidget(self.scalex)        
-#        custom_layout.addWidget(self.scaley)        
+#        custom_layout.addWidget(self.scalex)
+#        custom_layout.addWidget(self.scaley)
 
         templayout1 = qg.QHBoxLayout()
-        templayout1.addStretch()        
-        templayout1.addWidget(self.radiobox_scale_x)        
-        templayout1.addWidget(self.radiobox_custom_x)        
-        templayout1.addWidget(self.scalex)        
-        templayout1.addStretch()        
+        templayout1.addStretch()
+        templayout1.addWidget(self.radiobox_scale_x)
+        templayout1.addWidget(self.radiobox_custom_x)
+        templayout1.addWidget(self.scalex)
+        templayout1.addStretch()
         templayout2 = qg.QHBoxLayout()
-        templayout2.addStretch()        
-        templayout2.addWidget(self.radiobox_scale_y)        
-        templayout2.addWidget(self.radiobox_custom_y)        
-        templayout2.addWidget(self.scaley)        
-        templayout2.addStretch()        
+        templayout2.addStretch()
+        templayout2.addWidget(self.radiobox_scale_y)
+        templayout2.addWidget(self.radiobox_custom_y)
+        templayout2.addWidget(self.scaley)
+        templayout2.addStretch()
 
         layout5 = qg.QHBoxLayout()
         layout5.addWidget(qg.QLabel('Flip Layers'))
@@ -84,7 +98,7 @@ class Dialog(qg.QDialog):
         layout4 = qg.QHBoxLayout()
         layout4.addWidget(qg.QLabel('Shift Layers'))
         self.sb = qg.QSpinBox()
-        self.sb.setRange(-100,100)
+        self.sb.setRange(-100, 100)
         self.sb.setSingleStep(1)
         self.sb.setValue(shift)
         layout4.addWidget(self.sb)
@@ -133,29 +147,29 @@ class Dialog(qg.QDialog):
 
 #        if self.subdesign != None:
 #            self.validatename()
-        self.designwidget.itemlist.itemSelectionChanged.connect(self.loadoperations)
+        self.designwidget.itemlist.itemSelectionChanged.connect(
+            self.loadoperations)
 
         for ii in range(self.designwidget.itemlist.count()):
             item = self.designwidget.itemlist.item(ii)
-            if item.value==subdesign:
+            if item.value == subdesign:
                 item.setSelected(True)
-                
+
         for ii in range(self.sketchwidget.itemlist.count()):
             item = self.sketchwidget.itemlist.item(ii)
-            if item.value==sketch:
+            if item.value == sketch:
                 item.setSelected(True)
 
         self.loadoperations()
         try:
-            if subopref != None: 
+            if subopref is not None:
                 id, jj = subopref
-                if subdesign!=None:
+                if subdesign is not None:
                     ii = subdesign.operation_index(id)
-                    self.optree.selectIndeces([(ii,jj)])
+                    self.optree.selectIndeces([(ii, jj)])
         except NoOperation:
             pass
 
-            
     def subdesign(self):
         try:
             return self.designwidget.itemlist.selectedItems()[0].value
@@ -167,9 +181,9 @@ class Dialog(qg.QDialog):
             return self.sketchwidget.itemlist.selectedItems()[0].value
         except IndexError:
             return None
-            
+
     def loadoperations(self):
-        if len(self.designwidget.itemlist.selectedItems())>0:
+        if len(self.designwidget.itemlist.selectedItems()) > 0:
             self.optree.linklist(self.subdesign().operations)
 
     def acceptdata(self):
@@ -182,32 +196,54 @@ class Dialog(qg.QDialog):
             transformtype_y = PlaceOperation8.transformtypes.scale
         elif self.radiobox_custom_y.isChecked():
             transformtype_y = PlaceOperation8.transformtypes.custom
-            
-        ii,jj = self.optree.currentIndeces2()[0]  
-        subopid = self.subdesign().operations[ii].id    
-        subopref = subopid,jj
-        sketch_links = {'place':[self.sketch().id]}
-        design_links = {'subdesign':[self.subdesign().id]}
-        return sketch_links,design_links,subopref,transformtype_x,transformtype_y,self.sb.value(),self.flip.isChecked(),float(self.scalex.text()),float(self.scaley.text())
-            
-        
+
+        ii, jj = self.optree.currentIndeces2()[0]
+        subopid = self.subdesign().operations[ii].id
+        subopref = subopid, jj
+        sketch_links = {'place': [self.sketch().id]}
+        design_links = {'subdesign': [self.subdesign().id]}
+        return sketch_links, design_links, subopref, transformtype_x, transformtype_y, self.sb.value(
+        ), self.flip.isChecked(), float(self.scalex.text()), float(self.scaley.text())
+
+
 class PlaceOperation8(Operation2):
     name = 'PlacementOp'
     operationtypes = ['placement']
-    transformtypes = enum(scale = 'scale',custom = 'custom')
-    def copy(self,identical = True):
-        new = PlaceOperation8(self.sketch_links,self.design_links,self.subopref,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
+    transformtypes = enum(scale='scale', custom='custom')
+
+    def copy(self, identical=True):
+        new = PlaceOperation8(
+            self.sketch_links,
+            self.design_links,
+            self.subopref,
+            self.transformtype_x,
+            self.transformtype_y,
+            self.shift,
+            self.flip,
+            self.scalex,
+            self.scaley)
         new.customname = self.customname
         if identical:
             new.id = self.id
         return new
-    def __init__(self,*args):
-        super(PlaceOperation8,self).__init__()
+
+    def __init__(self, *args):
+        super(PlaceOperation8, self).__init__()
         self.editdata(*args)
         self.id = id(self)
 
-    def editdata(self,sketch_links,design_links,subopref,transformtype_x,transformtype_y,shift,flip,scalex,scaley):
-        super(PlaceOperation8,self).editdata({},sketch_links,design_links)
+    def editdata(
+            self,
+            sketch_links,
+            design_links,
+            subopref,
+            transformtype_x,
+            transformtype_y,
+            shift,
+            flip,
+            scalex,
+            scaley):
+        super(PlaceOperation8, self).editdata({}, sketch_links, design_links)
 #        self.sketchid = sketchid
 #        self.subdesignid = subdesignid
         self.subopref = subopref
@@ -218,30 +254,31 @@ class PlaceOperation8(Operation2):
         self.scalex = scalex
         self.scaley = scaley
 
-    def operate(self,design):
+    def operate(self, design):
         subdesign = design.subdesigns[self.design_links['subdesign'][0]]
 
         locateline = subdesign.findlocateline()
 
-        operation_ref,output_index = self.subopref
+        operation_ref, output_index = self.subopref
         try:
-            designgeometry = subdesign.operations[subdesign.operation_index(operation_ref)].output[output_index].csg
+            designgeometry = subdesign.operations[
+                subdesign.operation_index(operation_ref)].output[output_index].csg
         except AttributeError:
-#            subdesign.reprocessoperations()
-            designgeometry = subdesign.operations[subdesign.operation_index(operation_ref)].output[output_index].csg
-            
+            #            subdesign.reprocessoperations()
+            designgeometry = subdesign.operations[
+                subdesign.operation_index(operation_ref)].output[output_index].csg
+
         sketch = design.sketches[self.sketch_links['place'][0]]
 
-        if self.transformtype_x==self.transformtypes.scale:
+        if self.transformtype_x == self.transformtypes.scale:
             scale_x = None
-        elif self.transformtype_x==self.transformtypes.custom:
+        elif self.transformtype_x == self.transformtypes.custom:
             scale_x = self.scalex
 
-        if self.transformtype_y==self.transformtypes.scale:
+        if self.transformtype_y == self.transformtypes.scale:
             scale_y = None
-        elif self.transformtype_y==self.transformtypes.custom:
+        elif self.transformtype_y == self.transformtypes.custom:
             scale_y = self.scaley
-
 
         step = 1
         if self.flip:
@@ -249,7 +286,7 @@ class PlaceOperation8(Operation2):
         if self.shift > 0:
             outshift = self.shift
             inshift = 0
-        elif self.shift <0:
+        elif self.shift < 0:
             outshift = 0
             inshift = -self.shift
         else:
@@ -257,25 +294,58 @@ class PlaceOperation8(Operation2):
             inshift = 0
 
         layerdef = design.return_layer_definition()
-        layerdef_subdesign = subdesign.return_layer_definition()            
-        return popupcad.algorithms.manufacturing_functions.transform(layerdef,layerdef_subdesign,inshift,outshift,step,sketch,designgeometry,locateline,scale_x,scale_y)
+        layerdef_subdesign = subdesign.return_layer_definition()
+        return popupcad.algorithms.manufacturing_functions.transform(
+            layerdef,
+            layerdef_subdesign,
+            inshift,
+            outshift,
+            step,
+            sketch,
+            designgeometry,
+            locateline,
+            scale_x,
+            scale_y)
 
-    def fromQTransform(self,tin):
-        tout = numpy.array([[tin.m11(),tin.m12(),tin.m13()],[tin.m21(),tin.m22(),tin.m23()],[tin.m31(),tin.m32(),tin.m33()]]).T
+    def fromQTransform(self, tin):
+        tout = numpy.array([[tin.m11(), tin.m12(), tin.m13()], [
+                           tin.m21(), tin.m22(), tin.m23()], [tin.m31(), tin.m32(), tin.m33()]]).T
         return tout
-    def toQTransform(self,tin):
-        tout = qg.QTransform(tin[1][1],tin[1][2],tin[1][3],tin[2][1],tin[2][2],tin[2][3],tin[3][1],tin[3][2],tin[3][3])
+
+    def toQTransform(self, tin):
+        tout = qg.QTransform(
+            tin[1][1],
+            tin[1][2],
+            tin[1][3],
+            tin[2][1],
+            tin[2][2],
+            tin[2][3],
+            tin[3][1],
+            tin[3][2],
+            tin[3][3])
         return tout
-            
+
     @classmethod
-    def buildnewdialog(cls,design,currentop):
-        dialog = Dialog(design,design.operations)
+    def buildnewdialog(cls, design, currentop):
+        dialog = Dialog(design, design.operations)
         return dialog
-    def buildeditdialog(self,design):
+
+    def buildeditdialog(self, design):
         sketch = design.sketches[self.sketch_links['place'][0]]
         subdesign = design.subdesigns[self.design_links['subdesign'][0]]
-        dialog = Dialog(design,design.prioroperations(self),sketch = sketch,subdesign = subdesign, subopref = self.subopref, transformtype_x = self.transformtype_x,transformtype_y = self.transformtype_y,shift=self.shift,flip = self.flip,scalex = self.scalex,scaley = self.scaley)
+        dialog = Dialog(
+            design,
+            design.prioroperations(self),
+            sketch=sketch,
+            subdesign=subdesign,
+            subopref=self.subopref,
+            transformtype_x=self.transformtype_x,
+            transformtype_y=self.transformtype_y,
+            shift=self.shift,
+            flip=self.flip,
+            scalex=self.scalex,
+            scaley=self.scaley)
         return dialog
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
-    sys.exit(app.exec_())    
+    sys.exit(app.exec_())

@@ -10,6 +10,7 @@ from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 import popupcad_manufacturing_plugins.algorithms as algorithms
 from popupcad_manufacturing_plugins.manufacturing.outersheet3 import OuterSheet3
 
+
 class OuterSheet2(MultiValueOperation2):
     name = 'Sheet'
     show = []
@@ -17,8 +18,10 @@ class OuterSheet2(MultiValueOperation2):
     defaults = [0.]
     upgradeclass = OuterSheet3
 
-    def operate(self,design):
-        ls1 = design.op_from_ref(self.operation_link1).output[self.getoutputref()].csg
-        ls,dummy = algorithms.web.supportsheet(design.return_layer_definition(),ls1,self.values[0]*popupcad.internal_argument_scaling)
+    def operate(self, design):
+        ls1 = design.op_from_ref(
+            self.operation_link1).output[
+            self.getoutputref()].csg
+        ls, dummy = algorithms.web.supportsheet(design.return_layer_definition(
+        ), ls1, self.values[0] * popupcad.internal_argument_scaling)
         return ls
-                

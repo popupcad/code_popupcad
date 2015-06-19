@@ -28,5 +28,3 @@ from . import supportcandidate4
 #from . import keepout2
 #from . import outersheet2
 #from . import removability
-
-

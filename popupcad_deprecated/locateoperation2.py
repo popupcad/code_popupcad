@@ -20,17 +20,18 @@ from popupcad.manufacturing.nulloperation import NullOp
 
 
 class Dialog(qg.QDialog):
-    def __init__(self,cls,design,sketch = None):
-        super(Dialog,self).__init__()
+
+    def __init__(self, cls, design, sketch=None):
+        super(Dialog, self).__init__()
         self.design = design
         self.cls = cls
 
         self.sketchwidget = SketchListManager(self.design)
         for ii in range(self.sketchwidget.itemlist.count()):
             item = self.sketchwidget.itemlist.item(ii)
-            if item.value==sketch:
+            if item.value == sketch:
                 item.setSelected(True)
-        
+
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')
         buttonlayout = qg.QHBoxLayout()
@@ -40,7 +41,7 @@ class Dialog(qg.QDialog):
         layout = qg.QVBoxLayout()
         layout.addWidget(self.sketchwidget)
         layout.addLayout(buttonlayout)
-        self.setLayout(layout)        
+        self.setLayout(layout)
 
         button1.clicked.connect(self.accept)
         button2.clicked.connect(self.reject)
@@ -52,8 +53,9 @@ class Dialog(qg.QDialog):
             return None
 
     def acceptdata(self):
-        sketchid =  self.sketch().id
+        sketchid = self.sketch().id
         return sketchid,
+
 
 class LocateOperation2(Operation):
     name = 'Locate Operation'
@@ -63,42 +65,45 @@ class LocateOperation2(Operation):
         new.id = self.id
         return new
 
-    def __init__(self,*args):
-        super(LocateOperation2,self).__init__()
+    def __init__(self, *args):
+        super(LocateOperation2, self).__init__()
         self.editdata(*args)
         self.id = id(self)
-        
-    def editdata(self,sketchid):        
-        super(LocateOperation2,self).editdata()
+
+    def editdata(self, sketchid):
+        super(LocateOperation2, self).editdata()
         self.sketchid = sketchid
 
     def sketchrefs(self):
         return [self.sketchid]
 
     @classmethod
-    def buildnewdialog(cls,design,currentop):
-        dialog = Dialog(cls,design)
-        return dialog
-        
-    def buildeditdialog(self,design):
-        sketch = design.sketches[self.sketchid]
-        dialog = Dialog(self,design,sketch)
+    def buildnewdialog(cls, design, currentop):
+        dialog = Dialog(cls, design)
         return dialog
 
-    def operate(self,design):
+    def buildeditdialog(self, design):
         sketch = design.sketches[self.sketchid]
-        operationgeom = customshapely.unary_union_safe([item.outputshapely() for item in sketch.operationgeometry])
+        dialog = Dialog(self, design, sketch)
+        return dialog
+
+    def operate(self, design):
+        sketch = design.sketches[self.sketchid]
+        operationgeom = customshapely.unary_union_safe(
+            [item.outputshapely() for item in sketch.operationgeometry])
         lsout = Laminate(design.return_layer_definition())
         for layer in design.return_layer_definition().layers:
-            lsout.replacelayergeoms(layer,customshapely.multiinit(operationgeom))
+            lsout.replacelayergeoms(
+                layer,
+                customshapely.multiinit(operationgeom))
         return lsout
 
     def locationgeometry(self):
         return self.sketchid
 
-    def upgrade(self,*args,**kwargs):
+    def upgrade(self, *args, **kwargs):
         from popupcad.manufacturing.locateoperation3 import LocateOperation3
-        sketch_links = {'sketch':[self.sketchid]}
+        sketch_links = {'sketch': [self.sketchid]}
         new = LocateOperation3(sketch_links)
         new.id = self.id
         return new

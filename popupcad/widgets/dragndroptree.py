@@ -8,13 +8,16 @@ Please see LICENSE.txt for full license.
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 from popupcad.filetypes.userdata import UserData
-from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph,Node
+from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph, Node
 
-def debugprint(*args,**kwargs):
+
+def debugprint(*args, **kwargs):
     pass
 
+
 class TreeItem(qg.QTreeWidgetItem):
-    def data(self,column,role):
+
+    def data(self, column, role):
         if role == qc.Qt.ItemDataRole.DisplayRole:
             return str(self.userdata)
         elif role == qc.Qt.ItemDataRole.EditRole:
@@ -24,7 +27,7 @@ class TreeItem(qg.QTreeWidgetItem):
         else:
             return
 
-    def setData(self,column,role,value):
+    def setData(self, column, role, value):
         if role == qc.Qt.ItemDataRole.EditRole:
             self.userdata.setcustomname(value)
             return True
@@ -32,12 +35,14 @@ class TreeItem(qg.QTreeWidgetItem):
             self.userdata = value
             return True
         else:
-            return False        
+            return False
+
 
 class ParentItem(TreeItem):
-    def __init__(self,parent,data):
+
+    def __init__(self, parent, data):
         self.userdata = data
-        super(ParentItem,self).__init__(parent,[str(data)])
+        super(ParentItem, self).__init__(parent, [str(data)])
 
         flags = qc.Qt.ItemFlag.NoItemFlags
         flags |= qc.Qt.ItemFlag.ItemIsEnabled
@@ -48,22 +53,24 @@ class ParentItem(TreeItem):
 
         try:
             outputs = self.userdata.output[:]
-        
+
             try:
                 outputs.pop(0)
             except IndexError:
                 pass
-        
+
             for output in outputs:
-                self.addChild(ChildItem(self,output))
+                self.addChild(ChildItem(self, output))
 
         except AttributeError:
             pass
-        
+
+
 class ChildItem(TreeItem):
-    def __init__(self,parent,data):
+
+    def __init__(self, parent, data):
         self.userdata = data
-        super(ChildItem,self).__init__(parent,[str(data)])
+        super(ChildItem, self).__init__(parent, [str(data)])
 
         flags = qc.Qt.ItemFlag.NoItemFlags
         flags |= qc.Qt.ItemFlag.ItemIsEnabled
@@ -71,24 +78,25 @@ class ChildItem(TreeItem):
         flags |= qc.Qt.ItemFlag.ItemIsEditable
         self.setFlags(flags)
 
+
 class DraggableTreeWidget(qg.QTreeWidget):
     signal_edit = qc.Signal(object)
-    currentRowChanged = qc.Signal(int,int)
+    currentRowChanged = qc.Signal(int, int)
 
-    def parent_index(self,index):
+    def parent_index(self, index):
         if index.parent().isValid():
             return index.parent()
         else:
             return index
 
-    def delete_index(self,index):
+    def delete_index(self, index):
         self.model().removeRow(index.row())
         self.refreshmaster()
 
-    def __init__(self,*args,**kwargs):
+    def __init__(self, *args, **kwargs):
         debugprint('innit')
-        
-        super(DraggableTreeWidget,self).__init__(*args,**kwargs)
+
+        super(DraggableTreeWidget, self).__init__(*args, **kwargs)
         self.setHeaderHidden(True)
         self.setExpandsOnDoubleClick(False)
         self.currentItemChanged.connect(self.myItemChanged)
@@ -105,11 +113,11 @@ class DraggableTreeWidget(qg.QTreeWidget):
         debugprint('currentOperationOutputIndex')
         index = self.currentValidIndex(ii=-1)
         if index.parent().isValid():
-            return index.row()+1
+            return index.row() + 1
         else:
             return 0
-            
-    def currentValidIndex(self,ii = 0):
+
+    def currentValidIndex(self, ii=0):
         debugprint('currentValidIndex')
         index = self.currentIndex()
         if index.isValid():
@@ -117,30 +125,30 @@ class DraggableTreeWidget(qg.QTreeWidget):
         else:
             m = self.model()
             n = m.rowCount()
-            if n==0:
+            if n == 0:
                 jj = 0
             else:
-                jj = ii%n
-            index = m.createIndex(jj,0) 
+                jj = ii % n
+            index = m.createIndex(jj, 0)
             return index
 
-    def currentIndeces(self,ii=-1):
+    def currentIndeces(self, ii=-1):
         debugprint('currentIndeces')
         ii = self.currentRow(ii=ii)
         jj = self.currentOperationOutputIndex()
-        return ii,jj
-        
-    def myItemChanged(self,current,previous):
+        return ii, jj
+
+    def myItemChanged(self, current, previous):
         if not (self.refreshing or self.master_refreshing):
             debugprint('myItemChanged')
             self.currentRowChanged.emit(*self.currentIndeces())
-        
-    def currentRow(self,ii=-1):
+
+    def currentRow(self, ii=-1):
         debugprint('currentRow')
         index = self.currentValidIndex(ii=ii)
         return self.parent_index(index).row()
-        
-    def linklist(self,masterlist):
+
+    def linklist(self, masterlist):
         debugprint('linklist')
         self.masterlist = masterlist
         self.refresh()
@@ -148,56 +156,56 @@ class DraggableTreeWidget(qg.QTreeWidget):
     def refresh(self):
         debugprint('refresh')
         self.refreshing = True
-        
+
 #        index = self.currentValidIndex(-1)
         selected_items = self.selectedItems()
         selected_ids = []
         for item in selected_items:
             ii = self.indexFromItem(item)
-            if isinstance(item,ChildItem):
-                selected_ids.append((item.parent().userdata.id,ii.row()+1))
+            if isinstance(item, ChildItem):
+                selected_ids.append((item.parent().userdata.id, ii.row() + 1))
             else:
-                selected_ids.append((item.userdata.id,0))
-#        for item in 
+                selected_ids.append((item.userdata.id, 0))
+#        for item in
 #        selected_id = self.model().data(index,qc.Qt.ItemDataRole.UserRole).id
         new_indeces = []
         new_ids = [item.id for item in self.masterlist]
-        for a,b in selected_ids:
+        for a, b in selected_ids:
             try:
-                new_indeces.append((new_ids.index(a),b))
+                new_indeces.append((new_ids.index(a), b))
             except IndexError:
                 pass
             except ValueError:
                 pass
-            
-                
+
         self.emit_item_change = False
         self.clear()
         self.emit_item_change = True
-        items = [ParentItem(None,item) for item in self.masterlist]
+        items = [ParentItem(None, item) for item in self.masterlist]
         self.addTopLevelItems(items)
         self.expandAll()
 
 #        self.selectIndeces(new_indeces)
-        
+
         self.refreshing = False
-    def allData(self):    
+
+    def allData(self):
         debugprint('allData')
         m = self.model()
-        num_rows = m.rowCount()        
-        
-        role = qc.Qt.ItemDataRole.UserRole        
-        
+        num_rows = m.rowCount()
+
+        role = qc.Qt.ItemDataRole.UserRole
+
         items = []
         for ii in range(num_rows):
-            index = m.index(ii,0,qc.QModelIndex())
-            item = m.data(index,role)
+            index = m.index(ii, 0, qc.QModelIndex())
+            item = m.data(index, role)
             items.append(item)
         return items
 
     def refreshmaster(self):
         debugprint('refreshmaster')
-        
+
         self.master_refreshing = True
         newmasterlist = [item for item in self.allData()]
         debugprint('new master list')
@@ -205,10 +213,10 @@ class DraggableTreeWidget(qg.QTreeWidget):
 #        self.clear()
 #        debugprint('cleared')
 
-        while len(self.masterlist)>0:
+        while len(self.masterlist) > 0:
             self.masterlist.pop()
         debugprint('clearing old master list')
-        
+
         [self.masterlist.append(item) for item in newmasterlist]
         debugprint('added new items')
 
@@ -222,40 +230,42 @@ class DraggableTreeWidget(qg.QTreeWidget):
 #        return self.masterlist
         self.master_refreshing = False
 
-
-    def keyPressEvent(self,event):
+    def keyPressEvent(self, event):
         debugprint('keyPressEvent')
         if not (self.refreshing or self.master_refreshing):
-            if event.key()==qc.Qt.Key_Delete:
-                self.deleteCurrent()            
-            if event.key()==qc.Qt.Key_Enter or event.key()==qc.Qt.Key_Return:
+            if event.key() == qc.Qt.Key_Delete:
+                self.deleteCurrent()
+            if event.key() == qc.Qt.Key_Enter or event.key(
+            ) == qc.Qt.Key_Return:
                 index = self.currentValidIndex(ii=-1)
-                userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
+                userdata = self.model().data(
+                    index,
+                    qc.Qt.ItemDataRole.UserRole)
                 item = self.itemFromIndex(index)
-                if isinstance(item,ParentItem):
-                    self.signal_edit.emit(userdata)   
+                if isinstance(item, ParentItem):
+                    self.signal_edit.emit(userdata)
             else:
-                super(DraggableTreeWidget,self).keyPressEvent(event)
+                super(DraggableTreeWidget, self).keyPressEvent(event)
 
     def deleteCurrent(self):
         debugprint('deleteCurrent')
         if self.enabled:
             if not (self.refreshing or self.master_refreshing):
                 row = self.currentRow(ii=-1)
-                self.model().removeRow(row,qc.QModelIndex())
+                self.model().removeRow(row, qc.QModelIndex())
                 self.refreshmaster()
-        
-    def itemDoubleClicked(self,index):
+
+    def itemDoubleClicked(self, index):
         debugprint('itemDoubleClicked')
         if not (self.refreshing or self.master_refreshing):
-            userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
+            userdata = self.model().data(index, qc.Qt.ItemDataRole.UserRole)
             item = self.itemFromIndex(index)
-            if isinstance(item,ParentItem):
-                self.signal_edit.emit(userdata)   
-        
+            if isinstance(item, ParentItem):
+                self.signal_edit.emit(userdata)
+
     def disable(self):
         debugprint('disable')
-        self.enabled=False
+        self.enabled = False
         self.setDragEnabled(False)
         self.setDropIndicatorShown(True)
         self.setDragDropMode(self.DragDropMode.NoDragDrop)
@@ -263,17 +273,17 @@ class DraggableTreeWidget(qg.QTreeWidget):
 
     def enable(self):
         debugprint('enable')
-        self.enabled=True
+        self.enabled = True
         self.setDragEnabled(True)
         self.setDropIndicatorShown(True)
         self.setDragDropMode(self.DragDropMode.InternalMove)
         self.setEditTriggers(self.EditTrigger.EditKeyPressed)
-    
+
 #    def set_tree_generator(self,generator):
 #        debugprint('set_tree_generator')
 #        pass
 
-    def myRowsInserted(self,*args,**kwargs):
+    def myRowsInserted(self, *args, **kwargs):
         debugprint('myRowsInserted')
         if not (self.refreshing or self.master_refreshing):
             self.refreshmaster()
@@ -283,27 +293,27 @@ class DraggableTreeWidget(qg.QTreeWidget):
         indeces = []
         for item in self.selectedItems():
             ii = self.indexFromItem(item)
-            if isinstance(item,ChildItem):
-                indeces.append((ii.parent().row(),ii.row()+1))
+            if isinstance(item, ChildItem):
+                indeces.append((ii.parent().row(), ii.row() + 1))
             else:
-                indeces.append((ii.row(),0))
+                indeces.append((ii.row(), 0))
         return indeces
 
-    def selectIndeces(self,indeces,clear = True):
+    def selectIndeces(self, indeces, clear=True):
         debugprint('selectIndeces')
         if clear:
             self.clearSelection()
-        for ii,jj in indeces:
+        for ii, jj in indeces:
             m = self.model()
             n = m.rowCount()
-            if n>0:
-                ii = ii%n
-            
-                if jj==0:
+            if n > 0:
+                ii = ii % n
+
+                if jj == 0:
                     item = self.topLevelItem(ii)
                 else:
-                    item = self.topLevelItem(ii).child(jj-1)
-                self.setItemSelected(item,True)
+                    item = self.topLevelItem(ii).child(jj - 1)
+                self.setItemSelected(item, True)
 
     def currentRefs(self):
         debugprint('currentrefs')
@@ -311,79 +321,112 @@ class DraggableTreeWidget(qg.QTreeWidget):
         indeces = []
         for item in self.selectedItems():
             ii = self.indexFromItem(item)
-            if isinstance(item,ChildItem):
-                indeces.append((item.parent().userdata.id,ii.row()+1))
+            if isinstance(item, ChildItem):
+                indeces.append((item.parent().userdata.id, ii.row() + 1))
             else:
-                indeces.append((item.userdata.id,0))
-        return indeces    
-        
+                indeces.append((item.userdata.id, 0))
+        return indeces
+
+
 class DirectedDraggableTreeWidget(DraggableTreeWidget):
-    def __init__(self,*args,**kwargs):
-        super(DirectedDraggableTreeWidget,self).__init__(*args,**kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super(DirectedDraggableTreeWidget, self).__init__(*args, **kwargs)
         self.setContextMenuPolicy(qc.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.onCustomContextMenu)
 
-    def onCustomContextMenu(self,point):
+    def onCustomContextMenu(self, point):
         index = self.indexAt(point)
         item = self.itemAt(point)
-        if isinstance(item,ParentItem):
-#            if index.isValid():
+        if isinstance(item, ParentItem):
+            #            if index.isValid():
             menu = qg.QMenu()
-            menu.addAction(qg.QAction('edit...',menu,triggered = lambda:self.signal_edit.emit(item.userdata)))
-            menu.addAction(qg.QAction('rename...',menu,triggered = lambda:self.edit(index)))
-            menu.addAction(qg.QAction('delete',menu,triggered = lambda:self.delete_indeces([index])))
-            menu.addAction(qg.QAction('parents',menu,triggered = lambda:self.show_parents(item)))
-            menu.addAction(qg.QAction('children',menu,triggered = lambda:self.show_children(item)))
-            menu.addAction(qg.QAction('edit description...',menu,triggered = item.userdata.edit_description))
-            menu.addAction(qg.QAction('set main image',menu,triggered = lambda:self.set_main_image(item)))
+            menu.addAction(
+                qg.QAction(
+                    'edit...',
+                    menu,
+                    triggered=lambda: self.signal_edit.emit(
+                        item.userdata)))
+            menu.addAction(
+                qg.QAction(
+                    'rename...',
+                    menu,
+                    triggered=lambda: self.edit(index)))
+            menu.addAction(
+                qg.QAction(
+                    'delete',
+                    menu,
+                    triggered=lambda: self.delete_indeces(
+                        [index])))
+            menu.addAction(
+                qg.QAction(
+                    'parents',
+                    menu,
+                    triggered=lambda: self.show_parents(item)))
+            menu.addAction(
+                qg.QAction(
+                    'children',
+                    menu,
+                    triggered=lambda: self.show_children(item)))
+            menu.addAction(
+                qg.QAction(
+                    'edit description...',
+                    menu,
+                    triggered=item.userdata.edit_description))
+            menu.addAction(
+                qg.QAction(
+                    'set main image',
+                    menu,
+                    triggered=lambda: self.set_main_image(item)))
             menu.exec_(self.mapToGlobal(point))
 
-    def set_main_image(self,item):
+    def set_main_image(self, item):
         self.design = self.get_design()
-        if isinstance(item,ParentItem):
+        if isinstance(item, ParentItem):
             self.design.set_main_operation(self.currentRefs()[0])
-    def show_parents(self,item):
+
+    def show_parents(self, item):
         self.tree_generator()
         m = qg.QMessageBox()
         m.setText(str(item.userdata.ancestors()))
         m.exec_()
 
-    def show_children(self,item):
+    def show_children(self, item):
         self.tree_generator()
         m = qg.QMessageBox()
         m.setText(str(item.userdata.decendents()))
         m.exec_()
-        
-    def set_tree_generator(self,generator):
+
+    def set_tree_generator(self, generator):
         debugprint('set_tree_generator_p')
         self.tree_generator = generator
 
-    def set_get_design(self,get_design):
+    def set_get_design(self, get_design):
         self.get_design = get_design
 
-    def myRowsInserted(self,*args,**kwargs):
+    def myRowsInserted(self, *args, **kwargs):
         if not (self.refreshing or self.master_refreshing):
             debugprint('myrowsinserted_p')
             tree = self.tree_generator()
             if not tree.sequence_complete_valid(self.allData()):
                 self.refresh()
-                raise(Exception('Item cannot be moved. This would move a parent operation below a child.'))
+                raise Exception
             else:
                 self.refreshmaster()
 
-    def linklist(self,masterlist):
+    def linklist(self, masterlist):
         debugprint('linklist_p')
 #        tree = self.tree_generator()
 #        if tree.sequence_complete_valid(masterlist):
 #            super(DirectedDraggableTreeWidget,self).linklist(masterlist)
 #        else:
 #            raise(Exception('invalid sequence of operations'))
-        super(DirectedDraggableTreeWidget,self).linklist(masterlist)
+        super(DirectedDraggableTreeWidget, self).linklist(masterlist)
 
     def deleteCurrent(self):
         self.delete_indeces(self.selectedIndexes())
-    
-    def delete_indeces(self,indeces):
+
+    def delete_indeces(self, indeces):
         if self.enabled:
             rows = []
             for ii in indeces:
@@ -391,27 +434,28 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
                     rows.append(ii.row())
             rows.sort()
             rows.reverse()
-            
+
             self.tree_generator()
-            for ii in rows:    
+            for ii in rows:
                 children = self.masterlist[ii].decendents()
                 if not children:
                     del self.masterlist[ii]
                 else:
                     m = qg.QMessageBox()
                     m.setIcon(m.Information)
-                    m.setText(str(self.masterlist[ii])+' cannot be deleted.')
+                    m.setText(str(self.masterlist[ii]) + ' cannot be deleted.')
                     m.setInformativeText('Delete all dependent operations?')
                     s = 'This is due to the following dependent operations:\n'
                     for child in children[:-1]:
-                        s+='{0},\n'.format(str(child))
-                    s+='{0}'.format(str(children[-1]))
+                        s += '{0},\n'.format(str(child))
+                    s += '{0}'.format(str(children[-1]))
                     m.setDetailedText(s)
                     m.addButton(m.YesToAll)
                     m.addButton(m.Cancel)
                     result = m.exec_()
                     if result == m.YesToAll:
-                        alltodelete = [self.masterlist.index(item) for item in children]
+                        alltodelete = [
+                            self.masterlist.index(item) for item in children]
                         alltodelete.append(ii)
                         alltodelete = sorted(alltodelete)[::-1]
                         [self.masterlist.pop(jj) for jj in alltodelete]
@@ -421,23 +465,24 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
 
     def disable(self):
         debugprint('disable_p')
-        super(DirectedDraggableTreeWidget,self).disable()
+        super(DirectedDraggableTreeWidget, self).disable()
         self.blockSignals(True)
-        
+
     def enable(self):
         debugprint('enable_p')
-        super(DirectedDraggableTreeWidget,self).enable()
+        super(DirectedDraggableTreeWidget, self).enable()
         self.blockSignals(False)
-    
-if __name__=='__main__':
+
+if __name__ == '__main__':
     def edituserdata(userdata):
         userdata.edit()
-    class DummyClass(UserData,Node):
+
+    class DummyClass(UserData, Node):
         pass
     import sys
 
     list1 = [DummyClass(str(ii)) for ii in range(5)]
-    
+
     for item in list1:
         outputs = [UserData(str(ii)) for ii in range(2)]
         item.output = outputs
@@ -445,8 +490,8 @@ if __name__=='__main__':
     app = qg.QApplication(sys.argv)
     tw = DirectedDraggableTreeWidget()
     nodes = list1
-    connections = list(zip(nodes[:-1],nodes[1:]))
-    tree_generator = lambda:AcyclicDirectedGraph(nodes,connections[0:3])
+    connections = list(zip(nodes[:-1], nodes[1:]))
+    tree_generator = lambda: AcyclicDirectedGraph(nodes, connections[0:3])
     tw.set_tree_generator(tree_generator)
     tw.linklist(list1)
     tw.signal_edit.connect(edituserdata)
