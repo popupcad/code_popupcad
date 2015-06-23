@@ -194,39 +194,5 @@ for item in classes_remap:
 
 modules_after = sys.modules.copy()
 modules_diff = list(set(modules_after.keys()) - set(modules_before.keys()))
-#
-# def undeprecate():
-#    for path in local_modules:
-#        sys.modules.pop('popupcad_deprecated.'+path)
-#        try:
-#            exec('del {0}'.format(path))
-#        except Exception as ex:
-#            print(ex,path)
-#
-#    for path in new_modules:
-#        sys.modules.pop(path)
-#        try:
-#            exec('del {0}'.format(path))
-#        except Exception as ex:
-#            print(ex,path)
-#
-#    for source,path in modules_remap:
-#        sys.modules.pop(path)
-#        try:
-#            exec('del {0}'.format(path))
-#        except Exception as ex:
-#            print(ex,path)
-#
-#    for source,path in classes_remap:
-#        try:
-#            exec('del {0}'.format(path))
-#        except Exception as ex:
-#            print(ex,path)
-#
-#    try:
-#        for path in modules_diff:
-#            sys.modules.pop('popupcad_deprecated.'+path)
-#            exec('del {0}'.format(path))
-#
-#    except Exception as ex:
-#        print(ex)
+
+Vertex = popupcad.geometry.vertex.Vertex
