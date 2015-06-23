@@ -13,7 +13,8 @@ from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
 import popupcad
 from popupcad.filetypes.laminate import Laminate
 from popupcad.widgets.table_editor import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row
-
+from lxml import etree
+import os
 
 class JointRow(Row):
 
@@ -99,6 +100,7 @@ class MainWidget(qg.QDialog):
 
         button_ok.clicked.connect(self.accept)
         button_cancel.clicked.connect(self.reject)
+                
 
         sublayout2 = qg.QHBoxLayout()
         sublayout2.addWidget(button_ok)
@@ -112,8 +114,7 @@ class MainWidget(qg.QDialog):
         layout.addWidget(self.table)
         layout.addLayout(sublayout1)
         layout.addLayout(sublayout2)
-        self.setLayout(layout)
-
+        
         if jointop is not None:
             try:
                 op_ref, output_ii = jointop.operation_links['parent'][0]
@@ -143,9 +144,13 @@ class MainWidget(qg.QDialog):
                     item.width,
                     item.stiffness,
                     item.damping,
-                    item.preload_angle)
+                    item.preload_angle)            
         else:
             self.table.row_add_empty()
+
+        self.setLayout(layout)
+
+
 
     def get_sketches(self):
         return self.sketches
@@ -353,8 +358,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         self.connections = [(key, connections[key]) for key in allhingelines]
         self.all_joint_props = all_joint_props
 
-        laminates = [safe, unsafe2, split1, split2] + \
-            bodies + list(connections2.values())
+        laminates = [safe, unsafe2, split1, split2] + bodies + list(connections2.values())
         self.output = []
         for ii, item in enumerate(laminates):
             self.output.append(
@@ -372,3 +376,85 @@ class JointOperation2(Operation2, LayerBasedOperation):
             joint_def.sublaminate_layers = new.convert_layer_links(
                 [joint_def.sublaminate_layers], layerdef_old, layerdef_new)[0]
         return new
+        
+    def export(self):
+        joint_laminates = []
+        laminate_names = []
+        print 'Some fun stuff will happen here'
+        for thing in self.connections:
+            for tmp_laminate in thing[1]:
+                joint_laminates.append(tmp_laminate)
+                laminate_names.append(str(tmp_laminate.id))
+        print "These are the laminates we actually want to render..." + str(joint_laminates)
+        for laminate in joint_laminates:
+            laminate.toDAE()
+        create_World_File_Parts("exported", laminate_names)        
+
+
+def createRobotPart(filename, counter):    
+    root_of_robot = etree.Element("link", name='basic_bot' + str(counter))
+    #etree.SubElement(root_of_robot, "gravity").text = "false" # For Testing purposes disable gravity
+    visual_of_robot = etree.Element("visual", name="basic_bot_visual" + str(counter))        
+    etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+    #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
+    geometry_of_robot = etree.Element("geometry")
+    robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
+    etree.SubElement(robo_mesh, "uri").text = "file://" + os.getcwd() + "/" + filename + ".dae"
+    
+    visual_of_robot.append(geometry_of_robot)
+    
+    
+    from copy import deepcopy #copys the element
+    
+    collision = etree.Element("collision", name="basic_bot_collision" + str(counter))
+    collision.insert(0, deepcopy(geometry_of_robot))
+
+    root_of_robot.append(visual_of_robot)    
+    root_of_robot.append(collision)        
+    
+    return root_of_robot    
+
+
+
+def createFloor():
+    floor = etree.Element("model", name='floor')
+    etree.SubElement(floor, "static").text = "true"
+    floor_root = etree.SubElement(floor, "link", name='floor_link')
+    floor_collision = etree.Element("collision", name='floor_collision')
+    floor_root.append(floor_collision)
+    etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
+    floor_geo = etree.SubElement(floor_collision, "geometry")
+    floor_box = etree.SubElement(floor_geo, "box")
+    etree.SubElement(floor_box, "size").text = "100 100 1"
+    floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
+    from copy import deepcopy #copys the element    
+    floor_visual.append(deepcopy(floor_geo))    
+    return floor
+
+
+
+def create_World_File_Parts(project_name, part_names): 
+    global_root = etree.Element("sdf", version="1.5")
+    
+    world_object = etree.Element("world", name='default')
+    global_root.append(world_object);
+    
+    model_object = etree.Element("model", name='default_body')
+    world_object.append(model_object)
+    
+    etree.SubElement(model_object, "static").text = "false"
+    etree.SubElement(model_object, "pose").text = "0 0 1 0 0 0"
+    
+    world_object.append(createFloor())
+    
+    counter = 0
+    for name in part_names:
+        model_object.append(createRobotPart(str(name), counter))
+        counter+=1
+        
+    print etree.tostring(global_root, pretty_print=True)  #Just wow...
+
+    #Saves the object
+    f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w") #opens file with name of "world.world"
+    f.write(etree.tostring(global_root, pretty_print=True))
+    f.close()
