@@ -39,7 +39,9 @@ class GenericLine(GenericShapeBase):
     def segments(self):
         return self.segments_open()
 
-
+    def output_dxf(self,model_space):
+        model_space.add_lwpolyline(self.exteriorpoints())
+        
 class GenericPolyline(GenericShapeBase):
 
     def outputinteractive(self):
@@ -68,6 +70,9 @@ class GenericPolyline(GenericShapeBase):
             self.get_exterior(),
             self.get_interiors(),
             self.is_construction())
+
+    def output_dxf(self,model_space):
+        model_space.add_lwpolyline(self.exteriorpoints())
 
 
 class GenericPoly(GenericShapeBase):
@@ -180,6 +185,9 @@ class GenericPoly(GenericShapeBase):
             self.get_exterior(),
             self.get_interiors(),
             self.is_construction())
+
+    def output_dxf(self,model_space):
+        model_space.add_lwpolyline(self.exteriorpoints(),dxfattribs={'closed':True})
 
 
 class GenericCircle(GenericShapeBase):

@@ -179,3 +179,44 @@ class Sketch(popupCADFile):
             elif 'dxf' in selectedfilter:
                 return cls.load_dxf(filename, parent)
         return None, None
+
+    def saveAs(self, parent=None):
+        import os
+        try:
+            tempfilename = os.path.normpath(
+                os.path.join(
+                    self.dirname,
+                    self.get_basename()))
+        except AttributeError:
+            try:
+                basename = self.get_basename()
+            except AttributeError:
+                basename = self.genbasename()
+
+            tempfilename = os.path.normpath(
+                os.path.join(
+                    self.lastdir(),
+                    basename))
+
+        filterstring, selectedfilter = self.buildfilters()
+        filename, selectedfilter = qg.QFileDialog.getSaveFileName(
+            parent, "Save As", tempfilename, filter=filterstring, selectedFilter=selectedfilter)
+        if not filename:
+            return False
+        else:
+            if 'sketch' in selectedfilter:
+                return self.save_yaml(filename)
+            elif 'dxf' in selectedfilter:
+                return self.save_dxf(filename)
+
+    def save_dxf(self,filename):
+        import ezdxf
+        
+        dwg = ezdxf.new('AC1015')
+        msp = dwg.modelspace()
+        
+        for item in self.operationgeometry:
+            if not item.is_construction():
+                item.output_dxf(msp)
+        
+        dwg.saveas(filename)        
