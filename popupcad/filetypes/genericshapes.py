@@ -45,7 +45,12 @@ class GenericLine(GenericShapeBase):
     def segments(self):
         return self.segments_open()
 
-
+    def output_dxf(self,model_space,layer = None):
+        dxfattribs = {}
+        if not layer==None:
+            dxfattribs['layer']=layer
+        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
+        
 class GenericPolyline(GenericShapeBase):
 
     def outputinteractive(self):
@@ -74,6 +79,12 @@ class GenericPolyline(GenericShapeBase):
             self.get_exterior(),
             self.get_interiors(),
             self.is_construction())
+
+    def output_dxf(self,model_space,layer = None):
+        dxfattribs = {}
+        if not layer==None:
+            dxfattribs['layer']=layer
+        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
 
 
 class GenericPoly(GenericShapeBase):
@@ -201,6 +212,11 @@ class GenericPoly(GenericShapeBase):
         return 0.5 * abs(sum(x0*y1 - x1*y0
                              for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
 
+    def output_dxf(self,model_space,layer = None):
+        dxfattribs = {'closed':True}
+        if not layer==None:
+            dxfattribs['layer']=layer
+        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs=dxfattribs)
 
 class GenericCircle(GenericShapeBase):
 
