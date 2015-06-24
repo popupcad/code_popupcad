@@ -13,6 +13,12 @@ import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 
+try: #Hack to ensure Python 2 & 3 support
+    import itertools.izip as zip
+except ImportError:
+    pass
+
+
 from popupcad.filetypes.genericshapebase import GenericShapeBase
 
 
@@ -191,6 +197,20 @@ class GenericPoly(GenericShapeBase):
             self.get_exterior(),
             self.get_interiors(),
             self.is_construction())
+            
+    #Returns the area scaled to match the appropiate size of the mesh
+    def trueArea(self):
+        p = self.exteriorpoints()
+        
+        p = [[float(x)/popupcad.internal_argument_scaling/1000 for x in point] for point in p]#scales appropiately 
+        return 0.5 * abs(sum(x0*y1 - x1*y0
+                             for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
+   
+    #Returns the area
+    def area(self):
+        p = self.exteriorpoints()
+        return 0.5 * abs(sum(x0*y1 - x1*y0
+                             for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
 
     def output_dxf(self,model_space,layer = None):
         dxfattribs = {'closed':True}

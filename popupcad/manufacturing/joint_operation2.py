@@ -13,7 +13,13 @@ from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
 import popupcad
 from popupcad.filetypes.laminate import Laminate
 from popupcad.widgets.table_editor import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row
+from lxml import etree
+import os
 
+try:
+    import itertools.izip as zip
+except ImportError:
+    pass
 
 class JointRow(Row):
 
@@ -99,6 +105,7 @@ class MainWidget(qg.QDialog):
 
         button_ok.clicked.connect(self.accept)
         button_cancel.clicked.connect(self.reject)
+                
 
         sublayout2 = qg.QHBoxLayout()
         sublayout2.addWidget(button_ok)
@@ -112,8 +119,7 @@ class MainWidget(qg.QDialog):
         layout.addWidget(self.table)
         layout.addLayout(sublayout1)
         layout.addLayout(sublayout2)
-        self.setLayout(layout)
-
+        
         if jointop is not None:
             try:
                 op_ref, output_ii = jointop.operation_links['parent'][0]
@@ -143,9 +149,13 @@ class MainWidget(qg.QDialog):
                     item.width,
                     item.stiffness,
                     item.damping,
-                    item.preload_angle)
+                    item.preload_angle)            
         else:
             self.table.row_add_empty()
+
+        self.setLayout(layout)
+
+
 
     def get_sketches(self):
         return self.sketches
@@ -353,8 +363,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         self.connections = [(key, connections[key]) for key in allhingelines]
         self.all_joint_props = all_joint_props
 
-        laminates = [safe, unsafe2, split1, split2] + \
-            bodies + list(connections2.values())
+        laminates = [safe, unsafe2, split1, split2] + bodies + list(connections2.values())
         self.output = []
         for ii, item in enumerate(laminates):
             self.output.append(
@@ -372,3 +381,117 @@ class JointOperation2(Operation2, LayerBasedOperation):
             joint_def.sublaminate_layers = new.convert_layer_links(
                 [joint_def.sublaminate_layers], layerdef_old, layerdef_new)[0]
         return new
+        
+    def export(self):
+        joint_laminates = []
+        for thing in self.connections:
+            for tmp_laminate in thing[1]:
+                if tmp_laminate not in joint_laminates: #So we don't render the same shape twice
+                    joint_laminates.append(tmp_laminate)
+        for laminate in joint_laminates:
+            laminate.toDAE()
+            
+        project_name = "exported" #We can figure out a better way later.
+        
+        global_root = etree.Element("sdf", version="1.5")
+        
+        world_object = etree.Element("world", name='default')
+        global_root.append(world_object);
+        
+        model_object = etree.Element("model", name='default_body')
+        world_object.append(model_object)
+        
+        etree.SubElement(model_object, "static").text = "false"
+        etree.SubElement(model_object, "pose").text = "0 0 5 0 0 0"
+        
+        world_object.append(createFloor())
+        
+        counter = 0
+        for joint_laminate in joint_laminates:
+            model_object.append(createRobotPart(joint_laminate, counter))
+            counter+=1
+        
+        counter = 0
+        for thing in self.connections:
+            model_object.append(craftJoint(thing, counter))
+            counter+=1
+        
+        #Saves the object
+        f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w") #opens file with name of "world.world"
+        f.write(etree.tostring(global_root, pretty_print=True))
+        f.close()
+
+def createRobotPart(joint_laminate, counter,):
+    filename = str(joint_laminate.id)
+    center_of_mass = joint_laminate.calculateCentroid()
+    
+    root_of_robot = etree.Element("link", name=filename)
+    etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
+    etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.   
+    
+    visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
+    etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+    #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
+    geometry_of_robot = etree.Element("geometry")
+    robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
+    etree.SubElement(robo_mesh, "uri").text = "file://" + os.getcwd() + "/" + filename + ".dae"
+    #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
+    visual_of_robot.append(geometry_of_robot)
+    
+    
+    from copy import deepcopy #copys the element
+    
+    collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
+    collision.insert(0, deepcopy(geometry_of_robot))
+
+    inertial = etree.SubElement(root_of_robot, "inertial")
+    etree.SubElement(inertial, "mass").text = str(joint_laminate.calculateTrueVolume() * 1.4 / 1000) #TODO make layer specfic 
+    etree.SubElement(inertial, "pose").text = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
+    
+    return root_of_robot    
+
+
+
+def createFloor():
+    floor = etree.Element("model", name='floor')
+    etree.SubElement(floor, "static").text = "true"
+    floor_root = etree.SubElement(floor, "link", name='floor_link')
+    floor_collision = etree.Element("collision", name='floor_collision')
+    floor_root.append(floor_collision)
+    etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
+    floor_geo = etree.SubElement(floor_collision, "geometry")
+    floor_box = etree.SubElement(floor_geo, "box")
+    etree.SubElement(floor_box, "size").text = "100 100 1"
+    floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
+    from copy import deepcopy #copys the element    
+    floor_visual.append(deepcopy(floor_geo))    
+    return floor
+
+
+def unitizeLine(shape):
+    print shape.exteriorpoints()   
+    x = shape.exteriorpoints()[0][0] - shape.exteriorpoints()[1][0]
+    y = shape.exteriorpoints()[0][1] - shape.exteriorpoints()[1][1]
+    z = 0
+    from math import sqrt
+    length = sqrt(x * x + y * y)
+    x /= length
+    y /= length
+    return (x, y, z)
+    
+#Crafts a joint.
+def craftJoint(connection, counter):
+    joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
+    etree.SubElement(joint_root, "parent").text = str(connection[1][0].id)
+    etree.SubElement(joint_root, "child").text = str(connection[1][1].id)
+    axis = etree.SubElement(joint_root, "axis")
+    
+    #line = connection[0].exteriorpoints()
+    line = unitizeLine(connection[0])    
+    etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
+    etree.SubElement(axis, "use_parent_model_frame").text = "true"
+    limit = etree.SubElement(axis, "limit")
+    etree.SubElement(limit, "lower").text = '-3.145159'
+    etree.SubElement(limit, "upper").text = '3.14519'
+    return joint_root
+    #come back and implement rather stuff
