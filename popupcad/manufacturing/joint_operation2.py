@@ -383,24 +383,57 @@ class JointOperation2(Operation2, LayerBasedOperation):
         print 'Some fun stuff will happen here'
         for thing in self.connections:
             for tmp_laminate in thing[1]:
-                joint_laminates.append(tmp_laminate)
-                laminate_names.append(str(tmp_laminate.id))
+                if tmp_laminate not in joint_laminates:
+                    joint_laminates.append(tmp_laminate)
+                    laminate_names.append(str(tmp_laminate.id))
         print "These are the laminates we actually want to render..." + str(joint_laminates)
         for laminate in joint_laminates:
             laminate.toDAE()
-        create_World_File_Parts("exported", laminate_names)        
-
+            
+        project_name = "exported"
+        part_names = laminate_names
+        
+        global_root = etree.Element("sdf", version="1.5")
+        
+        world_object = etree.Element("world", name='default')
+        global_root.append(world_object);
+        
+        model_object = etree.Element("model", name='default_body')
+        world_object.append(model_object)
+        
+        etree.SubElement(model_object, "static").text = "false"
+        etree.SubElement(model_object, "pose").text = "0 0 5 0 0 0"
+        
+        world_object.append(createFloor())
+        
+        counter = 0
+        for name in part_names:
+            model_object.append(createRobotPart(str(name), counter))
+            counter+=1
+        
+        counter = 0
+        for thing in self.connections:
+            print thing
+            model_object.append(craftJoint(thing, counter))
+            counter+=1
+        
+        #Saves the object
+        f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w") #opens file with name of "world.world"
+        f.write(etree.tostring(global_root, pretty_print=True))
+        f.close()
 
 def createRobotPart(filename, counter):    
-    root_of_robot = etree.Element("link", name='basic_bot' + str(counter))
-    #etree.SubElement(root_of_robot, "gravity").text = "false" # For Testing purposes disable gravity
+    root_of_robot = etree.Element("link", name=filename)
+    #etree.SubElement(root_of_robot, "gra)
+    etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
+    etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.    
     visual_of_robot = etree.Element("visual", name="basic_bot_visual" + str(counter))        
     etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
     #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
     geometry_of_robot = etree.Element("geometry")
     robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
     etree.SubElement(robo_mesh, "uri").text = "file://" + os.getcwd() + "/" + filename + ".dae"
-    
+    #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
     visual_of_robot.append(geometry_of_robot)
     
     
@@ -432,29 +465,30 @@ def createFloor():
     return floor
 
 
-
-def create_World_File_Parts(project_name, part_names): 
-    global_root = etree.Element("sdf", version="1.5")
+def unitizeLine(shape):
+    print shape.exteriorpoints()   
+    x = shape.exteriorpoints()[0][0] - shape.exteriorpoints()[1][0]
+    y = shape.exteriorpoints()[0][1] - shape.exteriorpoints()[1][1]
+    z = 0
+    from math import sqrt
+    length = sqrt(x * x + y * y)
+    x /= length
+    y /= length
+    return (x, y, z)
     
-    world_object = etree.Element("world", name='default')
-    global_root.append(world_object);
+#Crafts a joint.
+def craftJoint(connection, counter):
+    joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
+    etree.SubElement(joint_root, "parent").text = str(connection[1][0].id)
+    etree.SubElement(joint_root, "child").text = str(connection[1][1].id)
+    axis = etree.SubElement(joint_root, "axis")
     
-    model_object = etree.Element("model", name='default_body')
-    world_object.append(model_object)
-    
-    etree.SubElement(model_object, "static").text = "false"
-    etree.SubElement(model_object, "pose").text = "0 0 1 0 0 0"
-    
-    world_object.append(createFloor())
-    
-    counter = 0
-    for name in part_names:
-        model_object.append(createRobotPart(str(name), counter))
-        counter+=1
-        
-    print etree.tostring(global_root, pretty_print=True)  #Just wow...
-
-    #Saves the object
-    f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w") #opens file with name of "world.world"
-    f.write(etree.tostring(global_root, pretty_print=True))
-    f.close()
+    #line = connection[0].exteriorpoints()
+    line = unitizeLine(connection[0])    
+    etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
+    etree.SubElement(axis, "use_parent_model_frame").text = "true"
+    limit = etree.SubElement(axis, "limit")
+    etree.SubElement(limit, "lower").text = '-3.145159'
+    etree.SubElement(limit, "upper").text = '3.14519'
+    return joint_root
+    #come back and implement rather stuff

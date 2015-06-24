@@ -87,6 +87,36 @@ class GenericLaminate(popupCADFile):
         filename_out = gv.raster(destination, filename, filetype)
         return filename_out
         
+        
+    #Returns the thickness of the laminate
+    def getLaminateThickness(self):
+        layerdef = self.layerdef        
+        zvalue = 0        
+        for layer in layerdef:
+            zvalue += layerdef.zvalue[layer]
+        return zvalue
+        
+    #This will calculate the centeroid
+    def calculateCentroid(self):
+        layerdef = self.layerdef
+        xvalues = []
+        yvalues = []
+        zvalues = []
+        for layer in layerdef.layers:
+            shapes = self.geoms[layer]
+            zvalue = layerdef.zvalue[layer]        
+            for shape in shapes:
+                tris = shape.triangles3()
+                for tri in tris:
+                    for point in tri:
+                        xvalues.append(point[0])
+                        yvalues.append(point[1])
+                        zvalues.append(zvalue)
+        x = reduce(lambda x, y: x + y, xvalues) / len(xvalues)
+        y = reduce(lambda x, y: x + y, yvalues) / len(yvalues)
+        z = reduce(lambda x, y: x + y, zvalues) / len(zvalues)
+        return (x, y, z)
+                
     #Allows the laminate to get exported as a DAE.
     def toDAE(self):
         mesh = Collada()
@@ -127,7 +157,7 @@ class GenericLaminate(popupCADFile):
                 vertices.append(dec[1]) #y-axis            
                 vertices.append(layer_num ) #z-axi
             
-            #This scales the verticies properly. So that they are in millimeters.
+        #This scales the verticies properly. So that they are in millimeters.
         vert_floats = [float(x)/popupcad.internal_argument_scaling/1000 for x in vertices] 
         vert_src_name = str(self.get_basename()) + "-array"
         vert_src = source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
