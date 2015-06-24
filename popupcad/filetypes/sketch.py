@@ -92,12 +92,16 @@ class Sketch(popupCADFile):
     @classmethod
     def load_dxf(cls, filename, parent=None):
         import dxfgrabber
-        from dxfgrabber.entities import Line, Arc, LWPolyline, Insert, Circle, Spline
+        import ezdxf
+        import ezdxf.modern
         dxf = dxfgrabber.readfile(filename)
+        dxf2 = ezdxf.readfile(filename)
         layer_names = dxf.layers.names()
+        layer_names2 = [layer.dxf.name for layer in dxf2.layers]
+        
         dialog = qg.QDialog()
         lw = qg.QListWidget()
-        for item in layer_names:
+        for item in layer_names2:
             lw.addItem(qg.QListWidgetItem(item))
         lw.setSelectionMode(lw.SelectionMode.ExtendedSelection)
         button_ok = qg.QPushButton('Ok')
@@ -113,33 +117,37 @@ class Sketch(popupCADFile):
         layout.addLayout(layout_buttons)
         dialog.setLayout(layout)
         result = dialog.exec_()
+        
         if result:
             selected_layers = [
                 item.data(
                     qc.Qt.ItemDataRole.DisplayRole) for item in lw.selectedItems()]
             entities = dxf.entities
+            entities2 = dxf2.entities
             generics = []
-            for entity in entities:
-                if entity.layer in selected_layers:
-                    if isinstance(entity, Line):
+            for entity in entities2:
+                if entity.dxf.layer in selected_layers:
+#                    if isinstance(entity, dxfgrabber.entities.Line):
+                    if isinstance(entity, ezdxf.modern.graphics.Line):
                         from popupcad.filetypes.genericshapes import GenericLine
                         import numpy
                         points = numpy.array(
-                            [entity.start[:2], entity.end[:2]])
+                            [entity.dxf.start[:2], entity.dxf.end[:2]])
                         points *= popupcad.internal_argument_scaling
                         generics.append(
                             GenericLine.gen_from_point_lists(
                                 points.tolist(),
                                 []))
-                    elif isinstance(entity, Arc):
-                        pass
+#                    elif isinstance(entity, dxfgrabber.entities.Arc):
+#                        pass
 #                        from popupcad.filetypes.genericshapes import GenericCircle
 #                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
-                    elif isinstance(entity, LWPolyline):
+#                    elif isinstance(entity, dxfgrabber.entities.LWPolyline):
+                    elif isinstance(entity, ezdxf.modern.graphics.LWPolyline):
                         from popupcad.filetypes.genericshapes import GenericPolyline
                         from popupcad.filetypes.genericshapes import GenericPoly
                         import numpy
-                        points = numpy.array(entity.points)
+                        points = numpy.array(entity.dxf.points)
                         points *= popupcad.internal_argument_scaling
                         if entity.is_closed:
                             generics.append(
@@ -151,14 +159,14 @@ class Sketch(popupCADFile):
                                 GenericPolyline.gen_from_point_lists(
                                     points.tolist(),
                                     []))
-                    elif isinstance(entity, Insert):
-                        pass
-                    elif isinstance(entity, Circle):
-                        pass
-#                        from popupcad.filetypes.genericshapes import GenericCircle
-#                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
-                    elif isinstance(entity, Spline):
-                        pass
+#                    elif isinstance(entity, dxfgrabber.entities.Insert):
+#                        pass
+#                    elif isinstance(entity, dxfgrabber.entities.Circle):
+#                        pass
+##                        from popupcad.filetypes.genericshapes import GenericCircle
+##                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
+#                    elif isinstance(entity, dxfgrabber.entities.Spline):
+#                        pass
                     else:
                         print(entity)
             new = cls()
