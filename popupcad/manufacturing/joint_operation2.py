@@ -16,6 +16,11 @@ from popupcad.widgets.table_editor import Table, SingleItemListElement, MultiIte
 from lxml import etree
 import os
 
+try:
+    import itertools.izip as zip
+except ImportError:
+    pass
+
 class JointRow(Row):
 
     def __init__(self, get_sketches, get_layers):
@@ -379,19 +384,14 @@ class JointOperation2(Operation2, LayerBasedOperation):
         
     def export(self):
         joint_laminates = []
-        laminate_names = []
-        print 'Some fun stuff will happen here'
         for thing in self.connections:
             for tmp_laminate in thing[1]:
-                if tmp_laminate not in joint_laminates:
+                if tmp_laminate not in joint_laminates: #So we don't render the same shape twice
                     joint_laminates.append(tmp_laminate)
-                    laminate_names.append(str(tmp_laminate.id))
-        print "These are the laminates we actually want to render..." + str(joint_laminates)
         for laminate in joint_laminates:
             laminate.toDAE()
             
-        project_name = "exported"
-        part_names = laminate_names
+        project_name = "exported" #We can figure out a better way later.
         
         global_root = etree.Element("sdf", version="1.5")
         
@@ -407,13 +407,12 @@ class JointOperation2(Operation2, LayerBasedOperation):
         world_object.append(createFloor())
         
         counter = 0
-        for name in part_names:
-            model_object.append(createRobotPart(str(name), counter))
+        for joint_laminate in joint_laminates:
+            model_object.append(createRobotPart(joint_laminate, counter))
             counter+=1
         
         counter = 0
         for thing in self.connections:
-            print thing
             model_object.append(craftJoint(thing, counter))
             counter+=1
         
@@ -422,12 +421,15 @@ class JointOperation2(Operation2, LayerBasedOperation):
         f.write(etree.tostring(global_root, pretty_print=True))
         f.close()
 
-def createRobotPart(filename, counter):    
+def createRobotPart(joint_laminate, counter,):
+    filename = str(joint_laminate.id)
+    center_of_mass = joint_laminate.calculateCentroid()
+    
     root_of_robot = etree.Element("link", name=filename)
-    #etree.SubElement(root_of_robot, "gra)
     etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
-    etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.    
-    visual_of_robot = etree.Element("visual", name="basic_bot_visual" + str(counter))        
+    etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.   
+    
+    visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
     etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
     #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
     geometry_of_robot = etree.Element("geometry")
@@ -439,11 +441,12 @@ def createRobotPart(filename, counter):
     
     from copy import deepcopy #copys the element
     
-    collision = etree.Element("collision", name="basic_bot_collision" + str(counter))
+    collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
     collision.insert(0, deepcopy(geometry_of_robot))
 
-    root_of_robot.append(visual_of_robot)    
-    root_of_robot.append(collision)        
+    inertial = etree.SubElement(root_of_robot, "inertial")
+    etree.SubElement(inertial, "mass").text = str(joint_laminate.calculateTrueVolume() * 1.4 / 1000) #TODO make layer specfic 
+    etree.SubElement(inertial, "pose").text = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
     
     return root_of_robot    
 

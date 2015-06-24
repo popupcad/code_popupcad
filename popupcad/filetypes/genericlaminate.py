@@ -95,7 +95,19 @@ class GenericLaminate(popupCADFile):
         for layer in layerdef:
             zvalue += layerdef.zvalue[layer]
         return zvalue
-        
+
+    def calculateTrueVolume(self):
+        layerdef = self.layerdef
+        volume = 0
+        for layer in layerdef.layers:
+            shapes = self.geoms[layer]
+            zvalue = layerdef.zvalue[layer]        
+            for shape in shapes:
+                area = shape.trueArea()
+                zvalue = zvalue/popupcad.internal_argument_scaling/1000
+                volume += area * zvalue
+        return volume
+    
     #This will calculate the centeroid
     def calculateCentroid(self):
         layerdef = self.layerdef
@@ -108,15 +120,19 @@ class GenericLaminate(popupCADFile):
             for shape in shapes:
                 tris = shape.triangles3()
                 for tri in tris:
-                    for point in tri:
+                    for point in tri:   
+                        #Scales the mesh properly
+                        point = [float(a)/popupcad.internal_argument_scaling/1000 for a in point]
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
         x = reduce(lambda x, y: x + y, xvalues) / len(xvalues)
         y = reduce(lambda x, y: x + y, yvalues) / len(yvalues)
         z = reduce(lambda x, y: x + y, zvalues) / len(zvalues)
-        return (x, y, z)
-                
+        out = (x, y, z)
+        return out#[float(a)/popupcad.internal_argument_scaling/1000 for a in out]
+        
+
     #Allows the laminate to get exported as a DAE.
     def toDAE(self):
         mesh = Collada()
