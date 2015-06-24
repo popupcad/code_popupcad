@@ -203,6 +203,8 @@ class TextParent(qg.QGraphicsPathItem, Common):
         genericcopy = self.generic.copy(identical=False)
         return genericcopy.outputinteractive()
 
+    def output_dxf(self,model_space,layer = None):
+        pass
 
 class TextItem(qg.QGraphicsTextItem, Common):
 

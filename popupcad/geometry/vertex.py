@@ -236,6 +236,9 @@ class DrawnPoint(ShapeVertex):
             new.id = self.id
         return new
 
+    def output_dxf(self,model_space,layer = None):
+        pass
+    
     @classmethod
     def delistify(cls, id, x, y, is_construction):
         new = cls()

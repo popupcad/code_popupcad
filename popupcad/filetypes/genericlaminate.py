@@ -188,12 +188,16 @@ class GenericLaminate(popupCADFile):
 
 
 if __name__ == '__main__':   
-    import PySide.QtGui as qg
-    import sys
-    
-    app = qg.QApplication(sys.argv)
+    def save_dxf(self,filename):
+        import ezdxf
+        
+        dwg = ezdxf.new('AC1015')
+        msp = dwg.modelspace()
 
-    a = GenericLaminate(1, {})
-    a.copy()
-    a.saveAs()
-#    sys.exit(app.exec_())
+        for layer in self.layerdef.layers:
+            dxf_layer = dwg.layers.create(name=layer.id)
+            for item in self.geoms[layer]:
+                if not item.is_construction():
+                    item.output_dxf(msp,layer.id)
+        
+        dwg.saveas(filename)                

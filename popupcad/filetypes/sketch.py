@@ -91,10 +91,11 @@ class Sketch(popupCADFile):
 
     @classmethod
     def load_dxf(cls, filename, parent=None):
-        import dxfgrabber
-        from dxfgrabber.entities import Line, Arc, LWPolyline, Insert, Circle, Spline
-        dxf = dxfgrabber.readfile(filename)
-        layer_names = dxf.layers.names()
+        import ezdxf
+        import ezdxf.modern
+        dxf = ezdxf.readfile(filename)
+        layer_names = [layer.dxf.name for layer in dxf.layers]
+        
         dialog = qg.QDialog()
         lw = qg.QListWidget()
         for item in layer_names:
@@ -113,6 +114,7 @@ class Sketch(popupCADFile):
         layout.addLayout(layout_buttons)
         dialog.setLayout(layout)
         result = dialog.exec_()
+        
         if result:
             selected_layers = [
                 item.data(
@@ -120,26 +122,22 @@ class Sketch(popupCADFile):
             entities = dxf.entities
             generics = []
             for entity in entities:
-                if entity.layer in selected_layers:
-                    if isinstance(entity, Line):
+                if entity.dxf.layer in selected_layers:
+                    if isinstance(entity, ezdxf.modern.graphics.Line):
                         from popupcad.filetypes.genericshapes import GenericLine
                         import numpy
                         points = numpy.array(
-                            [entity.start[:2], entity.end[:2]])
+                            [entity.dxf.start[:2], entity.dxf.end[:2]])
                         points *= popupcad.internal_argument_scaling
                         generics.append(
                             GenericLine.gen_from_point_lists(
                                 points.tolist(),
                                 []))
-                    elif isinstance(entity, Arc):
-                        pass
-#                        from popupcad.filetypes.genericshapes import GenericCircle
-#                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
-                    elif isinstance(entity, LWPolyline):
+                    elif isinstance(entity, ezdxf.modern.graphics.LWPolyline):
                         from popupcad.filetypes.genericshapes import GenericPolyline
                         from popupcad.filetypes.genericshapes import GenericPoly
                         import numpy
-                        points = numpy.array(entity.points)
+                        points = numpy.array(entity.dxf.points)
                         points *= popupcad.internal_argument_scaling
                         if entity.is_closed:
                             generics.append(
@@ -151,14 +149,6 @@ class Sketch(popupCADFile):
                                 GenericPolyline.gen_from_point_lists(
                                     points.tolist(),
                                     []))
-                    elif isinstance(entity, Insert):
-                        pass
-                    elif isinstance(entity, Circle):
-                        pass
-#                        from popupcad.filetypes.genericshapes import GenericCircle
-#                        generics.append(GenericCircle.gen_from_point_lists([entity.center[:2],(entity.radius,0)],[]))
-                    elif isinstance(entity, Spline):
-                        pass
                     else:
                         print(entity)
             new = cls()
@@ -179,3 +169,44 @@ class Sketch(popupCADFile):
             elif 'dxf' in selectedfilter:
                 return cls.load_dxf(filename, parent)
         return None, None
+
+    def saveAs(self, parent=None):
+        import os
+        try:
+            tempfilename = os.path.normpath(
+                os.path.join(
+                    self.dirname,
+                    self.get_basename()))
+        except AttributeError:
+            try:
+                basename = self.get_basename()
+            except AttributeError:
+                basename = self.genbasename()
+
+            tempfilename = os.path.normpath(
+                os.path.join(
+                    self.lastdir(),
+                    basename))
+
+        filterstring, selectedfilter = self.buildfilters()
+        filename, selectedfilter = qg.QFileDialog.getSaveFileName(
+            parent, "Save As", tempfilename, filter=filterstring, selectedFilter=selectedfilter)
+        if not filename:
+            return False
+        else:
+            if 'sketch' in selectedfilter:
+                return self.save_yaml(filename)
+            elif 'dxf' in selectedfilter:
+                return self.save_dxf(filename)
+
+    def save_dxf(self,filename):
+        import ezdxf
+        
+        dwg = ezdxf.new('AC1015')
+        msp = dwg.modelspace()
+        
+        for item in self.operationgeometry:
+            if not item.is_construction():
+                item.output_dxf(msp)
+        
+        dwg.saveas(filename)        
