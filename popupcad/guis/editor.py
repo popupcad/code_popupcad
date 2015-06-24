@@ -189,7 +189,13 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.fileactions.append({'text': '&Export to SVG', 'kwargs': {
                                 'icon': Icon('export'), 'triggered': self.exportLayerSVG}})
         self.fileactions.append({'text': 'Export to dxf', 'kwargs': {
+                                'icon': Icon('export'),
+                                'statusTip': "Exports to a dxf file",                                
                                 'triggered': self.export_dxf}})
+        self.fileactions.append({'text': 'Export to dae', 'kwargs': {
+                                'icon': Icon('export'),
+                                'statusTip': "Exports to a dxf file",                                
+                                'triggered': self.export_dae}})
         self.fileactions.append(
             {'text': "Save Joint Defs", 'kwargs': {'triggered': self.save_joint_def}})
         self.fileactions.append(
@@ -771,6 +777,12 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         output = self.design.operations[ii].output[jj]
         generic = output.generic_laminate()
         generic.save_dxf(os.path.normpath(os.path.join(popupcad.exportdir,self.design.get_basename() + '_'+str(self.design.operations[ii])+'.dxf')))
+
+    @loggable
+    def export_dae(self):
+        ii, jj = self.operationeditor.currentIndeces2()[0]
+        output = self.design.operations[ii].output[jj]
+        output.generic_laminate().toDAE()
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
