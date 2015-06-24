@@ -39,8 +39,11 @@ class GenericLine(GenericShapeBase):
     def segments(self):
         return self.segments_open()
 
-    def output_dxf(self,model_space):
-        model_space.add_lwpolyline(self.exteriorpoints())
+    def output_dxf(self,model_space,layer = None):
+        dxfattribs = {}
+        if not layer==None:
+            dxfattribs['layer']=layer
+        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
         
 class GenericPolyline(GenericShapeBase):
 
@@ -71,8 +74,11 @@ class GenericPolyline(GenericShapeBase):
             self.get_interiors(),
             self.is_construction())
 
-    def output_dxf(self,model_space):
-        model_space.add_lwpolyline(self.exteriorpoints())
+    def output_dxf(self,model_space,layer = None):
+        dxfattribs = {}
+        if not layer==None:
+            dxfattribs['layer']=layer
+        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
 
 
 class GenericPoly(GenericShapeBase):
@@ -186,9 +192,11 @@ class GenericPoly(GenericShapeBase):
             self.get_interiors(),
             self.is_construction())
 
-    def output_dxf(self,model_space):
-        model_space.add_lwpolyline(self.exteriorpoints(),dxfattribs={'closed':True})
-
+    def output_dxf(self,model_space,layer = None):
+        dxfattribs = {'closed':True}
+        if not layer==None:
+            dxfattribs['layer']=layer
+        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs=dxfattribs)
 
 class GenericCircle(GenericShapeBase):
 

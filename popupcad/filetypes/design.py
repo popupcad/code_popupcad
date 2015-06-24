@@ -221,8 +221,9 @@ class Design(popupCADFile):
     def findlocateline(self):
         for op in self.operations[::-1]:
             try:
-                return self.sketches[
-                    op.locationgeometry()].operationgeometry[0]
+                for geom in self.sketches[op.locationgeometry()].operationgeometry:
+                    if not geom.is_construction():
+                        return geom
             except AttributeError:
                 pass
 

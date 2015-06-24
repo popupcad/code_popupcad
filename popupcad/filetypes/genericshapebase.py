@@ -344,5 +344,5 @@ class GenericShapeBase(popupCADFile):
     def append_exterior_vertex(self, vertex):
         self.exterior.append(vertex)
 
-    def output_dxf(self,model_space):
+    def output_dxf(self,model_space,layer = None):
         pass

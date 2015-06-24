@@ -188,6 +188,8 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                                             'triggered': self.upgrade}})
         self.fileactions.append({'text': '&Export to SVG', 'kwargs': {
                                 'icon': Icon('export'), 'triggered': self.exportLayerSVG}})
+        self.fileactions.append({'text': 'Export to dxf', 'kwargs': {
+                                'triggered': self.export_dxf}})
         self.fileactions.append(
             {'text': "Save Joint Defs", 'kwargs': {'triggered': self.save_joint_def}})
         self.fileactions.append(
@@ -761,6 +763,14 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     @loggable
     def build_documentation(self):
         self.design.build_documentation()
+
+    @loggable
+    def export_dxf(self):
+        import os
+        ii, jj = self.operationeditor.currentIndeces2()[0]
+        output = self.design.operations[ii].output[jj]
+        generic = output.generic_laminate()
+        generic.save_dxf(os.path.normpath(os.path.join(popupcad.exportdir,self.design.get_basename() + '_'+str(self.design.operations[ii])+'.dxf')))
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
