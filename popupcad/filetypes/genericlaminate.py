@@ -176,7 +176,7 @@ class GenericLaminate(popupCADFile):
         
         if (thickness > 0): #This part of the code extrudes the mesh to the specified thickness
             sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
-            sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:]))
+            sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
             sideTriangles.extend(sideTriangles2)
             sideTriangles = [list(triangle) for triangle in sideTriangles]
             sideTriangles = reduce(lambda x, y: x + y, sideTriangles)
