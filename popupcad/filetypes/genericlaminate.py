@@ -8,6 +8,11 @@ import popupcad
 import numpy
 from popupcad.filetypes.popupcad_file import popupCADFile
 from collada import *
+try:
+    import itertools.izip as zip
+except ImportError:
+    pass
+
 
 class GenericLaminate(popupCADFile):
     filetypes = {'laminate': 'Laminate File'}
