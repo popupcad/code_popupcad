@@ -395,7 +395,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         
         global_root = etree.Element("sdf", version="1.5")
         
-        world_object = etree.Element("world", name='default')
+        world_object = etree.Element("world", name='world')
         global_root.append(world_object);
         
         model_object = etree.Element("model", name='default_body')
@@ -416,8 +416,21 @@ class JointOperation2(Operation2, LayerBasedOperation):
             model_object.append(craftJoint(thing, counter))
             counter+=1
         
-        #Saves the object
-        f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w") #opens file with name of "world.world"
+
+        joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
+        etree.SubElement(joint_root, 'parent').text = str(self.connections[0][1][0].id)
+        etree.SubElement(joint_root, 'child').text = "world"
+        axis = etree.SubElement(joint_root, "axis")
+        etree.SubElement(axis, "xyz").text = "0 1 0"
+        limit = etree.SubElement(axis, "limit")
+        etree.SubElement(limit, "upper").text = '0'
+        etree.SubElement(limit, "lower").text = '0'
+            
+        
+   
+
+    #Saves the object
+        f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w")
         f.write(etree.tostring(global_root, pretty_print=True))
         f.close()
 
@@ -445,8 +458,9 @@ def createRobotPart(joint_laminate, counter,):
     collision.insert(0, deepcopy(geometry_of_robot))
 
     inertial = etree.SubElement(root_of_robot, "inertial")
-    etree.SubElement(inertial, "mass").text = str(joint_laminate.calculateTrueVolume() * 1.4 / 1000) #TODO make layer specfic 
+    #etree.SubElement(inertial, "mass").text = str(joint_laminate.calculateTrueVolume() * 1.4 / 1000) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
+    
     
     return root_of_robot    
 
@@ -468,8 +482,7 @@ def createFloor():
     return floor
 
 
-def unitizeLine(shape):
-    print shape.exteriorpoints()   
+def unitizeLine(shape): 
     x = shape.exteriorpoints()[0][0] - shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] - shape.exteriorpoints()[1][1]
     z = 0
@@ -495,3 +508,13 @@ def craftJoint(connection, counter):
     etree.SubElement(limit, "upper").text = '3.14519'
     return joint_root
     #come back and implement rather stuff
+
+
+def fixToWorld(root):
+    #fixed_root = etree.SubElement(root, "link", name="lworld")
+    #include = etree.SubElement(fixed_root, "include")
+    #etree.SubElement(include, "uri").text = popupcad.exportdir + os.path.sep + "fixed.world"    
+    #etree.SubElement(fixed_root, "static").text = "true"    
+    
+    print etree.tostring(root, pretty_print=True)
+    return joint_root

@@ -106,10 +106,10 @@ class GenericLaminate(popupCADFile):
         volume = 0
         for layer in layerdef.layers:
             shapes = self.geoms[layer]
-            zvalue = layerdef.zvalue[layer]        
+            zvalue = layer.thickness
             for shape in shapes:
                 area = shape.trueArea()
-                zvalue = zvalue/popupcad.internal_argument_scaling/1000
+                zvalue = zvalue / 1000
                 volume += area * zvalue
         return volume
     
@@ -144,13 +144,14 @@ class GenericLaminate(popupCADFile):
         layerdef = self.layerdef
         nodes = [] # Each node of the mesh scene. Typically one per layer.
         for layer in layerdef.layers:
+            layer_thickness = layer.thickness * popupcad.internal_argument_scaling            
             shapes = self.geoms[layer]
             zvalue = layerdef.zvalue[layer]        
             height = float(zvalue) #* 100 #* 1/popupcad.internal_argument_scaling
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
             for s in shapes:
-                geom = self.createMeshFromShape(s, height, mesh)
+                geom = self.createMeshFromShape(s, height, mesh, layer_thickness)
                 mesh.geometries.append(geom) 
                 effect = material.Effect("effect", [], "phone", diffuse=(1,0,0), specular=(0,1,0))
                 mat = material.Material("material", "mymaterial", effect)    
@@ -168,11 +169,11 @@ class GenericLaminate(popupCADFile):
         filename = popupcad.exportdir + os.path.sep +   str(self.id) + 'dat.dae' # 
         mesh.write(filename)
         
-    def createMeshFromShape(self, s, layer_num, mesh): #TODO Move this method into the shape class.
+    def createMeshFromShape(self, s, layer_num, mesh, thickness): #TODO Move this method into the shape class.
         s.exteriorpoints()
         a = s.triangles3()
         vertices = []
-        thickness = 0 #TODO Replace this with an actual method parameter when I figure out the values.
+        #thickness = 0 #TODO Replace this with an actual method parameter when I figure out the values.
         for coord in a: 
             for dec in coord:            
                 vertices.append(dec[0]) #x-axis
@@ -180,6 +181,13 @@ class GenericLaminate(popupCADFile):
                 vertices.append(layer_num ) #z-axi
         
         if (thickness > 0): #This part of the code extrudes the mesh to the specified thickness
+            raw_edges = s.exteriorpoints()        
+            top_edges = []
+            bottom_edges = []            
+            for dec in raw_edges:      
+                top_edges.append((dec[0], dec[1], layer_num)) #x-axis
+                bottom_edges.append((dec[0], dec[1], layer_num + thickness))
+        
             sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
             sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
             sideTriangles.extend(sideTriangles2)
