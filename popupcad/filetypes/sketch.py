@@ -195,7 +195,7 @@ class Sketch(popupCADFile):
             return False
         else:
             if 'sketch' in selectedfilter:
-                return self.save_yaml(filename)
+                return self.save_yaml(filename,identical=False)
             elif 'dxf' in selectedfilter:
                 return self.save_dxf(filename)
 
