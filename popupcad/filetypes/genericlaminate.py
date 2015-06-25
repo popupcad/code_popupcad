@@ -167,11 +167,23 @@ class GenericLaminate(popupCADFile):
         s.exteriorpoints()
         a = s.triangles3()
         vertices = []
+        thickness = 0 #TODO Replace this with an actual method parameter when I figure out the values.
         for coord in a: 
             for dec in coord:            
                 vertices.append(dec[0]) #x-axis
                 vertices.append(dec[1]) #y-axis            
                 vertices.append(layer_num ) #z-axi
+        
+        if (thickness > 0): #This part of the code extrudes the mesh to the specified thickness
+            sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
+            sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:]))
+            sideTriangles.extend(sideTriangles2)
+            sideTriangles = [list(triangle) for triangle in sideTriangles]
+            sideTriangles = reduce(lambda x, y: x + y, sideTriangles)
+            sideTriangles = [list(point) for point in sideTriangles]
+            sideTriangles = reduce(lambda x, y: x + y, sideTriangles)            
+            vertices.extend(sideTriangles)
+            
             
         #This scales the verticies properly. So that they are in millimeters.
         vert_floats = [float(x)/popupcad.internal_argument_scaling/1000 for x in vertices] 
