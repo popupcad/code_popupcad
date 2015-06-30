@@ -427,9 +427,9 @@ class JointOperation2(Operation2, LayerBasedOperation):
         etree.SubElement(limit, "upper").text = '0'
         etree.SubElement(limit, "lower").text = '0'
         
-        physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
-        etree.SubElement(physics, 'max_step_size').text = str(0.0001)
-        etree.SubElement(physics, "real_time_factor").text = "0.1"
+        #physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
+        #etree.SubElement(physics, 'max_step_size').text = str(0.0001)
+        #etree.SubElement(physics, "real_time_factor").text = "0.1"
         
         #Saves the object
         f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w")
@@ -444,8 +444,12 @@ def createRobotPart(joint_laminate, counter,):
     etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
     etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.   
     
+    centroid_pose = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
+    #etree.SubElement(root_of_robot, "pose").text = centroid_pose    
+    
     visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
     etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+    etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
     #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
     geometry_of_robot = etree.Element("geometry")
     robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
@@ -462,7 +466,7 @@ def createRobotPart(joint_laminate, counter,):
     inertial = etree.SubElement(root_of_robot, "inertial")
     trueMass = joint_laminate.calculateTrueVolume() * 1.4 / 1000
     etree.SubElement(inertial, "mass").text = str(max(0.01, trueMass)) #TODO make layer specfic 
-    etree.SubElement(inertial, "pose").text = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
+    etree.SubElement(inertial, "pose").text = centroid_pose
     
     return root_of_robot    
 
@@ -477,6 +481,7 @@ def createFloor():
     etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
     floor_geo = etree.SubElement(floor_collision, "geometry")
     floor_box = etree.SubElement(floor_geo, "plane")
+    floor_size = etree.SubElement(floor_box, "size").text = "10 10"
     #etree.SubElement(floor_box, "size").text = "100 100 1"
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
@@ -484,11 +489,24 @@ def createFloor():
     return floor
 
 
-def unitizeLine(shape):
-    print(shape.exteriorpoints())
+def extractLine(shape):    
     x = shape.exteriorpoints()[0][0] - shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] - shape.exteriorpoints()[1][1]
     z = 0
+    return (x, y, z)
+    
+def findMidPoint(shape, anchor):
+    x = shape.exteriorpoints()[0][0] + shape.exteriorpoints()[1][0]
+    y = shape.exteriorpoints()[0][1] + shape.exteriorpoints()[1][1]
+    z = anchor.getLaminateThickness()    
+    x /= (2.0 * popupcad.internal_argument_scaling * 1000)
+    y /= (2.0 * popupcad.internal_argument_scaling * 1000)
+    z /= (2.0 * popupcad.internal_argument_scaling * 1000)
+    return (x, y, z)
+    
+def unitizeLine(shape):
+    print(shape.exteriorpoints())
+    (x, y, z) = extractLine(shape)    
     from math import sqrt
     length = sqrt(x * x + y * y)
     x /= length
@@ -498,13 +516,17 @@ def unitizeLine(shape):
 #Crafts a joint.
 def craftJoint(connection, counter):
     joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
-    etree.SubElement(joint_root, "parent").text = str(connection[1][0].id)
-    etree.SubElement(joint_root, "child").text = str(connection[1][1].id)
+    etree.SubElement(joint_root, "parent").text = str(connection[1][1].id)
+    etree.SubElement(joint_root, "child").text = str(connection[1][0].id)
+    joint_center = findMidPoint(connection[0], connection[1][0])
+    joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
+    etree.SubElement(joint_root, "pose").text = joint_loc   
     axis = etree.SubElement(joint_root, "axis")
     line = unitizeLine(connection[0])    
     etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
     print(line)    
-    etree.SubElement(axis, "use_parent_model_frame").text = "true"
+    
+    #etree.SubElement(axis, "use_parent_model_frame").text = "true"
     limit = etree.SubElement(axis, "limit")
     etree.SubElement(limit, "lower").text = '-3.145159'
     etree.SubElement(limit, "upper").text = '3.14519'

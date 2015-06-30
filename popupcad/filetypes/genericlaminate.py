@@ -96,7 +96,7 @@ class GenericLaminate(popupCADFile):
     def getLaminateThickness(self):
         layerdef = self.layerdef        
         zvalue = 0        
-        for layer in layerdef:
+        for layer in layerdef.layers:
             zvalue += layerdef.zvalue[layer]
         return zvalue
 
@@ -172,7 +172,7 @@ class GenericLaminate(popupCADFile):
         s.exteriorpoints()
         a = s.triangles3()
         vertices = []
-        thickness = thickness * 1000
+        thickness = thickness 
         #thickness = 0 #TODO Replace this with an actual method parameter when I figure out the values.
         
         for coord in a: 
