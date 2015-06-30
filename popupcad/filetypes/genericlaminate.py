@@ -114,7 +114,6 @@ class GenericLaminate(popupCADFile):
     
     #This will calculate the centeroid
     def calculateCentroid(self):
-        import collada
         layerdef = self.layerdef
         xvalues = []
         yvalues = []
@@ -131,9 +130,9 @@ class GenericLaminate(popupCADFile):
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
-        x = collada.reduce(lambda x, y: x + y, xvalues) / len(xvalues)
-        y = collada.reduce(lambda x, y: x + y, yvalues) / len(yvalues)
-        z = collada.reduce(lambda x, y: x + y, zvalues) / len(zvalues)
+        x = reduce(lambda x, y: x + y, xvalues) / len(xvalues)
+        y = reduce(lambda x, y: x + y, yvalues) / len(yvalues)
+        z = reduce(lambda x, y: x + y, zvalues) / len(zvalues)
         out = (x, y, z)
         return out#[float(a)/popupcad.internal_argument_scaling/1000 for a in out]
         
