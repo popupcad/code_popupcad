@@ -147,14 +147,14 @@ class SketcherSupport(object):
 
     def mouseMoveEvent(self, event):
         pos = event.scenePos()
-        if not self.temp is None:
+        if self.temp is not None:
             self.temp.mousemove(pos)
         else:
             qg.QGraphicsScene.mouseMoveEvent(self, event)
 
     def mouseReleaseEvent(self, event):
         pos = event.scenePos()
-        if not self.temp is None:
+        if self.temp is not None:
             self.temp.mouserelease(pos)
         else:
             qg.QGraphicsScene.mouseReleaseEvent(self, event)
@@ -196,12 +196,12 @@ class SketcherSupport(object):
                     pass
                 try:
                     for child in item.children():
-                        if not child in self.items():
+                        if child not in self.items():
                             self.addItem(child)
                 except AttributeError:
                     pass
             for item in self.extraobjects:
-                if not item in self.items():
+                if item not in self.items():
                     self.addItem(item)
         else:
             for item in self.items():
