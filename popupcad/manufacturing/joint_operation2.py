@@ -403,7 +403,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         world_object.append(model_object)
         
         etree.SubElement(model_object, "static").text = "false"
-        etree.SubElement(model_object, "pose").text = "0 0 5 0 0 0"
+        etree.SubElement(model_object, "pose").text = "0 0 1 0 0 0"
         
         world_object.append(createFloor())
         
@@ -428,8 +428,8 @@ class JointOperation2(Operation2, LayerBasedOperation):
         etree.SubElement(limit, "lower").text = '0'
         
         physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
-        #etree.SubElement(physics, 'max_step_size').text = str(0.00001)
-        etree.SubElement(physics, "real_time_factor").text = "0.01"
+        etree.SubElement(physics, 'max_step_size').text = str(0.0001)
+        etree.SubElement(physics, "real_time_factor").text = "0.1"
         
         #Saves the object
         f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w")
@@ -476,8 +476,8 @@ def createFloor():
     floor_root.append(floor_collision)
     etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
     floor_geo = etree.SubElement(floor_collision, "geometry")
-    floor_box = etree.SubElement(floor_geo, "box")
-    etree.SubElement(floor_box, "size").text = "100 100 10"
+    floor_box = etree.SubElement(floor_geo, "plane")
+    #etree.SubElement(floor_box, "size").text = "100 100 1"
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
     floor_visual.append(deepcopy(floor_geo))    

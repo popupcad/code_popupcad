@@ -14,11 +14,11 @@ class Program(object):
     def __init__(self, plugins, *args, **kwargs):
 
         args = list(args)
-        if hasattr(sys, 'frozen'):
-            pass
-        else:
-            import clear_compiled
-            clear_compiled.clear_compiled()
+#        if hasattr(sys, 'frozen'):
+#            pass
+#        else:
+            #import clear_compiled
+            #clear_compiled.clear_compiled()
 
         for item in args:
             if '--deprecated' in item:

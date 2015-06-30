@@ -171,7 +171,7 @@ class GenericLaminate(popupCADFile):
         s.exteriorpoints()
         a = s.triangles3()
         vertices = []
-        thickness = thickness * 10
+        thickness = thickness * 1000
         #thickness = 0 #TODO Replace this with an actual method parameter when I figure out the values.
         
         for coord in a: 
