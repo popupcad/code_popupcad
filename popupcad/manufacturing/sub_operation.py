@@ -185,11 +185,12 @@ class SubOperation(Operation2):
     name = 'Sub-Operation'
 
     def copy(self):
+        from copy import deepcopy
         new = type(self)(
-            self.design_links.copy(),
-            self.sketch_list.copy(),
-            self.input_list.copy(),
-            self.output_list.copy())
+            deepcopy(self.design_links),
+            deepcopy(self.sketch_list),
+            deepcopy(self.input_list),
+            deepcopy(self.output_list))
         new.id = self.id
         new.customname = self.customname
         return new

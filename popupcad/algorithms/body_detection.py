@@ -26,12 +26,13 @@ def find(generic_laminate):
     generic = generic_laminate.geoms
     layerdef = generic_laminate.layerdef
     from popupcad.filetypes.laminate import Laminate
+    from copy import deepcopy
 
     layer_dict = dict([(geom.id, layer)
                        for layer, geoms in generic.items() for geom in geoms])
     geom_dict = dict([(geom.id, geom)
                       for layer, geoms in generic.items() for geom in geoms])
-    geom_dict_whole = geom_dict.copy()
+    geom_dict_whole = deepcopy(geom_dict)
 
     laminates = []
     values = []

@@ -14,7 +14,8 @@ def joinedges(vertices):
     '''Create a convex polygon from given points'''
     delaunay = Delaunay(vertices)
 
-    cvx = delaunay.convex_hull.copy()
+    from copy import deepcopy
+    cvx = deepcopy(delaunay.convex_hull)
     lastrow = cvx[0]
     iis = range(len(cvx))
     for ii in iis[1:-1]:

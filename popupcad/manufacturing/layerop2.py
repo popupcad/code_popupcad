@@ -165,12 +165,13 @@ class LayerOp2(Operation2, LayerBasedOperation):
         self.output_layer_links = output_layer_links
 
     def copy(self):
+        from copy import deepcopy
         new = type(self)(
-            self.operation_links.copy(),
-            self.function,
-            self.unary_layer_links.copy(),
-            self.pair_layer_links.copy(),
-            self.output_layer_links.copy())
+            deepcopy(self.operation_links),
+            deepcopy(self.function),
+            deepcopy(self.unary_layer_links),
+            deepcopy(self.pair_layer_links),
+            deepcopy(self.output_layer_links))
         new.id = self.id
         new.customname = self.customname
         return new

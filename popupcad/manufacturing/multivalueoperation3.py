@@ -114,9 +114,10 @@ class MultiValueOperation3(Operation2):
         self.editdata(*args)
 
     def copy(self):
+        from copy import deepcopy
         new = type(self)(
-            self.operation_links.copy(),
-            self.values.copy(),
+            deepcopy(self.operation_links),
+            deepcopy(self.values),
             self.keepout_type)
         new.id = self.id
         new.customname = self.customname
