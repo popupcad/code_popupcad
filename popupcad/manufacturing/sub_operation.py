@@ -187,9 +187,9 @@ class SubOperation(Operation2):
     def copy(self):
         new = type(self)(
             self.design_links.copy(),
-            self.sketch_list.copy(),
-            self.input_list.copy(),
-            self.output_list.copy())
+            self.sketch_list[:],
+            self.input_list[:],
+            self.output_list[:])
         new.id = self.id
         new.customname = self.customname
         return new

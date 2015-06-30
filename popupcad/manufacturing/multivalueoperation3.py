@@ -116,7 +116,7 @@ class MultiValueOperation3(Operation2):
     def copy(self):
         new = type(self)(
             self.operation_links.copy(),
-            self.values.copy(),
+            self.values[:],
             self.keepout_type)
         new.id = self.id
         new.customname = self.customname

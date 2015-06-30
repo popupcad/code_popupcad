@@ -168,9 +168,9 @@ class LayerOp2(Operation2, LayerBasedOperation):
         new = type(self)(
             self.operation_links.copy(),
             self.function,
-            self.unary_layer_links.copy(),
-            self.pair_layer_links.copy(),
-            self.output_layer_links.copy())
+            self.unary_layer_links[:],
+            self.pair_layer_links[:],
+            self.output_layer_links[:])
         new.id = self.id
         new.customname = self.customname
         return new
