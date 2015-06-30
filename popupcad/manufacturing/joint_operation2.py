@@ -484,7 +484,8 @@ def createFloor():
     return floor
 
 
-def unitizeLine(shape): 
+def unitizeLine(shape):
+    print(shape.exteriorpoints())
     x = shape.exteriorpoints()[0][0] - shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] - shape.exteriorpoints()[1][1]
     z = 0

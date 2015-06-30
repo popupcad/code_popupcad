@@ -195,8 +195,8 @@ class Design(popupCADFile):
             else:
                 newoperations.append(op0)
 
-        for op in self.operations:
-            self.operations.remove(op)
+        while not not self.operations:
+            self.operations.pop()
         self.operations.extend(newoperations)
 
 #        for old,new in replacements:

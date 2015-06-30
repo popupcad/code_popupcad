@@ -172,7 +172,7 @@ class GenericFile(object):
             return False
         else:
             if savemethod is None:
-                return self.save_yaml(filename)
+                return self.save_yaml(filename,identical=False)
             else:
                 return savemethod(self.filename(), **savemethodkwargs)
 

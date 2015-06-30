@@ -7,12 +7,11 @@ Please see LICENSE.txt for full license.
 import popupcad
 import numpy
 from popupcad.filetypes.popupcad_file import popupCADFile
-from collada import *
 try:
     import itertools.izip as zip
 except ImportError:
     pass
-
+import os
 
 class GenericLaminate(popupCADFile):
     filetypes = {'laminate': 'Laminate File'}
@@ -115,6 +114,7 @@ class GenericLaminate(popupCADFile):
     
     #This will calculate the centeroid
     def calculateCentroid(self):
+        import collada
         layerdef = self.layerdef
         xvalues = []
         yvalues = []
@@ -131,16 +131,17 @@ class GenericLaminate(popupCADFile):
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
-        x = reduce(lambda x, y: x + y, xvalues) / len(xvalues)
-        y = reduce(lambda x, y: x + y, yvalues) / len(yvalues)
-        z = reduce(lambda x, y: x + y, zvalues) / len(zvalues)
+        x = collada.reduce(lambda x, y: x + y, xvalues) / len(xvalues)
+        y = collada.reduce(lambda x, y: x + y, yvalues) / len(yvalues)
+        z = collada.reduce(lambda x, y: x + y, zvalues) / len(zvalues)
         out = (x, y, z)
         return out#[float(a)/popupcad.internal_argument_scaling/1000 for a in out]
         
 
     #Allows the laminate to get exported as a DAE.
     def toDAE(self):
-        mesh = Collada()
+        import collada
+        mesh = collada.Collada()
         layerdef = self.layerdef
         nodes = [] # Each node of the mesh scene. Typically one per layer.
         for layer in layerdef.layers:
@@ -153,21 +154,22 @@ class GenericLaminate(popupCADFile):
             for s in shapes:
                 geom = self.createMeshFromShape(s, height, mesh, layer_thickness)
                 mesh.geometries.append(geom) 
-                effect = material.Effect("effect", [], "phone", diffuse=(1,0,0), specular=(0,1,0))
-                mat = material.Material("material", "mymaterial", effect)    
-                matnode = scene.MaterialNode("materialref", mat, inputs=[])
+                effect = collada.material.Effect("effect", [], "phone", diffuse=(1,0,0), specular=(0,1,0))
+                mat = collada.material.Material("material", "mymaterial", effect)    
+                matnode = collada.scene.MaterialNode("materialref", mat, inputs=[])
                 mesh.effects.append(effect)
                 mesh.materials.append(mat)
-                geomnode = scene.GeometryNode(geom, [matnode])
-                node = scene.Node("node" + str(s.id), children=[geomnode])    
+                geomnode = collada.scene.GeometryNode(geom, [matnode])
+                node = collada.scene.Node("node" + str(s.id), children=[geomnode])    
                 nodes.append(node)
-        myscene = scene.Scene("myscene", nodes)
+        myscene = collada.scene.Scene("myscene", nodes)
         mesh.scenes.append(myscene)
         mesh.scene = myscene
         filename = popupcad.exportdir + os.path.sep +   str(self.id) + '.dae' # 
         mesh.write(filename)
         
     def createMeshFromShape(self, s, layer_num, mesh, thickness): #TODO Move this method into the shape class.
+        import collada
         s.exteriorpoints()
         a = s.triangles3()
         vertices = []
@@ -205,9 +207,9 @@ class GenericLaminate(popupCADFile):
         #This scales the verticies properly. So that they are in millimeters.
         vert_floats = [float(x)/popupcad.internal_argument_scaling/1000 for x in vertices] 
         vert_src_name = str(self.get_basename()) + "-array"
-        vert_src = source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
-        geom = geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    
-        input_list = source.InputList()
+        vert_src = collada.source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
+        geom = collada.geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    
+        input_list = collada.source.InputList()
         input_list.addInput(0, 'VERTEX', "#" + vert_src_name)
         indices = numpy.array(range(0,(len(vertices) / 3)));    
         triset = geom.createTriangleSet(indices, input_list, "materialref")
