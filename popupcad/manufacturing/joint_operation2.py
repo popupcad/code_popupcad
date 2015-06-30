@@ -1,3 +1,4 @@
+from __future__ import print_function #Fixes crossplatform print issues
 # -*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes.
@@ -418,18 +419,19 @@ class JointOperation2(Operation2, LayerBasedOperation):
         
 
         joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
-        etree.SubElement(joint_root, 'parent').text = str(self.connections[0][1][0].id)
-        etree.SubElement(joint_root, 'child').text = "world"
+        etree.SubElement(joint_root, 'parent').text = 'world'
+        etree.SubElement(joint_root, 'child').text = str(self.connections[0][1][0].id)
         axis = etree.SubElement(joint_root, "axis")
         etree.SubElement(axis, "xyz").text = "0 1 0"
         limit = etree.SubElement(axis, "limit")
         etree.SubElement(limit, "upper").text = '0'
         etree.SubElement(limit, "lower").text = '0'
-            
         
-   
-
-    #Saves the object
+        physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
+        #etree.SubElement(physics, 'max_step_size').text = str(0.00001)
+        etree.SubElement(physics, "real_time_factor").text = "0.01"
+        
+        #Saves the object
         f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w")
         f.write(etree.tostring(global_root, pretty_print=True))
         f.close()
@@ -447,7 +449,7 @@ def createRobotPart(joint_laminate, counter,):
     #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
     geometry_of_robot = etree.Element("geometry")
     robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
-    etree.SubElement(robo_mesh, "uri").text = "file://" + os.getcwd() + "/" + filename + ".dae"
+    etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
     #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
     visual_of_robot.append(geometry_of_robot)
     
@@ -458,9 +460,9 @@ def createRobotPart(joint_laminate, counter,):
     collision.insert(0, deepcopy(geometry_of_robot))
 
     inertial = etree.SubElement(root_of_robot, "inertial")
-    #etree.SubElement(inertial, "mass").text = str(joint_laminate.calculateTrueVolume() * 1.4 / 1000) #TODO make layer specfic 
+    trueMass = joint_laminate.calculateTrueVolume() * 1.4 / 1000
+    etree.SubElement(inertial, "mass").text = str(max(0.01, trueMass)) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
-    
     
     return root_of_robot    
 
@@ -475,7 +477,7 @@ def createFloor():
     etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
     floor_geo = etree.SubElement(floor_collision, "geometry")
     floor_box = etree.SubElement(floor_geo, "box")
-    etree.SubElement(floor_box, "size").text = "100 100 1"
+    etree.SubElement(floor_box, "size").text = "100 100 10"
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
     floor_visual.append(deepcopy(floor_geo))    
@@ -498,23 +500,12 @@ def craftJoint(connection, counter):
     etree.SubElement(joint_root, "parent").text = str(connection[1][0].id)
     etree.SubElement(joint_root, "child").text = str(connection[1][1].id)
     axis = etree.SubElement(joint_root, "axis")
-    
-    #line = connection[0].exteriorpoints()
     line = unitizeLine(connection[0])    
     etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
+    print(line)    
     etree.SubElement(axis, "use_parent_model_frame").text = "true"
     limit = etree.SubElement(axis, "limit")
     etree.SubElement(limit, "lower").text = '-3.145159'
     etree.SubElement(limit, "upper").text = '3.14519'
     return joint_root
     #come back and implement rather stuff
-
-
-def fixToWorld(root):
-    #fixed_root = etree.SubElement(root, "link", name="lworld")
-    #include = etree.SubElement(fixed_root, "include")
-    #etree.SubElement(include, "uri").text = popupcad.exportdir + os.path.sep + "fixed.world"    
-    #etree.SubElement(fixed_root, "static").text = "true"    
-    
-    print etree.tostring(root, pretty_print=True)
-    return joint_root
