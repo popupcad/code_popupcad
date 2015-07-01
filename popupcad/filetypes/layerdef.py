@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad
-from popupcad.materials.materials import Adhesive
+from popupcad.materials.materials import Material
 
 
 class LayerDef(object):

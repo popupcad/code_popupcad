@@ -382,16 +382,39 @@ class JointOperation2(Operation2, LayerBasedOperation):
             joint_def.sublaminate_layers = new.convert_layer_links(
                 [joint_def.sublaminate_layers], layerdef_old, layerdef_new)[0]
         return new
+
+
+    #Returns a key of laminates to generations and assigns the value
+    #The original fixed body is generation 0 and all others are children to it.
+    def get_laminate_generations(self):
+        current_node = self.fixed_bodies[0] #The root of the tree
+        joint_pairs = [my_tuple[1] for my_tuple in self.connections]
+        hierarchy_map = {}
+        generation = 0 #The geneation of the current node
+        hierarchy_map[current_node] = generation
+        generation += 1
+        child_queue = [current_node]
+        visited_set = []
+        while len(child_queue) > 0:
+            current_node = child_queue.pop(0)            
+            visited_set.append(current_node)                        
+            children_tuples = [joint_pair for joint_pair in joint_pairs if current_node in joint_pair]
+            children = [[joint for joint in joint_pair if joint != current_node][0] for joint_pair in children_tuples]
+            children = [child for child in children if child not in visited_set]
+            for child in children:
+                hierarchy_map[child] = generation
+            generation += 1
+            #Queues up the next batch of children
+            child_queue.extend([child for child in children if child not in visited_set])
+        return hierarchy_map    
         
     def export(self):
-        joint_laminates = []
-        for thing in self.connections:
-            for tmp_laminate in thing[1]:
-                if tmp_laminate not in joint_laminates: #So we don't render the same shape twice
-                    joint_laminates.append(tmp_laminate)
+        joint_laminates = self.bodies_generic
         for laminate in joint_laminates:
             laminate.toDAE()
-            
+       
+       
+       
         project_name = "exported" #We can figure out a better way later.
         
         global_root = etree.Element("sdf", version="1.5")
@@ -413,11 +436,11 @@ class JointOperation2(Operation2, LayerBasedOperation):
             counter+=1
         
         counter = 0
-        for thing in self.connections:
-            model_object.append(craftJoint(thing, counter))
+        hierarchy_map = self.get_laminate_generations()
+        for joint_connection in self.connections:
+            model_object.append(craftJoint(joint_connection, counter, hierarchy_map))
             counter+=1
         
-
         joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
         etree.SubElement(joint_root, 'parent').text = 'world'
         etree.SubElement(joint_root, 'child').text = str(self.connections[0][1][0].id)
@@ -468,9 +491,7 @@ def createRobotPart(joint_laminate, counter,):
     etree.SubElement(inertial, "mass").text = str(max(0.01, trueMass)) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = centroid_pose
     
-    return root_of_robot    
-
-
+    return root_of_robot            
 
 def createFloor():
     floor = etree.Element("model", name='floor')
@@ -481,7 +502,7 @@ def createFloor():
     etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
     floor_geo = etree.SubElement(floor_collision, "geometry")
     floor_box = etree.SubElement(floor_geo, "plane")
-    floor_size = etree.SubElement(floor_box, "size").text = "10 10"
+    etree.SubElement(floor_box, "size").text = "10 10"
     #etree.SubElement(floor_box, "size").text = "100 100 1"
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
@@ -512,13 +533,24 @@ def unitizeLine(shape):
     x /= length
     y /= length
     return (x, y, z)
+
+#Ensures the connection are in the right order
+def reorder_pair(joint_pair, hierarchy_map):
+    first = hierarchy_map[joint_pair[0]]
+    second = hierarchy_map[joint_pair[1]]
+    if first > second:
+        return (joint_pair[1], joint_pair[0])
+    else:
+        return joint_pair
     
-#Crafts a joint.
-def craftJoint(connection, counter):
+#Crafts a joint. #TODO move this into the joint_op class itself so it can make use of the hierarchy map
+def craftJoint(connection, counter, hierarchy_map):    
+    joint_pair = reorder_pair(connection[1], hierarchy_map)    
+    
     joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
-    etree.SubElement(joint_root, "parent").text = str(connection[1][1].id)
-    etree.SubElement(joint_root, "child").text = str(connection[1][0].id)
-    joint_center = findMidPoint(connection[0], connection[1][0])
+    etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
+    etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
+    joint_center = findMidPoint(connection[0], joint_pair[0])
     joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
     etree.SubElement(joint_root, "pose").text = joint_loc   
     axis = etree.SubElement(joint_root, "axis")
