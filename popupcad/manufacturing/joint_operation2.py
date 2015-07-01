@@ -519,7 +519,7 @@ def createRobotPart(joint_laminate, counter,):
     collision.insert(0, deepcopy(geometry_of_robot))
 
     inertial = etree.SubElement(root_of_robot, "inertial")
-    trueMass = joint_laminate.calculateTrueVolume() * 1.4 / 1000
+    trueMass = joint_laminate.calculateTrueVolume() * 1.4 / popupcad.SI_length_scaling
     etree.SubElement(inertial, "mass").text = str(max(0.01, trueMass)) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = centroid_pose
     
@@ -552,9 +552,9 @@ def findMidPoint(shape, anchor):
     x = shape.exteriorpoints()[0][0] + shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] + shape.exteriorpoints()[1][1]
     z = anchor.getLaminateThickness()    
-    x /= (2.0 * popupcad.internal_argument_scaling * 1000)
-    y /= (2.0 * popupcad.internal_argument_scaling * 1000)
-    z /= (2.0 * popupcad.internal_argument_scaling * 1000)
+    x /= (2.0 * popupcad.internal_argument_scaling * popupcad.SI_length_scaling)
+    y /= (2.0 * popupcad.internal_argument_scaling * popupcad.SI_length_scaling)
+    z /= (2.0 * popupcad.internal_argument_scaling * popupcad.SI_length_scaling)
     return (x, y, z)
     
 def unitizeLine(shape):

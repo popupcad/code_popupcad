@@ -24,6 +24,11 @@ class Material(object):
 
     def __repr__(self):
         return str(self)
+
+    def upgrade(self):
+        from popupcad.filetypes.material2 import Material2
+        new = Material2(self.name,self.color,self.thickness,E1 = 1,E2 = 1,poisson = .5,is_adhesive = self.is_adhesive,is_rigid = self.is_rigid,is_conductive = False)
+        return new
     
 class Carbon_0_90_0(Material):
     is_rigid = True
