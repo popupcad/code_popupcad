@@ -7,7 +7,10 @@ Please see LICENSE.txt for full license.
 import popupcad
 import numpy
 from popupcad.filetypes.popupcad_file import popupCADFile
-#from collada import *
+try:
+    import itertools.izip as zip
+except ImportError:
+    pass
 import os
 
 class GenericLaminate(popupCADFile):
@@ -93,7 +96,7 @@ class GenericLaminate(popupCADFile):
     def getLaminateThickness(self):
         layerdef = self.layerdef        
         zvalue = 0        
-        for layer in layerdef:
+        for layer in layerdef.layers:
             zvalue += layerdef.zvalue[layer]
         return zvalue
 
@@ -102,10 +105,10 @@ class GenericLaminate(popupCADFile):
         volume = 0
         for layer in layerdef.layers:
             shapes = self.geoms[layer]
-            zvalue = layerdef.zvalue[layer]        
+            zvalue = layer.thickness
             for shape in shapes:
                 area = shape.trueArea()
-                zvalue = zvalue/popupcad.internal_argument_scaling/1000
+                zvalue = zvalue / 1000
                 volume += area * zvalue
         return volume
     
@@ -118,7 +121,7 @@ class GenericLaminate(popupCADFile):
         zvalues = []
         for layer in layerdef.layers:
             shapes = self.geoms[layer]
-            zvalue = layerdef.zvalue[layer]        
+            zvalue = layer.thickness / 1000            
             for shape in shapes:
                 tris = shape.triangles3()
                 for tri in tris:
@@ -142,13 +145,14 @@ class GenericLaminate(popupCADFile):
         layerdef = self.layerdef
         nodes = [] # Each node of the mesh scene. Typically one per layer.
         for layer in layerdef.layers:
+            layer_thickness = layer.thickness            
             shapes = self.geoms[layer]
             zvalue = layerdef.zvalue[layer]        
             height = float(zvalue) #* 100 #* 1/popupcad.internal_argument_scaling
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
             for s in shapes:
-                geom = self.createMeshFromShape(s, height, mesh)
+                geom = self.createMeshFromShape(s, height, mesh, layer_thickness)
                 mesh.geometries.append(geom) 
                 effect = collada.material.Effect("effect", [], "phone", diffuse=(1,0,0), specular=(0,1,0))
                 mat = collada.material.Material("material", "mymaterial", effect)    
@@ -161,22 +165,45 @@ class GenericLaminate(popupCADFile):
         myscene = collada.scene.Scene("myscene", nodes)
         mesh.scenes.append(myscene)
         mesh.scene = myscene
-        #ath_parts = self.lastdir().split(str(os.path.sep))
-        #path_parts =         
-        filename = popupcad.exportdir + os.path.sep +   str(self.id) + 'dat.dae' # 
+        filename = popupcad.exportdir + os.path.sep +   str(self.id) + '.dae' # 
         mesh.write(filename)
         
-    def createMeshFromShape(self, s, layer_num, mesh): #TODO Move this method into the shape class.
+    def createMeshFromShape(self, s, layer_num, mesh, thickness): #TODO Move this method into the shape class.
         import collada
         s.exteriorpoints()
         a = s.triangles3()
         vertices = []
+        thickness = thickness 
+        #thickness = 0 #TODO Replace this with an actual method parameter when I figure out the values.
+        
         for coord in a: 
             for dec in coord:            
                 vertices.append(dec[0]) #x-axis
                 vertices.append(dec[1]) #y-axis            
-                vertices.append(layer_num ) #z-axi
+                vertices.append(layer_num ) #z-axis
+        
+        for coord in a: 
+            for dec in reversed(coord):            
+                vertices.append(dec[0]) #x-axis
+                vertices.append(dec[1]) #y-axis            
+                vertices.append(layer_num + thickness) #z-axi            
             
+        raw_edges = s.exteriorpoints()        
+        top_edges = []
+        bottom_edges = []            
+        for dec in raw_edges:      
+            top_edges.append((dec[0], dec[1], layer_num)) #x-axis
+            bottom_edges.append((dec[0], dec[1], layer_num + thickness))
+            
+        sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
+        sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
+        sideTriangles.extend(sideTriangles2)
+        sideTriangles = [list(triangle) for triangle in sideTriangles]
+        sideTriangles = collada.reduce(lambda x, y: x + y, sideTriangles)
+        sideTriangles = [list(point) for point in sideTriangles]
+        sideTriangles = collada.reduce(lambda x, y: x + y, sideTriangles)            
+        vertices.extend(sideTriangles)
+        
         #This scales the verticies properly. So that they are in millimeters.
         vert_floats = [float(x)/popupcad.internal_argument_scaling/1000 for x in vertices] 
         vert_src_name = str(self.get_basename()) + "-array"
