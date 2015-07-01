@@ -49,7 +49,7 @@ def initialize(program):
             'kwargs': {
                 'icon': Icon('customsupport'),
                 'triggered': lambda: program.editor.newoperation(
-                    manufacturing.customsupport3.CustomSupport3)}})
+                    manufacturing.customsupport4.CustomSupport4)}})
 
     other = []
     other.append(
