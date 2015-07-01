@@ -94,11 +94,7 @@ class GenericLaminate(popupCADFile):
         
     #Returns the thickness of the laminate
     def getLaminateThickness(self):
-        layerdef = self.layerdef        
-        zvalue = 0        
-        for layer in layerdef.layers:
-            zvalue += layerdef.zvalue[layer]
-        return zvalue
+        return self.layerdef.zvalue[self.layerdef.layers[-1]]
 
     def calculateTrueVolume(self):
         layerdef = self.layerdef
@@ -114,7 +110,6 @@ class GenericLaminate(popupCADFile):
     
     #This will calculate the centeroid
     def calculateCentroid(self):
-        import collada
         layerdef = self.layerdef
         xvalues = []
         yvalues = []
@@ -131,9 +126,9 @@ class GenericLaminate(popupCADFile):
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
-        x = collada.reduce(lambda x, y: x + y, xvalues) / len(xvalues)
-        y = collada.reduce(lambda x, y: x + y, yvalues) / len(yvalues)
-        z = collada.reduce(lambda x, y: x + y, zvalues) / len(zvalues)
+        x = sum(xvalues) / len(xvalues)
+        y = sum(yvalues) / len(yvalues)
+        z = sum(zvalues) / len(zvalues)
         out = (x, y, z)
         return out#[float(a)/popupcad.internal_argument_scaling/1000 for a in out]
         
@@ -199,9 +194,10 @@ class GenericLaminate(popupCADFile):
         sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
         sideTriangles.extend(sideTriangles2)
         sideTriangles = [list(triangle) for triangle in sideTriangles]
-        sideTriangles = collada.reduce(lambda x, y: x + y, sideTriangles)
+        import itertools
+        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))
         sideTriangles = [list(point) for point in sideTriangles]
-        sideTriangles = collada.reduce(lambda x, y: x + y, sideTriangles)            
+        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))            
         vertices.extend(sideTriangles)
         
         #This scales the verticies properly. So that they are in millimeters.
