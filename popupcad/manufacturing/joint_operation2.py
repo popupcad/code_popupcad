@@ -407,7 +407,38 @@ class JointOperation2(Operation2, LayerBasedOperation):
             #Queues up the next batch of children
             child_queue.extend([child for child in children if child not in visited_set])
         return hierarchy_map    
+    
+    #Generates the XML Tree for the joint
+    def craftJoint(self, connection, counter):
+        joint_pair = reorder_pair(connection[1], self.get_laminate_generations())    
         
+        joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
+        etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
+        etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
+        joint_center = findMidPoint(connection[0], joint_pair[0])
+        joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
+        etree.SubElement(joint_root, "pose").text = joint_loc   
+        axis = etree.SubElement(joint_root, "axis")
+        line = unitizeLine(connection[0])    
+        etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
+        
+        
+        #etree.SubElement(axis, "use_parent_model_frame").text = "true"
+        limit = etree.SubElement(axis, "limit")
+        etree.SubElement(limit, "lower").text = '-3.145159'
+        etree.SubElement(limit, "upper").text = '3.14519'
+        
+        #Add the properties of the joint
+        joint_props = self.all_joint_props[self.connections.index(connection)]
+        etree.SubElement(limit, "stiffness").text = str(joint_props[0])
+        dynamics = etree.SubElement(axis, "dynamics")
+        etree.SubElement(dynamics, "damping").text = str(joint_props[1])
+        
+        
+        return joint_root
+        #come back and implement rather stuff
+
+    
     def export(self):
         joint_laminates = self.bodies_generic
         for laminate in joint_laminates:
@@ -436,9 +467,8 @@ class JointOperation2(Operation2, LayerBasedOperation):
             counter+=1
         
         counter = 0
-        hierarchy_map = self.get_laminate_generations()
         for joint_connection in self.connections:
-            model_object.append(craftJoint(joint_connection, counter, hierarchy_map))
+            model_object.append(self.craftJoint(joint_connection, counter))
             counter+=1
         
         joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
@@ -458,6 +488,8 @@ class JointOperation2(Operation2, LayerBasedOperation):
         f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w")
         f.write(etree.tostring(global_root, pretty_print=True))
         f.close()
+        
+
 
 def createRobotPart(joint_laminate, counter,):
     filename = str(joint_laminate.id)
@@ -543,24 +575,3 @@ def reorder_pair(joint_pair, hierarchy_map):
     else:
         return joint_pair
     
-#Crafts a joint. #TODO move this into the joint_op class itself so it can make use of the hierarchy map
-def craftJoint(connection, counter, hierarchy_map):    
-    joint_pair = reorder_pair(connection[1], hierarchy_map)    
-    
-    joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
-    etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
-    etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
-    joint_center = findMidPoint(connection[0], joint_pair[0])
-    joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
-    etree.SubElement(joint_root, "pose").text = joint_loc   
-    axis = etree.SubElement(joint_root, "axis")
-    line = unitizeLine(connection[0])    
-    etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
-    print(line)    
-    
-    #etree.SubElement(axis, "use_parent_model_frame").text = "true"
-    limit = etree.SubElement(axis, "limit")
-    etree.SubElement(limit, "lower").text = '-3.145159'
-    etree.SubElement(limit, "upper").text = '3.14519'
-    return joint_root
-    #come back and implement rather stuff
