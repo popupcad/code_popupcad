@@ -5,7 +5,6 @@ Created on Fri Jun 12 17:41:36 2015
 @author: danaukes
 """
 import numpy
-from popupcad.materials.materials import Rigid
 import shapely.geometry as sg
 import popupcad
 from popupcad.filetypes.laminate import Laminate
@@ -18,7 +17,7 @@ def find_rigid(generic, layerdef):
     connections = []
     source_geoms = [{'id': None, 'csg': sg.Polygon()}]
     for layer in layerdef.layers:
-        if isinstance(layer, Rigid):
+        if layer.is_rigid:
             rigid_geoms.extend(generic.geoms[layer])
             while not not source_geoms:
                 source_geom = source_geoms.pop()

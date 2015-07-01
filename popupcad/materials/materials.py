@@ -5,24 +5,14 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-import popupcad
-
-
-class Adhesive(object):
-    pass
-
-
-class Rigid(object):
-    pass
-
-
 class Material(object):
     display = ['color', 'thickness']
     editable = ['*']
-#    editable = ['color','thickness']
     name = 'material'
     color = (0., 0., 0., .2)
     thickness = .025
+    is_rigid=False
+    is_adhesive=False
 
     def __init__(self, thickness=None):
         if thickness is not None:
@@ -34,57 +24,51 @@ class Material(object):
 
     def __repr__(self):
         return str(self)
-
-
-class Carbon_0_90_0(Material, Rigid):
+    
+class Carbon_0_90_0(Material):
+    is_rigid = True
     name = 'Carbon(0-90-0)'
     color = (.2, 0.2, 0.2, .2)
 
-
-class Pyralux(Material, Adhesive):
+class Pyralux(Material):
+    is_adhesive = True
     name = 'Pyralux'
     color = (175. / 256, 81. / 256, 81. / 256, .2)
-
 
 class Kapton(Material):
     name = 'Kapton'
     color = (1., 1., 0., .2)
 
-
 class Cardboard(Material):
     name = 'Cardboard'
     color = (1., 0., 0., .2)
-
 
 class SMP(Material):
     name = 'SMP'
     color = (.75, 1, .75, .2)
 
-
 class Silicone(Material):
     name = 'Silicone'
     color = (.75, .75, .75, .2)
 
-
-class Aluminum(Material, Rigid):
+class Aluminum(Material):
+    is_rigid = True
     name = 'Aluminum'
     color = (.75, .75, .75, .2)
 
-
-class Copper(Material, Rigid):
+class Copper(Material):
+    is_rigid = True
     name = 'Copper'
     color = (1., .5, .16, .2)
 
-
-class FR4(Material, Rigid):
+class FR4(Material):
+    is_rigid = True
     name = 'FR4'
     color = (1., .85, .36, .2)
-
 
 class Velcro(Material):
     name = 'Velcro'
     color = (0., .5, .5, .2)
-
 
 class Dummy(Material):
     name = 'Dummy'

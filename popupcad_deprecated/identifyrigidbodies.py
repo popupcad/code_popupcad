@@ -22,8 +22,6 @@ class IdentifyRigidBodies(MultiValueOperation2):
     upgradeclass = IdentifyRigidBodies2
 
     def generate(self, design):
-        from popupcad.materials.materials import Rigid
-
         generic = design.op_from_ref(
             self.operation_link1).output[
             self.getoutputref()].generic_laminate()
@@ -41,7 +39,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
         connections = []
         source_geoms = [{'id': None, 'csg': sg.Polygon()}]
         for layer in layerdef.layers:
-            if isinstance(layer, Rigid):
+            if layer.is_rigid:
                 rigid_geoms.extend(generic.geoms[layer])
                 while not not source_geoms:
                     source_geom = source_geoms.pop()

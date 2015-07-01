@@ -50,11 +50,5 @@ class LayerDef(object):
 
     def connected_neighbors(self, layer):
         neighbors = self.neighbors(layer)
-        connected = [
-            neighbor for neighbor in neighbors if (
-                isinstance(
-                    neighbor,
-                    Adhesive) or isinstance(
-                    layer,
-                    Adhesive))]
+        connected = [neighbor for neighbor in neighbors if (neighbor.is_adhesive or layer.is_adhesive)]
         return connected

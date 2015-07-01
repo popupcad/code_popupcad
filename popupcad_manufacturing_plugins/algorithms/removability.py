@@ -6,8 +6,6 @@ Please see LICENSE.txt for full license.
 """
 from popupcad.filetypes.layer import Layer
 from popupcad.filetypes.laminate import Laminate
-import popupcad.materials.materials as mat
-
 
 def one_way_up(laminatein):
     l = Layer([])
@@ -32,11 +30,7 @@ def two_way(laminatein):
 def modify_up(removabilityin):
     layers = removabilityin.layerdef.layers
     for layer1, layer2 in zip(layers[:-1], layers[1:]):
-        if isinstance(
-                layer1,
-                mat.Adhesive) or isinstance(
-                layer2,
-                mat.Adhesive):
+        if layer1.is_adhesive or layer2.is_adhesive:
             removabilityin.layer_sequence[layer1] = removabilityin.layer_sequence[
                 layer1].union(removabilityin.layer_sequence[layer2])
     return removabilityin
