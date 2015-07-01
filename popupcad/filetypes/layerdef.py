@@ -5,8 +5,6 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import popupcad
-from popupcad.materials.materials import Adhesive
-
 
 class LayerDef(object):
 
@@ -39,7 +37,6 @@ class LayerDef(object):
 
     def neighbors(self, layer):
         '''Find the layers above and below a given layer'''
-#        from popupcad.materials.materials import Adhesive
         ii = self.layers.index(layer)
         neighbors = []
         if ii > 0:
