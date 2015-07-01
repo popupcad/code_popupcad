@@ -202,16 +202,10 @@ class GenericPoly(GenericShapeBase):
     def trueArea(self):
         p = self.exteriorpoints()
         
-        p = [[float(x)/popupcad.internal_argument_scaling/1000 for x in point] for point in p]#scales appropiately 
+        p = [[float(x)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for x in point] for point in p]#scales appropiately 
         return 0.5 * abs(sum(x0*y1 - x1*y0
                              for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
    
-    #Returns the area
-    def area(self):
-        p = self.exteriorpoints()
-        return 0.5 * abs(sum(x0*y1 - x1*y0
-                             for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
-
     def output_dxf(self,model_space,layer = None):
         dxfattribs = {'closed':True}
         if not layer==None:

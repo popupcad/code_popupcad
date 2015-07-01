@@ -104,7 +104,7 @@ class GenericLaminate(popupCADFile):
             zvalue = layer.thickness
             for shape in shapes:
                 area = shape.trueArea()
-                zvalue = zvalue / 1000
+                zvalue = zvalue / popupcad.SI_length_scaling
                 volume += area * zvalue
         return volume
     
@@ -116,13 +116,13 @@ class GenericLaminate(popupCADFile):
         zvalues = []
         for layer in layerdef.layers:
             shapes = self.geoms[layer]
-            zvalue = layer.thickness / 1000            
+            zvalue = layer.thickness / popupcad.SI_length_scaling            
             for shape in shapes:
                 tris = shape.triangles3()
                 for tri in tris:
                     for point in tri:   
                         #Scales the mesh properly
-                        point = [float(a)/popupcad.internal_argument_scaling/1000 for a in point]
+                        point = [float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in point]
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
@@ -130,7 +130,7 @@ class GenericLaminate(popupCADFile):
         y = sum(yvalues) / len(yvalues)
         z = sum(zvalues) / len(zvalues)
         out = (x, y, z)
-        return out#[float(a)/popupcad.internal_argument_scaling/1000 for a in out]
+        return out#[float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in out]
         
 
     #Allows the laminate to get exported as a DAE.
@@ -201,7 +201,7 @@ class GenericLaminate(popupCADFile):
         vertices.extend(sideTriangles)
         
         #This scales the verticies properly. So that they are in millimeters.
-        vert_floats = [float(x)/popupcad.internal_argument_scaling/1000 for x in vertices] 
+        vert_floats = [float(x)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for x in vertices] 
         vert_src_name = str(self.get_basename()) + "-array"
         vert_src = collada.source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
         geom = collada.geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    

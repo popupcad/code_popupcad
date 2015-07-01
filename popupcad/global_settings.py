@@ -38,6 +38,8 @@ geometry_round_value = 5
 distinguishable_number_difference = 10**(-geometry_round_value)
 undistinguishable_number_difference = 10**(-geometry_round_value - 1)
 
+SI_length_scaling = 1000
+
 inkscape_mm_conversion = 1. / 282.22293
 coreldraw_mm_conversion = 1. / 264.581
 
