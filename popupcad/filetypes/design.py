@@ -334,6 +334,7 @@ class Design(popupCADFile):
         subdir = os.path.normpath(os.path.join(self.dirname, base))
         if not os.path.exists(subdir):
             os.mkdir(subdir)
+            self.save_yaml(os.path.join(self.dirname,subdir,self.get_basename()),update_filename=False)
 #        self.raster(destination=subdir)
         new = DesignDocumentation.build(self, subdir)
         file = os.path.normpath(os.path.join(subdir, base + '.md'))
