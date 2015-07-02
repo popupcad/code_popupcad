@@ -489,13 +489,19 @@ class JointOperation2(Operation2, LayerBasedOperation):
         f.write(etree.tostring(global_root, pretty_print=True))
         f.close()
         
-        os.system("gazebo -e simbody " + file_output)
+        #TODO replace with Subprocess to prevent pollution of STDOUT
+        os.system("gazebo -e simbody " + file_output + " &")
+        
+        print("Done waiting")        
         
         from gazebo_controller import apply_joint_force
         
         counter = 0
         for joint_def in self.all_joint_props:
+            print("each joint_def")
             apply_joint_force(world_name, robot_name, "hingejoint" + str(counter), joint_def[2])
+            #TODO Make the above method sync so it actually runs properly instead of 
+            #print("Appliing joint force")
 
 def createRobotPart(joint_laminate, counter, buildMesh=True):
     filename = str(joint_laminate.id)
@@ -595,3 +601,4 @@ def reorder_pair(joint_pair, hierarchy_map):
     else:
         return joint_pair
     
+
