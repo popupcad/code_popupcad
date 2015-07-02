@@ -422,7 +422,6 @@ class JointOperation2(Operation2, LayerBasedOperation):
         line = unitizeLine(connection[0])    
         etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
         
-        
         #etree.SubElement(axis, "use_parent_model_frame").text = "true"
         limit = etree.SubElement(axis, "limit")
         etree.SubElement(limit, "lower").text = '-3.145159'
@@ -434,16 +433,14 @@ class JointOperation2(Operation2, LayerBasedOperation):
         dynamics = etree.SubElement(axis, "dynamics")
         etree.SubElement(dynamics, "damping").text = str(joint_props[1])
         
-        
         return joint_root
         #come back and implement rather stuff
-
     
+    #Export to Gazebo
     def export(self):
         joint_laminates = self.bodies_generic
         for laminate in joint_laminates:
             laminate.toDAE()
-       
        
        
         project_name = "exported" #We can figure out a better way later.
@@ -485,13 +482,15 @@ class JointOperation2(Operation2, LayerBasedOperation):
         #etree.SubElement(physics, "real_time_factor").text = "0.1"
         
         #Saves the object
-        f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w")
+        file_output = popupcad.exportdir + os.path.sep + project_name + ".world"
+        f = open(file_output,"w")
         f.write(etree.tostring(global_root, pretty_print=True))
         f.close()
         
+        os.system("gazebo -e simbody " + file_output)
 
 
-def createRobotPart(joint_laminate, counter,):
+def createRobotPart(joint_laminate, counter, buildMesh=True):
     filename = str(joint_laminate.id)
     center_of_mass = joint_laminate.calculateCentroid()
     
@@ -502,22 +501,29 @@ def createRobotPart(joint_laminate, counter,):
     centroid_pose = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
     #etree.SubElement(root_of_robot, "pose").text = centroid_pose    
     
-    visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
-    etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
-    etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
-    #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
-    geometry_of_robot = etree.Element("geometry")
-    robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
-    etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
-    #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
-    visual_of_robot.append(geometry_of_robot)
-    
-    
-    from copy import deepcopy #copys the element
-    
-    collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
-    collision.insert(0, deepcopy(geometry_of_robot))
+    if buildMesh:
+        visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
+        etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
+            
+        geometry_of_robot = etree.Element("geometry")
+        robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
+        etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
+        #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
+        visual_of_robot.append(geometry_of_robot)
 
+        from copy import deepcopy #copys the element
+        collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
+        collision.insert(0, deepcopy(geometry_of_robot))
+    else:
+        visuals_of_robot = joint_laminate.toSDFTag("visual", "basic_bot_visual" + str(counter))    
+        for visual_of_robot in visuals_of_robot:
+            etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+            #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
+            root_of_robot.append(visual_of_robot)     
+        collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
+        for collision in collisions:    
+            root_of_robot.append(collision)    
+    
     inertial = etree.SubElement(root_of_robot, "inertial")
     trueMass = joint_laminate.calculateTrueVolume() * 1.4 / popupcad.SI_length_scaling
     etree.SubElement(inertial, "mass").text = str(max(0.01, trueMass)) #TODO make layer specfic 
@@ -539,6 +545,13 @@ def createFloor():
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
     floor_visual.append(deepcopy(floor_geo))    
+    
+    #material = etree.SubElement(floor_visual, "material")
+    #etree.SubElement(material, "ambient").text = "1 0 0 1"
+    #etree.SubElement(material, "diffuse").text = "1 0 0 1"
+    #etree.SubElement(material, "specular").text ="0.1 0.1 0.1 1"
+    #etree.SubElement(material, "emissive").text = "0 0 0 0"
+
     return floor
 
 
