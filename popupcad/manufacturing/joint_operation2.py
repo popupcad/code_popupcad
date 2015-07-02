@@ -444,13 +444,15 @@ class JointOperation2(Operation2, LayerBasedOperation):
        
        
         project_name = "exported" #We can figure out a better way later.
+        world_name = 'world'
+        robot_name = 'default_body'        
         
         global_root = etree.Element("sdf", version="1.5")
         
-        world_object = etree.Element("world", name='world')
+        world_object = etree.Element("world", name=world_name)
         global_root.append(world_object);
         
-        model_object = etree.Element("model", name='default_body')
+        model_object = etree.Element("model", name=robot_name)
         world_object.append(model_object)
         
         etree.SubElement(model_object, "static").text = "false"
@@ -488,7 +490,12 @@ class JointOperation2(Operation2, LayerBasedOperation):
         f.close()
         
         os.system("gazebo -e simbody " + file_output)
-
+        
+        from gazebo_controller import apply_joint_force
+        
+        counter = 0
+        for joint_def in self.all_joint_props:
+            apply_joint_force(world_name, robot_name, "hingejoint" + str(counter), joint_def[2])
 
 def createRobotPart(joint_laminate, counter, buildMesh=True):
     filename = str(joint_laminate.id)
