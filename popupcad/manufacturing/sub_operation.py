@@ -234,6 +234,7 @@ class SubOperation(Operation2):
         return dialog
 
     def generate(self, design):
+        from popupcad.manufacturing.freeze import Freeze
         subdesign_orig = design.subdesigns[self.design_links['source']]
         subdesign = subdesign_orig.copy_yaml()
 
@@ -257,8 +258,10 @@ class SubOperation(Operation2):
             from_ref = input_data.ref1
             to_ref = input_data.ref2
             op_to_insert = design.op_from_ref(to_ref[0])
-            subdesign.operations.insert(0, op_to_insert.copy_wrapper())
-            subdesign.replace_op_refs_force(from_ref, to_ref)
+            to2 = Freeze(0,0,op_to_insert.output[to_ref[1]].generic_laminate())
+            to_ref2 = (to2.id,to_ref[1])
+            subdesign.operations.insert(0, to2)
+            subdesign.replace_op_refs_force(from_ref, to_ref2)
         for sketch_data in self.sketch_list:
             from_ref = sketch_data.ref1
             to_ref = sketch_data.ref2

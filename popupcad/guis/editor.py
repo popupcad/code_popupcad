@@ -567,13 +567,14 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     @loggable
     def showcurrentoutput(self):
-        selected_indeces = self.operationeditor.currentIndeces2()
-        if len(selected_indeces) > 0:
-            ii, jj = selected_indeces[0]
-        else:
-            ii, jj = -1, 0
-            self.operationeditor.selectIndeces([(ii, jj)])
-        self.showcurrentoutput_inner(ii, jj)
+        if len(self.design.operations)>0:
+            selected_indeces = self.operationeditor.currentIndeces2()
+            if len(selected_indeces) > 0:
+                ii, jj = selected_indeces[0]
+            else:
+                ii, jj = -1, 0
+                self.operationeditor.selectIndeces([(ii, jj)])
+            self.showcurrentoutput_inner(ii, jj)
 
     @loggable
     def showcurrentoutput_inner(self, ii, jj):
