@@ -58,7 +58,7 @@ class Freeze(Operation2):
         self.editdata(*args)
 
     def editdata(self, operation_link1, outputref, generic):
-        super(Freeze, self).editdata()
+        super(Freeze, self).editdata({},{},{})
         self.operation_link1 = operation_link1
         self.generic = generic
         self.outputref = outputref

@@ -260,10 +260,10 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.tools.append({'text': 'joinedges',
                            'kwargs': {'triggered': self.joinedges,
                                       'icon': Icon('joinedges')}})
-        self.tools.append({'text': 'autobridge',
+        self.tools.append({'text': 'triangulate',
                            'kwargs': {'triggered': self.autobridge,
                                       'icon': Icon('autobridge')}})
-        self.tools.append({'text': 'get joints',
+        self.tools.append({'text': 'shared edges',
                            'kwargs': {'triggered': self.getjoints,
                                       'icon': Icon('getjoints2')}})
         self.tools.append(

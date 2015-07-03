@@ -248,13 +248,16 @@ class SubOperation(Operation2):
             except AttributeError:
                 pass
             new_operations.append(operation)
-        subdesign.sketches.update(design.sketches)
+        sketches = design.sketches
+        for key,value in sketches.items():
+            sketches[key] = value.copy()
+        subdesign.sketches.update(sketches)
         subdesign.operations = new_operations
         for input_data in self.input_list:
             from_ref = input_data.ref1
             to_ref = input_data.ref2
             op_to_insert = design.op_from_ref(to_ref[0])
-            subdesign.operations.insert(0, op_to_insert)
+            subdesign.operations.insert(0, op_to_insert.copy_wrapper())
             subdesign.replace_op_refs_force(from_ref, to_ref)
         for sketch_data in self.sketch_list:
             from_ref = sketch_data.ref1

@@ -69,13 +69,12 @@ class CrossSection(Operation2):
         self.id = id(self)
         self.editdata(*args, **kwargs)
 
-    def copy(self, identical=True):
+    def copy(self):
         new = type(self)(
             self.operation_links,
             self.sketch_links,
             self.scale_value)
-        if identical:
-            new.id = self.id
+        new.id = self.id
         new.customname = self.customname
         return new
 
