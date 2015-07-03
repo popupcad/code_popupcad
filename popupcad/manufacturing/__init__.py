@@ -17,6 +17,7 @@ from . import multivalueoperation3
 from . import nulloperation
 from . import placeop8
 from . import shiftflip3
+from . import shiftflip4
 from . import simplesketchoperation
 from . import simplify2
 from . import sub_operation
