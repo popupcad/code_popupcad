@@ -208,16 +208,10 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             {'text': "Render Icons", 'kwargs': {'triggered': self.gen_icons}})
         self.fileactions.append(
             {'text': "Build Documentation", 'kwargs': {'triggered': self.build_documentation}})
-
-        def dummy(action):
-            action.setEnabled(
-                sys.platform == 'win32' and getattr(
-                    sys,
-                    'frozen',
-                    False))
+        self.fileactions.append(
+            {'text': "License", 'kwargs': {'triggered': self.show_license}})
         self.fileactions.append({'text': "Update...",
-                                 'kwargs': {'triggered': self.download_installer},
-                                 'prepmethod': dummy})
+                                 'kwargs': {'triggered': self.download_installer}})
 
         self.projectactions = []
         self.projectactions.append({'text': '&Rebuild',
@@ -724,20 +718,9 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.reprocessoperations()
         self.view_2d.zoomToFit()
 
-    def get_update_link(self):
-        import requests
-        r = requests.get('http://www.popupcad.org/downloads/current')
-        if r.status_code == requests.codes.ok:
-            #            self.update_text = 'Update('+r.text+')'
-            update_link = 'http://www.popupcad.org/downloads/' + r.text
-        else:
-            #            self.update_text = 'Visit popupCAD.com'
-            update_link = 'http://www.popupcad.org/download'
-        return update_link
-
     @loggable
     def download_installer(self):
-        qg.QDesktopServices.openUrl(self.get_update_link())
+        qg.QDesktopServices.openUrl(popupcad.update_url)
 
     @loggable
     def save_joint_def(self):
@@ -784,6 +767,30 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         output.generic_laminate().toDAE()
+
+    @loggable
+    def show_license(self):
+        import sys
+
+        if hasattr(sys,'frozen'):
+            path = './'
+        else:
+            path = './'
+        path = path+'LICENSE'
+        with open(path) as f:
+            license_text = f.readlines()
+
+        w = qg.QDialog()
+        le = qg.QTextEdit()
+        le.setText(''.join(license_text))
+        le.setReadOnly(True)
+        le.show()
+        layout = qg.QVBoxLayout()
+        layout.addWidget(le)        
+        w.setLayout(layout)
+        f = lambda: qc.QSize(600,400)
+        w.sizeHint = f
+        w.exec_()
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

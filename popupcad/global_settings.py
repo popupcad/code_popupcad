@@ -65,6 +65,7 @@ classifiers = [
 author = 'Daniel M. Aukes'
 author_email = 'danaukes@seas.harvard.edu'
 url = 'http://www.popupcad.com'
+update_url = 'http://www.popupcad.org/docs/download/'
 #import uuid
 # uuid.uuid4()
 windows_uuid = '{875b89db-f819-48bf-9be4-ec93f57f29c2}'
