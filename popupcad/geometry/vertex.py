@@ -6,10 +6,8 @@ Please see LICENSE.txt for full license.
 """
 
 import numpy
-
 from popupcad.filetypes.constraints import SymbolicVertex
 import popupcad
-
 
 class BaseVertex(object):
     editable = ['pos']
@@ -20,7 +18,7 @@ class BaseVertex(object):
     def __init__(self, position=None):
 
         self.id = id(self)
-        self._pos = None
+        self._position = None
 
         if position is not None:
             self.setpos(position)
@@ -64,33 +62,32 @@ class BaseVertex(object):
     def setpos(self, pos):
         pos = numpy.array(pos)
         pos.round(self.roundvalue)
-        self._pos = tuple(pos.tolist())
+        self._position = tuple(pos.tolist())
 
     def getpos(self, scaling=1):
-        try:
-            if self._pos is None:
-                self._pos = self.__pos
-                del self.__pos
-                return self.scale_tuple(self._pos, scaling)
-            else:
-                return self.scale_tuple(self._pos, scaling)
-        except AttributeError:
-            try:
-                self._pos = self.__pos
-                del self.__pos
-            except AttributeError:
-                self._pos = self._Vertex__pos
-                del self._Vertex__pos
-            return self.scale_tuple(self._pos, scaling)
-
+        if hasattr(self,'_position') and (self._position is not None):
+            pass
+        elif hasattr(self,'_pos') and (self._pos is not None):
+            self._position = self.scale_tuple(self._pos,1/popupcad.deprecated_internal_argument_scaling )
+            del self._pos
+        elif hasattr(self,'__pos'):
+            self._position = self.scale_tuple(self.__pos,1/popupcad.deprecated_internal_argument_scaling )
+            del self.__pos
+        elif hasattr(self,'_Vertex__pos'):
+            self._position = self.scale_tuple(self._Vertex__pos,1/popupcad.deprecated_internal_argument_scaling )
+            del self._Vertex__pos
+        else:
+            raise Exception
+        return self._position
+        
     @staticmethod
-    def scale_tuple(tup, scale):
+    def scale_tuple(value, scale):
         if scale != 1:
-            tup = tuple([item * scale for item in tup])
-        return tup
+            value = tuple([item * scale for item in value])
+        return value
 
     def getpos3D(self):
-        return (self._pos[0], self._pos[1], 0)
+        return tuple(numpy.r_[self.getpos(),0].tolist())
 
     def setsymbol(self, variable, value):
         p = self.constraints_ref().p()
@@ -159,7 +156,6 @@ class BaseVertex(object):
         list1 = loader.construct_sequence(node)
         new = cls.delistify(*list1)
         return new
-
 
 class ShapeVertex(BaseVertex):
     yaml_node_name = u'!ShapeVertex'
@@ -265,14 +261,12 @@ class ReferenceVertex(BaseVertex):
         iv.updateshape()
         return iv
 
+
 import yaml
+
 yaml.add_representer(ShapeVertex, ShapeVertex.vertex_representer)
-yaml.add_constructor(
-    ShapeVertex.yaml_node_name,
-    ShapeVertex.vertex_constructor)
+yaml.add_constructor(ShapeVertex.yaml_node_name,ShapeVertex.vertex_constructor)
 yaml.add_representer(DrawnPoint, DrawnPoint.vertex_representer)
 yaml.add_constructor(DrawnPoint.yaml_node_name, DrawnPoint.vertex_constructor)
-yaml.add_representer(ReferenceVertex, ReferenceVertex.vertex_representer)
-yaml.add_constructor(
-    ReferenceVertex.yaml_node_name,
-    ReferenceVertex.vertex_constructor)
+#yaml.add_representer(ReferenceVertex, ReferenceVertex.vertex_representer)
+#yaml.add_constructor(ReferenceVertex.yaml_node_name,ReferenceVertex.vertex_constructor)

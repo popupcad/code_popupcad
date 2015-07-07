@@ -87,27 +87,29 @@ class ConstraintSystem(object):
             if len(objects) > 0:
                 variables, qout = [], []
 
-                staticvertices = []
-                for item in objects:
-                    if isinstance(item, ReferenceVertex):
-                        staticvertices.append(item)
-                    elif isinstance(item, Line):
-                        if isinstance(item.vertex1, ReferenceVertex):
-                            staticvertices.append(item.vertex1)
-                        if isinstance(item.vertex2, ReferenceVertex):
-                            staticvertices.append(item.vertex2)
-                constants = []
-                for item in staticvertices:
-                    constants.extend(SymbolicVertex(item.id).p()[:2])
-                constants = list(set(constants))
+#                staticvertices = []
+#                for item in objects:
+#                    if isinstance(item, ReferenceVertex):
+#                        staticvertices.append(item)
+#                    elif isinstance(item, Line):
+#                        if isinstance(item.vertex1, ReferenceVertex):
+#                            staticvertices.append(item.vertex1)
+#                        if isinstance(item.vertex2, ReferenceVertex):
+#                            staticvertices.append(item.vertex2)
+#                constants = []
+#                for item in staticvertices:
+#                    constants.extend(SymbolicVertex(item.id).p()[:2])
+#                constants = list(set(constants))
 
                 constraint_eqs = sympy.Matrix(
                     [equation for constraint in self.constraints for equation in constraint.generated_equations()])
                 allvariables = list(set(
                     [item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
-                constants_in_eq = list(
-                    set(constants).intersection(allvariables))
-                variables = list(set(allvariables) - set(constants_in_eq))
+#                constants_in_eq = list(
+#                    set(constants).intersection(allvariables))
+                constants_in_eq = []
+#                variables = list(set(allvariables) - set(constants_in_eq))
+                variables = allvariables[:]
                 J = constraint_eqs.jacobian(sympy.Matrix(variables))
 
                 f_constraints1 = sympy.utilities.lambdify(

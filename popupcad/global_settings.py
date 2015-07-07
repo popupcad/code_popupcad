@@ -31,7 +31,8 @@ flip_y = True
 
 user_home_dir = os.path.expanduser('~')
 
-internal_argument_scaling = 1e3
+internal_argument_scaling = 1
+deprecated_internal_argument_scaling = 1e3
 view_scaling = 1e0
 
 geometry_round_value = 5

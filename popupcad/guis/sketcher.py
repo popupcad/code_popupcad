@@ -439,14 +439,14 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 items.append(item.get_generic())
             elif isinstance(item, InteractiveEdge):
                 items.append(item.get_generic())
-            elif isinstance(item, InteractiveLine):
-                items.append(item.selectableedges[0].get_generic())
-            elif isinstance(item, StaticLine):
-                items.append(item.selectableedges[0].get_generic())
+#            elif isinstance(item, InteractiveLine):
+#                items.append(item.selectableedges[0].get_generic())
+#            elif isinstance(item, StaticLine):
+#                items.append(item.selectableedges[0].get_generic())
             elif isinstance(item, DrawingPoint):
                 items.append(item.get_generic())
-            elif isinstance(item, StaticDrawingPoint):
-                items.append(item.get_generic())
+#            elif isinstance(item, StaticDrawingPoint):
+#                items.append(item.get_generic())
 
         new_constraint = constraintclass.new(*items)
         if new_constraint != None:
@@ -470,13 +470,15 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def buildvertices(self):
         self.buildsketch()
 
-        vertices = []
-        control = [
-            item.get_generic() for item in self.controlpoints +
-            self.controllines]
-
-        for geom in self.sketch.operationgeometry + control:
-            vertices.extend(geom.vertices())
+#        vertices = []
+#        control = [
+#            item.get_generic() for item in self.controlpoints +
+#            self.controllines]
+#
+#        for geom in self.sketch.operationgeometry + control:
+#            vertices.extend(geom.vertices())
+            
+        vertices = [vertex for geom in self.sketch.operationgeometry for vertex in geom.vertices()]
         return vertices
 
     def cleanupconstraints(self):
