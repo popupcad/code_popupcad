@@ -23,7 +23,7 @@ except ImportError:
 def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
     wait_net_service('localhost',11345)
 
-    @trollius.coroutine 
+    @trollius.coroutine
     def joint_force_loop(world_name, robot_name, joint_name, force, duration=-1):
         manager = yield From(pygazebo.connect())
         print("connected")
@@ -121,8 +121,6 @@ def export(program):
 #Export to Gazebo
 def export_inner(operation):
     joint_laminates = operation.bodies_generic
-    for laminate in joint_laminates:
-        laminate.toDAE()
    
    
     project_name = "exported" #We can figure out a better way later.
@@ -140,7 +138,11 @@ def export_inner(operation):
     etree.SubElement(model_object, "static").text = "false"
     etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"
     
-    world_object.append(createFloor())
+    #world_object.append(createFloor())
+    include_floor = etree.SubElement(world_object, "include")
+    etree.SubElement(include_floor, "uri").text = "model://ground_plane"
+    include_sun = etree.SubElement(world_object, "include")
+    etree.SubElement(include_sun, "uri").text = "model://sun"
     
     counter = 0
     for joint_laminate in joint_laminates:
@@ -309,6 +311,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
 
     
     if buildMesh:
+        joint_laminate.toDAE()      
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
             
