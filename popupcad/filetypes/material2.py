@@ -20,6 +20,7 @@ class Material2(object):
         self.is_adhesive = is_adhesive
         self.is_rigid = is_rigid
         self.is_conductive = is_conductive
+
         self.id = id(self)
 
     def __str__(self):
