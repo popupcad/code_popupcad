@@ -773,10 +773,11 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         import sys
 
         if hasattr(sys,'frozen'):
-            path = './'
+            path = popupcad.localpath
         else:
-            path = './'
-        path = path+'LICENSE'
+            path = os.path.normpath(os.path.join(popupcad.localpath,'../'))
+
+        path = os.path.normpath(os.path.join(path,'LICENSE'))
         with open(path) as f:
             license_text = f.readlines()
 
