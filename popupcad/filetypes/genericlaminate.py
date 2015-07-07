@@ -103,7 +103,15 @@ class GenericLaminate(popupCADFile):
                 if not item.is_construction():
                     item.output_dxf(msp,layer.id)
         
-        dwg.saveas(filename)                
+        dwg.saveas(filename)     
+    
+    def transform(self,T):     
+        geoms = {}
+        for key, value in self.geoms.items():
+            geoms[key] = [item.transform(T) for item in value]
+        new = type(self)(self.layerdef, geoms)
+        return new
+        
         
     #Returns the thickness of the laminate
     def getLaminateThickness(self):

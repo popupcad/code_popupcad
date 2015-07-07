@@ -119,6 +119,27 @@ class GenericShapeBase(popupCADFile):
         return [[vertex.getpos(scaling) for vertex in interior]
                 for interior in self.get_interiors()]
 
+    def exteriorpoints_3d(self, z=0):
+        points = numpy.array([vertex.getpos() for vertex in self.get_exterior()])
+        size = list(points.shape)
+        size[1]+=1
+        points2 = numpy.zeros(size)        
+        points2[:,:2] = points
+        points2[:,2] = z
+        return points2.tolist()
+        
+    def interiorpoints_3d(self, z=0):
+        interiors2 = []
+        for interior in self.get_interiors():
+            points = numpy.array([vertex.getpos() for vertex in interior])
+            size = list(points.shape)
+            size[1]+=1
+            points2 = numpy.zeros(size)        
+            points2[:,:2] = points
+            points2[:,2] = z
+            interiors2.append(points2.tolist())            
+        return interiors2
+
     def vertices(self):
         vertices = self.get_exterior()[:]
         [vertices.extend(interior) for interior in self.get_interiors()]
@@ -321,6 +342,11 @@ class GenericShapeBase(popupCADFile):
         [item.shift(dxdy) for item in self.get_exterior()]
         [item.shift(dxdy) for interior in self.get_interiors()
          for item in interior]
+
+    def transform(self, T):
+        exteriorpoints = (T.dot(numpy.array(self.exteriorpoints_3d(z=1)).T)).T[:,:2].tolist()
+        interiorpoints = [(T.dot(numpy.array(interior).T)).T[:,:2].tolist() for interior in self.interiorpoints_3d(z=1)]
+        return self.gen_from_point_lists(exteriorpoints,interiorpoints)
 
     def constrained_shift(self, dxdy, constraintsystem):
         a = [(item, dxdy) for item in self.get_exterior()]
