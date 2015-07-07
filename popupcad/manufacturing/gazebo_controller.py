@@ -10,13 +10,18 @@ from trollius import From
 
 import pygazebo
 import pygazebo.msg.joint_cmd_pb2
-import time   
+import time 
 
-def apply_joint_force(world_name, robot_name, joint_name, force, duration=-1):
+try:
+    import itertools.izip as zip
+except ImportError:
+    pass
 
-    
+def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
+    wait_net_service('localhost',11345)
+
     @trollius.coroutine 
-    def joint_force_loop():
+    def joint_force_loop(world_name, robot_name, joint_name, force, duration=-1):
         manager = yield From(pygazebo.connect())
         print("connected")
         
@@ -28,24 +33,36 @@ def apply_joint_force(world_name, robot_name, joint_name, force, duration=-1):
         message = pygazebo.msg.joint_cmd_pb2.JointCmd()
         message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
         message.force = force
-    
-    
-        #t_end = time.time() + duration # The time that you want the controller to stop
-        while True: #time.time() < t_end or duration == -1:
+        
+        t_end = time.time() + duration # The time that you want the controller to stop
+        while time.time() < t_end or duration == -1:
+            print(message)            
             try:
                 yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
             except:
                 pass
-             #Nothing   
+                break
         print("Connection closed")
-       
-    wait_net_service('localhost',11345)
+        
+    def loop_in_thread(loop, tasks):
+        trollius.set_event_loop(loop)
+        loop.run_until_complete(trollius.wait(tasks))
+        
+    tasks = []
+    for joint_name, force in zip(joint_names, forces):
+        tasks.append(trollius.Task(joint_force_loop(world_name, robot_name, joint_name, force, duration)))
     
-    
+    #Experimental code to make this loop non-blocking
+    #loop = trollius.get_event_loop()
+    #loop_thread_tasks = lambda t_loop: loop_in_thread(t_loop, tasks)
+    #import threading
+    #t = threading.Thread(target=loop_thread_tasks, args=(loop,))
+    #t.start()
+    #return t
     loop = trollius.get_event_loop()
-    loop.run_until_complete(joint_force_loop())
-    raise     
+    loop.run_until_complete(trollius.wait(tasks))
+    
     
     
 def wait_net_service(server, port, timeout=None):
@@ -63,7 +80,7 @@ def wait_net_service(server, port, timeout=None):
         # time module is needed to calc timeout shared between two exceptions
         end = now() + timeout
 
-    while True:
+    while True:   
         try:
             if timeout:
                 next_timeout = end - now()
@@ -72,7 +89,7 @@ def wait_net_service(server, port, timeout=None):
                 else:
             	    s.settimeout(next_timeout)
             s.connect((server, port))
-            time.sleep(1)
+            time.sleep(2)
         except socket.timeout, err:
             # this exception occurs only if timeout is set
             if timeout:
@@ -86,4 +103,3 @@ def wait_net_service(server, port, timeout=None):
         else:
             s.close()
             return True
-

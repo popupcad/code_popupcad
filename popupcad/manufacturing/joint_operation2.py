@@ -456,7 +456,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         world_object.append(model_object)
         
         etree.SubElement(model_object, "static").text = "false"
-        etree.SubElement(model_object, "pose").text = "0 0 1 0 0 0"
+        etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"
         
         world_object.append(createFloor())
         
@@ -470,15 +470,17 @@ class JointOperation2(Operation2, LayerBasedOperation):
             model_object.append(self.craftJoint(joint_connection, counter))
             counter+=1
         
-        joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
-        etree.SubElement(joint_root, 'parent').text = 'world'
-        etree.SubElement(joint_root, 'child').text = str(self.connections[0][1][0].id)
-        axis = etree.SubElement(joint_root, "axis")
-        etree.SubElement(axis, "xyz").text = "0 1 0"
-        limit = etree.SubElement(axis, "limit")
-        etree.SubElement(limit, "upper").text = '0'
-        etree.SubElement(limit, "lower").text = '0'
+        #Fixed joint method
+        #joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
+        #etree.SubElement(joint_root, 'parent').text = 'world'
+        #etree.SubElement(joint_root, 'child').text = str(self.connections[0][1][0].id)
+        #axis = etree.SubElement(joint_root, "axis")
+        #etree.SubElement(axis, "xyz").text = "0 1 0"
+        #limit = etree.SubElement(axis, "limit")
+        #etree.SubElement(limit, "upper").text = '0'
+        #etree.SubElement(limit, "lower").text = '0'
         
+        #Manually specify the physics engine
         #physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
         #etree.SubElement(physics, 'max_step_size').text = str(0.0001)
         #etree.SubElement(physics, "real_time_factor").text = "0.1"
@@ -490,18 +492,18 @@ class JointOperation2(Operation2, LayerBasedOperation):
         f.close()
         
         #TODO replace with Subprocess to prevent pollution of STDOUT
-        os.system("gazebo -e simbody " + file_output + " &")
+        os.system("gazebo -e dart " + file_output + " &")
         
-        print("Done waiting")        
         
-        from gazebo_controller import apply_joint_force
+        from gazebo_controller import apply_joint_forces
+
+        joint_names = []        
+        for num in range(0, len(self.all_joint_props)):
+            joint_names.append("hingejoint" + str(num))
         
-        counter = 0
-        for joint_def in self.all_joint_props:
-            print("each joint_def")
-            apply_joint_force(world_name, robot_name, "hingejoint" + str(counter), joint_def[2])
-            #TODO Make the above method sync so it actually runs properly instead of 
-            #print("Appliing joint force")
+        joint_forces = [joint_def[2] for joint_def in self.all_joint_props]
+        apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
+        
 
 def createRobotPart(joint_laminate, counter, buildMesh=True):
     filename = str(joint_laminate.id)
@@ -514,6 +516,15 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     centroid_pose = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
     #etree.SubElement(root_of_robot, "pose").text = centroid_pose    
     
+    surface_tree = etree.Element("surface")
+    friction = etree.SubElement(surface_tree, "friction")
+    ode_params = etree.SubElement(friction, "ode")
+    etree.SubElement(ode_params, "mu").text = "0.05"
+    etree.SubElement(ode_params, "mu2").text = "0.05"   
+    etree.SubElement(ode_params, "slip1").text = "1"
+    etree.SubElement(ode_params, "slip2").text = "1"
+
+    
     if buildMesh:
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
@@ -521,12 +532,13 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
         geometry_of_robot = etree.Element("geometry")
         robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
         etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
-        #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
+        #etree.SubElement(robo_mesh, "scale").text = "1 1 1000000"    #For debugging
         visual_of_robot.append(geometry_of_robot)
 
         from copy import deepcopy #copys the element
         collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
         collision.insert(0, deepcopy(geometry_of_robot))
+        collision.insert(0, surface_tree)
     else:
         visuals_of_robot = joint_laminate.toSDFTag("visual", "basic_bot_visual" + str(counter))    
         for visual_of_robot in visuals_of_robot:
@@ -535,26 +547,42 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
             root_of_robot.append(visual_of_robot)     
         collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
         for collision in collisions:    
+            collision.insert(0, surface_tree)
             root_of_robot.append(collision)    
-    
+        
     inertial = etree.SubElement(root_of_robot, "inertial")
     trueMass = joint_laminate.calculateTrueVolume() * 1.4 / popupcad.SI_length_scaling
-    etree.SubElement(inertial, "mass").text = str(max(0.01, trueMass)) #TODO make layer specfic 
+    etree.SubElement(inertial, "mass").text = str(trueMass) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = centroid_pose
     
     return root_of_robot            
 
 def createFloor():
     floor = etree.Element("model", name='floor')
+    
+    #etree.SubElement(floor, "pose").text = "0 0 -100 0 0 0"
     etree.SubElement(floor, "static").text = "true"
+        
     floor_root = etree.SubElement(floor, "link", name='floor_link')
+
+
+    surface_tree = etree.Element("surface")
+    friction = etree.SubElement(surface_tree, "friction")
+    ode_params = etree.SubElement(friction, "ode")
+    etree.SubElement(ode_params, "mu").text = "0.05"
+    etree.SubElement(ode_params, "mu2").text = "0.05"   
+    etree.SubElement(ode_params, "slip1").text = "1"
+    etree.SubElement(ode_params, "slip2").text = "1"
+    
     floor_collision = etree.Element("collision", name='floor_collision')
+    floor_collision.insert(0, surface_tree)    
     floor_root.append(floor_collision)
-    etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
+    #etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
     floor_geo = etree.SubElement(floor_collision, "geometry")
     floor_box = etree.SubElement(floor_geo, "plane")
     etree.SubElement(floor_box, "size").text = "10 10"
-    #etree.SubElement(floor_box, "size").text = "100 100 1"
+    #floor_box = etree.SubElement(floor_geo, "box")    
+    #etree.SubElement(floor_box, "size").text = "1000 1000 100"
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
     floor_visual.append(deepcopy(floor_geo))    
