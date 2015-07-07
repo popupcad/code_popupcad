@@ -33,7 +33,7 @@ user_home_dir = os.path.expanduser('~')
 
 internal_argument_scaling = 1
 deprecated_internal_argument_scaling = 1e3
-view_scaling = 1e0
+view_scaling = 1e3
 
 geometry_round_value = 5
 distinguishable_number_difference = 10**(-geometry_round_value)
