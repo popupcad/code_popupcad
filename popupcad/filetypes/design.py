@@ -147,7 +147,7 @@ class Design(popupCADFile):
             samesame = operations_old == operations_new
             operations_old = operations_new
         new.operations = operations_new
-        new.define_layers(self.return_layer_definition())
+        new.define_layers(self.return_layer_definition().upgrade())
         if identical:
             new.id = self.id
         new.main_operation = self.main_operation
