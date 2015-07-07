@@ -201,7 +201,6 @@ class GenericPoly(GenericShapeBase):
     #Returns the area scaled to match the appropiate size of the mesh
     def trueArea(self):
         p = self.exteriorpoints()
-        
         p = [[float(x)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for x in point] for point in p]#scales appropiately 
         return 0.5 * abs(sum(x0*y1 - x1*y0
                              for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
@@ -212,6 +211,24 @@ class GenericPoly(GenericShapeBase):
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs=dxfattribs)
 
+    #Gets the center
+    def get_center(self):
+        scaling_factor = popupcad.internal_argument_scaling*popupcad.SI_length_scaling
+        points = self.exteriorpoints()
+        x_values = [point[0]/scaling_factor for point in points]
+        y_values = [point[1]/scaling_factor for point in points]
+        x = float(sum(x_values)) / len(x_values)
+        y = float(sum(y_values)) / len(y_values)
+        return (x, y)
+    
+    def exterior_points_from_center(self):
+        scaling_factor = popupcad.internal_argument_scaling*popupcad.SI_length_scaling
+        center = self.get_center()
+        points = self.exteriorpoints()
+        x_values = [point[0]/scaling_factor - center[0] for point in points]
+        y_values = [point[1]/scaling_factor - center[1] for point in points]
+        return list(zip(x_values, y_values))
+        
 class GenericCircle(GenericShapeBase):
 
     def outputinteractive(self):

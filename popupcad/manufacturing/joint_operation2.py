@@ -407,22 +407,52 @@ class JointOperation2(Operation2, LayerBasedOperation):
             #Queues up the next batch of children
             child_queue.extend([child for child in children if child not in visited_set])
         return hierarchy_map    
+    
+    #Generates the XML Tree for the joint
+    def craftJoint(self, connection, counter):
+        joint_pair = reorder_pair(connection[1], self.get_laminate_generations())    
         
+        joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
+        etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
+        etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
+        joint_center = findMidPoint(connection[0], joint_pair[0])
+        joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
+        etree.SubElement(joint_root, "pose").text = joint_loc   
+        axis = etree.SubElement(joint_root, "axis")
+        line = unitizeLine(connection[0])    
+        etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
+        
+        #etree.SubElement(axis, "use_parent_model_frame").text = "true"
+        limit = etree.SubElement(axis, "limit")
+        etree.SubElement(limit, "lower").text = '-3.145159'
+        etree.SubElement(limit, "upper").text = '3.14519'
+        
+        #Add the properties of the joint
+        joint_props = self.all_joint_props[self.connections.index(connection)]
+        etree.SubElement(limit, "stiffness").text = str(joint_props[0])
+        dynamics = etree.SubElement(axis, "dynamics")
+        etree.SubElement(dynamics, "damping").text = str(joint_props[1])
+        
+        return joint_root
+        #come back and implement rather stuff
+    
+    #Export to Gazebo
     def export(self):
         joint_laminates = self.bodies_generic
         for laminate in joint_laminates:
             laminate.toDAE()
        
        
-       
         project_name = "exported" #We can figure out a better way later.
+        world_name = 'world'
+        robot_name = 'default_body'        
         
         global_root = etree.Element("sdf", version="1.5")
         
-        world_object = etree.Element("world", name='world')
+        world_object = etree.Element("world", name=world_name)
         global_root.append(world_object);
         
-        model_object = etree.Element("model", name='default_body')
+        model_object = etree.Element("model", name=robot_name)
         world_object.append(model_object)
         
         etree.SubElement(model_object, "static").text = "false"
@@ -436,9 +466,8 @@ class JointOperation2(Operation2, LayerBasedOperation):
             counter+=1
         
         counter = 0
-        hierarchy_map = self.get_laminate_generations()
         for joint_connection in self.connections:
-            model_object.append(craftJoint(joint_connection, counter, hierarchy_map))
+            model_object.append(self.craftJoint(joint_connection, counter))
             counter+=1
         
         joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
@@ -455,11 +484,26 @@ class JointOperation2(Operation2, LayerBasedOperation):
         #etree.SubElement(physics, "real_time_factor").text = "0.1"
         
         #Saves the object
-        f = open(popupcad.exportdir + os.path.sep + project_name + ".world","w")
+        file_output = popupcad.exportdir + os.path.sep + project_name + ".world"
+        f = open(file_output,"w")
         f.write(etree.tostring(global_root, pretty_print=True))
         f.close()
+        
+        #TODO replace with Subprocess to prevent pollution of STDOUT
+        os.system("gazebo -e simbody " + file_output + " &")
+        
+        print("Done waiting")        
+        
+        from gazebo_controller import apply_joint_force
+        
+        counter = 0
+        for joint_def in self.all_joint_props:
+            print("each joint_def")
+            apply_joint_force(world_name, robot_name, "hingejoint" + str(counter), joint_def[2])
+            #TODO Make the above method sync so it actually runs properly instead of 
+            #print("Appliing joint force")
 
-def createRobotPart(joint_laminate, counter,):
+def createRobotPart(joint_laminate, counter, buildMesh=True):
     filename = str(joint_laminate.id)
     center_of_mass = joint_laminate.calculateCentroid()
     
@@ -470,22 +514,29 @@ def createRobotPart(joint_laminate, counter,):
     centroid_pose = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
     #etree.SubElement(root_of_robot, "pose").text = centroid_pose    
     
-    visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
-    etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
-    etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
-    #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
-    geometry_of_robot = etree.Element("geometry")
-    robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
-    etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
-    #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
-    visual_of_robot.append(geometry_of_robot)
-    
-    
-    from copy import deepcopy #copys the element
-    
-    collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
-    collision.insert(0, deepcopy(geometry_of_robot))
+    if buildMesh:
+        visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
+        etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
+            
+        geometry_of_robot = etree.Element("geometry")
+        robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
+        etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
+        #etree.SubElement(robo_mesh, "scale").text = "100 100 100"    #For debugging
+        visual_of_robot.append(geometry_of_robot)
 
+        from copy import deepcopy #copys the element
+        collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
+        collision.insert(0, deepcopy(geometry_of_robot))
+    else:
+        visuals_of_robot = joint_laminate.toSDFTag("visual", "basic_bot_visual" + str(counter))    
+        for visual_of_robot in visuals_of_robot:
+            etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+            #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
+            root_of_robot.append(visual_of_robot)     
+        collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
+        for collision in collisions:    
+            root_of_robot.append(collision)    
+    
     inertial = etree.SubElement(root_of_robot, "inertial")
     trueMass = joint_laminate.calculateTrueVolume() * 1.4 / popupcad.SI_length_scaling
     etree.SubElement(inertial, "mass").text = str(max(0.01, trueMass)) #TODO make layer specfic 
@@ -507,6 +558,13 @@ def createFloor():
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
     floor_visual.append(deepcopy(floor_geo))    
+    
+    #material = etree.SubElement(floor_visual, "material")
+    #etree.SubElement(material, "ambient").text = "1 0 0 1"
+    #etree.SubElement(material, "diffuse").text = "1 0 0 1"
+    #etree.SubElement(material, "specular").text ="0.1 0.1 0.1 1"
+    #etree.SubElement(material, "emissive").text = "0 0 0 0"
+
     return floor
 
 
@@ -543,24 +601,4 @@ def reorder_pair(joint_pair, hierarchy_map):
     else:
         return joint_pair
     
-#Crafts a joint. #TODO move this into the joint_op class itself so it can make use of the hierarchy map
-def craftJoint(connection, counter, hierarchy_map):    
-    joint_pair = reorder_pair(connection[1], hierarchy_map)    
-    
-    joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
-    etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
-    etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
-    joint_center = findMidPoint(connection[0], joint_pair[0])
-    joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
-    etree.SubElement(joint_root, "pose").text = joint_loc   
-    axis = etree.SubElement(joint_root, "axis")
-    line = unitizeLine(connection[0])    
-    etree.SubElement(axis, "xyz").text = str(line[0]) + " " + str(line[1]) + " " + str(0)
-    print(line)    
-    
-    #etree.SubElement(axis, "use_parent_model_frame").text = "true"
-    limit = etree.SubElement(axis, "limit")
-    etree.SubElement(limit, "lower").text = '-3.145159'
-    etree.SubElement(limit, "upper").text = '3.14519'
-    return joint_root
-    #come back and implement rather stuff
+

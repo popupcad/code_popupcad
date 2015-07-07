@@ -52,7 +52,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 except IndexError:
                     pass
                 m.exec_()
-                raise
+                raise ex
 
         return log
 

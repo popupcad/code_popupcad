@@ -109,7 +109,7 @@ class GenericLaminate(popupCADFile):
         return volume
     
     #This will calculate the centeroid
-    def calculateCentroid(self):
+    def calculateCentroid(self): #TODO reimplement using .get_center method()
         layerdef = self.layerdef
         xvalues = []
         yvalues = []
@@ -122,7 +122,7 @@ class GenericLaminate(popupCADFile):
                 for tri in tris:
                     for point in tri:   
                         #Scales the mesh properly
-                        point = [float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in point]
+                        point = [float(a)/(popupcad.internal_argument_scaling*popupcad.SI_length_scaling) for a in point]
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
@@ -132,6 +132,31 @@ class GenericLaminate(popupCADFile):
         out = (x, y, z)
         return out#[float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in out]
         
+    def toSDFTag(self, tag, name_value):
+        from lxml import etree        
+        layerdef = self.layerdef
+        tree_tags = []
+        scaling_factor = popupcad.internal_argument_scaling * popupcad.SI_length_scaling
+        counter = 0
+        for layer in layerdef.layers:
+            layer_node = etree.Element(tag, name=name_value + "-" + str(counter))
+            layer_thickness = layer.thickness / scaling_factor
+            shapes = self.geoms[layer]
+            zvalue = layerdef.zvalue[layer] / scaling_factor
+            if (len(shapes) == 0) : 
+                continue
+            for s in shapes:
+                center = s.get_center()
+                etree.SubElement(layer_node, "pose").text = str(center[0]) + " " + str(center[1]) + " " + str(zvalue) + " 0 0 0"
+                geometry = etree.SubElement(layer_node, "geometry")
+                line = etree.SubElement(geometry, "polyline")
+                points = s.exterior_points_from_center()
+                for point in points:
+                    etree.SubElement(line, "point").text = str(point[0]) + " " + str(point[1])
+                etree.SubElement(line, "height").text = str(layer_thickness)
+            tree_tags.append(layer_node)
+            counter+=1
+        return tree_tags
 
     #Allows the laminate to get exported as a DAE.
     def toDAE(self):
@@ -140,7 +165,7 @@ class GenericLaminate(popupCADFile):
         layerdef = self.layerdef
         nodes = [] # Each node of the mesh scene. Typically one per layer.
         for layer in layerdef.layers:
-            layer_thickness = layer.thickness            
+            layer_thickness = layer.thickness    
             shapes = self.geoms[layer]
             zvalue = layerdef.zvalue[layer]        
             height = float(zvalue) #* 100 #* 1/popupcad.internal_argument_scaling
@@ -160,7 +185,7 @@ class GenericLaminate(popupCADFile):
         myscene = collada.scene.Scene("myscene", nodes)
         mesh.scenes.append(myscene)
         mesh.scene = myscene
-        filename = popupcad.exportdir + os.path.sep +   str(self.id) + '.dae' # 
+        filename = popupcad.exportdir + os.path.sep +  str(self.id) + '.dae' # 
         mesh.write(filename)
         
     def createMeshFromShape(self, s, layer_num, mesh, thickness): #TODO Move this method into the shape class.
@@ -201,7 +226,7 @@ class GenericLaminate(popupCADFile):
         vertices.extend(sideTriangles)
         
         #This scales the verticies properly. So that they are in millimeters.
-        vert_floats = [float(x)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for x in vertices] 
+        vert_floats = [float(x)/(popupcad.internal_argument_scaling*popupcad.SI_length_scaling) for x in vertices] 
         vert_src_name = str(self.get_basename()) + "-array"
         vert_src = collada.source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
         geom = collada.geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    
