@@ -39,7 +39,6 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
         
         t_end = time.time() + duration # The time that you want the controller to stop
         while time.time() < t_end or duration == -1:
-            print(message)            
             try:
                 yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
@@ -61,7 +60,8 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     import PySide.QtGui as qg
     widget = qg.QMessageBox()
     widget.setText("Close Gazebo to continue...")
-    w = widget.show()
+    widget.show()
+    
     #Experimental code to make this loop non-blocking
     #loop = trollius.get_event_loop()
     #loop_thread_tasks = lambda t_loop: loop_in_thread(t_loop, tasks)
@@ -177,14 +177,14 @@ def export_inner(operation):
     os.system("gazebo -e dart " + file_output + " &")
     
     
-    from gazebo_controller import apply_joint_forces
-
-    joint_names = []        
-    for num in range(0, len(operation.all_joint_props)):
-        joint_names.append("hingejoint" + str(num))
+    #Control System #TODO find a way to implement this
     
-    joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
-    apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
+    #joint_names = []        
+    #for num in range(0, len(operation.all_joint_props)):
+    #    joint_names.append("hingejoint" + str(num))
+    
+    #joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
+    #apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
 
 def craftJoint(operation, connection, counter):
     joint_pair = reorder_pair(connection[1], operation.get_laminate_generations())    
@@ -206,10 +206,11 @@ def craftJoint(operation, connection, counter):
             
     #Add the properties of the joint
     joint_props = operation.all_joint_props[operation.connections.index(connection)]
-    etree.SubElement(limit, "stiffness").text = str(joint_props[0])
+    #etree.SubElement(limit, "stiffness").text = str(joint_props[0])
     dynamics = etree.SubElement(axis, "dynamics")
     etree.SubElement(dynamics, "damping").text = str(joint_props[1])
-            
+    etree.SubElement(dynamics, "spring_reference").text = str(joint_props[2])
+    etree.SubElement(dynamics, "spring_stiffness").text = str(joint_props[0])    
     return joint_root
 
 
