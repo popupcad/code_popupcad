@@ -47,3 +47,4 @@ popupcad/docs/source/popupcad.widgets.rst
 dist/*
 settings.popupcad
 *.cad
+*~
