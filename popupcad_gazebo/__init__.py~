@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+from . import gazebo_controller
+
+
+def initialize(program):
+	projectactions =[]
+        projectactions.append(
+            {'text': 'Layer Order...', 'kwargs': {'triggered': gazebo_controller}})
+        program.editor.addMenu(projectactions, name='Gazebo')
+
