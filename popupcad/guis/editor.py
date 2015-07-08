@@ -217,7 +217,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.projectactions.append({'text': '&Rebuild',
                                     'kwargs': {'icon': Icon('refresh'),
                                                'shortcut': qc.Qt.CTRL + qc.Qt.SHIFT + qc.Qt.Key_R,
-                                               'triggered': self.reprocessoperations}})
+                                               'triggered': self.reprocessoperations_outer}})
 
         def dummy(action):
             action.setCheckable(True)
@@ -341,6 +341,12 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 'kwargs': {
                     'triggered': lambda: self.newoperation(
                         popupcad.manufacturing.sub_operation.SubOperation)}})
+        self.tools1.append(
+            {
+                'text': 'Transform',
+                'kwargs': {
+                    'triggered': lambda: self.newoperation(
+                        popupcad.manufacturing.transform.TransformOperation)}})
 
         self.operationactions = []
         self.operationactions.append(
@@ -454,6 +460,9 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.reprocessoperations([operation])
 
     @loggable
+    def reprocessoperations_outer(self,operations = None):
+        self.reprocessoperations(operations)
+        
     def reprocessoperations(self, operations=None):
         try:
             self.design.reprocessoperations(operations)
@@ -468,15 +477,11 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     @loggable
     def newfile(self):
         from popupcad.filetypes.layerdef import LayerDef
-        from popupcad.materials.materials import Carbon_0_90_0, Pyralux, Kapton
+        import popupcad.filetypes.material2 as materials
+#        from popupcad.materials.materials import Carbon_0_90_0, Pyralux, Kapton
         design = Design()
         design.define_layers(
-            LayerDef(
-                Carbon_0_90_0(),
-                Pyralux(),
-                Kapton(),
-                Pyralux(),
-                Carbon_0_90_0()))
+            LayerDef(*materials.default_sublaminate))
         self.load_design(design)
         self.view_2d.zoomToFit()
 
@@ -519,9 +524,10 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     @loggable
     def editlayers(self):
+        available_materials = popupcad.filetypes.material2.default_materials+popupcad.user_materials
         window = popupcad.widgets.materialselection.MaterialSelection(
             self.design.return_layer_definition().layers,
-            popupcad.materials.materials.available_materials,
+            available_materials,
             self)
         result = window.exec_()
         if result == window.Accepted:

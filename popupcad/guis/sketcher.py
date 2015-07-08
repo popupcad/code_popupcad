@@ -595,21 +595,18 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.scene.addItem(poly.outputinteractive())
 
     def autobridge(self):
-        interactives = [
-            item for item in self.scene.items() if isinstance(
-                item,
-                Interactive)]
+        from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
+        from popupcad.graphics2d.interactiveedge import InteractiveEdge
 
-        handles = []
-        [handles.extend(item.generic.vertices()) for item in interactives]
-        try:
-            handles.extend([item.get_generic() for item in self.controlpoints])
-        except AttributeError:
-            pass
-        handles.extend([item.get_generic()
-                        for item in self.scene.items() if isinstance(item, DrawingPoint)])
-        handles = [handle.getpos() for handle in handles]
-        polys = popupcad.algorithms.autobridge.autobridge(handles)
+        selecteditems = self.scene.selectedItems()
+        genericvertices = []
+        for item in selecteditems:
+            if isinstance(item, InteractiveVertexBase):
+                genericvertices.append(item.get_generic())
+            elif isinstance(item, InteractiveEdge):
+                genericvertices.extend(item.get_generic().vertices())
+        vertices2 = [vertex.getpos() for vertex in genericvertices]
+        polys = popupcad.algorithms.autobridge.autobridge(vertices2)
         [self.scene.addItem(poly.outputinteractive()) for poly in polys]
 
     def getjoints(self):
@@ -706,7 +703,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         selecteditems = self.scene.selectedItems()
         newgenerics = []
         for item in selecteditems:
-            newgenerics.append(item.generic.hollow())
+            newgenerics.extend(item.generic.hollow())
             item.harddelete()
         for item in newgenerics:
             self.scene.addItem(item.outputinteractive())
@@ -715,7 +712,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         selecteditems = self.scene.selectedItems()
         newgenerics = []
         for item in selecteditems:
-            newgenerics.append(item.generic.fill())
+            newgenerics.extend(item.generic.fill())
             item.harddelete()
         for item in newgenerics:
             self.scene.addItem(item.outputinteractive())

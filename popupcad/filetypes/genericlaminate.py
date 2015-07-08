@@ -91,6 +91,27 @@ class GenericLaminate(popupCADFile):
         filename_out = gv.raster(destination, filename, filetype)
         return filename_out
         
+    def save_dxf(self,filename):
+        import ezdxf
+        
+        dwg = ezdxf.new('AC1015')
+        msp = dwg.modelspace()
+
+        for layer in self.layerdef.layers:
+            dxf_layer = dwg.layers.create(name=layer.id)
+            for item in self.geoms[layer]:
+                if not item.is_construction():
+                    item.output_dxf(msp,layer.id)
+        
+        dwg.saveas(filename)     
+    
+    def transform(self,T):     
+        geoms = {}
+        for key, value in self.geoms.items():
+            geoms[key] = [item.transform(T) for item in value]
+        new = type(self)(self.layerdef, geoms)
+        return new
+        
         
     #Returns the thickness of the laminate
     def getLaminateThickness(self):
@@ -238,18 +259,3 @@ class GenericLaminate(popupCADFile):
         geom.primitives.append(triset)
         return geom
 
-
-if __name__ == '__main__':   
-    def save_dxf(self,filename):
-        import ezdxf
-        
-        dwg = ezdxf.new('AC1015')
-        msp = dwg.modelspace()
-
-        for layer in self.layerdef.layers:
-            dxf_layer = dwg.layers.create(name=layer.id)
-            for item in self.geoms[layer]:
-                if not item.is_construction():
-                    item.output_dxf(msp,layer.id)
-        
-        dwg.saveas(filename)                

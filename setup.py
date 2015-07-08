@@ -17,7 +17,6 @@ packages.append('popupcad.graphics2d')
 packages.append('popupcad.graphics3d')
 packages.append('popupcad.guis')
 packages.append('popupcad.manufacturing')
-packages.append('popupcad.materials')
 packages.append('popupcad.widgets')
 
 packages.append('dev_tools')
