@@ -212,17 +212,25 @@ class GenericShapeBase(popupCADFile):
 
     @classmethod
     def remove_redundant_points(cls, points, scaling=1):
-        points = points[:]
         newpoints = []
-        if len(points)>0:
-            newpoints.append(points.pop(0))
-            while not not points:
-                newpoint = points.pop(0)
-                if not cls.samepoint(
-                        newpoints[-1].getpos(scaling),
-                        newpoint.getpos(scaling)):
-                    newpoints.append(newpoint)
+        for point1, point2 in zip(points, points[1:] + points[0:1]):
+            if not cls.samepoint(
+                    point1.getpos(scaling),
+                    point2.getpos(scaling)):
+                newpoints.append(point1)
         return newpoints
+#    def remove_redundant_points(cls, points, scaling=1):
+#        points = points[:]
+#        newpoints = []
+#        if len(points)>0:
+#            newpoints.append(points.pop(0))
+#            while not not points:
+#                newpoint = points.pop(0)
+#                if not cls.samepoint(
+#                        newpoints[-1].getpos(scaling),
+#                        newpoint.getpos(scaling)):
+#                    newpoints.append(newpoint)
+#        return newpoints
 
     @classmethod
     def samepoint(cls, point1, point2):
