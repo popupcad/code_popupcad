@@ -128,9 +128,8 @@ class BaseVertex(object):
 
     @classmethod
     def delistify(cls, id, x, y):
-        new = cls()
+        new = cls((x, y))
         new.id = id
-        new.setpos((x, y))
         return new
 
     def listify(self):
@@ -236,9 +235,8 @@ class DrawnPoint(ShapeVertex):
     
     @classmethod
     def delistify(cls, id, x, y, is_construction):
-        new = cls()
+        new = cls((x, y))
         new.id = id
-        new.setpos((x, y))
         new.set_construction(is_construction)
         return new
 
