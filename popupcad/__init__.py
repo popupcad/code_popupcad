@@ -38,8 +38,8 @@ from . import supportfiles
 from . import widgets
 
 import yaml
-#try:
-with open(user_materials_filename) as f:
-    user_materials = yaml.load(f)
-#except:
-#    user_materials = []
+try:
+    with open(user_materials_filename) as f:
+        user_materials = yaml.load(f)
+except:
+    user_materials = []
