@@ -4,7 +4,7 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import popupcad.materials.materials as materials
+#import popupcad.materials.materials as materials
 from popupcad.filetypes.layerdef import LayerDef
 import PySide.QtGui as qg
 
@@ -58,7 +58,7 @@ class MaterialSelection(qg.QDialog):
         self.update_left()
 
     def add_item(self, item):
-        self.layerdef.addlayer(item.class1())
+        self.layerdef.addlayer(item.class1.copy())
         self.update_left()
 
     def update_left(self):
@@ -92,11 +92,5 @@ if __name__ == '__main__':
 
     app = qg.QApplication(sys.argv)
 
-#    carbon = materials.Carbon_0_90_0
-#    pyralux = materials.Pyralux
-#    kapton = materials.Kapton
-
-#    initiallist = [carbon,pyralux,kapton]
-
-    window = MaterialSelection([], materials.available_materials)
+    window = MaterialSelection([], [])
     a = window.exec_()

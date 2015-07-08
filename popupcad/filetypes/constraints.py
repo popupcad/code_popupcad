@@ -79,13 +79,13 @@ class ConstraintSystem(object):
         self.generated_variables = self.regenerate_inner()
 
     def regenerate_inner(self):
-        from popupcad.geometry.vertex import BaseVertex, ReferenceVertex
-        from popupcad.geometry.line import Line
+#        from popupcad.geometry.vertex import BaseVertex, ReferenceVertex
+#        from popupcad.geometry.line import Line
 
         if len(self.constraints) > 0:
             objects = self.vertex_builder()
             if len(objects) > 0:
-                variables, qout = [], []
+#                variables, qout = [], []
 
                 staticvertices = []
                 for item in objects:

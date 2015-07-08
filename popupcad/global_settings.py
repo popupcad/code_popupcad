@@ -65,6 +65,7 @@ classifiers = [
 author = 'Daniel M. Aukes'
 author_email = 'danaukes@seas.harvard.edu'
 url = 'http://www.popupcad.com'
+update_url = 'http://www.popupcad.org/docs/download/'
 #import uuid
 # uuid.uuid4()
 windows_uuid = '{875b89db-f819-48bf-9be4-ec93f57f29c2}'
@@ -90,6 +91,8 @@ local_settings_filename = os.path.normpath(
     os.path.join(
         popupcad_home_path,
         'settings.popupcad'))
+user_materials_filename = os.path.normpath(os.path.join(popupcad_home_path,'materials.yaml'))
+internal_materials_filename = os.path.normpath(os.path.join(supportfiledir,'materials.yaml'))
 
 lastdir = popupcad_home_path
 lastdesigndir = designdir

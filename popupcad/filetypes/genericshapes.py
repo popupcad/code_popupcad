@@ -74,11 +74,12 @@ class GenericPolyline(GenericShapeBase):
     def segments(self):
         return self.segments_open()
 
-    def fill(self, identical=True):
-        return GenericPoly(
-            self.get_exterior(),
-            self.get_interiors(),
-            self.is_construction())
+    def fill(self):
+        polygons = []
+        for loop in [self.get_exterior()]+self.get_interiors():
+            newloop = [vertex.copy(identical = False) for vertex in loop]
+            polygons.append(GenericPoly(newloop,[],self.is_construction()))
+        return polygons
 
     def output_dxf(self,model_space,layer = None):
         dxfattribs = {}
@@ -192,11 +193,12 @@ class GenericPoly(GenericShapeBase):
         b = t['vertices'][t['triangles']]
         return [tri.tolist() for tri in b]
 
-    def hollow(self, identical=True):
-        return GenericPolyline(
-            self.get_exterior(),
-            self.get_interiors(),
-            self.is_construction())
+    def hollow(self):
+        polylines = []
+        for loop in [self.get_exterior()]+self.get_interiors():
+            newloop = [vertex.copy(identical = False) for vertex in loop] + [loop[0].copy(identical = False)]
+            polylines.append(GenericPolyline(newloop,[],self.is_construction()))
+        return polylines
             
     #Returns the area scaled to match the appropiate size of the mesh
     def trueArea(self):

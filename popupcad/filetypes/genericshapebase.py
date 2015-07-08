@@ -119,6 +119,27 @@ class GenericShapeBase(popupCADFile):
         return [[vertex.getpos(scaling) for vertex in interior]
                 for interior in self.get_interiors()]
 
+    def exteriorpoints_3d(self, z=0):
+        points = numpy.array([vertex.getpos() for vertex in self.get_exterior()])
+        size = list(points.shape)
+        size[1]+=1
+        points2 = numpy.zeros(size)        
+        points2[:,:2] = points
+        points2[:,2] = z
+        return points2.tolist()
+        
+    def interiorpoints_3d(self, z=0):
+        interiors2 = []
+        for interior in self.get_interiors():
+            points = numpy.array([vertex.getpos() for vertex in interior])
+            size = list(points.shape)
+            size[1]+=1
+            points2 = numpy.zeros(size)        
+            points2[:,:2] = points
+            points2[:,2] = z
+            interiors2.append(points2.tolist())            
+        return interiors2
+
     def vertices(self):
         vertices = self.get_exterior()[:]
         [vertices.extend(interior) for interior in self.get_interiors()]
@@ -191,12 +212,16 @@ class GenericShapeBase(popupCADFile):
 
     @classmethod
     def remove_redundant_points(cls, points, scaling=1):
+        points = points[:]
         newpoints = []
-        for point1, point2 in zip(points, points[1:] + points[0:1]):
-            if not cls.samepoint(
-                    point1.getpos(scaling),
-                    point2.getpos(scaling)):
-                newpoints.append(point1)
+        if len(points)>0:
+            newpoints.append(points.pop(0))
+            while not not points:
+                newpoint = points.pop(0)
+                if not cls.samepoint(
+                        newpoints[-1].getpos(scaling),
+                        newpoint.getpos(scaling)):
+                    newpoints.append(newpoint)
         return newpoints
 
     @classmethod
@@ -322,6 +347,11 @@ class GenericShapeBase(popupCADFile):
         [item.shift(dxdy) for interior in self.get_interiors()
          for item in interior]
 
+    def transform(self, T):
+        exteriorpoints = (T.dot(numpy.array(self.exteriorpoints_3d(z=1)).T)).T[:,:2].tolist()
+        interiorpoints = [(T.dot(numpy.array(interior).T)).T[:,:2].tolist() for interior in self.interiorpoints_3d(z=1)]
+        return self.gen_from_point_lists(exteriorpoints,interiorpoints)
+
     def constrained_shift(self, dxdy, constraintsystem):
         a = [(item, dxdy) for item in self.get_exterior()]
         a.extend([(item, dxdy) for interior in self.get_interiors()
@@ -333,10 +363,10 @@ class GenericShapeBase(popupCADFile):
         self.interiors = [interior[::-1] for interior in self.get_interiors()]
 
     def hollow(self):
-        return self
+        return [self]
 
     def fill(self):
-        return self
+        return [self]
 
     def insert_exterior_vertex(self, ii, vertex):
         self.exterior.insert(ii, vertex)

@@ -28,10 +28,17 @@ My title is {{{{page.title}}}}
 
 {{% for operation in page.operations %}}
 
-* [<img src="{{{{operation.image_file}}}}" height = "75px" />]({{{{operation.image_file}}}}) **{{{{ operation.name }}}}** {{{{operation.description}}}} [{{{{operation.cut_file}}}}]({{{{operation.cut_file}}}})
+* [<img src="{{{{operation.image_file}}}}" height = "75px" />]({{{{operation.image_file}}}}) **{{{{ operation.name }}}}** {{{{operation.description}}}} 
+{{% for file in operation.cut_files%}}
+[{{{{file}}}}]({{{{file}}}}),
+{{% endfor %}}
 
 {{% for output in operation.outputs %}}
-  * [<img src="{{{{output.image_file}}}}" height = "50px" />]({{{{output.image_file}}}}) **{{{{output.name}}}}** {{{{output.description}}}} [{{{{output.cut_file}}}}]({{{{output.cut_file}}}})
+  * [<img src="{{{{output.image_file}}}}" height = "50px" />]({{{{output.image_file}}}}) **{{{{output.name}}}}** {{{{output.description}}}}
+{{% for file in output.cut_files%}}
+[{{{{file}}}}]({{{{file}}}}),
+{{% endfor %}}
+
 
 {{% endfor %}}
 {{% endfor %}}
@@ -72,34 +79,29 @@ def process_output(output, ii, jj, destination):
         'name': name,
         'image_file': filename_out,
         'description': output.description,
-        'cut_file': 'cut-dummy.svg'}
+        'cut_files': ['cut-dummy1.svg','cut-dummy2.svg']}
 
 
 class OperationDocumentation(Documentation):
     yaml_node_name = u'Operation'
-    export_keys = ['name', 'description', 'image_file', 'cut_file', 'outputs']
+    export_keys = ['name', 'description', 'image_file', 'cut_files', 'outputs']
 
     @classmethod
     def build(cls, operation, ii, destination):
         outputs = []
         out0 = process_output(operation.output[0], ii, 0, destination)
         image_file = out0['image_file']
-        cut_file = out0['cut_file']
+        cut_files = out0['cut_files']
         for jj, out in enumerate(operation.output[1:]):
             outputs.append(process_output(out, ii, jj, destination))
-        return cls(
-            str(operation),
-            operation.description,
-            image_file,
-            cut_file,
-            outputs)
+        return cls(str(operation),operation.description,image_file,cut_files,outputs)
 
-    def __init__(self, name, description, image_file, cut_file, outputs):
+    def __init__(self, name, description, image_file, cut_files, outputs):
         super(OperationDocumentation, self).__init__()
         self.name = name
         self.description = description
         self.image_file = image_file
-        self.cut_file = cut_file
+        self.cut_files = cut_files
         self.outputs = outputs
 
 
@@ -120,14 +122,16 @@ class DesignDocumentation(popupCADFile, Documentation):
 
         ii = design.operation_index(design.main_operation[0])
         image_file = operations[ii].image_file
-        return cls(title, name, operations, image_file)
+        cad_file = design.get_basename()
+        return cls(title, name, operations, image_file,cad_file)
 
-    def __init__(self, title, name, operations, image_file):
+    def __init__(self, title, name, operations, image_file,cad_file):
         super(DesignDocumentation, self).__init__()
         self.title = title
         self.name = name
         self.operations = operations
         self.image_file = image_file
+        self.cad_file = cad_file
 
     def copy(self, identical=True):
         new = type(self)(self.operations)
@@ -139,7 +143,7 @@ class DesignDocumentation(popupCADFile, Documentation):
         output['name'] = self.name
         output['operations'] = [item.dictify() for item in self.operations]
         output['image_file'] = self.image_file
-        output['cad_file'] = 'asdf.cad'
+        output['cad_file'] = self.cad_file
         return output
 
     def output(self):

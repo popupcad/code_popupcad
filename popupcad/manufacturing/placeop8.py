@@ -211,7 +211,7 @@ class PlaceOperation8(Operation2):
     operationtypes = ['placement']
     transformtypes = enum(scale='scale', custom='custom')
 
-    def copy(self, identical=True):
+    def copy(self):
         new = PlaceOperation8(
             self.sketch_links,
             self.design_links,
@@ -223,8 +223,7 @@ class PlaceOperation8(Operation2):
             self.scalex,
             self.scaley)
         new.customname = self.customname
-        if identical:
-            new.id = self.id
+        new.id = self.id
         return new
 
     def __init__(self, *args):

@@ -208,22 +208,16 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             {'text': "Render Icons", 'kwargs': {'triggered': self.gen_icons}})
         self.fileactions.append(
             {'text': "Build Documentation", 'kwargs': {'triggered': self.build_documentation}})
-
-        def dummy(action):
-            action.setEnabled(
-                sys.platform == 'win32' and getattr(
-                    sys,
-                    'frozen',
-                    False))
+        self.fileactions.append(
+            {'text': "License", 'kwargs': {'triggered': self.show_license}})
         self.fileactions.append({'text': "Update...",
-                                 'kwargs': {'triggered': self.download_installer},
-                                 'prepmethod': dummy})
+                                 'kwargs': {'triggered': self.download_installer}})
 
         self.projectactions = []
         self.projectactions.append({'text': '&Rebuild',
                                     'kwargs': {'icon': Icon('refresh'),
                                                'shortcut': qc.Qt.CTRL + qc.Qt.SHIFT + qc.Qt.Key_R,
-                                               'triggered': self.reprocessoperations}})
+                                               'triggered': self.reprocessoperations_outer}})
 
         def dummy(action):
             action.setCheckable(True)
@@ -347,6 +341,12 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 'kwargs': {
                     'triggered': lambda: self.newoperation(
                         popupcad.manufacturing.sub_operation.SubOperation)}})
+        self.tools1.append(
+            {
+                'text': 'Transform',
+                'kwargs': {
+                    'triggered': lambda: self.newoperation(
+                        popupcad.manufacturing.transform.TransformOperation)}})
 
         self.operationactions = []
         self.operationactions.append(
@@ -460,6 +460,9 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.reprocessoperations([operation])
 
     @loggable
+    def reprocessoperations_outer(self,operations = None):
+        self.reprocessoperations(operations)
+        
     def reprocessoperations(self, operations=None):
         try:
             self.design.reprocessoperations(operations)
@@ -474,15 +477,11 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     @loggable
     def newfile(self):
         from popupcad.filetypes.layerdef import LayerDef
-        from popupcad.materials.materials import Carbon_0_90_0, Pyralux, Kapton
+        import popupcad.filetypes.material2 as materials
+#        from popupcad.materials.materials import Carbon_0_90_0, Pyralux, Kapton
         design = Design()
         design.define_layers(
-            LayerDef(
-                Carbon_0_90_0(),
-                Pyralux(),
-                Kapton(),
-                Pyralux(),
-                Carbon_0_90_0()))
+            LayerDef(*materials.default_sublaminate))
         self.load_design(design)
         self.view_2d.zoomToFit()
 
@@ -525,9 +524,10 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     @loggable
     def editlayers(self):
+        available_materials = popupcad.filetypes.material2.default_materials+popupcad.user_materials
         window = popupcad.widgets.materialselection.MaterialSelection(
             self.design.return_layer_definition().layers,
-            popupcad.materials.materials.available_materials,
+            available_materials,
             self)
         result = window.exec_()
         if result == window.Accepted:
@@ -567,13 +567,14 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     @loggable
     def showcurrentoutput(self):
-        selected_indeces = self.operationeditor.currentIndeces2()
-        if len(selected_indeces) > 0:
-            ii, jj = selected_indeces[0]
-        else:
-            ii, jj = -1, 0
-            self.operationeditor.selectIndeces([(ii, jj)])
-        self.showcurrentoutput_inner(ii, jj)
+        if len(self.design.operations)>0:
+            selected_indeces = self.operationeditor.currentIndeces2()
+            if len(selected_indeces) > 0:
+                ii, jj = selected_indeces[0]
+            else:
+                ii, jj = -1, 0
+                self.operationeditor.selectIndeces([(ii, jj)])
+            self.showcurrentoutput_inner(ii, jj)
 
     @loggable
     def showcurrentoutput_inner(self, ii, jj):
@@ -723,20 +724,9 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.reprocessoperations()
         self.view_2d.zoomToFit()
 
-    def get_update_link(self):
-        import requests
-        r = requests.get('http://www.popupcad.org/downloads/current')
-        if r.status_code == requests.codes.ok:
-            #            self.update_text = 'Update('+r.text+')'
-            update_link = 'http://www.popupcad.org/downloads/' + r.text
-        else:
-            #            self.update_text = 'Visit popupCAD.com'
-            update_link = 'http://www.popupcad.org/download'
-        return update_link
-
     @loggable
     def download_installer(self):
-        qg.QDesktopServices.openUrl(self.get_update_link())
+        qg.QDesktopServices.openUrl(popupcad.update_url)
 
     @loggable
     def save_joint_def(self):
@@ -783,6 +773,31 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         output.generic_laminate().toDAE()
+
+    @loggable
+    def show_license(self):
+        import sys
+
+        if hasattr(sys,'frozen'):
+            path = popupcad.localpath
+        else:
+            path = os.path.normpath(os.path.join(popupcad.localpath,'../'))
+
+        path = os.path.normpath(os.path.join(path,'LICENSE'))
+        with open(path) as f:
+            license_text = f.readlines()
+
+        w = qg.QDialog()
+        le = qg.QTextEdit()
+        le.setText(''.join(license_text))
+        le.setReadOnly(True)
+        le.show()
+        layout = qg.QVBoxLayout()
+        layout.addWidget(le)        
+        w.setLayout(layout)
+        f = lambda: qc.QSize(600,400)
+        w.sizeHint = f
+        w.exec_()
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

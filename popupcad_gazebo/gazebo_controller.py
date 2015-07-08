@@ -97,12 +97,12 @@ def wait_net_service(server, port, timeout=None):
                 else:
             	    s.settimeout(next_timeout)
             s.connect((server, port))
-        except socket.timeout, err:
+        except socket.timeout as err:
             # this exception occurs only if timeout is set
             if timeout:
                 return False
       
-        except socket.error, err:
+        except socket.error as err:
             # catch timeout exception from underlying network library
             # this one is different from socket.timeout
             if type(err.args) != tuple or (err[0] != errno.ETIMEDOUT and err[0] != errno.ECONNREFUSED):
