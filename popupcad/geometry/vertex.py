@@ -10,7 +10,8 @@ from popupcad.filetypes.constraints import SymbolicVertex
 import popupcad
 
 class BaseVertex(object):
-    editable = ['pos']
+    editable = ['position']
+    hidden = ['roundvalue,yaml_node_name']
     deletable = []
 
     roundvalue = popupcad.geometry_round_value
@@ -76,7 +77,8 @@ class BaseVertex(object):
             else:
                 raise Exception
             return self.scale_tuple(self._position,scaling)
-        
+    position = property(getpos,setpos)
+    
     @staticmethod
     def scale_tuple(value, scale):
         if scale != 1:
