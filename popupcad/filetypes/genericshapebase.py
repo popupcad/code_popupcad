@@ -212,12 +212,16 @@ class GenericShapeBase(popupCADFile):
 
     @classmethod
     def remove_redundant_points(cls, points, scaling=1):
+        points = points[:]
         newpoints = []
-        for point1, point2 in zip(points, points[1:] + points[0:1]):
-            if not cls.samepoint(
-                    point1.getpos(scaling),
-                    point2.getpos(scaling)):
-                newpoints.append(point1)
+        if len(points)>0:
+            newpoints.append(points.pop(0))
+            while not not points:
+                newpoint = points.pop(0)
+                if not cls.samepoint(
+                        newpoints[-1].getpos(scaling),
+                        newpoint.getpos(scaling)):
+                    newpoints.append(newpoint)
         return newpoints
 
     @classmethod
@@ -359,10 +363,10 @@ class GenericShapeBase(popupCADFile):
         self.interiors = [interior[::-1] for interior in self.get_interiors()]
 
     def hollow(self):
-        return self
+        return [self]
 
     def fill(self):
-        return self
+        return [self]
 
     def insert_exterior_vertex(self, ii, vertex):
         self.exterior.insert(ii, vertex)
