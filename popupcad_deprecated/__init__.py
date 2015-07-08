@@ -61,7 +61,7 @@ local_modules.append('jointop')
 local_modules.append('keepout2')
 local_modules.append('laminateoperation')
 local_modules.append('layerop')
-local_modules.append('materials')
+#local_modules.append('materials')
 # local_modules.append('locateoperation')
 local_modules.append('locateoperation2')
 local_modules.append('outersheet2')
@@ -82,7 +82,7 @@ new_modules = []
 new_modules.append('popupcad.plugins')
 new_modules.append('popupcad.plugins.manufacturing')
 new_modules.append('popupcad.constraints')
-new_modules.append('popupcad.materials')
+#new_modules.append('popupcad.materials')
 # new_modules.append('popupcad.manufacturing.freeze')
 
 my_manufacturing_modules = []
@@ -148,9 +148,9 @@ modules_remap.append(
 modules_remap.append(
     ('popupcad.manufacturing.freeze',
      'popupcad.manufacturing.flatten'))
-modules_remap.append(
-    ('materials',
-     'popupcad.materials.materials'))
+#modules_remap.append(
+#    ('materials',
+#     'popupcad.materials.materials'))
 
 classes_remap = []
 classes_remap.append(
