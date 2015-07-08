@@ -11,7 +11,12 @@ class LayerDef(object):
     def __init__(self, *args):
         self.layers = list(args)
         self.refreshzvalues()
-
+        
+    def upgrade(self):
+        layers = [layer.upgrade() for layer in self.layers]
+        new = type(self)(*layers)
+        return new
+        
     def addlayer(self, layer):
         self.layers.append(layer)
         self.refreshzvalues()
