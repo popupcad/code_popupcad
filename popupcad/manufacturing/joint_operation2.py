@@ -14,8 +14,6 @@ from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
 import popupcad
 from popupcad.filetypes.laminate import Laminate
 from popupcad.widgets.table_editor import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row
-from lxml import etree
-import os
 
 try:
     import itertools.izip as zip
@@ -361,7 +359,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
                 self.fixed_bodies.append(body_generic)
 
         self.bodies_generic = bodies_generic
-        self.connections = [(key, connections[key]) for key in allhingelines]
+        self.connections = [(key, connections[key]) for key in allhingelines if len(connections[key]) == 2]
         self.all_joint_props = all_joint_props
 
         laminates = [safe, unsafe2, split1, split2] + bodies + list(connections2.values())
@@ -397,7 +395,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         visited_set = []
         while len(child_queue) > 0:
             current_node = child_queue.pop(0)            
-            visited_set.append(current_node)                        
+            visited_set.append(current_node)                            
             children_tuples = [joint_pair for joint_pair in joint_pairs if current_node in joint_pair]
             children = [[joint for joint in joint_pair if joint != current_node][0] for joint_pair in children_tuples]
             children = [child for child in children if child not in visited_set]

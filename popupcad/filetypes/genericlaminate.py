@@ -7,6 +7,8 @@ Please see LICENSE.txt for full license.
 import popupcad
 import numpy
 from popupcad.filetypes.popupcad_file import popupCADFile
+from popupcad.algorithms import tetrahedron
+
 try:
     import itertools.izip as zip
 except ImportError:
@@ -153,6 +155,11 @@ class GenericLaminate(popupCADFile):
         out = (x, y, z)
         return out#[float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in out]
         
+    def getDensity(self):
+        total_densities = sum([layer.density for layer in self.layers()])
+        return total_densities / len(self.layers())
+                
+                
     def toSDFTag(self, tag, name_value):
         from lxml import etree        
         layerdef = self.layerdef

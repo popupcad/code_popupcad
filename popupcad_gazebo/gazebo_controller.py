@@ -282,8 +282,11 @@ def unitizeLine(shape):
 
 #Ensures the connection are in the right order
 def reorder_pair(joint_pair, hierarchy_map):
-    first = hierarchy_map[joint_pair[0]]
-    second = hierarchy_map[joint_pair[1]]
+    try:
+        first = hierarchy_map[joint_pair[0]]
+        second = hierarchy_map[joint_pair[1]]
+    except:
+        return joint_pair
     if first > second:
         return (joint_pair[1], joint_pair[0])
     else:
@@ -310,6 +313,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     etree.SubElement(ode_params, "slip1").text = "1"
     etree.SubElement(ode_params, "slip2").text = "1"
 
+    
     
     if buildMesh:
         joint_laminate.toDAE()      
@@ -338,7 +342,9 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
             root_of_robot.append(collision)    
         
     inertial = etree.SubElement(root_of_robot, "inertial")
-    trueMass = joint_laminate.calculateTrueVolume() * 1.4 / popupcad.SI_length_scaling
+    trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
+    import math    
+    trueMass /= math.pow(popupcad.SI_length_scaling, 3) #Volume is cubed
     etree.SubElement(inertial, "mass").text = str(trueMass) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = centroid_pose
     
