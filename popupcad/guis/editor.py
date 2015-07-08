@@ -217,7 +217,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.projectactions.append({'text': '&Rebuild',
                                     'kwargs': {'icon': Icon('refresh'),
                                                'shortcut': qc.Qt.CTRL + qc.Qt.SHIFT + qc.Qt.Key_R,
-                                               'triggered': self.reprocessoperations}})
+                                               'triggered': self.reprocessoperations_outer}})
 
         def dummy(action):
             action.setCheckable(True)
@@ -460,6 +460,9 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.reprocessoperations([operation])
 
     @loggable
+    def reprocessoperations_outer(self,operations = None):
+        self.reprocessoperations(operations)
+        
     def reprocessoperations(self, operations=None):
         try:
             self.design.reprocessoperations(operations)

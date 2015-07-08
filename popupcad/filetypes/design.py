@@ -9,16 +9,17 @@ from popupcad.filetypes.popupcad_file import popupCADFile
 from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph
 import PySide.QtGui as qg
 
-
 class UpgradeError(Exception):
     pass
 
-
 class NoOperation(Exception):
-
     def __init__(self):
         Exception.__init__(self, 'No Parent Operation')
 
+class RegenFailure(Exception):
+    def __init__(self,other_exceptions):
+        Exception.__init__(self, 'Regen Failure',[str(item) for item in other_exceptions])
+#        self.other_exceptions = other_exceptions
 
 class Design(popupCADFile):
     filetypes = {'cad': 'CAD Design'}
@@ -253,9 +254,15 @@ class Design(popupCADFile):
         if operations is None:
             operations = self.operations
 
+        exceptions = []        
         for op in self.operations:
-            op.generate(self)
-
+            try:
+                op.generate(self)
+            except Exception as ex:
+                exceptions.append(ex)
+        if len(exceptions)>0:
+            raise RegenFailure(exceptions)
+            
     def build_tree(self):
         connections = []
         for child in self.operations:
