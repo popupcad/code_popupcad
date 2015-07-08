@@ -113,8 +113,9 @@ def wait_net_service(server, port, timeout=None):
 
 def export(program):
     design = program.editor.design
+    from popupcad.manufacturing.joint_operation2 import JointOperation2
     for tmp_op in design.operations:
-        if str(tmp_op) == "Joint Operation":
+        if isinstance(tmp_op, JointOperation2):
             operation = tmp_op
     export_inner(operation)
     
