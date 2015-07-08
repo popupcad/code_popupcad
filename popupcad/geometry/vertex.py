@@ -15,13 +15,9 @@ class BaseVertex(object):
 
     roundvalue = popupcad.geometry_round_value
 
-    def __init__(self, position=None):
-
+    def __init__(self, position):
         self.id = id(self)
-        self._position = None
-
-        if position is not None:
-            self.setpos(position)
+        self.setpos(position)
 
     def constraints_ref(self):
         try:
@@ -65,20 +61,21 @@ class BaseVertex(object):
         self._position = tuple(pos.tolist())
 
     def getpos(self, scaling=1):
-        if hasattr(self,'_position') and (self._position is not None):
-            pass
-        elif hasattr(self,'_pos') and (self._pos is not None):
-            self._position = self.scale_tuple(self._pos,1/popupcad.deprecated_internal_argument_scaling )
-            del self._pos
-        elif hasattr(self,'__pos'):
-            self._position = self.scale_tuple(self.__pos,1/popupcad.deprecated_internal_argument_scaling )
-            del self.__pos
-        elif hasattr(self,'_Vertex__pos'):
-            self._position = self.scale_tuple(self._Vertex__pos,1/popupcad.deprecated_internal_argument_scaling )
-            del self._Vertex__pos
-        else:
-            raise Exception
-        return self._position
+        try:
+            return self.scale_tuple(self._position,scaling)
+        except AttributeError:
+            if hasattr(self,'_pos') and (self._pos is not None):
+                self._position = self.scale_tuple(self._pos,1/popupcad.deprecated_internal_argument_scaling )
+                del self._pos
+            elif hasattr(self,'__pos'):
+                self._position = self.scale_tuple(self.__pos,1/popupcad.deprecated_internal_argument_scaling )
+                del self.__pos
+            elif hasattr(self,'_Vertex__pos'):
+                self._position = self.scale_tuple(self._Vertex__pos,1/popupcad.deprecated_internal_argument_scaling )
+                del self._Vertex__pos
+            else:
+                raise Exception
+            return self.scale_tuple(self._position,scaling)
         
     @staticmethod
     def scale_tuple(value, scale):
