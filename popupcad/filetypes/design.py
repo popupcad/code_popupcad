@@ -364,3 +364,10 @@ class Design(popupCADFile):
 
             return self._main_operation
     main_operation = property(get_main_operation, set_main_operation)
+
+    @classmethod
+    def load_yaml(cls, filename):
+        obj1 = popupCADFile.load_yaml(filename)
+        obj1.backup(popupcad.backupdir,'_pre-upgrade_')
+        obj2 = obj1.upgrade()
+        return obj2

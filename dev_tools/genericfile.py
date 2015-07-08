@@ -223,7 +223,7 @@ class GenericFile(object):
         for item in existingfiles[popupcad.backup_limit-1:]:
             os.remove(item)
         
-        time = popupcad.basic_functions.return_formatted_time(specificity = 'second')
+        time = popupcad.basic_functions.return_formatted_time(specificity = 'minute')
         
         backupfilename = filename+backupstring+time+'.'+self.defaultfiletype
             
