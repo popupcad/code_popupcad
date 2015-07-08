@@ -257,7 +257,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
         self.tools = []
 #        self.drawingactions.append(None)
-        self.tools.append({'text': 'joinedges',
+        self.tools.append({'text': 'convex hull',
                            'kwargs': {'triggered': self.joinedges,
                                       'icon': Icon('joinedges')}})
         self.tools.append({'text': 'triangulate',
@@ -412,7 +412,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         for item in self.scene.selectedItems():
             if isinstance(item, ReferenceInteractiveVertex):
                 generic = item.get_generic()
-                newgeneric = generic.copy_values(DrawnPoint(), False)
+                newgeneric = DrawnPoint(generic.getpos())
                 newitem = newgeneric.gen_interactive()
                 self.scene.addItem(newitem)
                 items.append(newgeneric)
@@ -422,8 +422,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
             elif isinstance(item, ReferenceInteractiveEdge):
                 generic = item.get_generic()
-                v1 = generic.vertex1.copy_values(ShapeVertex(), False)
-                v2 = generic.vertex2.copy_values(ShapeVertex(), False)
+                v1 = ShapeVertex(generic.vertex1.getpos())
+                v2 = ShapeVertex(generic.vertex2.getpos())
                 new_constraints.append(constraints.fixed.new(v1, v2))
 
                 l = GenericLine([v1, v2], [], construction=True)

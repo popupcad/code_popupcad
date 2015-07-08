@@ -72,7 +72,7 @@ class OperationOutput(UserData):
                 unique_geoms.append(geom)
 
         vertices = list(set(vertices))
-        controlpoints = [ReferenceVertex(position=p) for p in vertices]
+        controlpoints = [ReferenceVertex(p) for p in vertices]
 
         lines = list(set(lines))
         lines2 = [(vertices.index(p1), vertices.index(p2)) for p1, p2 in lines]

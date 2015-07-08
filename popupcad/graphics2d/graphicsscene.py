@@ -118,8 +118,7 @@ class SketcherSupport(object):
             if event.button() == qc.Qt.LeftButton:
                 if self.temp is None:
                     if self.nextgeometry == TextParent:
-                        textpos = BaseVertex()
-                        textpos.setpos(pos.toTuple())
+                        textpos = BaseVertex(pos.toTuple())
                         text = GenericText(
                             '',
                             textpos,
@@ -130,10 +129,9 @@ class SketcherSupport(object):
                         temp.editmode()
 
                     elif self.nextgeometry == DrawingPoint:
-                        temp = self.nextgeometry(DrawnPoint())
+                        temp = self.nextgeometry(DrawnPoint(pos))
                         self.addItem(temp)
                         self.setFocusItem(temp)
-                        temp.setPos(pos)
                         temp.updatescale()
                         self.childfinished()
                     else:

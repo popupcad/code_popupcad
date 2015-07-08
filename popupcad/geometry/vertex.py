@@ -98,18 +98,13 @@ class BaseVertex(object):
         return PropertyEditor(self)
 
     def copy(self, identical=True):
-        new = type(self)()
-        return self.copy_values(new, identical)
-
-    def upgrade(self, *args, **kwargs):
-        return self
-
-    def copy_values(self, new, identical=False):
-        new.setpos(self.getpos())
-
+        new = type(self)(self.getpos())
         if identical:
             new.id = self.id
         return new
+
+    def upgrade(self, *args, **kwargs):
+        return self
 
     def shape_is_equal(self, other):
         from popupcad.filetypes.genericshapebase import GenericShapeBase
@@ -154,6 +149,15 @@ class BaseVertex(object):
         new = cls.delistify(*list1)
         return new
 
+class ReferenceVertex(BaseVertex):
+    yaml_node_name = u'!ReferenceVertex'
+
+    def gen_interactive(self):
+        from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
+        iv = ReferenceInteractiveVertex(self)
+        iv.updateshape()
+        return iv
+
 class ShapeVertex(BaseVertex):
     yaml_node_name = u'!ShapeVertex'
 
@@ -163,14 +167,14 @@ class ShapeVertex(BaseVertex):
         iv.updateshape()
         return iv
 
-
+#TODO: does DrawnPoint really need to be a child class of ShapeVertex, or can it be a child of BaseVertex?
 class DrawnPoint(ShapeVertex):
     editable = ShapeVertex.editable + ['construction']
     yaml_node_name = u'!DrawnPoint'
 
-    def __init__(self):
-        super(DrawnPoint, self).__init__()
-        self.set_construction(True)
+    def __init__(self,position,construction = True):
+        super(DrawnPoint, self).__init__(position)
+        self.set_construction(construction)
 
     def exteriorpoints(self):
         return [self.getpos()]
@@ -221,10 +225,8 @@ class DrawnPoint(ShapeVertex):
     def set_construction(self, test):
         self.construction = test
 
-    def copy_values(self, new, identical=False):
-        new.setpos(self.getpos())
-        new.set_construction(self.is_construction())
-
+    def copy(self, identical=True):
+        new = type(self)(self.getpos(),self.is_construction())
         if identical:
             new.id = self.id
         return new
@@ -244,20 +246,6 @@ class DrawnPoint(ShapeVertex):
         x, y = self.getpos()
         output = [self.id, x, y, self.is_construction()]
         return output
-
-
-class ReferenceVertex(BaseVertex):
-    yaml_node_name = u'!ReferenceVertex'
-
-    def __init__(self, *args, **kwargs):
-        super(ReferenceVertex, self).__init__(*args, **kwargs)
-
-    def gen_interactive(self):
-        from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
-        iv = ReferenceInteractiveVertex(self)
-        iv.updateshape()
-        return iv
-
 
 import yaml
 

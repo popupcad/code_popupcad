@@ -238,8 +238,7 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
 
     def addvertex(self, qpoint):
         from popupcad.geometry.vertex import ShapeVertex
-        v = ShapeVertex()
-        v.setpos(qpoint.toTuple())
+        v = ShapeVertex(qpoint.toTuple())
         self.generic.addvertex_exterior(v, special=True)
         self.updatehandles()
         self.refreshview()

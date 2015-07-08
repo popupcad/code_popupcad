@@ -217,8 +217,7 @@ class GenericShapeBase(popupCADFile):
     def buildvertexlist(points):
         exterior = []
         for point in points:
-            v = ShapeVertex()
-            v.setpos(point)
+            v = ShapeVertex(point)
             exterior.append(v)
         return exterior
 
@@ -233,8 +232,7 @@ class GenericShapeBase(popupCADFile):
             subclass = GenericPolyline
         elif isinstance(obj, customshapely.ShapelyPoint):
             from popupcad.geometry.vertex import DrawnPoint
-            s = DrawnPoint()
-            s.setpos(exterior_p[0])
+            s = DrawnPoint(exterior_p[0])
             return s
         else:
             raise Exception

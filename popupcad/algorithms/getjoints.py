@@ -74,7 +74,7 @@ def getjoints(geoms):
 #            newsegments.extend(segs)
 
     newsegments2 = [GenericLine(
-        [ShapeVertex(position=v1), ShapeVertex(position=v2)], []) for v1, v2 in newsegments]
+        [ShapeVertex(v1), ShapeVertex(v2)], []) for v1, v2 in newsegments]
     outputsegments = [
         segment.outputinteractive() for segment in newsegments2 if len(
             segment.get_exterior()) == 2]
