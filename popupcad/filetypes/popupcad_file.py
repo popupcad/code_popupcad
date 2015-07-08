@@ -16,3 +16,4 @@ class popupCADFile(GenericFile):
     @classmethod
     def get_parent_program_version(self):
         return popupcad.version
+

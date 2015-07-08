@@ -132,21 +132,21 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.act_view_errors)
 
     def autosave(self):
-        import os
-        import glob
-        filenames = glob.glob(popupcad.backupdir + '\\*.cad')
-        filenames.sort(reverse=True)
-        for filename in filenames[popupcad.backup_limit:]:
-            os.remove(filename)
-
-        time = popupcad.basic_functions.return_formatted_time()
-        filename = os.path.normpath(
-            os.path.join(
-                popupcad.backupdir,
-                'autosave_' +
-                time +
-                '.cad'))
-        self.design.save_yaml(filename, update_filename=False)
+#        import os
+#        import glob
+#        filenames = glob.glob(popupcad.backupdir + '\\*.cad')
+#        filenames.sort(reverse=True)
+#        for filename in filenames[popupcad.backup_limit:]:
+#            os.remove(filename)
+#
+#        time = popupcad.basic_functions.return_formatted_time()
+#        filename = os.path.normpath(
+#            os.path.join(
+#                popupcad.backupdir,
+#                'autosave_' +
+#                time +
+#                '.cad'))
+        self.design.backup(popupcad.backupdir,'_autosave_')
 
     @loggable
     def importscripts(self):
