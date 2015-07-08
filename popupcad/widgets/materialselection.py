@@ -58,7 +58,7 @@ class MaterialSelection(qg.QDialog):
         self.update_left()
 
     def add_item(self, item):
-        self.layerdef.addlayer(item.class1())
+        self.layerdef.addlayer(item.class1.copy())
         self.update_left()
 
     def update_left(self):

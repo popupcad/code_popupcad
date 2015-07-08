@@ -21,11 +21,10 @@ from .global_settings import *
 from popupcad.filetypes.programsettings import ProgramSettings
 try:
     local_settings = ProgramSettings.load_yaml(settings_filename)
-except IOError:
-    local_settings = ProgramSettings()
+#except IOError:
+#    local_settings = ProgramSettings()
 except:
     local_settings = ProgramSettings()
-
 
 from . import algorithms
 from . import filetypes
@@ -36,3 +35,10 @@ from . import guis
 from . import manufacturing
 from . import supportfiles
 from . import widgets
+
+import yaml
+#try:
+with open(user_materials_filename) as f:
+    user_materials = yaml.load(f)
+#except:
+#    user_materials = []

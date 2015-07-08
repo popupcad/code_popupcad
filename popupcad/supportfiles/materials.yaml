@@ -1,36 +1,38 @@
-rigid: !!python/object:popupcad.filetypes.material2.Material2
-  E1: 1
-  E2: 1
-  color: &id001 !!python/tuple [0.2, 0.2, 0.2, 0.2]
-  density: 1
-  id: 143245040
-  is_adhesive: false
-  is_conductive: false
-  is_rigid: true
-  name: Carbon
-  poisson: 0.5
-  thickness: 0.025
-flexible: !!python/object:popupcad.filetypes.material2.Material2
-  E1: 1
-  E2: 1
-  color: *id001
-  density: 1
-  id: 159473616
-  is_adhesive: false
-  is_conductive: false
-  is_rigid: true
-  name: Flexible
-  poisson: 0.5
-  thickness: 0.025
-adhesive: !!python/object:popupcad.filetypes.material2.Material2
-  E1: 1
-  E2: 1
-  color: *id001
-  density: 1
-  id: 159473616
-  is_adhesive: false
-  is_conductive: false
-  is_rigid: true
-  name: Adhesive
-  poisson: 0.5
-  thickness: 0.025
+default_material_types:
+  adhesive: !!python/object:popupcad.filetypes.material2.Material2
+    E1: 1
+    E2: 1
+    color: !!python/tuple [0.5, 0.5, 0.5, 0.5]
+    density: 1
+    id: 43436632
+    is_adhesive: true
+    is_conductive: false
+    is_rigid: false
+    name: adhesive
+    poisson: 0.5
+    thickness: 0.1
+  flexible: !!python/object:popupcad.filetypes.material2.Material2
+    E1: 1
+    E2: 1
+    color: !!python/tuple [0.5, 0.5, 0.5, 0.5]
+    density: 1
+    id: 43434840
+    is_adhesive: false
+    is_conductive: false
+    is_rigid: false
+    name: flexible
+    poisson: 0.5
+    thickness: 0.1
+  rigid: !!python/object:popupcad.filetypes.material2.Material2
+    E1: 1
+    E2: 1
+    color: !!python/tuple [0.5, 0.5, 0.5, 0.5]
+    density: 1
+    id: 43405096
+    is_adhesive: false
+    is_conductive: false
+    is_rigid: true
+    name: rigid
+    poisson: 0.5
+    thickness: 0.1
+default_sublaminate_keys: [rigid, adhesive, flexible, adhesive, rigid]
