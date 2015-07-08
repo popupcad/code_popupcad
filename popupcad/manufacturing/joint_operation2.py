@@ -356,23 +356,25 @@ class JointOperation2(Operation2, LayerBasedOperation):
             connections2[line] = Laminate.unaryoperation(geoms, 'union')
 
         self.fixed_bodies = []
+        fixed_csg = []
         for body, body_generic in zip(bodies, bodies_generic):
             if not fixed.intersection(body).isEmpty():
                 self.fixed_bodies.append(body_generic)
+                fixed_csg.append(body)
 
         self.bodies_generic = bodies_generic
         self.connections = [(key, connections[key]) for key in allhingelines]
         self.all_joint_props = all_joint_props
 
-        laminates = [safe, unsafe2, split1, split2] + bodies + list(connections2.values())
         self.output = []
-        for ii, item in enumerate(laminates):
-            self.output.append(
-                OperationOutput(
-                    item,
-                    'Body {0:d}'.format(ii),
-                    self))
-        self.output.insert(0, self.output[0])
+        self.output.append(OperationOutput(safe,'Safe',self))        
+        self.output.append(OperationOutput(unsafe,'Unafe',self))        
+        self.output.append(OperationOutput(split1,'Split1',self))        
+        self.output.append(OperationOutput(split2,'Split2',self))        
+        self.output.extend([OperationOutput(item,'Fixed {0:d}'.format(ii),self) for ii,item in enumerate(fixed_csg)])        
+        self.output.extend([OperationOutput(item,'Body {0:d}'.format(ii),self) for ii,item in enumerate(bodies)])        
+        self.output.extend([OperationOutput(item,'Connection {0:d}'.format(ii),self) for ii,item in enumerate(connections2.values())])        
+        self.output.insert(0, self.output[3])
 
     def switch_layer_defs(self, layerdef_old, layerdef_new):
         new = self.copy()
