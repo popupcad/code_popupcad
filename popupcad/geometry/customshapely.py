@@ -5,7 +5,8 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import shapely.geometry as sg
-
+import numpy
+import popupcad
 
 def iscollection(item):
     collections = [
@@ -47,24 +48,21 @@ def multiinit(*geoms):
 
 
 class ShapelyLineString(sg.LineString):
-
     def genpoints_generic(self):
-        coords = [coord for coord in self.coords]
+        coords = (numpy.array([coord for coord in self.coords])/popupcad.csg_processing_scaling).tolist()
         return coords, []
 
 
 class ShapelyPoint(sg.Point):
-
     def genpoints_generic(self):
-        coords = [coord for coord in self.coords]
+        coords = (numpy.array([coord for coord in self.coords])/popupcad.csg_processing_scaling).tolist()
         return coords, []
 
 
 class ShapelyPolygon(sg.Polygon):
-
     def genpoints_generic(self):
-        exterior = [coord for coord in self.exterior.coords]
-        interiors = [[coord for coord in interior.coords]
+        exterior = (numpy.array([coord for coord in self.exterior.coords])/popupcad.csg_processing_scaling).tolist()
+        interiors = [(numpy.array([coord for coord in interior.coords])/popupcad.csg_processing_scaling).tolist()
                      for interior in self.interiors]
         return exterior, interiors
 
