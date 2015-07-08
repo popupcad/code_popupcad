@@ -77,7 +77,9 @@ popupcad_home_path = os.path.normpath(
         popupcad_dirname))
 
 backup_timeout = 1000 * 60 * 5
+#backup_timeout = 1000 * 2
 backup_limit = 10
+#backup_limit = 3
 
 designdir = os.path.normpath(os.path.join(popupcad_home_path, 'designs'))
 importdir = os.path.normpath(os.path.join(popupcad_home_path, 'import'))
