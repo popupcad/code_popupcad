@@ -294,7 +294,7 @@ def reorder_pair(joint_pair, hierarchy_map):
     
         
 
-def createRobotPart(joint_laminate, counter, buildMesh=True):
+def createRobotPart(joint_laminate, counter, buildMesh=False):
     filename = str(joint_laminate.id)
     center_of_mass = joint_laminate.calculateCentroid()
     
