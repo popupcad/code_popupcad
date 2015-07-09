@@ -17,6 +17,9 @@ import popupcad
 from popupcad.filetypes.design import Design
 from popupcad.supportfiles import Icon
 
+class NoOutput(Exception):
+    def __init__(self):
+        Exception.__init__(self,'Operation has not been processed due to a previous exception')
 
 class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
@@ -579,16 +582,18 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     @loggable
     def showcurrentoutput_inner(self, ii, jj):
+        self.scene.deleteall()
+        self.view_3d.view.clear()
         try:
-            self.scene.deleteall()
-            self.view_3d.view.clear()
             operationoutput = self.design.operations[ii].output[jj]
-            selectedlayers = [item for item in self.design.return_layer_definition(
-            ).layers if item in self.layerlistwidget.selectedData()]
-            self.show2dgeometry3(operationoutput, selectedlayers)
-            self.show3dgeometry3(operationoutput, selectedlayers)
         except IndexError:
             raise
+        except AttributeError:
+            raise NoOutput()
+        selectedlayers = [item for item in self.design.return_layer_definition(
+        ).layers if item in self.layerlistwidget.selectedData()]
+        self.show2dgeometry3(operationoutput, selectedlayers)
+        self.show3dgeometry3(operationoutput, selectedlayers)
 
     @loggable
     def show2dgeometry3(self, operationoutput, selectedlayers,):

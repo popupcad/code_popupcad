@@ -8,6 +8,7 @@ import sys
 import PySide.QtGui as qg
 import popupcad
 import logging
+import traceback
 
 class Program(object):
 
@@ -33,23 +34,24 @@ class Program(object):
             plugin.initialize(self)
         self.create_exception_listener()
     def create_exception_listener(self):
-        logging.basicConfig(filename='log.txt',filemode='w',level=logging.DEBUG)
+        logging.basicConfig(filename=popupcad.error_log_filename,filemode='w',level=logging.DEBUG)
         import sys
         self.excepthook_internal = sys.excepthook
         sys.excepthook = self.excepthook
-    def excepthook(self,exctype,value,traceback):
-        message = \
-'''
-Exception: {}
-Value: {}
-Traceback: {}
-'''.format(str(exctype),str(value),str(traceback))
-        print(message)
-        logging.error(message)
-        self.editor.error_log.appendText(message)
-        self.excepthook_internal(exctype,value,traceback)
-        mb = qg.QMessageBox()
-        mb.setText(message)
-        mb.exec_()
+    def excepthook(self,exctype,value,tb):
+        if exctype is not SystemExit:
+            message = '''{}: {}'''.format(str(exctype),str(value))
+            print(message)
+    
+            tbmessage = traceback.format_tb(tb)
+            tbmessage = '  '.join(tbmessage)
+    
+            logging.error(message)
+            logging.debug('\n'+tbmessage)
+            self.editor.error_log.appendText(message+'\n'+tbmessage)
+            self.excepthook_internal(exctype,value,traceback)
+            mb = qg.QMessageBox()
+            mb.setText(message)
+            mb.exec_()
         
         

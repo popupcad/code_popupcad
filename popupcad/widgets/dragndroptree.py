@@ -183,7 +183,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.emit_item_change = True
         items = [ParentItem(None, item) for item in self.masterlist]
         self.addTopLevelItems(items)
-        self.expandAll()
+        self.collapseAll()
 
 #        self.selectIndeces(new_indeces)
 
