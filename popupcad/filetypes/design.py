@@ -257,14 +257,7 @@ class Design(popupCADFile):
 
         exceptions = []        
         for op in self.operations:
-            try:
-                op.generate(self)
-            except Exception as ex:
-                ex = sys.exc_info()
-                exceptions.append(ex)
-        if len(exceptions)>0:
-#            raise RegenFailure(exceptions)
-            raise exceptions[0][1],None,exceptions[0][2]
+            op.generate(self)
             
     def build_tree(self):
         connections = []
