@@ -210,6 +210,7 @@ class GenericShapeBase(popupCADFile):
             cls.remove_redundant_points(interior) for interior in interiors]
         return exterior, interiors
 
+    @classmethod
     def remove_redundant_points(cls, points, scaling=1,loop_test = True):
         newpoints = []
         if len(points)>0:
