@@ -23,7 +23,7 @@ except ImportError:
 def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
     wait_net_service('localhost',11345)
 
-    @trollius.coroutine 
+    @trollius.coroutine
     def joint_force_loop(world_name, robot_name, joint_name, force, duration=-1):
         manager = yield From(pygazebo.connect())
         print("connected")
@@ -39,7 +39,6 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
         
         t_end = time.time() + duration # The time that you want the controller to stop
         while time.time() < t_end or duration == -1:
-            print(message)            
             try:
                 yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
@@ -61,7 +60,8 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     import PySide.QtGui as qg
     widget = qg.QMessageBox()
     widget.setText("Close Gazebo to continue...")
-    w = widget.show()
+    widget.show()
+    
     #Experimental code to make this loop non-blocking
     #loop = trollius.get_event_loop()
     #loop_thread_tasks = lambda t_loop: loop_in_thread(t_loop, tasks)
@@ -113,16 +113,15 @@ def wait_net_service(server, port, timeout=None):
 
 def export(program):
     design = program.editor.design
+    from popupcad.manufacturing.joint_operation2 import JointOperation2
     for tmp_op in design.operations:
-        if str(tmp_op) == "Joint Operation":
+        if isinstance(tmp_op, JointOperation2):
             operation = tmp_op
     export_inner(operation)
     
 #Export to Gazebo
 def export_inner(operation):
     joint_laminates = operation.bodies_generic
-    for laminate in joint_laminates:
-        laminate.toDAE()
    
    
     project_name = "exported" #We can figure out a better way later.
@@ -140,7 +139,11 @@ def export_inner(operation):
     etree.SubElement(model_object, "static").text = "false"
     etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"
     
-    world_object.append(createFloor())
+    #world_object.append(createFloor())
+    include_floor = etree.SubElement(world_object, "include")
+    etree.SubElement(include_floor, "uri").text = "model://ground_plane"
+    include_sun = etree.SubElement(world_object, "include")
+    etree.SubElement(include_sun, "uri").text = "model://sun"
     
     counter = 0
     for joint_laminate in joint_laminates:
@@ -177,14 +180,14 @@ def export_inner(operation):
     os.system("gazebo -e dart " + file_output + " &")
     
     
-    from gazebo_controller import apply_joint_forces
-
-    joint_names = []        
-    for num in range(0, len(operation.all_joint_props)):
-        joint_names.append("hingejoint" + str(num))
+    #Control System #TODO find a way to implement this
     
-    joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
-    apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
+    #joint_names = []        
+    #for num in range(0, len(operation.all_joint_props)):
+    #    joint_names.append("hingejoint" + str(num))
+    
+    #joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
+    #apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
 
 def craftJoint(operation, connection, counter):
     joint_pair = reorder_pair(connection[1], operation.get_laminate_generations())    
@@ -206,10 +209,11 @@ def craftJoint(operation, connection, counter):
             
     #Add the properties of the joint
     joint_props = operation.all_joint_props[operation.connections.index(connection)]
-    etree.SubElement(limit, "stiffness").text = str(joint_props[0])
+    #etree.SubElement(limit, "stiffness").text = str(joint_props[0])
     dynamics = etree.SubElement(axis, "dynamics")
     etree.SubElement(dynamics, "damping").text = str(joint_props[1])
-            
+    etree.SubElement(dynamics, "spring_reference").text = str(joint_props[2])
+    etree.SubElement(dynamics, "spring_stiffness").text = str(joint_props[0])    
     return joint_root
 
 
@@ -278,8 +282,11 @@ def unitizeLine(shape):
 
 #Ensures the connection are in the right order
 def reorder_pair(joint_pair, hierarchy_map):
-    first = hierarchy_map[joint_pair[0]]
-    second = hierarchy_map[joint_pair[1]]
+    try:
+        first = hierarchy_map[joint_pair[0]]
+        second = hierarchy_map[joint_pair[1]]
+    except:
+        return joint_pair
     if first > second:
         return (joint_pair[1], joint_pair[0])
     else:
@@ -307,7 +314,9 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     etree.SubElement(ode_params, "slip2").text = "1"
 
     
+    
     if buildMesh:
+        joint_laminate.toDAE()      
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
             
@@ -333,7 +342,9 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
             root_of_robot.append(collision)    
         
     inertial = etree.SubElement(root_of_robot, "inertial")
-    trueMass = joint_laminate.calculateTrueVolume() * 1.4 / popupcad.SI_length_scaling
+    trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
+    import math    
+    trueMass /= math.pow(popupcad.SI_length_scaling, 3) #Volume is cubed
     etree.SubElement(inertial, "mass").text = str(trueMass) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = centroid_pose
     
