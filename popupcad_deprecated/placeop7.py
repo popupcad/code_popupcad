@@ -148,8 +148,6 @@ class Dialog(qg.QDialog):
         elif self.transformtype_y == PlaceOperation7.transformtypes.custom:
             self.radiobox_custom_y.setChecked(True)
 
-#        if self.subdesign != None:
-#            self.validatename()
         self.designwidget.itemlist.itemSelectionChanged.connect(
             self.loadoperations)
 

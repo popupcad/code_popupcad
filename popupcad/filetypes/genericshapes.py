@@ -47,7 +47,7 @@ class GenericLine(GenericShapeBase):
 
     def output_dxf(self,model_space,layer = None):
         dxfattribs = {}
-        if not layer==None:
+        if layer is not None:
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
         
@@ -86,7 +86,7 @@ class GenericPolyline(GenericShapeBase):
 
     def output_dxf(self,model_space,layer = None):
         dxfattribs = {}
-        if not layer==None:
+        if layer is not None:
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
 
@@ -212,7 +212,7 @@ class GenericPoly(GenericShapeBase):
    
     def output_dxf(self,model_space,layer = None):
         dxfattribs = {'closed':True}
-        if not layer==None:
+        if layer is not None:
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs=dxfattribs)
 
