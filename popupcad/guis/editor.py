@@ -31,28 +31,29 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     def loggable(func):
         def log(self, *args, **kwargs):
-            try:
-                return func(self, *args, **kwargs)
-            except Exception as ex:
-                import traceback
-                import sys
-                tb = sys.exc_info()[2]
-                exception_string = traceback.format_exception(type(ex), ex, tb)
-                [self.error_log.appendText(item) for item in exception_string]
-
-                m = qg.QMessageBox()
-                m.setIcon(m.Warning)
-                m.setText(ex.args[0])
-                try:
-                    m.setInformativeText(str(ex.args[1]))
-                except IndexError:
-                    pass
-                try:
-                    m.setDetailedText(str(ex.args[2]))
-                except IndexError:
-                    pass
-                m.exec_()
-                raise ex
+            return func(self, *args, **kwargs)
+#            try:
+#                return func(self, *args, **kwargs)
+#            except Exception as ex:
+#                import traceback
+#                import sys
+#                tb = sys.exc_info()[2]
+#                exception_string = traceback.format_exception(type(ex), ex, tb)
+#                [self.error_log.appendText(item) for item in exception_string]
+#
+#                m = qg.QMessageBox()
+#                m.setIcon(m.Warning)
+#                m.setText(ex.args[0])
+#                try:
+#                    m.setInformativeText(str(ex.args[1]))
+#                except IndexError:
+#                    pass
+#                try:
+#                    m.setDetailedText(str(ex.args[2]))
+#                except IndexError:
+#                    pass
+#                m.exec_()
+#                raise
 
         return log
 
