@@ -263,6 +263,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         sketch_result = Laminate(design.return_layer_definition())
         sketch_result.replacelayergeoms(hingelayer, operationgeom)
         hingelines = sketch_result.to_generic_laminate().geoms[hingelayer]
+        hingelines = [item for item in hingelines if item.is_valid_bool()]
 
         buffered_split = sketch_result.buffer(
             split_buffer,

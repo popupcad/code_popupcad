@@ -56,6 +56,12 @@ class GenericShapeBase(popupCADFile):
 
         self.construction = construction
 
+    def is_valid_bool(self):
+        try: 
+            self.is_valid()
+            return True
+        except:
+            return False
     def is_valid(self):
         shapely = self.outputshapely()
         if not shapely.is_simple:
