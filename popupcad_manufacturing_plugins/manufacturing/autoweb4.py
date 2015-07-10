@@ -29,7 +29,7 @@ class AutoWeb4(MultiValueOperation3):
             keepout = popupcad.algorithms.keepout.millflipkeepout(ls1)
 
         sheet, outer_web, inner_elements, buffered_keepout = algorithms.web.generate_web(ls1, keepout, design.return_layer_definition(
-        ), (self.values[0] + self.values[1]) * popupcad.internal_argument_scaling, self.values[1] * popupcad.internal_argument_scaling)
+        ), (self.values[0] + self.values[1]) * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling, self.values[1] * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
 
         a = OperationOutput(outer_web, 'Web', self)
         b = OperationOutput(sheet, 'Sheet', self)

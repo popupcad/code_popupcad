@@ -24,7 +24,7 @@ class TransformOperation(MultiValueOperation3):
         cq = cos(self.values[0]*pi/180)
         sq = sin(self.values[0]*pi/180)
 
-        T = numpy.array([[cq,-sq,self.values[1]*popupcad.internal_argument_scaling],[sq,cq,self.values[2]*popupcad.internal_argument_scaling],[0,0,1]])
+        T = numpy.array([[cq,-sq,self.values[1]*popupcad.internal_argument_scaling*popupcad.csg_processing_scaling],[sq,cq,self.values[2]*popupcad.internal_argument_scaling*popupcad.csg_processing_scaling],[0,0,1]])
         generic2 = generic.transform(T)
         csg2 = generic2.to_csg()
 

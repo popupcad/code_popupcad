@@ -123,7 +123,7 @@ class Assembly(popupCADFile):
                             b = [
                                 item.simplify(
                                     cleanup *
-                                    popupcad.internal_argument_scaling) for item in b]
+                                    popupcad.internal_argument_scaling*popupcad.csg_processing_scaling) for item in b]
                         c = b.pop(0)
                         for item in b:
                             c = c.symmetric_difference(item)
@@ -133,7 +133,7 @@ class Assembly(popupCADFile):
                             [
                                 item.buffer(
                                     bufferval *
-                                    popupcad.internal_argument_scaling,
+                                    popupcad.internal_argument_scaling*popupcad.csg_processing_scaling,
                                     resolution=popupcad.default_buffer_resolution) for item in d])
                         f = [
                             GenericShapeBase.genfromshapely(item) for item in e]

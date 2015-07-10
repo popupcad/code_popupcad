@@ -214,10 +214,10 @@ class CustomSupport3(Operation):
             self.device_link).output[
             self.deviceoutputref].csg
         modified_device, supports, cuts = algorithms.modify_device.modify_device(device, support, self.support_width *
-                                                                                 popupcad.internal_argument_scaling, self.support_out *
-                                                                                 popupcad.internal_argument_scaling, self.hole_radius *
-                                                                                 popupcad.internal_argument_scaling, self.cut_width *
-                                                                                 popupcad.internal_argument_scaling)
+                                                                                 popupcad.internal_argument_scaling*popupcad.csg_processing_scaling, self.support_out *
+                                                                                 popupcad.internal_argument_scaling*popupcad.csg_processing_scaling, self.hole_radius *
+                                                                                 popupcad.internal_argument_scaling*popupcad.csg_processing_scaling, self.cut_width *
+                                                                                 popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
         s = OperationOutput(supports, 'supports', self)
         c = OperationOutput(cuts, 'cuts', self)
         d = OperationOutput(modified_device, 'device', self)

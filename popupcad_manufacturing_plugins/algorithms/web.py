@@ -64,7 +64,7 @@ def generate_web(robot, keepout, layerdef, value_outer, value_inner):
 
 def autosupport(robot, keepout, layerdef, value_inner, value_gap, cut_out):
     import popupcad
-    cleanup = 1e-3 * popupcad.internal_argument_scaling
+    cleanup = 1e-3 * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
     buffered_keepout = keepout.buffer(value_inner)
     allsupport = buffered_keepout.difference(keepout)
     invalidsupport = keepout.difference(robot)
