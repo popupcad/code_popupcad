@@ -129,7 +129,13 @@ class BaseVertex(object):
         constraintsystem.constrained_shift([(self, dxdy)])
 
     @classmethod
-    def delistify(cls, id, x, y):
+    def delistify_0(cls, id, x, y):
+        new = cls((x/popupcad.deprecated_internal_argument_scaling, y/popupcad.deprecated_internal_argument_scaling))
+        new.id = id
+        return new
+
+    @classmethod
+    def delistify_1(cls, id, x, y):
         new = cls((x, y))
         new.id = id
         return new
@@ -141,17 +147,22 @@ class BaseVertex(object):
 
     @staticmethod
     def vertex_representer(dumper, v):
-        output = dumper.represent_sequence(v.yaml_node_name, v.listify())
+        output = dumper.represent_sequence(v.yaml_node_name_1, v.listify())
         return output
 
     @classmethod
-    def vertex_constructor(cls, loader, node):
+    def vertex_constructor_0(cls, loader, node):
         list1 = loader.construct_sequence(node)
-        new = cls.delistify(*list1)
+        new = cls.delistify_0(*list1)
+        return new
+
+    @classmethod
+    def vertex_constructor_1(cls, loader, node):
+        list1 = loader.construct_sequence(node)
+        new = cls.delistify_1(*list1)
         return new
 
 class ReferenceVertex(BaseVertex):
-    yaml_node_name = u'!ReferenceVertex'
 
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
@@ -160,7 +171,8 @@ class ReferenceVertex(BaseVertex):
         return iv
 
 class ShapeVertex(BaseVertex):
-    yaml_node_name = u'!ShapeVertex'
+    yaml_node_name_0 = u'!ShapeVertex'
+    yaml_node_name_1 = u'!ShapeVertex_1'
 
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import InteractiveShapeVertex
@@ -171,7 +183,8 @@ class ShapeVertex(BaseVertex):
 #TODO: does DrawnPoint really need to be a child class of ShapeVertex, or can it be a child of BaseVertex?
 class DrawnPoint(ShapeVertex):
     editable = ShapeVertex.editable + ['construction']
-    yaml_node_name = u'!DrawnPoint'
+    yaml_node_name_0 = u'!DrawnPoint'
+    yaml_node_name_1 = u'!DrawnPoint_1'
 
     def __init__(self,position,construction = True):
         super(DrawnPoint, self).__init__(position)
@@ -236,7 +249,14 @@ class DrawnPoint(ShapeVertex):
         pass
     
     @classmethod
-    def delistify(cls, id, x, y, is_construction):
+    def delistify_0(cls, id, x, y, is_construction):
+        new = cls((x/popupcad.deprecated_internal_argument_scaling, y/popupcad.deprecated_internal_argument_scaling))
+        new.id = id
+        new.set_construction(is_construction)
+        return new
+
+    @classmethod
+    def delistify_1(cls, id, x, y, is_construction):
         new = cls((x, y))
         new.id = id
         new.set_construction(is_construction)
@@ -250,8 +270,8 @@ class DrawnPoint(ShapeVertex):
 import yaml
 
 yaml.add_representer(ShapeVertex, ShapeVertex.vertex_representer)
-yaml.add_constructor(ShapeVertex.yaml_node_name,ShapeVertex.vertex_constructor)
+yaml.add_constructor(ShapeVertex.yaml_node_name_0,ShapeVertex.vertex_constructor_0)
+yaml.add_constructor(ShapeVertex.yaml_node_name_1,ShapeVertex.vertex_constructor_1)
 yaml.add_representer(DrawnPoint, DrawnPoint.vertex_representer)
-yaml.add_constructor(DrawnPoint.yaml_node_name, DrawnPoint.vertex_constructor)
-#yaml.add_representer(ReferenceVertex, ReferenceVertex.vertex_representer)
-#yaml.add_constructor(ReferenceVertex.yaml_node_name,ReferenceVertex.vertex_constructor)
+yaml.add_constructor(DrawnPoint.yaml_node_name_0, DrawnPoint.vertex_constructor_0)
+yaml.add_constructor(DrawnPoint.yaml_node_name_1, DrawnPoint.vertex_constructor_1)
