@@ -29,13 +29,14 @@ class UserInputIDE(qg.QDialog):
         layout.addWidget(self.te)
         layout.addWidget(self.ok)
         self.setLayout(layout)
+        from popupcad_gazebo import syntax
+        syntax.PythonHighlighter(self.te.document())
+
 
     def appendText(self, text):
         current = self.te.toPlainText()
         current += text + "\n"
         self.te.setText(current)
-        from popupcad_gazebo import syntax
-        syntax.PythonHighlighter(self.te.document())
         
     def sizeHint(self):
         return qc.QSize(800,600)
