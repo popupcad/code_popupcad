@@ -92,6 +92,8 @@ class Sketch(popupCADFile):
     @classmethod
     def load_dxf(cls, filename, parent=None):
         import ezdxf
+        ezdxf.options.template_dir = popupcad.supportfiledir        
+        
         import ezdxf.modern
         dxf = ezdxf.readfile(filename)
         layer_names = [layer.dxf.name for layer in dxf.layers]
@@ -201,6 +203,7 @@ class Sketch(popupCADFile):
 
     def save_dxf(self,filename):
         import ezdxf
+        ezdxf.options.template_dir = popupcad.supportfiledir        
         
         dwg = ezdxf.new('AC1015')
         msp = dwg.modelspace()

@@ -95,6 +95,7 @@ class GenericLaminate(popupCADFile):
         
     def save_dxf(self,filename):
         import ezdxf
+        ezdxf.options.template_dir = popupcad.supportfiledir        
         
         dwg = ezdxf.new('AC1015')
         msp = dwg.modelspace()
