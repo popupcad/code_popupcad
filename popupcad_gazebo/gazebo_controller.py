@@ -21,7 +21,8 @@ except ImportError:
     pass
 
 def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
-    wait_net_service('localhost',11345)
+    wait_net_service('localhost',11345)    
+    print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
     def joint_force_loop(world_name, robot_name, joint_name, force, duration=-1):
@@ -58,9 +59,12 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     
     loop = trollius.get_event_loop()    
     import PySide.QtGui as qg
+    import PySide
     widget = qg.QMessageBox()
     widget.setText("Close Gazebo to continue...")
+    widget.setWindowModality(PySide.QtCore.Qt.NonModal)    
     widget.show()
+    
     
     #Experimental code to make this loop non-blocking
     #loop = trollius.get_event_loop()
@@ -71,6 +75,58 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     #return t
     loop.run_until_complete(trollius.wait(tasks))
     
+
+def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=-1):
+    wait_net_service('localhost', 11345)
+    print("Net serviced detected. Proceeding")
+
+    @trollius.coroutine
+    def joint_pos_loop(world_name, robot_name, joint_name, pos):
+        manager = yield From(pygazebo.connect())
+        print("connected")
+        
+        
+        publisher = yield From(
+            manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
+                              'gazebo.msgs.JointCmd'))
+    
+        message = pygazebo.msg.joint_cmd_pb2.JointCmd()
+        message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
+        message.position = pos
+        
+        try:
+            yield From(publisher.publish(message))
+            yield From(trollius.sleep(1.0))
+        except:
+            pass
+        print("Connection closed")
+        
+    def loop_in_thread(loop, tasks):
+        trollius.set_event_loop(loop)
+        loop.run_until_complete(trollius.wait(tasks))
+        
+    tasks = []
+    for joint_name, pos in zip(joint_names, poses):
+        tasks.append(trollius.Task(joint_pos_loop(world_name, robot_name, joint_name, pos)))
+    
+    
+    loop = trollius.get_event_loop()    
+    import PySide.QtGui as qg
+    import PySide
+    widget = qg.QMessageBox()
+    widget.setText("Close Gazebo to continue...")
+    widget.setWindowModality(PySide.QtCore.Qt.NonModal)    
+    widget.exec_()
+    
+    
+    #Experimental code to make this loop non-blocking
+    #loop = trollius.get_event_loop()
+    #loop_thread_tasks = lambda t_loop: loop_in_thread(t_loop, tasks)
+    #import threading
+    #t = threading.Thread(target=loop_thread_tasks, args=(loop,))
+    #t.start()
+    #return t
+    loop.run_until_complete(trollius.wait(tasks))
     
     
 def wait_net_service(server, port, timeout=None):
@@ -118,6 +174,7 @@ def export(program):
         if isinstance(tmp_op, JointOperation2):
             operation = tmp_op
     export_inner(operation)
+       
     
 #Export to Gazebo
 def export_inner(operation):
@@ -176,19 +233,40 @@ def export_inner(operation):
     f.write(etree.tostring(global_root, pretty_print=True))
     f.close()
     
+
+    
+    joint_names = []        
+    for num in range(0, len(operation.all_joint_props)):
+        joint_names.append("hingejoint" + str(num))
+   
+    #joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
+    #apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
+    #apply_joint_pos(world_name, robot_name, joint_names, joint_forces)
+    
+    #Experimental Python IDE and Control System
+    #TODO Sandbox this
+    #TODO Save and load python scripts
+    from popupcad_gazebo.userinput import UserInputIDE
+    mw = UserInputIDE()
+    mw.setWindowTitle('Internal Python IDE')
+    mw.appendText('#This code will control your robot during the simulation')
+    mw.appendText('from popupcad_gazebo.gazebo_controller import apply_joint_forces, apply_joint_pos')
+    mw.appendText('world_name=' + stringify(world_name))
+    mw.appendText('robot_name=' + stringify(robot_name))
+    mw.appendText('joint_names=' + str(joint_names))
+    mw.te.setReadOnly(False)   
+    mw.exec_()    
+    user_input_code = mw.te.toPlainText()#Todo Sandbox this
+    exec(user_input_code)
+    print("the window should have oppened")
+    
     #TODO replace with Subprocess to prevent pollution of STDOUT
     os.system("gazebo -e dart " + file_output + " &")
     
-    
-    #Control System #TODO find a way to implement this
-    
-    #joint_names = []        
-    #for num in range(0, len(operation.all_joint_props)):
-    #    joint_names.append("hingejoint" + str(num))
-    
-    #joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
-    #apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
 
+def stringify(s1):
+    return "'{}'".format(s1)
+    
 def craftJoint(operation, connection, counter):
     joint_pair = reorder_pair(connection[1], operation.get_laminate_generations())    
     
@@ -294,7 +372,7 @@ def reorder_pair(joint_pair, hierarchy_map):
     
         
 
-def createRobotPart(joint_laminate, counter, buildMesh=False):
+def createRobotPart(joint_laminate, counter, buildMesh=True):
     filename = str(joint_laminate.id)
     center_of_mass = joint_laminate.calculateCentroid()
     
