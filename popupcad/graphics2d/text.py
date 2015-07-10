@@ -53,9 +53,7 @@ class GenericText(object):
             qc.QPointF(
                 0,
                 1 *
-                self.fontsize *
-                popupcad.internal_argument_scaling *
-                popupcad.view_scaling),
+                self.fontsize * scaling),
             font,
             text)
 

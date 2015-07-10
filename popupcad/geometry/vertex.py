@@ -16,9 +16,9 @@ class BaseVertex(object):
 
     roundvalue = popupcad.geometry_round_value
 
-    def __init__(self, position):
+    def __init__(self, position,scaling = 1):
         self.id = id(self)
-        self.setpos(position)
+        self.setpos(position,scaling)
 
     def constraints_ref(self):
         try:
@@ -56,9 +56,9 @@ class BaseVertex(object):
     def p(self):
         return self.constraints_ref().p()
 
-    def setpos(self, pos):
+    def setpos(self, pos,scaling = 1):
         pos = numpy.array(pos)
-        pos.round(self.roundvalue)
+        pos = pos.round(self.roundvalue)*scaling
         self._position = tuple(pos.tolist())
 
     def getpos(self, scaling=1):
@@ -186,8 +186,8 @@ class DrawnPoint(ShapeVertex):
     yaml_node_name_0 = u'!DrawnPoint'
     yaml_node_name_1 = u'!DrawnPoint_1'
 
-    def __init__(self,position,construction = True):
-        super(DrawnPoint, self).__init__(position)
+    def __init__(self,position,scaling = 1,construction = True):
+        super(DrawnPoint, self).__init__(position,scaling)
         self.set_construction(construction)
 
     def exteriorpoints(self):

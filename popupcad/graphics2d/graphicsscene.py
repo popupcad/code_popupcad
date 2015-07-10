@@ -10,7 +10,7 @@ import PySide.QtGui as qg
 import popupcad
 from popupcad.graphics2d.static import Static
 from popupcad.graphics2d.svg_support import SVGOutputSupport
-from popupcad.geometry.vertex import DrawnPoint, BaseVertex
+from popupcad.geometry.vertex import DrawnPoint, ShapeVertex
 from popupcad.graphics2d.interactivevertex import DrawingPoint, StaticDrawingPoint
 from popupcad.graphics2d.text import TextParent, GenericText
 
@@ -118,7 +118,7 @@ class SketcherSupport(object):
             if event.button() == qc.Qt.LeftButton:
                 if self.temp is None:
                     if self.nextgeometry == TextParent:
-                        textpos = BaseVertex(pos.toTuple())
+                        textpos = ShapeVertex(pos.toTuple(),scaling = 1/popupcad.view_scaling)
                         text = GenericText(
                             '',
                             textpos,
@@ -129,7 +129,7 @@ class SketcherSupport(object):
                         temp.editmode()
 
                     elif self.nextgeometry == DrawingPoint:
-                        temp = self.nextgeometry(DrawnPoint(pos))
+                        temp = self.nextgeometry(DrawnPoint(pos.toTuple(),scaling = 1/popupcad.view_scaling))
                         self.addItem(temp)
                         self.setFocusItem(temp)
                         temp.updatescale()
