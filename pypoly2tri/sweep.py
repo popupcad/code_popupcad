@@ -487,7 +487,7 @@ class Sweep(object):
         ot = t.NeighborAcross(p)
         op = ot.OppositePoint(t, p)
 
-        if t.NeighborAcross(p) == None:
+        if t.NeighborAcross(p) is None:
             assert(0)
         if InScanArea(
                 eq,

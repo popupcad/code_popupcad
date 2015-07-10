@@ -17,6 +17,9 @@ import popupcad
 from popupcad.filetypes.design import Design
 from popupcad.supportfiles import Icon
 
+class NoOutput(Exception):
+    def __init__(self):
+        Exception.__init__(self,'Operation has not been processed due to a previous exception')
 
 class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
@@ -31,28 +34,29 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     def loggable(func):
         def log(self, *args, **kwargs):
-            try:
-                return func(self, *args, **kwargs)
-            except Exception as ex:
-                import traceback
-                import sys
-                tb = sys.exc_info()[2]
-                exception_string = traceback.format_exception(type(ex), ex, tb)
-                [self.error_log.appendText(item) for item in exception_string]
-
-                m = qg.QMessageBox()
-                m.setIcon(m.Warning)
-                m.setText(ex.args[0])
-                try:
-                    m.setInformativeText(str(ex.args[1]))
-                except IndexError:
-                    pass
-                try:
-                    m.setDetailedText(str(ex.args[2]))
-                except IndexError:
-                    pass
-                m.exec_()
-                raise ex
+            return func(self, *args, **kwargs)
+#            try:
+#                return func(self, *args, **kwargs)
+#            except Exception as ex:
+#                import traceback
+#                import sys
+#                tb = sys.exc_info()[2]
+#                exception_string = traceback.format_exception(type(ex), ex, tb)
+#                [self.error_log.appendText(item) for item in exception_string]
+#
+#                m = qg.QMessageBox()
+#                m.setIcon(m.Warning)
+#                m.setText(ex.args[0])
+#                try:
+#                    m.setInformativeText(str(ex.args[1]))
+#                except IndexError:
+#                    pass
+#                try:
+#                    m.setDetailedText(str(ex.args[2]))
+#                except IndexError:
+#                    pass
+#                m.exec_()
+#                raise
 
         return log
 
@@ -578,16 +582,18 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     @loggable
     def showcurrentoutput_inner(self, ii, jj):
+        self.scene.deleteall()
+        self.view_3d.view.clear()
         try:
-            self.scene.deleteall()
-            self.view_3d.view.clear()
             operationoutput = self.design.operations[ii].output[jj]
-            selectedlayers = [item for item in self.design.return_layer_definition(
-            ).layers if item in self.layerlistwidget.selectedData()]
-            self.show2dgeometry3(operationoutput, selectedlayers)
-            self.show3dgeometry3(operationoutput, selectedlayers)
         except IndexError:
             raise
+        except AttributeError:
+            raise NoOutput()
+        selectedlayers = [item for item in self.design.return_layer_definition(
+        ).layers if item in self.layerlistwidget.selectedData()]
+        self.show2dgeometry3(operationoutput, selectedlayers)
+        self.show3dgeometry3(operationoutput, selectedlayers)
 
     @loggable
     def show2dgeometry3(self, operationoutput, selectedlayers,):

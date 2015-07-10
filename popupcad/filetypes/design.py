@@ -246,6 +246,7 @@ class Design(popupCADFile):
             self.subdesigns_reprocessed = setvalue
 
     def reprocessoperations(self, operations=None):
+        import sys
         if not self.subdesigns_are_reprocessed():
             for subdesign in self.subdesigns.values():
                 subdesign.reprocessoperations()
@@ -256,12 +257,7 @@ class Design(popupCADFile):
 
         exceptions = []        
         for op in self.operations:
-            try:
-                op.generate(self)
-            except Exception as ex:
-                exceptions.append(ex)
-        if len(exceptions)>0:
-            raise RegenFailure(exceptions)
+            op.generate(self)
             
     def build_tree(self):
         connections = []

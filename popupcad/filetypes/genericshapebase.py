@@ -56,6 +56,12 @@ class GenericShapeBase(popupCADFile):
 
         self.construction = construction
 
+    def is_valid_bool(self):
+        try: 
+            self.is_valid()
+            return True
+        except:
+            return False
     def is_valid(self):
         shapely = self.outputshapely()
         if not shapely.is_simple:
@@ -211,26 +217,20 @@ class GenericShapeBase(popupCADFile):
         return exterior, interiors
 
     @classmethod
-    def remove_redundant_points(cls, points, scaling=1):
+    def remove_redundant_points(cls, points, scaling=1,loop_test = True):
         newpoints = []
-        for point1, point2 in zip(points, points[1:] + points[0:1]):
-            if not cls.samepoint(
-                    point1.getpos(scaling),
-                    point2.getpos(scaling)):
-                newpoints.append(point1)
+        if len(points)>0:
+            points = points[:]
+            newpoints.append(points.pop(0))
+            while not not points:
+                newpoint = points.pop(0)
+                if not cls.samepoint(newpoints[-1].getpos(scaling),newpoint.getpos(scaling)):
+                    if len(points)==0 and loop_test:
+                        if not cls.samepoint(newpoints[0].getpos(scaling),newpoint.getpos(scaling)):
+                            newpoints.append(newpoint)
+                    else:
+                        newpoints.append(newpoint)
         return newpoints
-#    def remove_redundant_points(cls, points, scaling=1):
-#        points = points[:]
-#        newpoints = []
-#        if len(points)>0:
-#            newpoints.append(points.pop(0))
-#            while not not points:
-#                newpoint = points.pop(0)
-#                if not cls.samepoint(
-#                        newpoints[-1].getpos(scaling),
-#                        newpoint.getpos(scaling)):
-#                    newpoints.append(newpoint)
-#        return newpoints
 
     @classmethod
     def samepoint(cls, point1, point2):

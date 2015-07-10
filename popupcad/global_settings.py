@@ -97,6 +97,7 @@ local_settings_filename = os.path.normpath(
         'settings.popupcad'))
 user_materials_filename = os.path.normpath(os.path.join(popupcad_home_path,'materials.yaml'))
 internal_materials_filename = os.path.normpath(os.path.join(supportfiledir,'materials.yaml'))
+error_log_filename = os.path.normpath(os.path.join(popupcad_home_path,'log.txt'))
 
 lastdir = popupcad_home_path
 lastdesigndir = designdir

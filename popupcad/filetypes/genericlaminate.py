@@ -7,6 +7,8 @@ Please see LICENSE.txt for full license.
 import popupcad
 import numpy
 from popupcad.filetypes.popupcad_file import popupCADFile
+from popupcad.algorithms import tetrahedron
+
 try:
     import itertools.izip as zip
 except ImportError:
@@ -97,11 +99,12 @@ class GenericLaminate(popupCADFile):
         dwg = ezdxf.new('AC1015')
         msp = dwg.modelspace()
 
-        for layer in self.layerdef.layers:
-            dxf_layer = dwg.layers.create(name=layer.id)
+        for ii,layer in enumerate(self.layerdef.layers):
+            layername = '{:03.0f}_'.format(ii)+layer.name
+            dwg.layers.create(name=layername)
             for item in self.geoms[layer]:
                 if not item.is_construction():
-                    item.output_dxf(msp,layer.id)
+                    item.output_dxf(msp,layername)
         
         dwg.saveas(filename)     
     
@@ -153,6 +156,11 @@ class GenericLaminate(popupCADFile):
         out = (x, y, z)
         return out#[float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in out]
         
+    def getDensity(self):
+        total_densities = sum([layer.density for layer in self.layers()])
+        return total_densities / len(self.layers())
+                
+                
     def toSDFTag(self, tag, name_value):
         from lxml import etree        
         layerdef = self.layerdef

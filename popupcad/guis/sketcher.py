@@ -449,7 +449,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 #                items.append(item.get_generic())
 
         new_constraint = constraintclass.new(*items)
-        if new_constraint != None:
+        if new_constraint is not None:
             new_constraints.append(new_constraint)
             for constraint in new_constraints:
                 self.sketch.constraintsystem.add_constraint(constraint)
