@@ -42,15 +42,13 @@ class GenericText(object):
     def isValid(self):
         return True
 
-    def genpath(self):
+    def genpath(self,scaling):
         text = self.text
         p = qg.QPainterPath()
 
         font = qg.QFont(
             self.font,
-            pointSize=self.fontsize *
-            popupcad.internal_argument_scaling *
-            popupcad.view_scaling)
+            pointSize=self.fontsize * scaling)
         p.addText(
             qc.QPointF(
                 0,
@@ -106,7 +104,7 @@ class GenericText(object):
 
     def outputshapely(self):
         import popupcad.geometry.customshapely as customshapely
-        self.genpath()
+        self.genpath(popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
         objs = [
             customshapely.ShapelyPolygon(
                 exterior,
@@ -184,7 +182,7 @@ class TextParent(qg.QGraphicsPathItem, Common):
 #        self.scene().savesnapshot.emit()
 
     def refreshview(self):
-        self.setPath(self.generic.genpath())
+        self.setPath(self.generic.genpath(popupcad.internal_argument_scaling *popupcad.view_scaling))
 
     def mouseDoubleClickEvent(self, event):
         self.editmode()

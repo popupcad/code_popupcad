@@ -154,7 +154,7 @@ class Assembly(popupCADFile):
 
         v2 = R1.T.dot(R2.T.dot(looparray) + b2)
         v2 = v2[0:2, :].T
-        v2 = v2 * scalefactor * popupcad.internal_argument_scaling
+        v2 = v2 * scalefactor
         return v2.tolist()
 
     def build_face_sketch(self):
