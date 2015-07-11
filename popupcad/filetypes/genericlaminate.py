@@ -93,6 +93,20 @@ class GenericLaminate(popupCADFile):
         filename_out = gv.raster(destination, filename, filetype)
         return filename_out
         
+    def to_svg(self,filename,destination,gv=None,size=(400,300)):
+        if gv is None:
+            from popupcad.widgets.render_widget import RenderWidget
+            widget = RenderWidget(size)
+            gv = widget.gv
+
+        gv.scene().clear()
+        [gv.scene().addItem(item) for item in self.to_static_sorted()]
+        gv.zoomToFit(buffer=0)
+        import os
+        filename_out = os.path.join(destination,filename)
+        gv.scene().renderprocess(filename,1.0,False,0,False,destination)
+        return filename_out
+
     def save_dxf(self,filename):
         import ezdxf
         ezdxf.options.template_dir = popupcad.supportfiledir        
