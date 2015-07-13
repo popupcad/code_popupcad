@@ -74,8 +74,8 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     wait_net_service('localhost', 11345)
     print("Net serviced detected. Proceeding")
     for joint_name, pose in zip(joint_names, poses):
-        #subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name,"--pose-t", str(pose)]) 
-        os.system("gz joint -m " + robot_name + " -j " + joint_name + " --pos-t " + str(pose))
+        subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name, '--pos-t', str(pose)]) 
+        #os.system("gz joint -m " + robot_name + " -j " + joint_name + " --pos-t " + str(pose))
     print("Joint poses applied")
     time.sleep(duration)
     #TODO either integrate with PyGazebo or clean up, maybe with sub processes
@@ -211,7 +211,6 @@ def export_inner(operation):
     mw.exec_()    
     user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
      #TODO replace with Subprocess to prevent pollution of STDOUT
-    os.system("killall gz")     
     gazebo = subprocess.Popen(["gazebo", "-edart", file_output])    
     #Add quotes around file output to prevent injection later
     def exec_(arg):
