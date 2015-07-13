@@ -4,7 +4,6 @@ Created on Thu Jul  2 12:52:50 2015
 
 @author: skylion
 """
-
 import trollius #NOTE: Trollius requires protobuffer from Google
 from trollius import From
 
@@ -13,6 +12,7 @@ import pygazebo.msg.joint_cmd_pb2
 import time 
 import popupcad
 from lxml import etree
+import subprocess
 import os
 
 try:
@@ -74,8 +74,10 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     wait_net_service('localhost', 11345)
     print("Net serviced detected. Proceeding")
     for joint_name, pose in zip(joint_names, poses):
+        #subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name,"--pose-t", str(pose)]) 
         os.system("gz joint -m " + robot_name + " -j " + joint_name + " --pos-t " + str(pose))
     print("Joint poses applied")
+    time.sleep(duration)
     #TODO either integrate with PyGazebo or clean up, maybe with sub processes
     #This is a Sandbox Nightmare. Poor Coding practices
 
@@ -176,6 +178,7 @@ def export_inner(operation):
     #physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
     #etree.SubElement(physics, 'max_step_size').text = str(0.0001)
     #etree.SubElement(physics, "real_time_factor").text = "0.1"
+
     
     #Saves the object
     file_output = popupcad.exportdir + os.path.sep + project_name + ".world"
@@ -206,20 +209,25 @@ def export_inner(operation):
     mw.appendText('joint_names=' + str(joint_names))
     mw.te.setReadOnly(False)   
     mw.exec_()    
-    user_input_code = mw.te.toPlainText()#Todo Sandbox this
+    user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
      #TODO replace with Subprocess to prevent pollution of STDOUT
     os.system("killall gz")     
-    os.system("gazebo -e dart " + file_output + " &")
+    gazebo = subprocess.Popen(["gazebo", "-edart", file_output])    
     #Add quotes around file output to prevent injection later
-   
-    exec(user_input_code)
-    
+    def exec_(arg):
+        exec(arg)
+    from multiprocessing import Process
+    code_process = Process(target=exec_, args=(user_input_code,))
+    code_process.start()    
     import PySide.QtGui as qg
     import PySide
     widget = qg.QMessageBox()
-    widget.setText("Close Gazebo to continue...")
-    widget.setWindowModality(PySide.QtCore.Qt.NonModal)    
-    widget.show() 
+    widget.setText("Press Okay to Stop the Simulation and Close Gazebo")
+    widget.setWindowModality(PySide.QtCore.Qt.NonModal)
+    widget.exec_() 
+    code_process.terminate()
+    gazebo.terminate()
+    #Make it kill the process later if it needs to
 
 def stringify(s1):
     return "'{}'".format(s1)
@@ -353,7 +361,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
         joint_laminate.toDAE()      
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
-            
+
         geometry_of_robot = etree.Element("geometry")
         robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
         etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
