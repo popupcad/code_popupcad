@@ -9,10 +9,9 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
 from popupcad.geometry.vertex import ShapeVertex, DrawnPoint
-from popupcad.graphics2d.interactivevertex import InteractiveVertex, ReferenceInteractiveVertex, DrawingPoint, StaticDrawingPoint, InteractiveVertexBase
+from popupcad.graphics2d.interactivevertex import InteractiveVertex, ReferenceInteractiveVertex, DrawingPoint, InteractiveVertexBase
 from popupcad.graphics2d.interactiveedge import InteractiveEdge, ReferenceInteractiveEdge
-from popupcad.graphics2d.interactive import Interactive, InteractiveLine
-from popupcad.graphics2d.static import StaticLine
+from popupcad.graphics2d.interactive import Interactive
 from popupcad.graphics2d.proto import ProtoLine, ProtoPath, ProtoCircle, ProtoPoly, ProtoRect2Point
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView

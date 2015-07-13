@@ -163,7 +163,6 @@ class BaseVertex(object):
         return new
 
 class ReferenceVertex(BaseVertex):
-
     def gen_interactive(self):
         from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
         iv = ReferenceInteractiveVertex(self)
@@ -181,12 +180,12 @@ class ShapeVertex(BaseVertex):
         return iv
 
 #TODO: does DrawnPoint really need to be a child class of ShapeVertex, or can it be a child of BaseVertex?
-class DrawnPoint(ShapeVertex):
+class DrawnPoint(BaseVertex):
     editable = ShapeVertex.editable + ['construction']
     yaml_node_name_0 = u'!DrawnPoint'
     yaml_node_name_1 = u'!DrawnPoint_1'
 
-    def __init__(self,position,scaling = 1,construction = True):
+    def __init__(self,position,scaling = 1,construction = False):
         super(DrawnPoint, self).__init__(position,scaling)
         self.set_construction(construction)
 
@@ -226,21 +225,21 @@ class DrawnPoint(ShapeVertex):
     def outputshapely(self):
         from popupcad.geometry.customshapely import ShapelyPoint
 #        from shapely.geometry import Point
-        p = ShapelyPoint(*self.getpos())
+        p = ShapelyPoint(*self.getpos(scaling = popupcad.csg_processing_scaling))
         return p
 
     def is_construction(self):
         try:
             return self.construction
         except AttributeError:
-            self.construction = True
+            self.construction = False
             return self.construction
 
     def set_construction(self, test):
         self.construction = test
 
     def copy(self, identical=True):
-        new = type(self)(self.getpos(),self.is_construction())
+        new = type(self)(self.getpos(),construction = self.is_construction())
         if identical:
             new.id = self.id
         return new
