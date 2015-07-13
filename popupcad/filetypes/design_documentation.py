@@ -69,13 +69,14 @@ class Documentation(object):
 
 
 def process_output(output, ii, jj, destination):
+    import os
     filename_in = '{0:02.0f}_{1:02.0f}'.format(ii, jj)
-    png_filename_out = output.generic_laminate().raster(
+    dummy,png_filename_out = os.path.split(output.generic_laminate().raster(
         filename_in,
         'png',
-        destination)
+        destination))
 
-    svg_filename_out = output.generic_laminate().to_svg(filename_in+'.svg',destination)
+    dummy,svg_filename_out = os.path.split(output.generic_laminate().to_svg(filename_in+'.svg',destination))
 
     name = str(output)
     return {

@@ -228,3 +228,9 @@ class GenericFile(object):
         backupfilename = filename+backupstring+time+'.'+self.defaultfiletype
             
         self.save_yaml(backupfilename, update_filename=False)
+    @staticmethod
+    def slugify(string):
+        string = string.replace('_','-')
+        string = string.replace(' ','-')
+        string = string.lower()
+        return string        
