@@ -20,12 +20,12 @@ try:
 except ImportError:
     pass
 
-def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
+def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
     wait_net_service('localhost',11345)    
     print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
-    def joint_force_loop(world_name, robot_name, joint_name, force, duration=-1):
+    def joint_force_loop(world_name, robot_name, joint_name, force, duration):
         manager = yield From(pygazebo.connect())
         print("connected")
         
@@ -58,12 +58,6 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     
     
     loop = trollius.get_event_loop()    
-    import PySide.QtGui as qg
-    import PySide
-    widget = qg.QMessageBox()
-    widget.setText("Close Gazebo to continue...")
-    widget.setWindowModality(PySide.QtCore.Qt.NonModal)    
-    widget.show()
     
     
     #Experimental code to make this loop non-blocking
@@ -76,59 +70,15 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     loop.run_until_complete(trollius.wait(tasks))
     
 
-def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=-1):
+def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     wait_net_service('localhost', 11345)
     print("Net serviced detected. Proceeding")
+    for joint_name, pose in zip(joint_names, poses):
+        os.system("gz joint -m " + robot_name + " -j " + joint_name + " --pos-t " + str(pose))
+    print("Joint poses applied")
+    #TODO either integrate with PyGazebo or clean up, maybe with sub processes
+    #This is a Sandbox Nightmare. Poor Coding practices
 
-    @trollius.coroutine
-    def joint_pos_loop(world_name, robot_name, joint_name, pos):
-        manager = yield From(pygazebo.connect())
-        print("connected")
-        
-        
-        publisher = yield From(
-            manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
-                              'gazebo.msgs.JointCmd'))
-    
-        message = pygazebo.msg.joint_cmd_pb2.JointCmd()
-        message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
-        message.position = pos
-        
-        try:
-            yield From(publisher.publish(message))
-            yield From(trollius.sleep(1.0))
-        except:
-            pass
-        print("Connection closed")
-        
-    def loop_in_thread(loop, tasks):
-        trollius.set_event_loop(loop)
-        loop.run_until_complete(trollius.wait(tasks))
-        
-    tasks = []
-    for joint_name, pos in zip(joint_names, poses):
-        tasks.append(trollius.Task(joint_pos_loop(world_name, robot_name, joint_name, pos)))
-    
-    
-    loop = trollius.get_event_loop()    
-    import PySide.QtGui as qg
-    import PySide
-    widget = qg.QMessageBox()
-    widget.setText("Close Gazebo to continue...")
-    widget.setWindowModality(PySide.QtCore.Qt.NonModal)    
-    widget.exec_()
-    
-    
-    #Experimental code to make this loop non-blocking
-    #loop = trollius.get_event_loop()
-    #loop_thread_tasks = lambda t_loop: loop_in_thread(t_loop, tasks)
-    #import threading
-    #t = threading.Thread(target=loop_thread_tasks, args=(loop,))
-    #t.start()
-    #return t
-    loop.run_until_complete(trollius.wait(tasks))
-    
-    
 def wait_net_service(server, port, timeout=None):
     """ Wait for network service to appear 
         @param timeout: in seconds, if None or 0 wait forever
@@ -257,12 +207,19 @@ def export_inner(operation):
     mw.te.setReadOnly(False)   
     mw.exec_()    
     user_input_code = mw.te.toPlainText()#Todo Sandbox this
-    exec(user_input_code)
-    print("the window should have oppened")
-    
-    #TODO replace with Subprocess to prevent pollution of STDOUT
+     #TODO replace with Subprocess to prevent pollution of STDOUT
+    os.system("killall gz")     
     os.system("gazebo -e dart " + file_output + " &")
+    #Add quotes around file output to prevent injection later
+   
+    exec(user_input_code)
     
+    import PySide.QtGui as qg
+    import PySide
+    widget = qg.QMessageBox()
+    widget.setText("Close Gazebo to continue...")
+    widget.setWindowModality(PySide.QtCore.Qt.NonModal)    
+    widget.show() 
 
 def stringify(s1):
     return "'{}'".format(s1)
@@ -381,7 +338,6 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.   
     
     centroid_pose = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
-    #etree.SubElement(root_of_robot, "pose").text = centroid_pose    
     
     surface_tree = etree.Element("surface")
     friction = etree.SubElement(surface_tree, "friction")
@@ -411,7 +367,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     else:
         visuals_of_robot = joint_laminate.toSDFTag("visual", "basic_bot_visual" + str(counter))    
         for visual_of_robot in visuals_of_robot:
-            etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+            #etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
             #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
             root_of_robot.append(visual_of_robot)     
         collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
@@ -421,9 +377,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
         
     inertial = etree.SubElement(root_of_robot, "inertial")
     trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
-    import math    
-    trueMass /= math.pow(popupcad.SI_length_scaling, 3) #Volume is cubed
+    #trueMass /= math.pow(popupcad.SI_length_scaling, 3) #Volume is cubed
     etree.SubElement(inertial, "mass").text = str(trueMass) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = centroid_pose
-    
     return root_of_robot            
