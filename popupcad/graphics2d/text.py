@@ -46,16 +46,8 @@ class GenericText(object):
         text = self.text
         p = qg.QPainterPath()
 
-        font = qg.QFont(
-            self.font,
-            pointSize=self.fontsize * scaling)
-        p.addText(
-            qc.QPointF(
-                0,
-                1 *
-                self.fontsize * scaling),
-            font,
-            text)
+        font = qg.QFont(self.font,pointSize=self.fontsize * scaling)
+        p.addText(qc.QPointF(0,1*self.fontsize * scaling),font,text)
 
         p2 = qg.QPainterPath()
         exteriors = []
@@ -84,12 +76,9 @@ class GenericText(object):
         if exterior is not None:
             exteriors.append(exterior)
 
-        exteriors = [(numpy.array(item) + self.pos.getpos()).tolist()
+        exteriors = [(numpy.array(item) + self.pos.getpos(scaling = scaling)).tolist()
                      for item in exteriors]
-        self.exteriors_p = exteriors
-        self.exteriors = self.buildvertices(exteriors)
-        self.path = p2
-        return p2
+        return p2,exteriors
 
     def buildvertices(self, exteriors_p):
         exteriors = [[ShapeVertex(pos) for pos in exterior_p]
@@ -102,11 +91,11 @@ class GenericText(object):
 
     def outputshapely(self):
         import popupcad.geometry.customshapely as customshapely
-        self.genpath(popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
+        dummy, exteriors_p = self.genpath(popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
         objs = [
             customshapely.ShapelyPolygon(
                 exterior,
-                []) for exterior in self.exteriors_p]
+                []) for exterior in exteriors_p]
         if len(objs) > 1:
             obj1 = objs.pop(0)
             while objs:
@@ -146,7 +135,7 @@ class TextParent(qg.QGraphicsPathItem, Common):
                 0, 0, 0, .25), qc.Qt.SolidPattern)
         self.setPen(self.pen)
         self.setBrush(self.brush)
-        self.setPos(*self.generic.pos.getpos())
+        self.setPos(*self.generic.pos.getpos(scaling = popupcad.view_scaling))
         self.setFlag(self.ItemSendsGeometryChanges, True)
         self.changed_trigger = False
 
@@ -180,7 +169,8 @@ class TextParent(qg.QGraphicsPathItem, Common):
 #        self.scene().savesnapshot.emit()
 
     def refreshview(self):
-        self.setPath(self.generic.genpath(popupcad.internal_argument_scaling *popupcad.view_scaling))
+        path, dummy = self.generic.genpath(popupcad.internal_argument_scaling *popupcad.view_scaling)
+        self.setPath(path)
 
     def mouseDoubleClickEvent(self, event):
         self.editmode()
