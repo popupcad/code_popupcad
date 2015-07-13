@@ -215,6 +215,9 @@ class GenericPoly(GenericShapeBase):
         if layer is not None:
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs=dxfattribs)
+        for interior in self.interiorpoints(scaling = 1./popupcad.internal_argument_scaling):
+            model_space.add_lwpolyline(interior,dxfattribs=dxfattribs)
+        
 
     #Gets the center
     def get_center(self):

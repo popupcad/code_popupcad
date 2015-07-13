@@ -52,7 +52,7 @@ class RenderWidget(qg.QWidget):
         d = popupcad.filetypes.design.Design.load_yaml(path)
         d.reprocessoperations()
         directory, file = os.path.split(path)
-        self.render_design(d, directory)
+        self.raster_design(d, directory)
 
     def select_directory(self):
         path, selected_filter = qg.QFileDialog.getOpenFileName(
@@ -68,7 +68,7 @@ class RenderWidget(qg.QWidget):
         for item in self.gv.scene().items():
             self.gv.scene().removeItem(item)
 
-    def render_design(self, d, dest, filetype='png'):
+    def raster_design(self, d, dest, filetype='png'):
         d.raster(destination=dest, filetype=filetype, gv=self.gv)
 
 if __name__ == "__main__":
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 #    path = 'C:\\Users\\danaukes\\Desktop\\118391752.cad'
 #    d = popupcad.filetypes.design.Design.load_yaml(path)
 #    d.reprocessoperations()
-#    widget.render_design(d,destination)
+#    widget.raster_design(d,destination)
 #    for dirname, dirnames, filenames in os.walk(source):
 #        filenames2 = glob.glob(os.path.normpath(os.path.join(dirname,filter1)))
 #        relpath = os.path.relpath(dirname,source)
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 #                local_file_dir = os.path.normpath(os.path.join(local_dir,local_file))
 #                if not os.path.exists(local_file_dir):
 #                    os.mkdir(local_file_dir)
-#                widget.render_design(d,local_file_dir)
+#                widget.raster_design(d,local_file_dir)
 #            except(Exception) as ex:
 #                print(ex)
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
 #            local_file_dir = os.path.normpath(os.path.join(local_dir,local_file))
 #            if not os.path.exists(local_file_dir):
 #                os.mkdir(local_file_dir)
-# widget.render_design(d,local_file_dir)
+# widget.raster_design(d,local_file_dir)
 ##            ii = 1
 ##            jj = 0
 ##            op = d.operations[ii]

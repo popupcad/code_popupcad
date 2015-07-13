@@ -24,17 +24,17 @@ My name is {{{{page.name}}}}
 
 My title is {{{{page.title}}}}
 
-[<img src="{{{{page.image_file}}}}" />]({{{{page.cad_file}}}})
+[<img src="{{{{page.png_image_file}}}}" />]({{{{page.cad_file}}}})
 
 {{% for operation in page.operations %}}
 
-* [<img src="{{{{operation.image_file}}}}" height = "75px" />]({{{{operation.image_file}}}}) **{{{{ operation.name }}}}** {{{{operation.description}}}} 
+* [<img src="{{{{operation.png_image_file}}}}" height = "75px" />]({{{{operation.png_image_file}}}}) **{{{{ operation.name }}}}** {{{{operation.description}}}} 
 {{% for file in operation.cut_files%}}
 [{{{{file}}}}]({{{{file}}}}),
 {{% endfor %}}
 
 {{% for output in operation.outputs %}}
-  * [<img src="{{{{output.image_file}}}}" height = "50px" />]({{{{output.image_file}}}}) **{{{{output.name}}}}** {{{{output.description}}}}
+  * [<img src="{{{{output.png_image_file}}}}" height = "50px" />]({{{{output.png_image_file}}}}) **{{{{output.name}}}}** {{{{output.description}}}}
 {{% for file in output.cut_files%}}
 [{{{{file}}}}]({{{{file}}}}),
 {{% endfor %}}
@@ -69,38 +69,45 @@ class Documentation(object):
 
 
 def process_output(output, ii, jj, destination):
+    import os
     filename_in = '{0:02.0f}_{1:02.0f}'.format(ii, jj)
-    filename_out = output.generic_laminate().raster(
+    dummy,png_filename_out = os.path.split(output.generic_laminate().raster(
         filename_in,
         'png',
-        destination)
+        destination))
+
+    dummy,svg_filename_out = os.path.split(output.generic_laminate().to_svg(filename_in+'.svg',destination))
+
     name = str(output)
     return {
         'name': name,
-        'image_file': filename_out,
+        'svg_image_file': svg_filename_out,
+        'png_image_file': png_filename_out,
         'description': output.description,
         'cut_files': ['cut-dummy1.svg','cut-dummy2.svg']}
 
 
 class OperationDocumentation(Documentation):
     yaml_node_name = u'Operation'
-    export_keys = ['name', 'description', 'image_file', 'cut_files', 'outputs']
+    export_keys = ['name', 'description', 'svg_image_file','png_image_file', 'cut_files', 'outputs']
 
     @classmethod
     def build(cls, operation, ii, destination):
         outputs = []
         out0 = process_output(operation.output[0], ii, 0, destination)
-        image_file = out0['image_file']
+        svg_image_file = out0['svg_image_file']
+        png_image_file = out0['png_image_file']
         cut_files = out0['cut_files']
         for jj, out in enumerate(operation.output[1:]):
             outputs.append(process_output(out, ii, jj, destination))
-        return cls(str(operation),operation.description,image_file,cut_files,outputs)
+        return cls(str(operation),operation.description, svg_image_file, png_image_file,cut_files,outputs)
 
-    def __init__(self, name, description, image_file, cut_files, outputs):
+    def __init__(self, name, description, svg_image_file, png_image_file, cut_files, outputs):
         super(OperationDocumentation, self).__init__()
         self.name = name
-        self.description = description
-        self.image_file = image_file
+        self.description = 'This is a fake operation description.  I am not about to make a separate description for each op, but the description might be about this long.'
+        self.svg_image_file = svg_image_file
+        self.png_image_file = png_image_file
         self.cut_files = cut_files
         self.outputs = outputs
 
@@ -114,23 +121,23 @@ class DesignDocumentation(popupCADFile, Documentation):
     @classmethod
     def build(cls, design, subdir):
         title = design.get_basename()
-        name = design.get_basename()
         operations = [
             OperationDocumentation.build(
                 operation, ii, subdir) for ii, operation in enumerate(
                 design.operations)]
 
         ii = design.operation_index(design.main_operation[0])
-        image_file = operations[ii].image_file
+        svg_image_file = operations[ii].svg_image_file
+        png_image_file = operations[ii].png_image_file
         cad_file = design.get_basename()
-        return cls(title, name, operations, image_file,cad_file)
+        return cls(title, operations, svg_image_file,png_image_file,cad_file)
 
-    def __init__(self, title, name, operations, image_file,cad_file):
+    def __init__(self, title, operations,svg_image_file,png_image_file,cad_file):
         super(DesignDocumentation, self).__init__()
         self.title = title
-        self.name = name
         self.operations = operations
-        self.image_file = image_file
+        self.svg_image_file = svg_image_file
+        self.png_image_file = png_image_file
         self.cad_file = cad_file
 
     def copy(self, identical=True):
@@ -140,9 +147,12 @@ class DesignDocumentation(popupCADFile, Documentation):
     def dictify2(self):
         output = {}
         output['title'] = self.title
-        output['name'] = self.name
+        output['description'] = 'This is a leg design, which is meant to be attached to the body of a robot.  It is a 2-dof mechanism, so requires inputs from two motors.  Operation 10 and 12 include the necessary cut files for creating this two-laminate device.'
+        output['category'] = 'Parts.Legs.2DOFLegs'
+        output['tags'] = 'parts,legs,2dof_robot_legs'
         output['operations'] = [item.dictify() for item in self.operations]
-        output['image_file'] = self.image_file
+        output['svg_image_file'] = self.svg_image_file
+        output['png_image_file'] = self.png_image_file
         output['cad_file'] = self.cad_file
         return output
 
