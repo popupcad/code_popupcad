@@ -160,13 +160,12 @@ class GenericPoly(GenericShapeBase):
     def segments(self):
         return self.segments_closed()
         
-    def mass_props(self,density,lower,upper,length_scaling = 1):
+    def mass_properties(self,density,z_lower,z_upper,length_scaling = 1):
         import scipy.linalg
-        import popupcad.algorithms.triangle as triangle
         tris = numpy.array(self.triangles3())*length_scaling
         shape = list(tris.shape)
         shape[2]+=1
-        z_center = (lower+upper)/2
+        z_center = (z_lower+z_upper)/2
         tris2 = numpy.ones(shape)
         tris2[:,:,:2] = tris
         areas = abs(numpy.array([scipy.linalg.det(tri) for tri in tris2])/2)
@@ -174,11 +173,19 @@ class GenericPoly(GenericShapeBase):
         tris2[:,:,2] = z_center
         centroids = tris2.sum(1)/3
         centroid = (areas*centroids.T).sum(1)/areas.sum()
+
+        thickness = z_upper - z_lower
+        volume = area*thickness
+        mass = volume*density
+        return area,centroid,volume,mass,tris
+
+    def inertia_tensor(self,density,z_lower,z_upper,tris,about_point):
+        import popupcad.algorithms.triangle as triangle
         tris3 = [triangle.Triangle(*tri) for tri in tris]
-        tets = [tet for tri in tris3 for tet in tri.extrude(lower,upper)]
-        Is = numpy.array([tet.I(centroid) for tet in tets])
+        tets = [tet for tri in tris3 for tet in tri.extrude(z_lower,z_upper)]
+        Is = numpy.array([tet.I(about_point) for tet in tets])
         I = Is.sum(0)
-        return area,centroid,I
+        return I
 #        return tris
 #        for tri in tris:
         
@@ -329,4 +336,13 @@ class GenericTwoPointRect(GenericShapeBase):
 
 if __name__=='__main__':
     a = GenericPoly.gen_from_point_lists([[0,0],[0,1],[1,2],[2,1],[2,-1],[1,-2],[0,-1]],[])
-    area,centroid,I= a.mass_props(1,-.1,.1)
+#`    area,centroid,I= a.mass_props(1,-.1,.1)\
+    z_lower = -.1
+    z_upper = .1
+    length_scaling = 1
+    density = 1
+    area,centroid,volume,mass,tris = a.mass_properties(density,z_lower ,z_upper,length_scaling)
+    about_point = centroid
+    I = a.inertia_tensor(density,z_lower,z_upper,tris,about_point)
+    area2 = a.trueArea()
+    print(area,area2)
