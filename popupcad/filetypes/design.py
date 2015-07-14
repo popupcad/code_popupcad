@@ -332,7 +332,7 @@ class Design(popupCADFile):
 
     def build_documentation(self):
         import os
-        from popupcad.filetypes.design_documentation import DesignDocumentation
+        import popupcad.algorithms.design_documentation as design_doc
         base,ext = os.path.splitext(self.get_basename())
         base = self.slugify(base)
         slugified_name = base+ext
@@ -341,10 +341,10 @@ class Design(popupCADFile):
             os.mkdir(subdir)
             self.save_yaml(os.path.join(self.dirname,subdir,slugified_name),update_filename=False)
 #        self.raster(destination=subdir)
-        new = DesignDocumentation.build(self, subdir)
+        new = design_doc.process_design(self, subdir)
         file = os.path.normpath(os.path.join(subdir, base + '.md'))
         with open(file, 'w') as f:
-            f.writelines(new.output())
+            f.writelines(design_doc.format_template(new))
         #            yaml.dump(new.dictify2(),f)
 #        new.save_yaml(file)
 

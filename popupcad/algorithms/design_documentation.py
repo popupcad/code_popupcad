@@ -60,7 +60,7 @@ def process_design(design,subdir):
     output['title'] = title
     output['description'] = 'This is a leg design, which is meant to be attached to the body of a robot.  It is a 2-dof mechanism, so requires inputs from two motors.  Operation 10 and 12 include the necessary cut files for creating this two-laminate device.'
     output['category'] = 'Parts.Legs.2DOFLegs'
-    output['tags'] = 'parts,legs,2dof_robot_legs'
+    output['tags'] = ['parts','legs','2dof_robot_legs']
     output['operations'] = operations
     output['svg_image_file'] = operations[ii]['svg_image_file']
     output['png_image_file'] = operations[ii]['png_image_file']
