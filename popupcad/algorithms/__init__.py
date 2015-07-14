@@ -10,3 +10,4 @@ from . import keepout
 from . import morphology
 from . import points
 from . import manufacturing_functions
+from . import design_documentation
