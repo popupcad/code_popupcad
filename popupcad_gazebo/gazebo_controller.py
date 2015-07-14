@@ -298,10 +298,9 @@ def createFloor():
     return floor
 
 
-def extractLine(shape):    
+def extractLine(shape, z = 0):    
     x = shape.exteriorpoints()[0][0] - shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] - shape.exteriorpoints()[1][1]
-    z = 0
     return (x, y, z)
     
 def findMidPoint(shape, anchor):
@@ -353,10 +352,8 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     etree.SubElement(ode_params, "mu2").text = "0.05"   
     etree.SubElement(ode_params, "slip1").text = "1"
     etree.SubElement(ode_params, "slip2").text = "1"
-
     
-    
-    if buildMesh:
+    if buildMesh: #Decides if you want to use an external mesh file or the polyline feature (experimental)
         joint_laminate.toDAE()      
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
