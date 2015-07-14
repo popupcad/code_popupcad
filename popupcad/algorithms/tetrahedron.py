@@ -9,7 +9,7 @@ import scipy
 import scipy.linalg
 
 class Tetrahedron(object):
-    def __init__(self,*points,density = 1.):
+    def __init__(self,density,*points):
         self.points = numpy.array(points)
         self.density = density
         
@@ -106,7 +106,8 @@ if __name__=='__main__':
     p1= numpy.array([1,0,0])
     p2= numpy.array([0,1,0])
     p3= numpy.array([0,0,1])
-    t=Tetrahedron(p0,p1,p2,p3,density = 1000)
+    density = 1000
+    t=Tetrahedron(density,p0,p1,p2,p3)
     c=t.centroid()    
     J = t.J()
     v = t.volume()

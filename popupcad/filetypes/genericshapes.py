@@ -162,7 +162,9 @@ class GenericPoly(GenericShapeBase):
         
     def mass_properties(self,density,z_lower,z_upper,length_scaling = 1):
         import scipy.linalg
-        tris = numpy.array(self.triangles3())*length_scaling
+        z_lower = z_lower*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
+        z_upper = z_upper*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
+        tris = numpy.array(self.triangles3())*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
         shape = list(tris.shape)
         shape[2]+=1
         z_center = (z_lower+z_upper)/2
@@ -179,10 +181,10 @@ class GenericPoly(GenericShapeBase):
         mass = volume*density
         return area,centroid,volume,mass,tris
 
-    def inertia_tensor(self,density,z_lower,z_upper,tris,about_point):
+    def inertia_tensor(self,about_point,density,z_lower,z_upper,tris):
         import popupcad.algorithms.triangle as triangle
         tris3 = [triangle.Triangle(*tri) for tri in tris]
-        tets = [tet for tri in tris3 for tet in tri.extrude(z_lower,z_upper)]
+        tets = [tet for tri in tris3 for tet in tri.extrude(density,z_lower,z_upper)]
         Is = numpy.array([tet.I(about_point) for tet in tets])
         I = Is.sum(0)
         return I
@@ -343,6 +345,6 @@ if __name__=='__main__':
     density = 1
     area,centroid,volume,mass,tris = a.mass_properties(density,z_lower ,z_upper,length_scaling)
     about_point = centroid
-    I = a.inertia_tensor(density,z_lower,z_upper,tris,about_point)
+    I = a.inertia_tensor(about_point,density,z_lower,z_upper,tris)
     area2 = a.trueArea()
     print(area,area2)

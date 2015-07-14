@@ -282,3 +282,23 @@ class GenericLaminate(popupCADFile):
         geom.primitives.append(triset)
         return geom
 
+    def mass_properties(self,length_scaling = 1):
+        zvalues = self.layerdef.z_values()
+        volume_total = 0
+        center_of_mass_accumulator = 0
+        next_args = []
+        for layer in self.layers():
+            density = layer.density
+            z_lower = zvalues[layer]['lower']
+            z_upper = zvalues[layer]['upper']
+            for geom in self.geoms[layer]:
+                area,centroid,volume,mass,tris = geom.mass_properties(density,z_lower,z_upper,length_scaling)
+                volume_total+=volume
+                center_of_mass_accumulator+=volume*centroid
+                next_args.append((geom,(density,z_lower,z_upper,tris)))
+        center_of_mass = center_of_mass_accumulator/volume_total
+        I = 0
+        for geom,args in next_args:
+            I+=geom.inertia_tensor(center_of_mass,*args)
+        return volume_total,center_of_mass,I
+            
