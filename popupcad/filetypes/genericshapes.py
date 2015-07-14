@@ -182,10 +182,12 @@ class GenericPoly(GenericShapeBase):
         return area,centroid,volume,mass,tris
 
     def inertia_tensor(self,about_point,density,z_lower,z_upper,tris):
+        z_lower = z_lower/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
+        z_upper = z_upper/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
         import popupcad.algorithms.triangle as triangle
         tris3 = [triangle.Triangle(*tri) for tri in tris]
-        tets = [tet for tri in tris3 for tet in tri.extrude(density,z_lower,z_upper)]
-        Is = numpy.array([tet.I(about_point) for tet in tets])
+        tets = [tet for tri in tris3 for tet in tri.extrude(z_lower,z_upper)]
+        Is = numpy.array([tet.I(density,about_point) for tet in tets])
         I = Is.sum(0)
         return I
 #        return tris

@@ -22,14 +22,14 @@ class Triangle(object):
     def area(self):
         return abs(scipy.linalg.det(self.J())/2)
 
-    def extrude(self,density,z_lower,z_upper):
+    def extrude(self,z_lower,z_upper):
         from popupcad.algorithms.tetrahedron import Tetrahedron
         p_lower = numpy.c_[self.points,[z_lower]*3]
         p_upper = numpy.c_[self.points,[z_upper]*3]
 
-        tet1 = Tetrahedron(density,p_upper[0],p_lower[1],p_lower[0],p_lower[2])
-        tet2 = Tetrahedron(density,p_upper[0],p_lower[1],p_upper[2],p_lower[2])
-        tet3 = Tetrahedron(density,p_upper[0],p_lower[1],p_upper[1],p_upper[2])
+        tet1 = Tetrahedron(p_upper[0],p_lower[1],p_lower[0],p_lower[2])
+        tet2 = Tetrahedron(p_upper[0],p_lower[1],p_upper[2],p_lower[2])
+        tet3 = Tetrahedron(p_upper[0],p_lower[1],p_upper[1],p_upper[2])
         return tet1,tet2,tet3
 
 if __name__=='__main__':
