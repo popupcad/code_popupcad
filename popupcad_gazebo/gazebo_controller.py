@@ -75,8 +75,9 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
     
 #Applies the joint using PyGazebo. All joints are applied concurrently.
 #Allows for granular PID control
-#TODO Allow users to specify PID variables
-def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
+#TODO Allow users to specify PID variables. 
+#Until other variables implemented, this is experimental.
+def apply_joint_pos_exp(world_name, robot_name, joint_names, poses, duration=0):
     """ Applies a joint position asynchronously over multiple joint members, 
         then waits for a specified duration if specified.    
     """    
@@ -101,7 +102,7 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
         
         try:
             yield From(publisher.publish(message))
-            yield From(trollius.sleep(1.0))
+            yield From(trollius.sleep(.1))
         except:
             pass
         print("Connection closed")
@@ -115,7 +116,7 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     loop.run_until_complete(trollius.wait(tasks))
     
 
-def apply_joint_pos_seq(world_name, robot_name, joint_names, poses, duration=0):
+def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
    """ Applies joint positions sequentially using subprocesses. No Trollius at all, 
        just commandline arguements.
    """
@@ -263,7 +264,8 @@ def export_inner(operation):
 
     user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
      #TODO replace with Subprocess to prevent pollution of STDOUT
-    gazebo = subprocess.Popen(["gazebo", "-edart", file_output])    
+    gazebo = subprocess.Popen(["gazebo", "-e", "dart", file_output])
+    print("Gazebo is now open")
     #Add quotes around file output to prevent injection later
     def exec_(arg): #This is done for Python 2 and 3 compatibility
         exec(arg)
