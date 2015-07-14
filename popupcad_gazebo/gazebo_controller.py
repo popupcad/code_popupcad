@@ -76,7 +76,7 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
 #Applies the joint using PyGazebo. All joints are applied concurrently.
 #Allows for granular PID control
 #TODO Allow users to specify PID variables
-def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=-1):
+def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     """ Applies a joint position asynchronously over multiple joint members, 
         then waits for a specified duration if specified.    
     """    
