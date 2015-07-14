@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Written by Daniel M. Aukes.
-Email: danaukes<at>seas.harvard.edu.
-Please see LICENSE.txt for full license.
+Created on Thu Jul  9 17:41:42 2015
+
+@author: danaukes
 """
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
-
 
 class ListWidgetItem(qg.QListWidgetItem):
 
@@ -49,8 +48,7 @@ class MultiListWidget(qg.QListWidget):
             item = self.item(ii)
             if item.customdata in data:
                 item.setSelected(True)
-
-
+                
 class Table(qg.QTableWidget):
 
     def __init__(self, data_class):
@@ -62,7 +60,7 @@ class Table(qg.QTableWidget):
         self.setHorizontalHeaderLabels(data_class.header_labels())
         self.resizeColumnsToContents()
         self.reset_min_width()
-        self.setItemDelegate(Delegate(data_class))
+#        self.setItemDelegate(Delegate(data_class))
         self.setHorizontalScrollBarPolicy(
             qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.data_class = data_class
@@ -93,6 +91,7 @@ class Table(qg.QTableWidget):
         for jj, item in enumerate(items):
             self.setItem(ii, jj, item)
         self.reset_min_width()
+        self.set_custom_widget(ii)
 
     def row_add_empty(self, *args, **kwargs):
         ii = self.rowCount()
@@ -101,6 +100,7 @@ class Table(qg.QTableWidget):
         for jj, item in enumerate(items):
             self.setItem(ii, jj, item)
         self.reset_min_width()
+        self.set_custom_widget(ii)
 
     def row_remove(self):
         ii = self.currentRow()
@@ -148,30 +148,10 @@ class Table(qg.QTableWidget):
                     self.data_class.column_count())] for ii in range(
                         self.rowCount())]
 
-
-class Delegate(qg.QStyledItemDelegate):
-
-    def __init__(self, data_class, parent=None):
-        super(Delegate, self).__init__(parent)
-        self.data_class = data_class
-
-    def createEditor(self, parent, option, index):
-        return self.data_class.create_editor(parent, option, index, self)
-
-    def commitAndCloseEditor(self):
-        editor = self.sender()
-        self.commitData.emit(editor)
-        self.closeEditor.emit(editor, qg.QAbstractItemDelegate.NoHint)
-
-    def updateEditorGeometry(self, editor, option, index):
-        return self.data_class.update_editor_geometry(editor, option, index)
-
-    def setEditorData(self, editor, index):
-        return self.data_class.set_editor_data(editor, index, self)
-
-    def setModelData(self, editor, model, index):
-        return self.data_class.set_model_data(editor, model, index, self)
-
+    def set_custom_widget(self,row):
+        for column,widget in self.data_class.custom_widgets.items():
+            self.setCellWidget(row,column,widget())
+    
 
 class Row(object):
 
@@ -215,7 +195,6 @@ class Row(object):
 
     def header_labels(self):
         return [element.name for element in self.elements]
-
 
 class Element(object):
 
@@ -385,3 +364,37 @@ class TableControl(qg.QWidget):
         main_layout.addLayout(sublayout1)
         self.setLayout(main_layout)
 
+
+class Dummy(object):
+    ii = 0
+    def __init__(self):
+        self.name = 'dummy'+str(self.ii)
+        type(self).ii+=1
+    def __str__(self):
+        return self.name
+    def __repr__(self):
+        return str(self)
+
+class InputRow(Row):
+    def __init__(self, get_sketches, get_layers):
+        elements = []
+        elements.append(DraggableTreeElement('to replace', get_sketches))
+        elements.append(DraggableTreeElement('replace with', get_layers))
+        self.elements = elements
+        
+
+
+def get_list():
+    return [Dummy() for ii in range(10)]
+
+if __name__=='__main__':
+    import sys
+    app = qg.QApplication(sys.argv)
+    
+    input_row = InputRow(get_list,get_list)    
+    input_row.custom_widgets = {1:qg.QCheckBox}
+    table = Table(input_row)
+    tablecontrol = TableControl(table)
+    tablecontrol.show()
+    
+    sys.exit(app.exec_())

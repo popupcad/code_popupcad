@@ -159,42 +159,64 @@ class GenericPoly(GenericShapeBase):
 
     def segments(self):
         return self.segments_closed()
-
-    def toTriangleFormat(self):
-        import shapely.geometry as sg
-        import numpy
-        vertices = []
-        segments = []
-        holes = []
-        loops = [self.exteriorpoints()]
-        ip = self.interiorpoints()
-        loops.extend(ip)
-        c = 0
-        for loop in loops:
-            d = len(vertices)
-            vertices.extend(loop)
-            a = range(c, c + len(vertices))
-            b = zip(a, a[1:] + a[:1])
-            segments.extend(b)
-            c += d
-
-        for loop in ip:
-            p = sg.Polygon(loop)
-            e = p.representative_point()
-            holes.append((e.x, e.y))
-        tri = {}
-        tri['vertices'] = numpy.array(vertices)
-        tri['segments'] = numpy.array(segments)
-        if len(holes) > 0:
-            tri['holes'] = numpy.array(holes)
-        return tri
-
-    def triangles4(self):
-        import triangle
-        a = self.toTriangleFormat()
-        t = triangle.triangulate(a)
-        b = t['vertices'][t['triangles']]
-        return [tri.tolist() for tri in b]
+        
+    def mass_props(self,density,lower,upper,length_scaling = 1):
+        import scipy.linalg
+        import popupcad.algorithms.triangle as triangle
+        tris = numpy.array(self.triangles3())*length_scaling
+        shape = list(tris.shape)
+        shape[2]+=1
+        z_center = (lower+upper)/2
+        tris2 = numpy.ones(shape)
+        tris2[:,:,:2] = tris
+        areas = abs(numpy.array([scipy.linalg.det(tri) for tri in tris2])/2)
+        area = areas.sum()
+        tris2[:,:,2] = z_center
+        centroids = tris2.sum(1)/3
+        centroid = (areas*centroids.T).sum(1)/areas.sum()
+        tris3 = [triangle.Triangle(*tri) for tri in tris]
+        tets = [tet for tri in tris3 for tet in tri.extrude(lower,upper)]
+        Is = numpy.array([tet.I(centroid) for tet in tets])
+        I = Is.sum(0)
+        return area,centroid,I
+#        return tris
+#        for tri in tris:
+        
+#    def toTriangleFormat(self):
+#        import shapely.geometry as sg
+#        import numpy
+#        vertices = []
+#        segments = []
+#        holes = []
+#        loops = [self.exteriorpoints()]
+#        ip = self.interiorpoints()
+#        loops.extend(ip)
+#        c = 0
+#        for loop in loops:
+#            d = len(vertices)
+#            vertices.extend(loop)
+#            a = range(c, c + len(vertices))
+#            b = zip(a, a[1:] + a[:1])
+#            segments.extend(b)
+#            c += d
+#
+#        for loop in ip:
+#            p = sg.Polygon(loop)
+#            e = p.representative_point()
+#            holes.append((e.x, e.y))
+#        tri = {}
+#        tri['vertices'] = numpy.array(vertices)
+#        tri['segments'] = numpy.array(segments)
+#        if len(holes) > 0:
+#            tri['holes'] = numpy.array(holes)
+#        return tri
+#
+#    def triangles4(self):
+#        import triangle
+#        a = self.toTriangleFormat()
+#        t = triangle.triangulate(a)
+#        b = t['vertices'][t['triangles']]
+#        return [tri.tolist() for tri in b]
 
     def hollow(self):
         polylines = []
@@ -215,6 +237,9 @@ class GenericPoly(GenericShapeBase):
         if layer is not None:
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs=dxfattribs)
+        for interior in self.interiorpoints(scaling = 1./popupcad.internal_argument_scaling):
+            model_space.add_lwpolyline(interior,dxfattribs=dxfattribs)
+        
 
     #Gets the center
     def get_center(self):
@@ -301,3 +326,7 @@ class GenericTwoPointRect(GenericShapeBase):
 
     def segments(self):
         return self.segments_closed()
+
+if __name__=='__main__':
+    a = GenericPoly.gen_from_point_lists([[0,0],[0,1],[1,2],[2,1],[2,-1],[1,-2],[0,-1]],[])
+    area,centroid,I= a.mass_props(1,-.1,.1)

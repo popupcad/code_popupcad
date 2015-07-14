@@ -63,7 +63,7 @@ class BaseVertex(object):
 
     def setpos(self, pos):
         pos = numpy.array(pos)
-        pos.round(self.roundvalue)
+        pos = pos.round(self.roundvalue)
         self._pos = tuple(pos.tolist())
 
     def getpos(self, scaling=1):
