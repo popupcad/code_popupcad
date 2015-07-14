@@ -20,7 +20,7 @@ class Triangle(object):
         return J
 
     def area(self):
-        return scipy.linalg.det(self.J())/2
+        return abs(scipy.linalg.det(self.J())/2)
 
     def extrude(self,z_lower,z_upper):
         from popupcad.algorithms.tetrahedron import Tetrahedron
