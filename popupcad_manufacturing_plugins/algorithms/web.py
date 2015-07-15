@@ -8,14 +8,14 @@ Please see LICENSE.txt for full license.
 from popupcad.filetypes.genericshapes import GenericShapeBase, GenericPoly
 from popupcad.filetypes.laminate import Laminate
 import numpy
-
+import popupcad
 
 def supportsheet(layerdef, lsin, value):
     allext = []
     for layer, layer_geometry in lsin.layer_sequence.items():
         for geom in layer_geometry.geoms:
             geom2 = GenericShapeBase.genfromshapely(geom)
-            allext.extend(geom2.exteriorpoints())
+            allext.extend(geom2.exteriorpoints(scaling = popupcad.csg_processing_scaling))
     allext = numpy.array(allext)
     minx = allext[:, 0].min() - value
     miny = allext[:, 1].min() - value
@@ -39,7 +39,7 @@ def find_outer(ls, minpoint):
         for geom in layer_geometry.geoms:
             if points.pointinpoints(
                     minpoint,
-                    GenericShapeBase.genfromshapely(geom).exteriorpoints(),
+                    GenericShapeBase.genfromshapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
                     GenericShapeBase.tolerance):
                 outergeoms.append(geom)
             else:

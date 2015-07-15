@@ -106,8 +106,8 @@ def transform(
                             aff.affine_transform(
                                 designgeom,
                                 calctransformfrom2lines(
-                                    locateline.exteriorpoints(),
-                                    geom.exteriorpoints(),
+                                    locateline.exteriorpoints(scaling = popupcad.csg_processing_scaling),
+                                    geom.exteriorpoints(scaling = popupcad.csg_processing_scaling),
                                     scale_x=scale_x,
                                     scale_y=scale_y)))
                     except IndexError:
