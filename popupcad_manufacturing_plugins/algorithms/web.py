@@ -22,7 +22,8 @@ def supportsheet(layerdef, lsin, value):
     maxx = allext[:, 0].max() + value
     maxy = allext[:, 1].max() + value
     exterior = [[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy]]
-    geom = GenericPoly.gen_from_point_lists(exterior, [])
+    exterior_scaled = (numpy.array(exterior)/popupcad.csg_processing_scaling).tolist()
+    geom = GenericPoly.gen_from_point_lists(exterior_scaled, [])
     geom = geom.outputshapely()
     ls = Laminate(layerdef)
     [ls.replacelayergeoms(layer, [geom]) for layer in layerdef.layers]
