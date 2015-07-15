@@ -11,6 +11,7 @@ from trollius import From
 
 import pygazebo
 import pygazebo.msg.joint_cmd_pb2
+import pygazebo.msg.world_control_pb2
 import time 
 import popupcad
 from lxml import etree
@@ -22,17 +23,39 @@ try:
 except ImportError:
     pass
 
+def pause_simulation(world_name, pause=True):
+    
+    @trollius.coroutine
+    def coroutine():
+        manager = yield From(pygazebo.connect())
+        print("connected")
+        
+        publisher = yield From(
+            manager.advertise("/gazebo/" + world_name + "/world_control",
+                              'gazebo.msgs.WorldControl'))
+    
+        message = pygazebo.msg.world_control_pb2.WorldControl()
+        message.pause = pause
+        
+        try:
+            yield From(publisher.wait_for_listener())                
+            yield From(publisher.publish(message))
+        except:
+            pass
+        print("Connection closed")
+            
+    loop = trollius.get_event_loop()    
+    loop.run_until_complete(coroutine())
+
 def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
     """ Applies joint forces via Trollius over a specified duration.
     """    
-    wait_net_service('localhost',11345)    
     print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
     def joint_force_loop(world_name, robot_name, joint_name, force, duration):
         manager = yield From(pygazebo.connect())
         print("connected")
-        
         
         publisher = yield From(
             manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
@@ -45,6 +68,7 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
         t_end = time.time() + duration # The time that you want the controller to stop
         while time.time() < t_end or duration == -1:
             try:
+                yield From(publisher.wait_for_listener())                
                 yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
             except:
@@ -62,65 +86,55 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
     
     
     loop = trollius.get_event_loop()    
-    
-    
-    #Experimental code to make this loop non-blocking
-    #loop = trollius.get_event_loop()
-    #loop_thread_tasks = lambda t_loop: loop_in_thread(t_loop, tasks)
-    #import threading
-    #t = threading.Thread(target=loop_thread_tasks, args=(loop,))
-    #t.start()
-    #return t
+
     loop.run_until_complete(trollius.wait(tasks))
-    
-#Applies the joint using PyGazebo. All joints are applied concurrently.
-#Allows for granular PID control
-#TODO Allow users to specify PID variables. 
-#Until other variables implemented, this is experimental.
-def apply_joint_pos_exp(world_name, robot_name, joint_names, poses, duration=0):
+
+def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     """ Applies a joint position asynchronously over multiple joint members, 
         then waits for a specified duration if specified.    
     """    
-    wait_net_service('localhost', 11345)    
     print("Net serviced detected. Proceeding")
     
     @trollius.coroutine
-    def joint_pose_loop(world_name, robot_name, joint_name, pose, duration):
+    def joint_pose_loop(world_name, robot_name, joint_name, pose):
         manager = yield From(pygazebo.connect())
-        print("connected")
-        
-        
         publisher = yield From(
-            manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
-                              'gazebo.msgs.JointCmd'))
-    
+                manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
+                                  'gazebo.msgs.JointCmd'))
+        print("connected")         
+        
+        
         message = pygazebo.msg.joint_cmd_pb2.JointCmd()
         message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
-        
         #Message.position is a PID message with several values
         message.position.target = pose
+                  
         
         try:
+            
+            yield From(publisher.wait_for_listener())
+            #This is needed to ensure that they are ready to publish.
             yield From(publisher.publish(message))
-            yield From(trollius.sleep(.1))
         except:
             pass
         print("Connection closed")
     
     tasks = []
     for joint_name, pose in zip(joint_names, poses):
-        tasks.append(trollius.Task(joint_pose_loop(world_name, robot_name, joint_name, pose, duration)))
-    
-    time.sleep(duration)
+        tasks.append(trollius.Task(joint_pose_loop(world_name, robot_name, joint_name, pose)))
+        
     loop = trollius.get_event_loop()        
     loop.run_until_complete(trollius.wait(tasks))
-    
+    time.sleep(duration)  
+#Applies the joint using PyGazebo. All joints are applied concurrently.
+#Allows for granular PID control
+#TODO Allow users to specify PID variables. 
+#Until other variables implemented, this is experimental.
 
-def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
+def apply_joint_pos_seq(world_name, robot_name, joint_names, poses, duration=0):
    """ Applies joint positions sequentially using subprocesses. No Trollius at all, 
        just commandline arguements.
    """
-   wait_net_service('localhost', 11345)
    print("Net serviced detected. Proceeding")
    for joint_name, pose in zip(joint_names, poses):
        subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name, '--pos-t', str(pose)]) 
@@ -239,8 +253,6 @@ def export_inner(operation):
     f.write(etree.tostring(global_root, pretty_print=True))
     f.close()
     
-
-    
     joint_names = []        
     for num in range(0, len(operation.all_joint_props)):
         joint_names.append("hingejoint" + str(num))
@@ -250,7 +262,6 @@ def export_inner(operation):
     
     #Experimental Python IDE and Control System
     #TODO Sandbox this
-    #TODO Save and load python scripts
     from popupcad_gazebo.userinput import UserInputIDE
     mw = UserInputIDE()
     mw.setWindowTitle('Internal Python IDE')
@@ -261,17 +272,23 @@ def export_inner(operation):
     mw.appendText('joint_names=' + str(joint_names))
     mw.te.setReadOnly(False)   
     mw.exec_()    
-
+    print("Starting gazebo")
     user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
      #TODO replace with Subprocess to prevent pollution of STDOUT
-    gazebo = subprocess.Popen(["gazebo", "-e", "dart", file_output])
+    subprocess.Popen("killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient", shell=True)    
+    gazebo = subprocess.Popen(["gazebo", "-e", "dart", file_output, '-u'])
     print("Gazebo is now open")
     #Add quotes around file output to prevent injection later
+    wait_net_service('localhost', 11345)
+    
+    
     def exec_(arg): #This is done for Python 2 and 3 compatibility
         exec(arg)
         
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
+    time.sleep(1)
+    pause_simulation(world_name, pause=False)
     code_process.start()    
     import PySide.QtGui as qg
     import PySide
@@ -403,7 +420,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     Creates the SDF for each link in the Robot
     """
     filename = str(joint_laminate.id)
-    center_of_mass = joint_laminate.calculateCentroid()
+    _, trueMass, center_of_mass, I =  joint_laminate.mass_properties()      
     
     root_of_robot = etree.Element("link", name=filename)
     etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
@@ -448,7 +465,14 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
             root_of_robot.append(collision)    
         
     inertial = etree.SubElement(root_of_robot, "inertial")
-    trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
+    #trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
     etree.SubElement(inertial, "mass").text = str(trueMass) 
     etree.SubElement(inertial, "pose").text = centroid_pose
-    return root_of_robot            
+    it_matrix = etree.SubElement(inertial, "inertia")    
+    etree.SubElement(it_matrix, 'ixx').text = str(I[0,0])
+    etree.SubElement(it_matrix, 'ixy').text = str(I[0,1])
+    etree.SubElement(it_matrix, 'ixz').text = str(I[0,2])
+    etree.SubElement(it_matrix, 'iyy').text = str(I[1,1])
+    etree.SubElement(it_matrix, 'iyz').text = str(I[1,2])
+    etree.SubElement(it_matrix, 'izz').text = str(I[2,2])
+    return root_of_robot
