@@ -520,6 +520,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.constraint_editor.linklist(
             self.sketch.constraintsystem.constraints)
         self.sketch.constraintsystem.link_vertex_builder(self.buildvertices)
+        self.load_references()
 
     def showvertices(self):
         if self.act_view_vertices.isChecked():
