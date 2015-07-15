@@ -54,3 +54,13 @@ class LayerDef(object):
         neighbors = self.neighbors(layer)
         connected = [neighbor for neighbor in neighbors if (neighbor.is_adhesive or layer.is_adhesive)]
         return connected
+
+    def z_values(self):
+        zvalues = {}
+        z = 0.
+        for layer in self.layers:
+            zvalues[layer] = {'lower':z}
+            z += layer.thickness * popupcad.internal_argument_scaling
+            zvalues[layer]['upper'] = z
+        return zvalues
+        

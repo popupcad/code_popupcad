@@ -4,7 +4,6 @@ Created on Thu Jul  2 12:52:50 2015
 
 @author: skylion
 """
-
 import trollius #NOTE: Trollius requires protobuffer from Google
 from trollius import From
 
@@ -13,6 +12,7 @@ import pygazebo.msg.joint_cmd_pb2
 import time 
 import popupcad
 from lxml import etree
+import subprocess
 import os
 
 try:
@@ -20,11 +20,12 @@ try:
 except ImportError:
     pass
 
-def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
-    wait_net_service('localhost',11345)
+def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
+    wait_net_service('localhost',11345)    
+    print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
-    def joint_force_loop(world_name, robot_name, joint_name, force, duration=-1):
+    def joint_force_loop(world_name, robot_name, joint_name, force, duration):
         manager = yield From(pygazebo.connect())
         print("connected")
         
@@ -57,10 +58,7 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     
     
     loop = trollius.get_event_loop()    
-    import PySide.QtGui as qg
-    widget = qg.QMessageBox()
-    widget.setText("Close Gazebo to continue...")
-    widget.show()
+    
     
     #Experimental code to make this loop non-blocking
     #loop = trollius.get_event_loop()
@@ -71,8 +69,18 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     #return t
     loop.run_until_complete(trollius.wait(tasks))
     
-    
-    
+
+def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
+    wait_net_service('localhost', 11345)
+    print("Net serviced detected. Proceeding")
+    for joint_name, pose in zip(joint_names, poses):
+        subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name, '--pos-t', str(pose)]) 
+        #os.system("gz joint -m " + robot_name + " -j " + joint_name + " --pos-t " + str(pose))
+    print("Joint poses applied")
+    time.sleep(duration)
+    #TODO either integrate with PyGazebo or clean up, maybe with sub processes
+    #This is a Sandbox Nightmare. Poor Coding practices
+
 def wait_net_service(server, port, timeout=None):
     """ Wait for network service to appear 
         @param timeout: in seconds, if None or 0 wait forever
@@ -118,6 +126,7 @@ def export(program):
         if isinstance(tmp_op, JointOperation2):
             operation = tmp_op
     export_inner(operation)
+       
     
 #Export to Gazebo
 def export_inner(operation):
@@ -169,6 +178,7 @@ def export_inner(operation):
     #physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
     #etree.SubElement(physics, 'max_step_size').text = str(0.0001)
     #etree.SubElement(physics, "real_time_factor").text = "0.1"
+
     
     #Saves the object
     file_output = popupcad.exportdir + os.path.sep + project_name + ".world"
@@ -176,19 +186,51 @@ def export_inner(operation):
     f.write(etree.tostring(global_root, pretty_print=True))
     f.close()
     
-    #TODO replace with Subprocess to prevent pollution of STDOUT
-    os.system("gazebo -e dart " + file_output + " &")
+
     
-    
-    #Control System #TODO find a way to implement this
-    
-    #joint_names = []        
-    #for num in range(0, len(operation.all_joint_props)):
-    #    joint_names.append("hingejoint" + str(num))
-    
+    joint_names = []        
+    for num in range(0, len(operation.all_joint_props)):
+        joint_names.append("hingejoint" + str(num))
+   
     #joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
     #apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
+    #apply_joint_pos(world_name, robot_name, joint_names, joint_forces)
+    
+    #Experimental Python IDE and Control System
+    #TODO Sandbox this
+    #TODO Save and load python scripts
+    from popupcad_gazebo.userinput import UserInputIDE
+    mw = UserInputIDE()
+    mw.setWindowTitle('Internal Python IDE')
+    mw.appendText('#This code will control your robot during the simulation')
+    mw.appendText('from popupcad_gazebo.gazebo_controller import apply_joint_forces, apply_joint_pos')
+    mw.appendText('world_name=' + stringify(world_name))
+    mw.appendText('robot_name=' + stringify(robot_name))
+    mw.appendText('joint_names=' + str(joint_names))
+    mw.te.setReadOnly(False)   
+    mw.exec_()    
+    user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
+     #TODO replace with Subprocess to prevent pollution of STDOUT
+    gazebo = subprocess.Popen(["gazebo", "-edart", file_output])    
+    #Add quotes around file output to prevent injection later
+    def exec_(arg):
+        exec(arg)
+    from multiprocessing import Process
+    code_process = Process(target=exec_, args=(user_input_code,))
+    code_process.start()    
+    import PySide.QtGui as qg
+    import PySide
+    widget = qg.QMessageBox()
+    widget.setText("Press Okay to Stop the Simulation and Close Gazebo")
+    widget.setWindowModality(PySide.QtCore.Qt.NonModal)
+    widget.exec_() 
+    code_process.terminate()
+    gazebo.terminate()
+    #Make it kill the process later if it needs to
 
+def stringify(s1):
+    return "'{}'".format(s1)
+    
 def craftJoint(operation, connection, counter):
     joint_pair = reorder_pair(connection[1], operation.get_laminate_generations())    
     
@@ -303,7 +345,6 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.   
     
     centroid_pose = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
-    #etree.SubElement(root_of_robot, "pose").text = centroid_pose    
     
     surface_tree = etree.Element("surface")
     friction = etree.SubElement(surface_tree, "friction")
@@ -319,7 +360,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
         joint_laminate.toDAE()      
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
-            
+
         geometry_of_robot = etree.Element("geometry")
         robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
         etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
@@ -333,7 +374,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     else:
         visuals_of_robot = joint_laminate.toSDFTag("visual", "basic_bot_visual" + str(counter))    
         for visual_of_robot in visuals_of_robot:
-            etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+            #etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
             #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
             root_of_robot.append(visual_of_robot)     
         collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
@@ -343,9 +384,7 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
         
     inertial = etree.SubElement(root_of_robot, "inertial")
     trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
-    import math    
-    trueMass /= math.pow(popupcad.SI_length_scaling, 3) #Volume is cubed
+    #trueMass /= math.pow(popupcad.SI_length_scaling, 3) #Volume is cubed
     etree.SubElement(inertial, "mass").text = str(trueMass) #TODO make layer specfic 
     etree.SubElement(inertial, "pose").text = centroid_pose
-    
     return root_of_robot            
