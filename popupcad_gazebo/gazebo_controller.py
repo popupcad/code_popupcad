@@ -2,6 +2,8 @@
 """
 Created on Thu Jul  2 12:52:50 2015
 
+This class
+
 @author: skylion
 """
 import trollius #NOTE: Trollius requires protobuffer from Google
@@ -9,6 +11,7 @@ from trollius import From
 
 import pygazebo
 import pygazebo.msg.joint_cmd_pb2
+import pygazebo.msg.world_control_pb2
 import time 
 import popupcad
 from lxml import etree
@@ -20,15 +23,39 @@ try:
 except ImportError:
     pass
 
+def pause_simulation(world_name, pause=True):
+    
+    @trollius.coroutine
+    def coroutine():
+        manager = yield From(pygazebo.connect())
+        print("connected")
+        
+        publisher = yield From(
+            manager.advertise("/gazebo/" + world_name + "/world_control",
+                              'gazebo.msgs.WorldControl'))
+    
+        message = pygazebo.msg.world_control_pb2.WorldControl()
+        message.pause = pause
+        
+        try:
+            yield From(publisher.wait_for_listener())                
+            yield From(publisher.publish(message))
+        except:
+            pass
+        print("Connection closed")
+            
+    loop = trollius.get_event_loop()    
+    loop.run_until_complete(coroutine())
+
 def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
-    wait_net_service('localhost',11345)    
+    """ Applies joint forces via Trollius over a specified duration.
+    """    
     print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
     def joint_force_loop(world_name, robot_name, joint_name, force, duration):
         manager = yield From(pygazebo.connect())
         print("connected")
-        
         
         publisher = yield From(
             manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
@@ -41,6 +68,7 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
         t_end = time.time() + duration # The time that you want the controller to stop
         while time.time() < t_end or duration == -1:
             try:
+                yield From(publisher.wait_for_listener())                
                 yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
             except:
@@ -58,29 +86,64 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
     
     
     loop = trollius.get_event_loop()    
-    
-    
-    #Experimental code to make this loop non-blocking
-    #loop = trollius.get_event_loop()
-    #loop_thread_tasks = lambda t_loop: loop_in_thread(t_loop, tasks)
-    #import threading
-    #t = threading.Thread(target=loop_thread_tasks, args=(loop,))
-    #t.start()
-    #return t
+
     loop.run_until_complete(trollius.wait(tasks))
-    
 
 def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
-    wait_net_service('localhost', 11345)
+    """ Applies a joint position asynchronously over multiple joint members, 
+        then waits for a specified duration if specified.    
+    """    
     print("Net serviced detected. Proceeding")
+    
+    @trollius.coroutine
+    def joint_pose_loop(world_name, robot_name, joint_name, pose):
+        manager = yield From(pygazebo.connect())
+        publisher = yield From(
+                manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
+                                  'gazebo.msgs.JointCmd'))
+        print("connected")         
+        
+        
+        message = pygazebo.msg.joint_cmd_pb2.JointCmd()
+        message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
+        #Message.position is a PID message with several values
+        message.position.target = pose
+                  
+        
+        try:
+            
+            yield From(publisher.wait_for_listener())
+            #This is needed to ensure that they are ready to publish.
+            yield From(publisher.publish(message))
+        except:
+            pass
+        print("Connection closed")
+    
+    tasks = []
     for joint_name, pose in zip(joint_names, poses):
-        subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name, '--pos-t', str(pose)]) 
-        #os.system("gz joint -m " + robot_name + " -j " + joint_name + " --pos-t " + str(pose))
-    print("Joint poses applied")
-    time.sleep(duration)
-    #TODO either integrate with PyGazebo or clean up, maybe with sub processes
-    #This is a Sandbox Nightmare. Poor Coding practices
+        tasks.append(trollius.Task(joint_pose_loop(world_name, robot_name, joint_name, pose)))
+        
+    loop = trollius.get_event_loop()        
+    loop.run_until_complete(trollius.wait(tasks))
+    time.sleep(duration)  
+#Applies the joint using PyGazebo. All joints are applied concurrently.
+#Allows for granular PID control
+#TODO Allow users to specify PID variables. 
+#Until other variables implemented, this is experimental.
 
+def apply_joint_pos_seq(world_name, robot_name, joint_names, poses, duration=0):
+   """ Applies joint positions sequentially using subprocesses. No Trollius at all, 
+       just commandline arguements.
+   """
+   print("Net serviced detected. Proceeding")
+   for joint_name, pose in zip(joint_names, poses):
+       subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name, '--pos-t', str(pose)]) 
+       #os.system("gz joint -m " + robot_name + " -j " + joint_name + " --pos-t " + str(pose))
+   print("Joint poses applied")
+   time.sleep(duration)    
+
+#TODO make method to apply forces sequentially, maybe via commandline
+    
 def wait_net_service(server, port, timeout=None):
     """ Wait for network service to appear 
         @param timeout: in seconds, if None or 0 wait forever
@@ -103,7 +166,7 @@ def wait_net_service(server, port, timeout=None):
                 if next_timeout < 0:
                     return False
                 else:
-            	    s.settimeout(next_timeout)
+                    s.settimeout(next_timeout)
             s.connect((server, port))
         except socket.timeout as err:
             # this exception occurs only if timeout is set
@@ -120,6 +183,9 @@ def wait_net_service(server, port, timeout=None):
             return True
 
 def export(program):
+    """
+    Begins the export process to Gazebo
+    """
     design = program.editor.design
     from popupcad.manufacturing.joint_operation2 import JointOperation2
     for tmp_op in design.operations:
@@ -130,8 +196,9 @@ def export(program):
     
 #Export to Gazebo
 def export_inner(operation):
+    """ Continues the export process on the specified operation
+    """    
     joint_laminates = operation.bodies_generic
-   
    
     project_name = "exported" #We can figure out a better way later.
     world_name = 'world'
@@ -186,19 +253,15 @@ def export_inner(operation):
     f.write(etree.tostring(global_root, pretty_print=True))
     f.close()
     
-
-    
     joint_names = []        
     for num in range(0, len(operation.all_joint_props)):
         joint_names.append("hingejoint" + str(num))
    
-    #joint_forces = [joint_def[2] for joint_def in operation.all_joint_props]
-    #apply_joint_forces(world_name, robot_name, joint_names, joint_forces)
-    #apply_joint_pos(world_name, robot_name, joint_names, joint_forces)
+    def stringify(s1): #For local use to generate default Python code
+        return "'{}'".format(s1)
     
     #Experimental Python IDE and Control System
     #TODO Sandbox this
-    #TODO Save and load python scripts
     from popupcad_gazebo.userinput import UserInputIDE
     mw = UserInputIDE()
     mw.setWindowTitle('Internal Python IDE')
@@ -209,14 +272,23 @@ def export_inner(operation):
     mw.appendText('joint_names=' + str(joint_names))
     mw.te.setReadOnly(False)   
     mw.exec_()    
+    print("Starting gazebo")
     user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
      #TODO replace with Subprocess to prevent pollution of STDOUT
-    gazebo = subprocess.Popen(["gazebo", "-edart", file_output])    
+    subprocess.Popen("killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient", shell=True)    
+    gazebo = subprocess.Popen(["gazebo", "-e", "dart", file_output, '-u'])
+    print("Gazebo is now open")
     #Add quotes around file output to prevent injection later
-    def exec_(arg):
+    wait_net_service('localhost', 11345)
+    
+    
+    def exec_(arg): #This is done for Python 2 and 3 compatibility
         exec(arg)
+        
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
+    time.sleep(1)
+    pause_simulation(world_name, pause=False)
     code_process.start()    
     import PySide.QtGui as qg
     import PySide
@@ -226,12 +298,13 @@ def export_inner(operation):
     widget.exec_() 
     code_process.terminate()
     gazebo.terminate()
-    #Make it kill the process later if it needs to
+    #TODO Make it possible to kill the process later if it needs to
 
-def stringify(s1):
-    return "'{}'".format(s1)
-    
+##TODO name the joints better, maybe via user_defined names if possible
 def craftJoint(operation, connection, counter):
+    """
+    Generates the SDf tag for a joint based off the connection and laminate generations.
+    """    
     joint_pair = reorder_pair(connection[1], operation.get_laminate_generations())    
     
     joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
@@ -258,7 +331,7 @@ def craftJoint(operation, connection, counter):
     etree.SubElement(dynamics, "spring_stiffness").text = str(joint_props[0])    
     return joint_root
 
-
+#Obsolete method to create floor, now we just include ground_plane
 def createFloor():
     floor = etree.Element("model", name='floor')
     
@@ -297,14 +370,18 @@ def createFloor():
 
     return floor
 
-
-def extractLine(shape):    
+def extractLine(shape, z = 0):    
+    """
+    Extracts a line from a shape line.
+    """
     x = shape.exteriorpoints()[0][0] - shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] - shape.exteriorpoints()[1][1]
-    z = 0
     return (x, y, z)
     
 def findMidPoint(shape, anchor):
+    """
+    Finds the midpoint of the line and extrcts the height out of it from the laminate.
+    """
     x = shape.exteriorpoints()[0][0] + shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] + shape.exteriorpoints()[1][1]
     z = anchor.getLaminateThickness()    
@@ -314,6 +391,9 @@ def findMidPoint(shape, anchor):
     return (x, y, z)
     
 def unitizeLine(shape):
+    """
+    Unitizes a line
+    """
     print(shape.exteriorpoints())
     (x, y, z) = extractLine(shape)    
     from math import sqrt
@@ -322,6 +402,7 @@ def unitizeLine(shape):
     y /= length
     return (x, y, z)
 
+#TODO Ensure this actually works
 #Ensures the connection are in the right order
 def reorder_pair(joint_pair, hierarchy_map):
     try:
@@ -334,11 +415,12 @@ def reorder_pair(joint_pair, hierarchy_map):
     else:
         return joint_pair
     
-        
-
 def createRobotPart(joint_laminate, counter, buildMesh=True):
+    """
+    Creates the SDF for each link in the Robot
+    """
     filename = str(joint_laminate.id)
-    center_of_mass = joint_laminate.calculateCentroid()
+    _, trueMass, center_of_mass, I =  joint_laminate.mass_properties()      
     
     root_of_robot = etree.Element("link", name=filename)
     etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
@@ -353,10 +435,8 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     etree.SubElement(ode_params, "mu2").text = "0.05"   
     etree.SubElement(ode_params, "slip1").text = "1"
     etree.SubElement(ode_params, "slip2").text = "1"
-
     
-    
-    if buildMesh:
+    if buildMesh: #Decides if you want to use an external mesh file or the polyline feature (experimental)
         joint_laminate.toDAE()      
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
@@ -374,6 +454,8 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     else:
         visuals_of_robot = joint_laminate.toSDFTag("visual", "basic_bot_visual" + str(counter))    
         for visual_of_robot in visuals_of_robot:
+            #Feel free tocomment these out for optional model prettyness. 
+            #Note though it may cause additional lag
             #etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
             #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
             root_of_robot.append(visual_of_robot)     
@@ -383,8 +465,14 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
             root_of_robot.append(collision)    
         
     inertial = etree.SubElement(root_of_robot, "inertial")
-    trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
-    #trueMass /= math.pow(popupcad.SI_length_scaling, 3) #Volume is cubed
-    etree.SubElement(inertial, "mass").text = str(trueMass) #TODO make layer specfic 
+    #trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
+    etree.SubElement(inertial, "mass").text = str(trueMass) 
     etree.SubElement(inertial, "pose").text = centroid_pose
-    return root_of_robot            
+    it_matrix = etree.SubElement(inertial, "inertia")    
+    etree.SubElement(it_matrix, 'ixx').text = str(I[0,0])
+    etree.SubElement(it_matrix, 'ixy').text = str(I[0,1])
+    etree.SubElement(it_matrix, 'ixz').text = str(I[0,2])
+    etree.SubElement(it_matrix, 'iyy').text = str(I[1,1])
+    etree.SubElement(it_matrix, 'iyz').text = str(I[1,2])
+    etree.SubElement(it_matrix, 'izz').text = str(I[2,2])
+    return root_of_robot
