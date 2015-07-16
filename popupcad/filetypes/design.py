@@ -330,13 +330,15 @@ class Design(popupCADFile):
                     destination,
                     gv)
 
-    def build_documentation(self):
+    def build_documentation(self,parent_dir = None):
         import os
         import popupcad.algorithms.design_documentation as design_doc
         base,ext = os.path.splitext(self.get_basename())
         base = self.slugify(base)
         slugified_name = base+ext
-        subdir = os.path.normpath(os.path.join(self.dirname, base))
+        if parent_dir is None:
+            parent_dir = self.dirname
+        subdir = os.path.normpath(os.path.join(parent_dir, base))
         if not os.path.exists(subdir):
             os.mkdir(subdir)
             self.save_yaml(os.path.join(self.dirname,subdir,slugified_name),update_filename=False)
