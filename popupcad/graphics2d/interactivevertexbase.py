@@ -55,6 +55,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         self.setselectable(True)
         self.generic = symbol
         self.setFlag(self.ItemIsMovable, True)
+        self.updateshape()
 #        self.setFlag(self.ItemSendsGeometryChanges,True)
 
     def updatemode(self, mode):

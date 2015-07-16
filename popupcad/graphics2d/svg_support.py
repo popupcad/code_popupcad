@@ -186,49 +186,6 @@ class SVGOutputSupport(object):
         self.setBackgroundBrush(tempbrush)
 
         self.update()
-#        if render_dxf:
-#            xshift = 0
-#            yshift = 0
-#            if center:
-#                xshift = -self.width() / 2 / popupcad.internal_argument_scaling
-#                yshift = -self.height() / 2 / \
-#                    popupcad.internal_argument_scaling
-#            svg_to_dxf_files([filename], xshift, yshift)
-
-
-#def svg_to_dxf_files(filenames, xshift=0, yshift=0):
-#    import subprocess
-#    import os
-#    inkscape_path = popupcad.local_settings.inkscape_path
-#    pstoedit_path = popupcad.local_settings.pstoedit_path
-#
-#    export_string_1 = '''"{0}"'''.format(
-#        inkscape_path) + ''' --export-area-page -P "{1}" "{0}"'''
-#    export_string_2 = '''"{0}" -xshift {1} -yshift {2} -dt -f '''.format(
-#        pstoedit_path,
-#        xshift * 72 / 25.4,
-#        yshift * 72 / 25.4) + '''"dxf:-polyaslines -mm" "{1}" "{0}"'''
-#    for input_file in filenames:
-#        dirname = os.path.dirname(input_file)
-#        tempfilename = os.path.join(dirname, 'temp.ps')
-#        print(input_file)
-#        output_file = input_file.replace('.svg', '.dxf')
-#
-#        run1 = subprocess.Popen(
-#            export_string_1.format(
-#                input_file,
-#                tempfilename),
-#            stdout=subprocess.PIPE,
-#            stderr=subprocess.PIPE)
-#        out1, err1 = run1.communicate()
-#        run2 = subprocess.Popen(
-#            export_string_2.format(
-#                output_file,
-#                tempfilename),
-#            stdout=subprocess.PIPE,
-#            stderr=subprocess.PIPE)
-#        out2, err2 = run2.communicate()
-#    os.remove(tempfilename)
 
 if __name__ == '__main__':
     app = qg.QApplication(sys.argv)

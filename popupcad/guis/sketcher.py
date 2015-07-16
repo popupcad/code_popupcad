@@ -9,10 +9,9 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
 from popupcad.geometry.vertex import ShapeVertex, DrawnPoint
-from popupcad.graphics2d.interactivevertex import InteractiveVertex, ReferenceInteractiveVertex, DrawingPoint, StaticDrawingPoint, InteractiveVertexBase
+from popupcad.graphics2d.interactivevertex import InteractiveVertex, ReferenceInteractiveVertex, DrawingPoint, InteractiveVertexBase
 from popupcad.graphics2d.interactiveedge import InteractiveEdge, ReferenceInteractiveEdge
-from popupcad.graphics2d.interactive import Interactive, InteractiveLine
-from popupcad.graphics2d.static import StaticLine
+from popupcad.graphics2d.interactive import Interactive
 from popupcad.graphics2d.proto import ProtoLine, ProtoPath, ProtoCircle, ProtoPoly, ProtoRect2Point
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
@@ -412,7 +411,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         for item in self.scene.selectedItems():
             if isinstance(item, ReferenceInteractiveVertex):
                 generic = item.get_generic()
-                newgeneric = generic.copy_values(DrawnPoint(), False)
+                newgeneric = DrawnPoint(generic.getpos())
                 newitem = newgeneric.gen_interactive()
                 self.scene.addItem(newitem)
                 items.append(newgeneric)
@@ -422,8 +421,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
             elif isinstance(item, ReferenceInteractiveEdge):
                 generic = item.get_generic()
-                v1 = generic.vertex1.copy_values(ShapeVertex(), False)
-                v2 = generic.vertex2.copy_values(ShapeVertex(), False)
+                v1 = ShapeVertex(generic.vertex1.getpos())
+                v2 = ShapeVertex(generic.vertex2.getpos())
                 new_constraints.append(constraints.fixed.new(v1, v2))
 
                 l = GenericLine([v1, v2], [], construction=True)
@@ -439,14 +438,14 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 items.append(item.get_generic())
             elif isinstance(item, InteractiveEdge):
                 items.append(item.get_generic())
-            elif isinstance(item, InteractiveLine):
-                items.append(item.selectableedges[0].get_generic())
-            elif isinstance(item, StaticLine):
-                items.append(item.selectableedges[0].get_generic())
+#            elif isinstance(item, InteractiveLine):
+#                items.append(item.selectableedges[0].get_generic())
+#            elif isinstance(item, StaticLine):
+#                items.append(item.selectableedges[0].get_generic())
             elif isinstance(item, DrawingPoint):
                 items.append(item.get_generic())
-            elif isinstance(item, StaticDrawingPoint):
-                items.append(item.get_generic())
+#            elif isinstance(item, StaticDrawingPoint):
+#                items.append(item.get_generic())
 
         new_constraint = constraintclass.new(*items)
         if new_constraint is not None:
@@ -470,13 +469,15 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def buildvertices(self):
         self.buildsketch()
 
-        vertices = []
-        control = [
-            item.get_generic() for item in self.controlpoints +
-            self.controllines]
-
-        for geom in self.sketch.operationgeometry + control:
-            vertices.extend(geom.vertices())
+#        vertices = []
+#        control = [
+#            item.get_generic() for item in self.controlpoints +
+#            self.controllines]
+#
+#        for geom in self.sketch.operationgeometry + control:
+#            vertices.extend(geom.vertices())
+            
+        vertices = [vertex for geom in self.sketch.operationgeometry for vertex in geom.vertices()]
         return vertices
 
     def cleanupconstraints(self):
