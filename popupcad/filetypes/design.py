@@ -333,21 +333,22 @@ class Design(popupCADFile):
     def build_documentation(self,parent_dir = None):
         import os
         import popupcad.algorithms.design_documentation as design_doc
-        base,ext = os.path.splitext(self.get_basename())
-        base = self.slugify(base)
-        slugified_name = base+ext
-        if parent_dir is None:
-            parent_dir = self.dirname
-        subdir = os.path.normpath(os.path.join(parent_dir, base))
-        if not os.path.exists(subdir):
-            os.mkdir(subdir)
-            self.save_yaml(os.path.join(self.dirname,subdir,slugified_name),update_filename=False)
-#        self.raster(destination=subdir)
-        new = design_doc.process_design(self, subdir)
-        file = os.path.normpath(os.path.join(subdir, base + '.md'))
-        with open(file, 'w') as f:
-            f.writelines(design_doc.format_template(new))
-        #            yaml.dump(new.dictify2(),f)
+        if len(self.operations)>0:
+            base,ext = os.path.splitext(self.get_basename())
+            base = self.slugify(base)
+            slugified_name = base+ext
+            if parent_dir is None:
+                parent_dir = self.dirname
+            subdir = os.path.normpath(os.path.join(parent_dir, base))
+            if not os.path.exists(subdir):
+                os.mkdir(subdir)
+                self.save_yaml(os.path.join(self.dirname,subdir,slugified_name),update_filename=False)
+    #        self.raster(destination=subdir)
+            new = design_doc.process_design(self, subdir)
+            file = os.path.normpath(os.path.join(subdir, base + '.md'))
+            with open(file, 'w') as f:
+                f.writelines(design_doc.format_template(new))
+            #            yaml.dump(new.dictify2(),f)
 #        new.save_yaml(file)
 
     def set_main_operation(self, op):
