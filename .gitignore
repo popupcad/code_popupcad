@@ -49,3 +49,14 @@ settings.popupcad
 *.cad
 *~
 log.txt
+popupcad_gazebo/gazebo_plugins/build/*
+popupcad_gazebo/gazebo_plugins/msgs/*.pb.cc
+popupcad_gazebo/gazebo_plugins/msgs/*.pb.h
+popupcad_gazebo/gazebo_plugins/msgs/CMakeFiles
+popupcad_gazebo/gazebo_plugins/msgs/CMakeCache.txt
+popupcad_gazebo/gazebo_plugins/msgs/*.cmake
+popupcad_gazebo/gazebo_plugins/CMakeCache.txt
+popupcad_gazebo/gazebo_plugins/*.cmake
+
+
+ 

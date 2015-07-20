@@ -24,6 +24,7 @@ except ImportError:
     pass
 
 def pause_simulation(world_name, pause=True):
+    wait_net_service('localhost', 11345)
     
     @trollius.coroutine
     def coroutine():
@@ -50,6 +51,7 @@ def pause_simulation(world_name, pause=True):
 def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
     """ Applies joint forces via Trollius over a specified duration.
     """    
+    wait_net_service('localhost', 11345)        
     print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
@@ -93,6 +95,7 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     """ Applies a joint position asynchronously over multiple joint members, 
         then waits for a specified duration if specified.    
     """    
+    wait_net_service('localhost', 11345)
     print("Net serviced detected. Proceeding")
     
     @trollius.coroutine
@@ -135,6 +138,7 @@ def apply_joint_pos_seq(world_name, robot_name, joint_names, poses, duration=0):
    """ Applies joint positions sequentially using subprocesses. No Trollius at all, 
        just commandline arguements.
    """
+   wait_net_service('localhost', 11345)
    print("Net serviced detected. Proceeding")
    for joint_name, pose in zip(joint_names, poses):
        subprocess.call(["gz", "joint", "-m", robot_name, "-j", joint_name, '--pos-t', str(pose)]) 
@@ -213,8 +217,10 @@ def export_inner(operation):
     world_object.append(model_object)
     
     etree.SubElement(model_object, "static").text = "false"
-    etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"
+    etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"    
     
+    etree.SubElement(model_object, "plugin", name="Model_Vel", 
+                     filename="libmodel_vel.so")
     #world_object.append(createFloor())
     include_floor = etree.SubElement(world_object, "include")
     etree.SubElement(include_floor, "uri").text = "model://ground_plane"
@@ -230,6 +236,10 @@ def export_inner(operation):
     for joint_connection in operation.connections:
         model_object.append(craftJoint(operation, joint_connection, counter))
         counter+=1
+    
+
+    etree.SubElement(model_object);
+    
     
     #Fixed joint method
     #joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
@@ -275,19 +285,19 @@ def export_inner(operation):
     print("Starting gazebo")
     user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
      #TODO replace with Subprocess to prevent pollution of STDOUT
-    subprocess.Popen("killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient", shell=True)    
+    #subprocess.Popen("killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient", shell=True)    
     gazebo = subprocess.Popen(["gazebo", "-e", "dart", file_output, '-u'])
     print("Gazebo is now open")
     #Add quotes around file output to prevent injection later
     wait_net_service('localhost', 11345)
-    
+    print("Gazebo is done waiting")
     
     def exec_(arg): #This is done for Python 2 and 3 compatibility
         exec(arg)
         
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
-    time.sleep(1)
+    time.sleep(3)
     pause_simulation(world_name, pause=False)
     code_process.start()    
     import PySide.QtGui as qg
