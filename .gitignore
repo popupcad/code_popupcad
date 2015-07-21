@@ -55,8 +55,10 @@ popupcad_gazebo/gazebo_plugins/msgs/*.pb.h
 popupcad_gazebo/gazebo_plugins/msgs/CMakeFiles
 popupcad_gazebo/gazebo_plugins/msgs/CMakeCache.txt
 popupcad_gazebo/gazebo_plugins/msgs/*.cmake
+popupcad_gazebo/gazebo_plugins/msgs/Makefile
 popupcad_gazebo/gazebo_plugins/CMakeCache.txt
 popupcad_gazebo/gazebo_plugins/*.cmake
+popupcad_gazebo/gazebo_plugins/Makefile
 
 
  
