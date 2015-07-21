@@ -12,6 +12,7 @@ import shapely.geometry
 import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
+import scipy.linalg
 
 try: #Hack to ensure Python 2 & 3 support
     import itertools.izip as zip
@@ -161,7 +162,6 @@ class GenericPoly(GenericShapeBase):
         return self.segments_closed()
         
     def mass_properties(self,density,z_lower,z_upper,length_scaling = 1):
-        import scipy.linalg
         z_lower = z_lower*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
         z_upper = z_upper*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
         tris = numpy.array(self.triangles3())*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling

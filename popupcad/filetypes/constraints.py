@@ -6,11 +6,11 @@ Please see LICENSE.txt for full license.
 """
 
 import sympy
-import scipy.integrate as integ
 import sympy.utilities
 import numpy
 import PySide.QtGui as qg
-import scipy.optimize as opt
+import scipy.optimize
+import scipy.linalg
 import popupcad
 from dev_tools.enum import enum
 
@@ -157,7 +157,7 @@ class ConstraintSystem(object):
         try:
             dq, variables, j, vertexdict, constraint_eqs, constants_in_eq, allvariables = self.generated_variables
             ini, vertexdict = self.ini()
-            qout = opt.root(
+            qout = scipy.optimize.root(
                 dq,
                 numpy.array(
                     self.inilist(
@@ -167,6 +167,7 @@ class ConstraintSystem(object):
                 tol=self.atol,
                 method='lm')
             qout = qout.x.tolist()
+#            qout = self.inilist(variables,ini)
 
     #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
     #            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
@@ -205,7 +206,6 @@ class ConstraintSystem(object):
 
             x0 = numpy.array(self.inilist(variables, ini))
             Jnum = j(x0)
-            import scipy
             L, S, R = scipy.linalg.svd(Jnum)
             aS = abs(S)
             m = (aS > (aS[0] / 100)).sum()
