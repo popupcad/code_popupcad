@@ -50,6 +50,7 @@ settings.popupcad
 *~
 log.txt
 popupcad_gazebo/gazebo_plugins/build/*
+popupcad_gazebo/gazebo_plugins/CMakeFiles/*
 popupcad_gazebo/gazebo_plugins/msgs/*.pb.cc
 popupcad_gazebo/gazebo_plugins/msgs/*.pb.h
 popupcad_gazebo/gazebo_plugins/msgs/CMakeFiles

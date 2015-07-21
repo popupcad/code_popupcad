@@ -11,7 +11,7 @@ include_directories(
   ${GAZEBO_INCLUDE_DIRS}
   ${CMAKE_CURRENT_BINARY_DIR}/msgs
   )
-link_directories(${GAZEBO_LIBRARY_DIRS} ${SDF_LIBRARY_DIRS} ${CMAKE_CURRENT_BINARY_DIR}/msgs)
+link_directories(${GAZEBO_LIBRARY_DIRS} ${SDF_LIBRARY_DIRS} msgs)
 add_subdirectory(msgs)
 
 add_library(model_vel SHARED model_vel.cc)

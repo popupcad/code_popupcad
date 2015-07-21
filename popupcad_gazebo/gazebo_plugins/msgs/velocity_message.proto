@@ -1,16 +1,18 @@
 package model_velocity.msgs;
 import "vector3d.proto";
+import "time.proto";
 
 message ModelVel_V{
-  repeated model_velocity.msgs.ModelVelResponse linkage = 1;
+  required gazebo.msgs.Time time = 1;
+  repeated model_velocity.msgs.ModelVelResponse linkage = 2;
 }
 
 
 message ModelVelResponse
 {
   required string name = 1;
-  optional gazebo.msgs.Vector3d angularVel = 2;
-  optional gazebo.msgs.Vector3d linearVel = 3;
+  required gazebo.msgs.Vector3d angularVel = 2;
+  required gazebo.msgs.Vector3d linearVel = 3;
 }
 
 

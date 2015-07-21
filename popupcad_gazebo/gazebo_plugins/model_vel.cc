@@ -41,6 +41,8 @@ namespace gazebo
       //this->model->SetLinearVel(math::Vector3(.03, 0, 0));
 	//std::cout << this->model->GetWorldLinearVel();
     model_velocity::msgs::ModelVel_V res_v;
+    *res_v.mutable_time() = msgs::Convert(world->GetSimTime());
+    std::cout << world->GetSimTime() << " ";
     for (physics::Link_V::const_iterator iter = this->model->GetLinks().begin();
             iter != this->model->GetLinks().end(); ++iter){
       model_velocity::msgs::ModelVelResponse* res = res_v.add_linkage();
