@@ -195,7 +195,17 @@ def export(program):
     for tmp_op in design.operations:
         if isinstance(tmp_op, JointOperation2):
             operation = tmp_op
-    export_inner(operation)
+    try:
+        operation
+    except NameError as err:
+        import PySide.QtGui as qg
+        import PySide
+        widget = qg.QMessageBox()
+        widget.setText("Error: No Valid Joint Operation Detected")
+        widget.setWindowModality(PySide.QtCore.Qt.NonModal)
+        widget.exec_() 
+    else:
+        export_inner(operation)
        
     
 #Export to Gazebo
@@ -218,7 +228,7 @@ def export_inner(operation):
     
     etree.SubElement(model_object, "static").text = "false"
     etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"    
-    
+    print("made it here")
     etree.SubElement(model_object, "plugin", name="Model_Vel", 
                      filename="libmodel_vel.so")
     #world_object.append(createFloor())
@@ -238,7 +248,6 @@ def export_inner(operation):
         counter+=1
     
 
-    etree.SubElement(model_object);
     
     
     #Fixed joint method
@@ -335,9 +344,10 @@ def craftJoint(operation, connection, counter):
     #Add the properties of the joint
     joint_props = operation.all_joint_props[operation.connections.index(connection)]
     #etree.SubElement(limit, "stiffness").text = str(joint_props[0])
+    from math import radians    
     dynamics = etree.SubElement(axis, "dynamics")
     etree.SubElement(dynamics, "damping").text = str(joint_props[1])
-    etree.SubElement(dynamics, "spring_reference").text = str(joint_props[2])
+    etree.SubElement(dynamics, "spring_reference").text = str(radians(joint_props[2]))
     etree.SubElement(dynamics, "spring_stiffness").text = str(joint_props[0])    
     return joint_root
 
@@ -486,3 +496,5 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     etree.SubElement(it_matrix, 'iyz').text = str(I[1,2])
     etree.SubElement(it_matrix, 'izz').text = str(I[2,2])
     return root_of_robot
+
+
