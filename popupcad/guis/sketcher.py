@@ -270,6 +270,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.tools.append(
             {'text': 'hollow', 'kwargs': {'triggered': self.hollow}})
         self.tools.append({'text': 'fill', 'kwargs': {'triggered': self.fill}})
+        self.tools.append({'text': 'Construction', 'kwargs': {'triggered': lambda: self.set_construction(True)}})
+        self.tools.append({'text': 'Not Construction', 'kwargs': {'triggered': lambda: self.set_construction(False)}})
 
         distanceactions = []
         distanceactions.append(
@@ -411,7 +413,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         for item in self.scene.selectedItems():
             if isinstance(item, ReferenceInteractiveVertex):
                 generic = item.get_generic()
-                newgeneric = DrawnPoint(generic.getpos())
+                newgeneric = DrawnPoint(generic.getpos(),construction = True)
                 newitem = newgeneric.gen_interactive()
                 self.scene.addItem(newitem)
                 items.append(newgeneric)
@@ -724,7 +726,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         x_num.setMinimum(1)
 
         x_val = qg.QDoubleSpinBox()
-        x_val.setMinimum(0)
+        x_val.setMinimum(-100000)
         x_val.setMaximum(100000)
         x_val.setValue(1)
 
@@ -734,7 +736,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
         y_val = qg.QDoubleSpinBox()
         y_val.setValue(1)
-        y_val.setMinimum(0)
+        y_val.setMinimum(-100000)
         y_val.setMaximum(100000)
 
         button_ok = qg.QPushButton('Ok')
@@ -772,17 +774,21 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                                 jj *
                                 y_val.value() *
                                 popupcad.internal_argument_scaling)
-                            new = item.generic.copy()
+                            new = item.generic.copy(identical = False)
                             new.shift(shift_val)
                             copies.append(new)
         copies = [
             self.scene.addItem(
                 item.outputinteractive()) for item in copies]
-
+    def set_construction(self,value):
+        for item in self.scene.selectedItems():
+            try:
+                item.generic.set_construction(value)
+            except AttributeError:
+                pass
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     mw = Sketcher(None, Sketch())
     mw.show()
-    mw.raise_()
     sys.exit(app.exec_())
