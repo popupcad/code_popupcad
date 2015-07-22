@@ -116,8 +116,7 @@ class ProtoMultiPoint(Proto):
         point = tuple(numpy.array(point.toTuple()) / popupcad.view_scaling)
 
         if not self.temphandle:
-            a = ShapeVertex()
-            a.setpos(point)
+            a = ShapeVertex(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
@@ -125,8 +124,7 @@ class ProtoMultiPoint(Proto):
         else:
             self.addhandle(self.temphandle)
         if not self.temphandle:
-            a = ShapeVertex()
-            a.setpos(point)
+            a = ShapeVertex(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
@@ -164,16 +162,14 @@ class ProtoTwoPoint(Proto):
         point = tuple(numpy.array(point.toTuple()) / popupcad.view_scaling)
 
         if not self.temphandle:
-            a = ShapeVertex()
-            a.setpos(point)
+            a = ShapeVertex(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()
 
         if self.generic.len_exterior() == 0:
             self.addhandle(self.temphandle)
-            a = ShapeVertex()
-            a.setpos(point)
+            a = ShapeVertex(point)
             self.temphandle = a.gen_interactive()
             self.temphandle.setParentItem(self)
             self.temphandle.updatescale()

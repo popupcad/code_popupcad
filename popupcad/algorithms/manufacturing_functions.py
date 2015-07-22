@@ -35,10 +35,10 @@ def cross_section(layerdef, sketch, parent, scale_value):
     for item in sketch.operationgeometry:
         if isinstance(item, GenericLine):
             line = item
-            b = line.exteriorpoints()[0]
+            b = line.exteriorpoints(scaling = popupcad.csg_processing_scaling)[0]
             c = numpy.array(b) + numpy.array([1, 0])
             a = points.calctransformfrom2lines(
-                line.exteriorpoints(), [
+                line.exteriorpoints(scaling = popupcad.csg_processing_scaling), [
                     b, c.tolist()], scale_x=1, scale_y=1)
             sketch_csg = sketch.output_csg()
 
@@ -48,10 +48,10 @@ def cross_section(layerdef, sketch, parent, scale_value):
             laminate2 = Laminate(layerdef)
             for ii, layerid in enumerate(layerdef.layers):
                 #                for ii,layer in enumerate(result):
-                yshift = layerdef.zvalue[layerid] * scale_value
+                yshift = layerdef.zvalue[layerid] * popupcad.csg_processing_scaling * scale_value
                 layer = result.layer_sequence[layerid]
                 thickness = layerid.thickness * \
-                    popupcad.internal_argument_scaling * scale_value
+                    popupcad.internal_argument_scaling * popupcad.csg_processing_scaling * scale_value
                 newgeoms = [item for item in layer.geoms]
                 newgeoms = [aff.affine_transform(item, a) for item in newgeoms]
 #                    newgeoms = [item.buffer(bufferval) for item in newgeoms]
@@ -106,8 +106,8 @@ def transform(
                             aff.affine_transform(
                                 designgeom,
                                 calctransformfrom2lines(
-                                    locateline.exteriorpoints(),
-                                    geom.exteriorpoints(),
+                                    locateline.exteriorpoints(scaling = popupcad.csg_processing_scaling),
+                                    geom.exteriorpoints(scaling = popupcad.csg_processing_scaling),
                                     scale_x=scale_x,
                                     scale_y=scale_y)))
                     except IndexError:

@@ -27,7 +27,7 @@ def modify_device(
     holes = holes_2.difference(
         holes_1.buffer(
             1e-3 *
-            popupcad.internal_argument_scaling))
+            popupcad.internal_argument_scaling*popupcad.csg_processing_scaling))
     device_with_holes = device.difference(holes)
 
     cut_width = support_sketch.buffer(cut_width / 2)

@@ -31,10 +31,12 @@ flip_y = True
 
 user_home_dir = os.path.expanduser('~')
 
-internal_argument_scaling = 1e3
-view_scaling = 1e0
+internal_argument_scaling = 1e0
+deprecated_internal_argument_scaling = 1e3
+view_scaling = 1e3
+csg_processing_scaling = 1e3
 
-geometry_round_value = 5
+geometry_round_value = 8
 distinguishable_number_difference = 10**(-geometry_round_value)
 undistinguishable_number_difference = 10**(-geometry_round_value - 1)
 

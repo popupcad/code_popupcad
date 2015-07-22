@@ -13,7 +13,7 @@ from popupcad.filetypes.laminate import Laminate
 
 class JointOp(SimpleSketchOp):
     name = 'Joint Definition'
-    hinge_gap = .01 * popupcad.internal_argument_scaling
+    hinge_gap = .01 * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
     safe_buffer1 = .5 * hinge_gap
     safe_buffer2 = .5 * hinge_gap
     safe_buffer3 = .5 * hinge_gap

@@ -5,7 +5,7 @@ Created on Tue Jul  7 10:11:06 2015
 @author: danaukes
 """
 import numpy
-import scipy
+#import scipy
 import scipy.linalg
 
 def I_xx_unscaled(density,x_0,x_1,x_2,x_3,xc,y_0,y_1,y_2,y_3,yc,z_0,z_1,z_2,z_3,zc):

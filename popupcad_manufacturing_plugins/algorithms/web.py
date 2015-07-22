@@ -8,21 +8,22 @@ Please see LICENSE.txt for full license.
 from popupcad.filetypes.genericshapes import GenericShapeBase, GenericPoly
 from popupcad.filetypes.laminate import Laminate
 import numpy
-
+import popupcad
 
 def supportsheet(layerdef, lsin, value):
     allext = []
     for layer, layer_geometry in lsin.layer_sequence.items():
         for geom in layer_geometry.geoms:
             geom2 = GenericShapeBase.genfromshapely(geom)
-            allext.extend(geom2.exteriorpoints())
+            allext.extend(geom2.exteriorpoints(scaling = popupcad.csg_processing_scaling))
     allext = numpy.array(allext)
     minx = allext[:, 0].min() - value
     miny = allext[:, 1].min() - value
     maxx = allext[:, 0].max() + value
     maxy = allext[:, 1].max() + value
     exterior = [[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy]]
-    geom = GenericPoly.gen_from_point_lists(exterior, [])
+    exterior_scaled = (numpy.array(exterior)/popupcad.csg_processing_scaling).tolist()
+    geom = GenericPoly.gen_from_point_lists(exterior_scaled, [])
     geom = geom.outputshapely()
     ls = Laminate(layerdef)
     [ls.replacelayergeoms(layer, [geom]) for layer in layerdef.layers]
@@ -39,7 +40,7 @@ def find_outer(ls, minpoint):
         for geom in layer_geometry.geoms:
             if points.pointinpoints(
                     minpoint,
-                    GenericShapeBase.genfromshapely(geom).exteriorpoints(),
+                    GenericShapeBase.genfromshapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
                     GenericShapeBase.tolerance):
                 outergeoms.append(geom)
             else:
@@ -64,7 +65,7 @@ def generate_web(robot, keepout, layerdef, value_outer, value_inner):
 
 def autosupport(robot, keepout, layerdef, value_inner, value_gap, cut_out):
     import popupcad
-    cleanup = 1e-3 * popupcad.internal_argument_scaling
+    cleanup = 1e-3 * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
     buffered_keepout = keepout.buffer(value_inner)
     allsupport = buffered_keepout.difference(keepout)
     invalidsupport = keepout.difference(robot)
