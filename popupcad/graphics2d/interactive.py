@@ -97,14 +97,13 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
         self.setZValue(self.z_value)
         self.setAcceptHoverEvents(True)
         self.updatemode(self.modes.mode_defined)
-        self.scale = 1
         self.setFlag(self.ItemIsMovable, False)
         self.setFlag(self.ItemIsSelectable, True)
         self.setFlag(self.ItemIsFocusable, True)
 
     def updatescale(self):
         try:
-            self.setcustomscale(1 / self.scene().views()[0].zoom())
+            self.set_view_scale(1 / self.scene().views()[0].zoom())
         except (IndexError, AttributeError):
             pass
 
@@ -117,9 +116,19 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     def handles(self):
         return self.generic.get_handles()
 
-    def setcustomscale(self, scale):
-        self.scale = scale
+    def set_view_scale(self, view_scale):
+        self._view_scale = view_scale
         self.setPen(self.querypen())
+        self.update_bounding_rect()
+
+    def get_view_scale(self):
+        try:
+            return self._view_scale
+        except AttributeError:
+            self._view_scale = 1
+            return self._view_scale
+
+    view_scale = property(get_view_scale,set_view_scale)
 
     def allchildren(self):
         return list(
@@ -197,19 +206,9 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
         else:
             self.hidechildren(self.handles())
 
-    def mouseMoveEvent(self, event):
-        import numpy
-        if self.changed_trigger:
-            self.changed_trigger = False
-            self.scene().savesnapshot.emit()
-        dp = event.scenePos() - event.lastScenePos()
-        dp = tuple(numpy.array(dp.toTuple()) / popupcad.view_scaling)
-        self.generic.constrained_shift(dp, self.constraintsystem())
-        self.scene().updateshape()
-        super(Interactive, self).mouseMoveEvent(event)
-
     def mousePressEvent(self, event):
         self.changed_trigger = True
+        self.moved_trigger = False
         if self.mode == self.modes.mode_edit:
             add = (
                 event.modifiers() & qc.Qt.KeyboardModifierMask.ControlModifier) != 0
@@ -218,9 +217,23 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
         self.scene().itemclicked.emit(self.generic)
         super(Interactive, self).mousePressEvent(event)
 
+    def mouseMoveEvent(self, event):
+        import numpy
+        if self.changed_trigger:
+            self.changed_trigger = False
+            self.moved_trigger = True
+            self.scene().savesnapshot.emit()
+        dp = event.scenePos() - event.lastScenePos()
+        dp = tuple(numpy.array(dp.toTuple()) / popupcad.view_scaling)
+        self.generic.constrained_shift(dp, self.constraintsystem())
+        self.scene().updateshape()
+        super(Interactive, self).mouseMoveEvent(event)
+
     def mouseReleaseEvent(self, event):
         self.changed_trigger = False
-        self.scene().refresh_request.emit()
+        if self.moved_trigger:
+            self.scene().refresh_request.emit()
+            self.moved_trigger = False
         super(Interactive, self).mouseReleaseEvent(event)
 
     def mouseDoubleClickEvent(self, event):
@@ -255,11 +268,14 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     def children(self):
         return self.handles() + self.selectableedges
 
-    def customshape(self):
-        path = self.path()
-        s = qg.QPainterPathStroker()
-        s.setWidth(10 * self.scale)
-        return s.createStroke(path)
+    def update_bounding_rect(self):
+        pass
+#
+#    def customshape(self):
+#        path = self.path()
+#        s = qg.QPainterPathStroker()
+#        s.setWidth(10 * self.view_scale)
+#        return s.createStroke(path)
 
 
 class InteractivePoly(Interactive):
@@ -280,12 +296,24 @@ class InteractivePath(Interactive):
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
 
-    def shape(self):
-        return self.customshape()
+#    def shape(self):
+#        return self.customshape()
 
+#    def boundingRect(self):
+#        return self.shape().boundingRect()
+
+    def updateshape(self):
+        super(InteractivePath, self).updateshape()
+        self.update_bounding_rect()
+        
+    def update_bounding_rect(self):
+        s = qg.QPainterPathStroker()
+        s.setWidth(10 * self.view_scale)
+#        self.prepareGeometryChange()
+        self._bounding_rect = s.createStroke(self.path()).boundingRect()
+        
     def boundingRect(self):
-        return self.shape().boundingRect()
-
+        return self._bounding_rect
 
 class InteractiveLine(Interactive):
     brushes = Interactive.nobrushes.copy()
@@ -293,11 +321,11 @@ class InteractiveLine(Interactive):
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
 
-    def shape(self):
-        return self.customshape()
-
-    def boundingRect(self):
-        return self.shape().boundingRect()
+#    def shape(self):
+#        return self.customshape()
+#
+#    def boundingRect(self):
+#        return self.shape().boundingRect()
 
     def updateshape(self):
         from math import atan2, pi
@@ -318,3 +346,14 @@ class InteractiveLine(Interactive):
         self.translate(xy.x(), xy.y())
         self.update()
         self.updatechildhandles(self.handles() + self.selectableedges)
+        self.update_bounding_rect()
+
+    def update_bounding_rect(self):
+        #update bounding_rect        
+        s = qg.QPainterPathStroker()
+        s.setWidth(10 * self.view_scale)
+#        self.prepareGeometryChange()
+        self._bounding_rect = s.createStroke(self.path()).boundingRect()
+
+    def boundingRect(self):
+        return self._bounding_rect

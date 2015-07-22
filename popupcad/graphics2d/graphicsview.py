@@ -19,7 +19,7 @@ class ZoomHandling(object):
     def updatescaleables(self):
         for item in self.scene().items():
             try:
-                item.setcustomscale(1 / self.zoom())
+                item.view_scale = 1 / self.zoom()
             except AttributeError:
                 pass
 
