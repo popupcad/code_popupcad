@@ -440,14 +440,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 items.append(item.get_generic())
             elif isinstance(item, InteractiveEdge):
                 items.append(item.get_generic())
-#            elif isinstance(item, InteractiveLine):
-#                items.append(item.selectableedges[0].get_generic())
-#            elif isinstance(item, StaticLine):
-#                items.append(item.selectableedges[0].get_generic())
             elif isinstance(item, DrawingPoint):
                 items.append(item.get_generic())
-#            elif isinstance(item, StaticDrawingPoint):
-#                items.append(item.get_generic())
 
         new_constraint = constraintclass.new(*items)
         if new_constraint is not None:
@@ -469,16 +463,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.constraint_editor.refresh()
 
     def buildvertices(self):
-        self.buildsketch()
-
-#        vertices = []
-#        control = [
-#            item.get_generic() for item in self.controlpoints +
-#            self.controllines]
-#
-#        for geom in self.sketch.operationgeometry + control:
-#            vertices.extend(geom.vertices())
-            
+        self.update_sketch_geometries()
         vertices = [vertex for geom in self.sketch.operationgeometry for vertex in geom.vertices()]
         return vertices
 
@@ -530,7 +515,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.scene.showvertices(self.act_view_vertices.isChecked())
         self.scene.updatevertices()
 
-    def buildsketch(self):
+    def update_sketch_geometries(self):
         self.sketch.cleargeometries()
         geometries = [
             item.generic for item in self.scene.items() if isinstance(
@@ -543,7 +528,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.sketch.addoperationgeometries(geometries)
 
     def get_current_sketch(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         return self.sketch
 
     def newfile(self):
@@ -565,11 +550,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             self.undoredo.restartundoqueue()
 
     def save(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         self.sketch.save()
 
     def saveAs(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         self.sketch.saveAs()
 
     def adddrawingpoint(self):
@@ -633,28 +618,13 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def reject(self):
         self.close()
 
-#    def keyPressEvent(self, event):
-#        super(Sketcher, self).keyPressEvent(event)
-#        if self.keypressfiltering(event):
-#            event.accept()
-
     def loadpropwindow(self, obj):
         widget = obj.properties()
         self.propdock.setWidget(widget)
 
     def acceptdata(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         return self.sketch,
-
-#    def keypressfiltering(self, event):
-#        if event.key() == qc.Qt.Key_Escape:
-#            return True
-#        elif event.key() == qc.Qt.Key_Enter:
-#            return True
-#        elif event.key() == qc.Qt.Key_Return:
-#            return True
-#        else:
-#            return False
 
     def load_references3(self, ii, jj):
         staticgeometries, controlpoints, controllines = [], [], []
@@ -781,6 +751,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         copies = [
             self.scene.addItem(
                 item.outputinteractive()) for item in copies]
+
     def set_construction(self,value):
         for item in self.scene.selectedItems():
             try:
