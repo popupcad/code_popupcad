@@ -5,7 +5,7 @@ Created on Mon Jul  6 21:57:48 2015
 @author: danaukes
 """
 import numpy
-import scipy
+#import scipy
 import scipy.linalg
 
 class Triangle(object):
