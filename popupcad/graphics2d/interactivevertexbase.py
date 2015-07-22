@@ -182,7 +182,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         self.changed_trigger = False
         if self.moved_trigger:
             self.moved_trigger = False
-            self.scene().refresh_request.emit()
+            self.scene().constraint_update_request.emit(self.generic)
 
     def setPos(self, pos):
         import numpy

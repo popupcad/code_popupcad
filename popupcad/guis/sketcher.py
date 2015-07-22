@@ -69,7 +69,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.scene.savesnapshot.connect(self.undoredo.savesnapshot)
         self.scene.itemdeleted.connect(self.cleanupconstraints)
         self.scene.refresh_request.connect(self.refreshconstraints)
-
+        self.scene.constraint_update_request.connect(self.update_selective)
+        
         self.constraint_editor.signal_edit.connect(self.editItem)
         self.constraint_editor.itemPressed.connect(self.showconstraint_item)
         self.constraint_editor.itemdeleted.connect(self.constraint_deleted)
@@ -459,6 +460,16 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def refreshconstraints(self):
         self.sketch.constraintsystem.regenerate()
         self.sketch.constraintsystem.update()
+        self.scene.updateshape()
+        self.constraint_editor.refresh()
+
+    def update_constraints(self,vertices):
+        self.sketch.constraintsystem.update()
+        self.scene.updateshape()
+        self.constraint_editor.refresh()
+
+    def update_selective(self,vertices):
+        self.sketch.constraintsystem.update_selective(vertices)
         self.scene.updateshape()
         self.constraint_editor.refresh()
 

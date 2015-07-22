@@ -290,7 +290,7 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
             super(InteractiveEdge, self).mouseReleaseEvent(event)
         self.changed_trigger = False
         if self.moved_trigger:
-            self.scene().refresh_request.emit()
+            self.scene().constraint_update_request.emit(self.generic.vertices())
             self.moved_trigger = False
 
 

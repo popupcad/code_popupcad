@@ -55,6 +55,7 @@ class SketcherSupport(object):
     savesnapshot = qc.Signal()
     itemdeleted = qc.Signal()
     refresh_request = qc.Signal()
+    constraint_update_request = qc.Signal(list)
 
     def __init__(self):
         self.setItemIndexMethod(self.NoIndex)

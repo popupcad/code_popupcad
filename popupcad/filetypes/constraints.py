@@ -157,26 +157,29 @@ class ConstraintSystem(object):
         try:
             dq, variables, j, vertexdict, constraint_eqs, constants_in_eq, allvariables = self.generated_variables
             ini, vertexdict = self.ini()
-            qout = scipy.optimize.root(
-                dq,
-                numpy.array(
-                    self.inilist(
-                        variables,
-                        ini)),
-                jac=j,
-                tol=self.atol,
-                method='lm')
+            qout = scipy.optimize.root(dq,numpy.array(self.inilist(variables,ini)),jac=j,tol=self.atol,method='lm')
             qout = qout.x.tolist()
-#            qout = self.inilist(variables,ini)
 
-    #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-    #            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-    #            qout = qout.tolist()
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
-    #            qout = qout.x.tolist()
+#            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+#            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+#            qout = qout.tolist()
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
+#            qout = qout.x.tolist()
+
+            for ii, variable in enumerate(variables):
+                vertexdict[variable].setsymbol(variable, qout[ii])
+        except (AttributeError, TypeError):
+            pass
+
+    def update_selective(self,vertices):
+        try:
+            dq, variables, j, vertexdict, constraint_eqs, constants_in_eq, allvariables = self.generated_variables
+            ini, vertexdict = self.ini()
+            qout = scipy.optimize.root(dq,numpy.array(self.inilist(variables,ini)),jac=j,tol=self.atol,method='lm')
+            qout = qout.x.tolist()
 
             for ii, variable in enumerate(variables):
                 vertexdict[variable].setsymbol(variable, qout[ii])

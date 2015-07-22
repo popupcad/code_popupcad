@@ -232,7 +232,7 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     def mouseReleaseEvent(self, event):
         self.changed_trigger = False
         if self.moved_trigger:
-            self.scene().refresh_request.emit()
+            self.scene().constraint_update_request.emit(self.generic.vertices())
             self.moved_trigger = False
         super(Interactive, self).mouseReleaseEvent(event)
 
