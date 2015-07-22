@@ -49,7 +49,7 @@ class Program(object):
             logging.error(message)
             logging.debug('\n'+tbmessage)
             self.editor.error_log.appendText(message+'\n'+tbmessage)
-            self.excepthook_internal(exctype,value,traceback)
+            self.excepthook_internal(exctype,value,tb)
             mb = qg.QMessageBox()
             mb.setText(message)
             mb.exec_()

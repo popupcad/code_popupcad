@@ -118,6 +118,9 @@ class GenericShapeBase(popupCADFile):
             self.construction = False
             return self.construction
 
+    def set_construction(self, test):
+        self.construction = test
+
     def exteriorpoints(self, scaling=1):
         return [vertex.getpos(scaling) for vertex in self.get_exterior()]
 
