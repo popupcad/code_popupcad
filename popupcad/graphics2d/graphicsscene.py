@@ -82,11 +82,14 @@ class SketcherSupport(object):
         self.nextgeometry = polygonclass
 
     def keyPressEvent(self, event):
-        self.savesnapshot.emit()
-        if event.key() == qc.Qt.Key_Delete:
-            self.delete_selected_items()
-        self.itemdeleted.emit()
         qg.QGraphicsScene.keyPressEvent(self, event)
+        if event.key() == qc.Qt.Key_Delete:
+            self.savesnapshot.emit()
+            self.delete_selected_items()
+            self.itemdeleted.emit()
+            event.accept()
+        else:
+            event.ignore()
 
     def cut_to_clipboard(self):
         self.copy_to_clipboard()

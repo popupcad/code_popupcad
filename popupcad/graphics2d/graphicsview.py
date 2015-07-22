@@ -162,6 +162,9 @@ class MouseModes(object):
             self.scene().cancelcreate()
             self.scene().deselectall()
             self.restoredrag()
+            event.accept()
+        else:
+            event.ignore()
 
     def turn_off_drag(self):
         self.lastdrag = self.dragMode()

@@ -633,9 +633,10 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def reject(self):
         self.close()
 
-    def keyPressEvent(self, event):
-        if not self.keypressfiltering(event):
-            super(Sketcher, self).keyPressEvent(event)
+#    def keyPressEvent(self, event):
+#        super(Sketcher, self).keyPressEvent(event)
+#        if self.keypressfiltering(event):
+#            event.accept()
 
     def loadpropwindow(self, obj):
         widget = obj.properties()
@@ -645,15 +646,15 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.buildsketch()
         return self.sketch,
 
-    def keypressfiltering(self, event):
-        if event.key() == qc.Qt.Key_Escape:
-            return True
-        elif event.key() == qc.Qt.Key_Enter:
-            return True
-        elif event.key() == qc.Qt.Key_Return:
-            return True
-        else:
-            return False
+#    def keypressfiltering(self, event):
+#        if event.key() == qc.Qt.Key_Escape:
+#            return True
+#        elif event.key() == qc.Qt.Key_Enter:
+#            return True
+#        elif event.key() == qc.Qt.Key_Return:
+#            return True
+#        else:
+#            return False
 
     def load_references3(self, ii, jj):
         staticgeometries, controlpoints, controllines = [], [], []
