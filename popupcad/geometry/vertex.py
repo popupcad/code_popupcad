@@ -49,7 +49,7 @@ class BaseVertex(object):
         return self.id
 
     def __eq__(self, other):
-        if isinstance(self, type(other)):
+        if isinstance(other, type(self)):
             return self.id == other.id
         return False
 
