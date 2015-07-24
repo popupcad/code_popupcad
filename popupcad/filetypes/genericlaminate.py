@@ -51,7 +51,7 @@ class GenericLaminate(popupCADFile):
         return display_geometry_2d
 
     def to_triangles(self):
-        alltriangles = {}
+        triangles_by_layer = {}
         for layer, geoms in self.geoms.items():
             triangles = []
             for geom in geoms:
@@ -59,8 +59,8 @@ class GenericLaminate(popupCADFile):
                     triangles.extend(geom.triangles3())
                 except AttributeError:
                     pass
-            alltriangles[layer] = triangles
-        return alltriangles
+            triangles_by_layer[layer] = triangles
+        return triangles_by_layer
 
     def layers(self):
         return self.layerdef.layers

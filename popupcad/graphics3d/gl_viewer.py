@@ -5,9 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-import PySide
-from PySide import QtCore
-from PySide import QtGui
+import popupcad
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 import pyqtgraph as pg
@@ -43,7 +41,11 @@ class GLViewWidget(gl.GLViewWidget):
     def __init__(self, *args, **kwargs):
         super(GLViewWidget, self).__init__(*args, **kwargs)
         self.z_zoom = 10
-        self.setCameraPosition(distance=30000)
+#        self.setCameraPosition(distance=30)
+        self.opts['center'] = qg.QVector3D(0,0,0)
+        self.opts['distance'] = 20
+        self.opts['elevation'] = 60
+        self.opts['azimuth'] = -90
 #        self.setMinimumSize(300,300)
         self.setSizePolicy(
             qg.QSizePolicy.Policy.MinimumExpanding,
@@ -65,8 +67,8 @@ class GLViewWidget(gl.GLViewWidget):
 #        import popupcad
 #        import os
 
-    def update_object(self, zvalue, tris, layers):
-        self.tris = tris
+    def update_object(self, zvalue, triangles_by_layer, layers):
+        self.triangles_by_layer = triangles_by_layer
         self.layers = layers
         self.zvalue = zvalue
         self.build_object()
@@ -90,7 +92,7 @@ class GLViewWidget(gl.GLViewWidget):
 #        self.add_grid()
         self.meshitems = []
         for layer in self.layers:
-            tri = numpy.array(self.tris[layer])
+            tri = numpy.array(self.triangles_by_layer[layer])
             if len(tri) > 0:
                 z = numpy.zeros((tri.shape[0], tri.shape[1], 1))
                 tri = numpy.concatenate((tri, z), 2)
