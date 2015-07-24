@@ -277,18 +277,16 @@ class GenericLaminate(popupCADFile):
         sideTriangles = [list(triangle) for triangle in sideTriangles]
         
         import itertools
+        sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
+        sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
+        sideTriangles.extend(sideTriangles2)
+        sideTriangles = [list(triangle) for triangle in sideTriangles]
+        import itertools
         sideTriangles = list(itertools.chain.from_iterable(sideTriangles))
         sideTriangles = [list(point) for point in sideTriangles]
         sideTriangles = list(itertools.chain.from_iterable(sideTriangles))            
         vertices.extend(sideTriangles)
-        sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
-        sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:]))
-        sideTriangles.extend(sideTriangles2)
-        sideTriangles = [list(triangle) for triangle in sideTriangles]
-        sideTriangles = reduce(lambda x, y: x + y, sideTriangles)
-        sideTriangles = [list(point) for point in sideTriangles]
-        sideTriangles = reduce(lambda x, y: x + y, sideTriangles)            
-        vertices.extend(sideTriangles)
+
                 
         return vertices
 
@@ -370,7 +368,7 @@ class GenericLaminate(popupCADFile):
         geom = collada.geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    
         input_list = collada.source.InputList()
         input_list.addInput(0, 'VERTEX', "#" + vert_src_name)
-        indices = numpy.array(range(0,(len(vertices) / 3)));    
+        indices = numpy.array(range(0,(len(vertices) // 3)));    
         triset = geom.createTriangleSet(indices, input_list, "materialref")
         triset.generateNormals()    
         geom.primitives.append(triset)
