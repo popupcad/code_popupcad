@@ -147,7 +147,7 @@ class GenericLaminate(popupCADFile):
                 volume += area * zvalue
         return volume
     
-    #This will calculate the centeroid
+    #This will calculate the centeroid #REMOVE DEPECRATED CODE
     def calculateCentroid(self): #TODO reimplement using .get_center method()
         layerdef = self.layerdef
         xvalues = []
@@ -170,7 +170,8 @@ class GenericLaminate(popupCADFile):
         z = sum(zvalues) / len(zvalues)
         out = (x, y, z)
         return out#[float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in out]
-        
+
+    #TODO REMOVE DEPRECATED CODE        
     def getDensity(self):
         total_densities = sum([layer.density for layer in self.layers()])
         return total_densities / len(self.layers())
@@ -219,7 +220,7 @@ class GenericLaminate(popupCADFile):
                 print("No shapes skipping")            
                 continue
             for s in shapes:
-                shape_verts = self.createSTLFromShape(s, zvalue, thickness)
+                shape_verts = s.extrudeVertices(thickness, z0=zvalue)
                 laminate_verts.extend(shape_verts)
     
         laminate_verts = [point/popupcad.SI_length_scaling for point in laminate_verts]
@@ -247,51 +248,6 @@ class GenericLaminate(popupCADFile):
         print(filename + " has been saved")
         os.chdir(old_path) #Change back to old directory
         
-    #TODO Abstract this so DAE fromShape can use it too    
-    def createSTLFromShape(self, s, layer_num, thickness):    
-        a = s.triangles3()
-        vertices = []
-        
-        for coord in a: 
-            for dec in coord:            
-                vertices.append(dec[0]) #x-axis
-                vertices.append(dec[1]) #y-axis            
-                vertices.append(layer_num ) #z-axis
-        
-        for coord in a: 
-            for dec in reversed(coord):            
-                vertices.append(dec[0]) #x-axis
-                vertices.append(dec[1]) #y-axis            
-                vertices.append(layer_num + thickness) #z-axi            
-            
-        raw_edges = s.exteriorpoints()        
-        top_edges = []
-        bottom_edges = []            
-        for dec in raw_edges:      
-            top_edges.append((dec[0], dec[1], layer_num)) #x-axis
-            bottom_edges.append((dec[0], dec[1], layer_num + thickness))
-            
-        sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
-        sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
-        sideTriangles.extend(sideTriangles2)
-        sideTriangles = [list(triangle) for triangle in sideTriangles]
-        
-        import itertools
-        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))
-        sideTriangles = [list(point) for point in sideTriangles]
-        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))            
-        vertices.extend(sideTriangles)
-        sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
-        sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:]))
-        sideTriangles.extend(sideTriangles2)
-        sideTriangles = [list(triangle) for triangle in sideTriangles]
-        sideTriangles = reduce(lambda x, y: x + y, sideTriangles)
-        sideTriangles = [list(point) for point in sideTriangles]
-        sideTriangles = reduce(lambda x, y: x + y, sideTriangles)            
-        vertices.extend(sideTriangles)
-                
-        return vertices
-
 
     #Allows the laminate to get exported as a DAE.
     def toDAE(self):
@@ -328,40 +284,7 @@ class GenericLaminate(popupCADFile):
         
     def createDAEFromShape(self, s, layer_num, mesh, thickness): #TODO Move this method into the shape class.
         import collada
-        s.exteriorpoints()
-        a = s.triangles3()
-        vertices = []
-        thickness = thickness 
-        #thickness = 0 #TODO Replace this with an actual method parameter when I figure out the values.
-        
-        for coord in a: 
-            for dec in coord:            
-                vertices.append(dec[0]) #x-axis
-                vertices.append(dec[1]) #y-axis            
-                vertices.append(layer_num ) #z-axis
-        
-        for coord in a: 
-            for dec in reversed(coord):            
-                vertices.append(dec[0]) #x-axis
-                vertices.append(dec[1]) #y-axis            
-                vertices.append(layer_num + thickness) #z-axi            
-            
-        raw_edges = s.exteriorpoints()        
-        top_edges = []
-        bottom_edges = []            
-        for dec in raw_edges:      
-            top_edges.append((dec[0], dec[1], layer_num)) #x-axis
-            bottom_edges.append((dec[0], dec[1], layer_num + thickness))
-            
-        sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
-        sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
-        sideTriangles.extend(sideTriangles2)
-        sideTriangles = [list(triangle) for triangle in sideTriangles]
-        import itertools
-        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))
-        sideTriangles = [list(point) for point in sideTriangles]
-        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))            
-        vertices.extend(sideTriangles)
+        vertices = s.extrudeVertices(thickness, z0=layer_num)
         
         #This scales the verticies properly. So that they are in millimeters.
         vert_floats = [float(x)/(popupcad.internal_argument_scaling*popupcad.SI_length_scaling) for x in vertices] 
@@ -375,6 +298,25 @@ class GenericLaminate(popupCADFile):
         triset.generateNormals()    
         geom.primitives.append(triset)
         return geom
+        
+    def getBoundingBox(self):
+        all_shapes = []
+        layerdef = self.layerdef
+        for layer in layerdef.layers:
+            layer_thickness = layer.thickness    
+            shapes = self.geoms[layer]
+            zvalue = layerdef.zvalue[layer]        
+            height = float(zvalue) #* 100 #* 1/popupcad.internal_argument_scaling
+            if (len(shapes) == 0) : #In case there are no shapes.
+                continue
+            all_shapes.extend(shapes)
+        all_shapes = [shape.outputshapely() for shape in shapes]
+        master_shape = all_shapes[0]
+        for shape in all_shapes[1:]:
+            master_shape = master_shape.union(shape)
+        bounds = master_shape.bounds
+        bounds = [value/popupcad.csg_processing_scaling for value in bounds]
+        return bounds
 
     def mass_properties(self,length_scaling = 1):
         zvalues = self.layerdef.z_values()
