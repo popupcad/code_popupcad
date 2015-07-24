@@ -244,11 +244,15 @@ class GenericPoly(GenericShapeBase):
                              for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
    
     def output_dxf(self,model_space,layer = None):
+        exterior = self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling)
         dxfattribs = {'closed':True}
         if layer is not None:
             dxfattribs['layer']=layer
-        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs=dxfattribs)
+        model_space.add_lwpolyline(exterior,dxfattribs=dxfattribs)
         for interior in self.interiorpoints(scaling = 1./popupcad.internal_argument_scaling):
+            dxfattribs = {'closed':True}
+            if layer is not None:
+                dxfattribs['layer']=layer
             model_space.add_lwpolyline(interior,dxfattribs=dxfattribs)
         
 
