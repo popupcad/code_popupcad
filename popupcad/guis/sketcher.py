@@ -379,7 +379,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.constraintactions.append({'text': 'Midpoint', 'kwargs': {
                                       'triggered': lambda: self.add_constraint(constraints.LineMidpoint)}})
         self.constraintactions.append({'text': 'Update', 'kwargs': {
-                                      'triggered': self.refreshconstraints_button, 'icon': Icon('refresh')}})
+                                      'triggered': self.refreshconstraints, 'icon': Icon('refresh')}})
         self.constraintactions.append({'text': 'Cleanup', 'kwargs': {
                                       'triggered': self.cleanupconstraints, 'icon': Icon('broom')}})
 
@@ -450,9 +450,6 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             for constraint in new_constraints:
                 self.sketch.constraintsystem.add_constraint(constraint)
             self.refreshconstraints()
-
-    def refreshconstraints_button(self):
-        self.refreshconstraints()
 
     def constraint_deleted(self):
         self.refreshconstraints()
