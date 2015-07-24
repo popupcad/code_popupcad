@@ -20,6 +20,11 @@ internal_argument_scaling = popupcad.internal_argument_scaling
 class Variable(sympy.Symbol):
     pass
 
+class UnknownType(Exception):
+    pass        
+        
+class WrongArguments(Exception):
+    pass        
 
 class ConstraintSystem(object):
     atol = 1e-10
@@ -85,7 +90,7 @@ class ConstraintSystem(object):
                 variables = []
 
                 constraint_eqs = sympy.Matrix(
-                    [equation for constraint in self.constraints for equation in constraint.generated_equations()])
+                    [equation for constraint in self.constraints for equation in constraint.generated_equations])
                 allvariables = list(set(
                     [item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
                 constants_in_eq = []
@@ -194,7 +199,7 @@ class ConstraintSystem(object):
             aS = abs(S)
             m = (aS > (aS[0] / 100)).sum()
             n = len(variables)
-            d = n - m
+#            d = n - m
 
             rnull = R[m:]
             lnull = ((rnull**2).sum(1))**.5
@@ -223,7 +228,7 @@ class ExactlyTwoPoints(object):
         return len(set(self.vertex_ids + self.vertices_in_lines())) == 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need exactly two points')
 
 
 class AtLeastTwoPoints(object):
@@ -232,7 +237,7 @@ class AtLeastTwoPoints(object):
         return len(set(self.vertex_ids + self.vertices_in_lines())) >= 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least two points')
 
 
 class ExactlyTwoLines(object):
@@ -241,7 +246,7 @@ class ExactlyTwoLines(object):
         return len(self.segment_ids) == 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need exactly two lines')
 
 
 class AtLeastTwoLines(object):
@@ -250,7 +255,7 @@ class AtLeastTwoLines(object):
         return len(self.segment_ids) >= 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least two lines')
 
 
 class AtLeastOneLine(object):
@@ -259,7 +264,7 @@ class AtLeastOneLine(object):
         return len(self.segment_ids) >= 1
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least one line')
 
 
 class ExactlyOnePointOneLine(object):
@@ -268,7 +273,7 @@ class ExactlyOnePointOneLine(object):
         return len(self.segment_ids) == 1 and len(self.vertex_ids) == 1
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need exactly one point and one line')
 
 
 class AtLeastOnePoint(object):
@@ -277,7 +282,7 @@ class AtLeastOnePoint(object):
         return len(set(self.vertex_ids + self.vertices_in_lines())) >= 1
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least one point')
 
 
 class SymbolicVertex(object):
@@ -335,8 +340,6 @@ class Constraint(object):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
         self.id = id(self)
-#        self.init_symbolics()
-#        self.generate_equations()
 
     def init_symbolics(self):
         self._vertices = [SymbolicVertex(id) for id in self.vertex_ids]
@@ -356,18 +359,34 @@ class Constraint(object):
             obj.throwvalidityerror()
         return obj
 
+    
+    @property
     def generated_equations(self):
         try:
             return self._generated_equations
         except AttributeError:
-            self.generate_equations()
+            self._generated_equations = self.equations()
             return self._generated_equations
 
-    def generate_equations(self):
-        self._generated_equations = self.equations()
+    @generated_equations.deleter
+    def generated_equations(self):
+        del self._generated_equations
 
+    def variables(self):
+        variables = []
+        for equation in self.generated_equations:
+            variables.extend(equation.atoms(Variable))
+        variables = set(variables)
+        variables = sorted(variables,key=lambda var:str(var))
+        return variables
+
+    def jacobian(self):
+        eq = sympy.Matrix(self.generated_equations)        
+        J = eq.jacobian(self.variables())
+        return J
+    
     def copy(self, identical=True):
-        new = type(self)(self.vertex_ids, self.segment_ids)
+        new = type(self)(self.vertex_ids[:], self.segment_ids[:])
         if identical:
             new.id = self.id
         return new
@@ -395,7 +414,7 @@ class Constraint(object):
             if isinstance(item, BaseVertex):
                 vertex_ids.append(item.id)
                 vertices.append(item.constraints_ref())
-            if isinstance(item, Line):
+            elif isinstance(item, Line):
                 segment_ids.append(
                     tuple(
                         sorted(
@@ -406,6 +425,8 @@ class Constraint(object):
 
                 segments.append(item.constraints_ref())
                 segment_vertices.extend(item.vertex_constraints_ref())
+            else:
+                raise 
         return vertex_ids, segment_ids
 
     def vertices_in_lines(self):
@@ -460,7 +481,6 @@ class Constraint(object):
                 segment_ids.append((id1, id2))
         self.segment_ids = segment_ids
 
-
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'
 
@@ -470,9 +490,6 @@ class ValueConstraint(Constraint):
         self.value = value
 
         self.id = id(self)
-#        self.init_symbolics()
-
-#        self.generate_equations()
 
     @classmethod
     def new(cls, *objects):
@@ -485,7 +502,7 @@ class ValueConstraint(Constraint):
             return obj
 
     def copy(self, identical=True):
-        new = type(self)(self.value, self.vertex_ids, self.segment_ids)
+        new = type(self)(self.value, self.vertex_ids[:], self.segment_ids[:])
         if identical:
             new.id = self.id
         return new
@@ -500,7 +517,7 @@ class ValueConstraint(Constraint):
             None, "Edit Value", "Value:", self.value, -10000, 10000, 5)
         if ok:
             self.value = value
-        self.generate_equations()
+        del self.generated_equations
 
 
 class fixed(Constraint, AtLeastOnePoint):
@@ -511,8 +528,6 @@ class fixed(Constraint, AtLeastOnePoint):
         self.segment_ids = []
         self.values = values
         self.id = id(self)
-#        self.init_symbolics()
-#        self.generate_equations()
 
     @classmethod
     def new(cls, *objects):
@@ -747,7 +762,12 @@ class LineMidpoint(Constraint, ExactlyOnePointOneLine):
         return eq
 
 if __name__ == '__main__':
-    a = SymbolicVertex(123)
-    b = SymbolicVertex(234)
-    c = tuple(sorted((a, b)))
-    d = tuple(sorted((a, b)))
+#    a = SymbolicVertex(1)
+#    b = SymbolicVertex(2)
+#    c = SymbolicVertex(3)
+#    d = SymbolicVertex(4)
+    
+#    line1 = a,b
+#    line2 = b,c
+
+    constraint = perpendicular([],[(1,2),(3,4)])
