@@ -198,8 +198,17 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                                 'triggered': self.export_dxf}})
         self.fileactions.append({'text': 'Export to dae', 'kwargs': {
                                 'icon': Icon('export'),
-                                'statusTip': "Exports to a dxf file",                                
+                                'statusTip': "Exports to a dae file",                                
                                 'triggered': self.export_dae}})
+        try: #Tests as numpy-stl is installed
+            from stl import mesh
+            self.fileactions.append({'text': 'Export to stl', 'kwargs': {
+                                'icon': Icon('export'),
+                                'statusTip': "Exports to a stl file",                                
+                                'triggered': self.export_stl}})
+        except ImportError:
+            print('STL export feature not loaded since "numpy-stl" was not installed.')            
+                    
         self.fileactions.append(
             {'text': "Save Joint Defs", 'kwargs': {'triggered': self.save_joint_def}})
         self.fileactions.append(
@@ -779,6 +788,13 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         output.generic_laminate().toDAE()
+
+    @loggable
+    def export_stl(self):
+        ii, jj = self.operationeditor.currentIndeces2()[0]
+        output = self.design.operations[ii].output[jj]
+        output.generic_laminate().toSTL()
+
 
     @loggable
     def show_license(self):
