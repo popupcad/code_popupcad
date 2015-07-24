@@ -91,6 +91,8 @@ class GenericPolyline(GenericShapeBase):
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
 
+    def addvertex_exterior(self, vertex, special=False):
+        self.addvertex_exterior_special(vertex,special)
 
 class GenericPoly(GenericShapeBase):
 
@@ -142,22 +144,8 @@ class GenericPoly(GenericShapeBase):
         return obj
 
     def addvertex_exterior(self, vertex, special=False):
-        if len(self.get_exterior()) > 2:
-            if special:
-                a = [v.getpos() for v in self.get_exterior()]
-                b = list(zip(a, a[1:] + a[:1]))
-                c = numpy.array(b)
-                d = numpy.array(vertex.getpos())
-                e = c - d
-                f = e.reshape(-1, 4)
-                g = (f**2).sum(1)
-                h = g.argmin()
-                self.insert_exterior_vertex(h + 1, vertex)
-                self.update_handles()
-                return
-        self.append_exterior_vertex(vertex)
-        self.update_handles()
-
+        self.addvertex_exterior_special(vertex,special)
+        
     def segments(self):
         return self.segments_closed()
         

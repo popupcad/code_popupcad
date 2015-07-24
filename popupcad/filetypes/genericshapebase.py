@@ -196,6 +196,24 @@ class GenericShapeBase(popupCADFile):
         self.exterior.append(vertex)
         self.update_handles()
 
+    def addvertex_exterior_special(self, vertex, special=False):
+        if len(self.get_exterior()) > 2:
+            if special:
+                a = [v.getpos() for v in self.get_exterior()]
+                b = list(zip(a, a[1:] + a[:1]))
+                c = numpy.array(b)
+                d = numpy.array(vertex.getpos())
+                e = c - d
+                f = e.reshape(-1, 4)
+                g = (f**2).sum(1)
+                h = g.argmin()
+                self.insert_exterior_vertex(h + 1, vertex)
+                self.update_handles()
+                return
+        self.append_exterior_vertex(vertex)
+        self.update_handles()
+
+
     def removevertex(self, vertex):
         if vertex in self.exterior:
             ii = self.exterior.index(vertex)
