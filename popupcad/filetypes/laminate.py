@@ -98,10 +98,7 @@ class Laminate(IterableLaminate):
             resolution=1)
 
     def simplify(self, tolerance, **kwargs):
-        return self.valueoperation(
-            'simplify',
-            tolerance,
-            preserve_topology=True)
+        return self.valueoperation('simplify',tolerance,preserve_topology=True)
 
     def binaryoperation(self, ls2, function):
         self = self

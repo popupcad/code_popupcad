@@ -24,6 +24,8 @@ from popupcad.filetypes.genericshapebase import GenericShapeBase
 
 
 class GenericLine(GenericShapeBase):
+    def condition_loop(self,loop):
+        return self._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
 
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveLine
@@ -53,9 +55,8 @@ class GenericLine(GenericShapeBase):
         model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
         
 class GenericPolyline(GenericShapeBase):
-    @classmethod
-    def remove_redundant_points(cls, points, scaling=1):
-        return GenericShapeBase.remove_redundant_points(points,scaling,loop_test = False)
+    def condition_loop(self,loop):
+        return self._condition_loop(loop,remove_loop_reduncancy=False)
 
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractivePath
@@ -220,7 +221,7 @@ class GenericPoly(GenericShapeBase):
     def hollow(self):
         polylines = []
         for loop in [self.get_exterior()]+self.get_interiors():
-            newloop = [vertex.copy(identical = False) for vertex in loop] + [loop[0].copy(identical = False)]
+            newloop = [vertex.copy(identical = False) for vertex in loop+loop[0:1]]
             polylines.append(GenericPolyline(newloop,[],self.is_construction()))
         return polylines
             
@@ -264,6 +265,9 @@ class GenericPoly(GenericShapeBase):
         
 class GenericCircle(GenericShapeBase):
 
+    def condition_loop(self,loop):
+        return self._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
+
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveCircle
         return InteractiveCircle(self)
@@ -301,6 +305,8 @@ class GenericCircle(GenericShapeBase):
 
 
 class GenericTwoPointRect(GenericShapeBase):
+    def condition_loop(self,loop):
+        return self._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
 
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveRect2Point

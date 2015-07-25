@@ -30,17 +30,11 @@ class BaseVertex(object):
     def isValid(self):
         return True
 
-    def is_equal(self, other, tolerance):
-        import popupcad.algorithms.points as points
-        if isinstance(self, type(other)):
-            return points.twopointsthesame(
-                self.getpos(),
-                other.getpos(),
-                tolerance)
-        return False
-
     def __str__(self):
-        return 'vertex' + str(self.id)
+        return 'vertex' + str(self.id) +str(self.getpos())
+        
+    def __repr__(self):
+        return str(self)
 
     def vertices(self):
         return [self]
@@ -57,9 +51,19 @@ class BaseVertex(object):
         return self.constraints_ref().p()
 
     def setpos(self, pos,scaling = 1):
-        pos = numpy.array(pos)
-        pos = pos.round(self.roundvalue)*scaling
+        pos = numpy.array(pos)*scaling
+#        pos = pos.round(self.roundvalue)
         self._position = tuple(pos.tolist())
+
+    def round(self, identical = False, decimal_places = None):
+        if decimal_places is None:
+            decimal_places = popupcad.geometry_round_value
+
+        pos = numpy.array(self.getpos()).round(decimal_places)
+        new = type(self)(pos)
+        if identical:
+            new.id = self.id
+        return new
 
     def getpos(self, scaling=1):
         try:
@@ -116,12 +120,20 @@ class BaseVertex(object):
         if isinstance(self, type(other)):
             return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
         return False
+
+    def rounded_is_equal(self, other, decimal_places = None):
+        import popupcad.algorithms.points as points
+
+        if decimal_places is None:
+            decimal_places = popupcad.geometry_round_value
+        if isinstance(self, type(other)):
+            return points.rounded_equal(self.getpos(),other.getpos(),decimal_places)
+        return False
+
+    def is_identical(self, other):
         import popupcad.algorithms.points as points
         if isinstance(self, type(other)):
-            return points.twopointsthesame(
-                self.getpos(),
-                other.getpos(),
-                tolerance)
+            return points.identical(self.getpos(),other.getpos())
         return False
 
     def shift(self, dxdy):
