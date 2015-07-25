@@ -50,7 +50,7 @@ class Dialog(qg.QDialog):
 
 
 class LocateOperation3(Operation2):
-    name = 'Locate Operation'
+    name = 'LocateOp'
 
     def copy(self):
         new = type(self)(self.sketch_links)

@@ -10,7 +10,7 @@ from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 
 
 class Cleanup3(MultiValueOperation3):
-    name = 'Cleanup'
+    name = 'New Cleanup'
     show = []
 #    function = 'buffer'
     valuenames = ['Buffer', 'Resolution']

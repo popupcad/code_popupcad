@@ -12,7 +12,7 @@ import popupcad_manufacturing_plugins.algorithms as algorithms
 
 
 class SupportCandidate4(MultiValueOperation3):
-    name = 'Support Candidate'
+    name = 'Support'
     valuenames = ['Support Gap', 'Keep-out Distance']
     defaults = [0., 0.]
 

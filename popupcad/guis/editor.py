@@ -308,7 +308,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                         popupcad.manufacturing.simplify2.Simplify2)}})
         self.tools1.append(
             {
-                'text': 'Joints',
+                'text': 'JointOp',
                 'kwargs': {
                     'triggered': lambda: self.newoperation(
                         popupcad.manufacturing.joint_operation2.JointOperation2)}})
@@ -322,7 +322,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                         popupcad.manufacturing.cross_section.CrossSection)}})
         self.tools1.append(
             {
-                'text': 'Sub-Operation',
+                'text': 'SubOp',
                 'kwargs': {
                     'triggered': lambda: self.newoperation(
                         popupcad.manufacturing.sub_operation.SubOperation)}})

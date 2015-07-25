@@ -29,7 +29,7 @@ def initialize(program):
                     manufacturing.autoweb4.AutoWeb4)}})
     scrap.append(
         {
-            'text': 'Scrap(Beta)',
+            'text': 'Scrap',
             'kwargs': {
                 'icon': Icon('scrap'),
                 'triggered': lambda: program.editor.newoperation(
@@ -54,7 +54,7 @@ def initialize(program):
     other = []
     other.append(
         {
-            'text': 'Keep-outs',
+            'text': 'Keep-out',
             'kwargs': {
                 'icon': Icon('firstpass'),
                 'triggered': lambda: program.editor.newoperation(

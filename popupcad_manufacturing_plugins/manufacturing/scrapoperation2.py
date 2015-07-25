@@ -101,7 +101,7 @@ class Dialog(qg.QDialog):
 
 
 class ScrapOperation2(Operation2):
-    name = 'Scrap Operation'
+    name = 'Scrap'
     valuenames = ['device buffer']
     show = []
     defaults = [1.]

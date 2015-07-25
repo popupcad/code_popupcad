@@ -200,10 +200,8 @@ class MainWidget(qg.QDialog):
 
 
 class JointOperation2(Operation2, LayerBasedOperation):
-    name = 'Joint Definition'
+    name = 'JointOp'
     resolution = 2
-
-    name = 'Joint Operation'
 
     def copy(self):
         new = type(self)(
