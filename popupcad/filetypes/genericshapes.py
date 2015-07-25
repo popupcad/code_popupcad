@@ -113,6 +113,13 @@ class GenericPoly(GenericShapeBase):
         return path
 
     def triangles3(self):
+        new = self.copy(identical = False)
+        new._condition(round_vertices=False,
+                       test_rounded_vertices = True,
+                       remove_forward_redundancy = True,
+                       remove_loop_reduncancy = True,
+                       terminate_with_start = False,
+                       decimal_places = popupcad.geometry_round_value)
         try:
             from pypoly2tri.shapes import Point
             from pypoly2tri.cdt import CDT
@@ -124,9 +131,9 @@ class GenericPoly(GenericShapeBase):
                 from p2t import CDT
             except ImportError:
                 return []
-        exterior = [Point(*point) for point in self.exteriorpoints()]
+        exterior = [Point(*point) for point in new.exteriorpoints(scaling = popupcad.triangulation_scaling)]
         interiors = [[Point(*point) for point in interior]
-                     for interior in self.interiorpoints()]
+                     for interior in new.interiorpoints(scaling = popupcad.triangulation_scaling)]
         cdt = CDT(exterior)
         [cdt.AddHole(interior) for interior in interiors]
         if not use_poly2tri:
@@ -136,6 +143,8 @@ class GenericPoly(GenericShapeBase):
             triangles = cdt.triangulate()
             tris = [[(tri.a.x, tri.a.y), (tri.b.x, tri.b.y), (tri.c.x, tri.c.y)]
                     for tri in triangles]
+
+        tris = (numpy.array(tris)/popupcad.triangulation_scaling).tolist()
         return tris
 
     def outputshapely(self):
@@ -179,44 +188,6 @@ class GenericPoly(GenericShapeBase):
         Is = numpy.array([tet.I(density,about_point) for tet in tets])
         I = Is.sum(0)
         return I
-#        return tris
-#        for tri in tris:
-        
-#    def toTriangleFormat(self):
-#        import shapely.geometry as sg
-#        import numpy
-#        vertices = []
-#        segments = []
-#        holes = []
-#        loops = [self.exteriorpoints()]
-#        ip = self.interiorpoints()
-#        loops.extend(ip)
-#        c = 0
-#        for loop in loops:
-#            d = len(vertices)
-#            vertices.extend(loop)
-#            a = range(c, c + len(vertices))
-#            b = zip(a, a[1:] + a[:1])
-#            segments.extend(b)
-#            c += d
-#
-#        for loop in ip:
-#            p = sg.Polygon(loop)
-#            e = p.representative_point()
-#            holes.append((e.x, e.y))
-#        tri = {}
-#        tri['vertices'] = numpy.array(vertices)
-#        tri['segments'] = numpy.array(segments)
-#        if len(holes) > 0:
-#            tri['holes'] = numpy.array(holes)
-#        return tri
-#
-#    def triangles4(self):
-#        import triangle
-#        a = self.toTriangleFormat()
-#        t = triangle.triangulate(a)
-#        b = t['vertices'][t['triangles']]
-#        return [tri.tolist() for tri in b]
 
     def hollow(self):
         polylines = []
