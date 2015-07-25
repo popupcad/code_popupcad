@@ -8,6 +8,10 @@ Please see LICENSE.txt for full license.
 from . import manufacturing
 from . import algorithms
 
+#import external modules
+import PySide
+import numpy
+import shapely
 
 def initialize(program):
     from popupcad.supportfiles import Icon

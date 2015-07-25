@@ -10,6 +10,12 @@ import types
 import sys
 import popupcad_manufacturing_plugins
 
+#load external modules
+import PySide
+import numpy
+import shapely
+
+
 modules_before = sys.modules.copy()
 
 

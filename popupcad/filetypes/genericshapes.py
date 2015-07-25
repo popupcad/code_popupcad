@@ -113,6 +113,13 @@ class GenericPoly(GenericShapeBase):
         return path
 
     def triangles3(self):
+        from pypoly2tri.shapes import Point
+        from pypoly2tri.cdt import CDT
+
+#        if you have poly2tri installed
+#        from p2t import Point
+#        from p2t import CDT
+
         new = self.copy(identical = False)
         new._condition(round_vertices=False,
                        test_rounded_vertices = True,
@@ -120,29 +127,21 @@ class GenericPoly(GenericShapeBase):
                        remove_loop_reduncancy = True,
                        terminate_with_start = False,
                        decimal_places = popupcad.geometry_round_value)
-        try:
-            from pypoly2tri.shapes import Point
-            from pypoly2tri.cdt import CDT
-            use_poly2tri = False
-        except ImportError:
-            try:
-                use_poly2tri = True
-                from p2t import Point
-                from p2t import CDT
-            except ImportError:
-                return []
+
         exterior = [Point(*point) for point in new.exteriorpoints(scaling = popupcad.triangulation_scaling)]
         interiors = [[Point(*point) for point in interior]
                      for interior in new.interiorpoints(scaling = popupcad.triangulation_scaling)]
         cdt = CDT(exterior)
         [cdt.AddHole(interior) for interior in interiors]
-        if not use_poly2tri:
-            cdt.Triangulate()
-            tris = [tri.toList() for tri in cdt.GetTriangles()]
-        else:
-            triangles = cdt.triangulate()
-            tris = [[(tri.a.x, tri.a.y), (tri.b.x, tri.b.y), (tri.c.x, tri.c.y)]
-                    for tri in triangles]
+
+#        pypoly2tri code
+        cdt.Triangulate()
+        tris = [tri.toList() for tri in cdt.GetTriangles()]
+
+#        poly2tri code
+#        triangles = cdt.triangulate()
+#        tris = [[(tri.a.x, tri.a.y), (tri.b.x, tri.b.y), (tri.c.x, tri.c.y)]
+#                for tri in triangles]
 
         tris = (numpy.array(tris)/popupcad.triangulation_scaling).tolist()
         return tris

@@ -16,6 +16,7 @@ if sys.platform != 'darwin':
     if speedups.available:
         speedups.enable()
 
+
 from .global_settings import *
 
 from popupcad.filetypes.programsettings import ProgramSettings
@@ -43,3 +44,18 @@ try:
         user_materials = yaml.load(f)
 except:
     user_materials = []
+
+#load external modules
+import PySide
+import collada
+import dev_tools
+import ezdxf
+import lxml
+import numpy
+import pypoly2tri
+import pyqtgraph
+import scipy
+import shapely
+import stl
+import sympy
+import yaml
