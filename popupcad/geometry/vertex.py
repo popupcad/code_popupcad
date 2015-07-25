@@ -108,9 +108,14 @@ class BaseVertex(object):
     def upgrade(self, *args, **kwargs):
         return self
 
-    def shape_is_equal(self, other):
-        from popupcad.filetypes.genericshapebase import GenericShapeBase
-        tolerance = GenericShapeBase.tolerance
+    def is_equal(self, other, tolerance = None):
+        import popupcad.algorithms.points as points
+
+        if tolerance is None:
+            tolerance = popupcad.distinguishable_number_difference
+        if isinstance(self, type(other)):
+            return points.twopointsthesame(self.getpos(),other.getpos(),tolerance)
+        return False
         import popupcad.algorithms.points as points
         if isinstance(self, type(other)):
             return points.twopointsthesame(

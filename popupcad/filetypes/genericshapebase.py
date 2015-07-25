@@ -31,8 +31,6 @@ class GenericShapeBase(popupCADFile):
 
     display = ['construction', 'exterior', 'interiors']
     editable = ['construction']
-    roundvalue = 5
-    tolerance = 10.**-(roundvalue - 1)
     shapetypes = enum(
         line='line',
         polyline='polyline',
@@ -227,7 +225,7 @@ class GenericShapeBase(popupCADFile):
     def checkedge(self, edge):
         import popupcad.algorithms.points as points
         for pt1, pt2 in zip(edge[:-1], edge[1:]):
-            if points.twopointsthesame(pt1, pt2, self.tolerance):
+            if points.twopointsthesame(pt1, pt2, popupcad.distinguishable_number_difference):
                 raise Exception
 
     @classmethod
@@ -348,7 +346,7 @@ class GenericShapeBase(popupCADFile):
                              for point in numpy.array(points)])
         return poly
 
-    def shape_is_equal(self, other):
+    def is_equal(self, other):
         if isinstance(self, type(other)):
             if len(
                 self.get_exterior()) == len(
@@ -357,14 +355,14 @@ class GenericShapeBase(popupCADFile):
                     other.get_interiors()):
                 for point1, point2 in zip(
                         self.get_exterior(), other.get_exterior()):
-                    if not point1.is_equal(point2, self.tolerance):
+                    if not point1.is_equal(point2, popupcad.distinguishable_number_difference):
                         return False
                 for interior1, interior2 in zip(
                         self.get_interiors(), other.get_interiors()):
                     if len(interior1) != len(interior2):
                         return False
                     for point1, point2 in zip(interior1, interior2):
-                        if not point1.is_equal(point2, self.tolerance):
+                        if not point1.is_equal(point2, popupcad.distinguishable_number_difference):
                             return False
                 return True
         return False

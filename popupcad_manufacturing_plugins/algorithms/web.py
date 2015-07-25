@@ -41,7 +41,7 @@ def find_outer(ls, minpoint):
             if points.pointinpoints(
                     minpoint,
                     GenericShapeBase.genfromshapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
-                    GenericShapeBase.tolerance):
+                    popupcad.distinguishable_number_difference):
                 outergeoms.append(geom)
             else:
                 innergeoms.append(geom)

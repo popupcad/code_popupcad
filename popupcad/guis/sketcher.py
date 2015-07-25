@@ -611,7 +611,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             if isinstance(item, Interactive):
                 items.append(item.generic)
                 item.removefromscene()
-        genericlines = gj.getjoints(items)
+
+        roundvalue = 3
+        tolerance = 10**(-roundvalue)
+                
+        genericlines = gj.getjoints(items,roundvalue,tolerance)
         [self.scene.addItem(line) for line in genericlines]
 
     def showconstraint(self, row):

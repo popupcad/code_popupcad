@@ -65,7 +65,7 @@ class OperationOutput(UserData):
         for geom in all_geoms:
             is_unique = True
             for geom2 in unique_geoms:
-                if geom.shape_is_equal(geom2):
+                if geom.is_equal(geom2):
                     is_unique = False
                     break
             if is_unique:
