@@ -10,7 +10,7 @@ from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 
 
 class KeepOut3(MultiValueOperation3):
-    name = 'KeepOut'
+    name = 'Keep-out'
     valuenames = []
     defaults = []
 
