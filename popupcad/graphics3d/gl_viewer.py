@@ -41,7 +41,6 @@ class GLViewWidget(gl.GLViewWidget):
     def __init__(self, *args, **kwargs):
         super(GLViewWidget, self).__init__(*args, **kwargs)
         self.z_zoom = 10
-#        self.setCameraPosition(distance=30)
         self.opts['center'] = qg.QVector3D(0,0,0)
         self.opts['distance'] = 20
         self.opts['elevation'] = 60
@@ -102,14 +101,8 @@ class GLViewWidget(gl.GLViewWidget):
                 for ii in range(tri.shape[0]):
                     for jj in range(3):
                         colors[ii, jj] = color
-                m = gl.GLMeshItem(
-                    vertexes=tri,
-                    vertexColors=colors,
-                    edgeColor=(
-                        1,
-                        1,
-                        1,
-                        1))
+                m = gl.GLMeshItem(vertexes=tri,vertexColors=colors,edgeColor=(1,1,1,1),computeNormals=True)
+                m.setGLOptions('translucent')
                 self.meshitems.append(m)
 #                self.addItem(m)
 
