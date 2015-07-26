@@ -48,7 +48,7 @@ class ConstraintSystem(object):
         listout = []
         for item in variables:
             listout.append(ini[item])
-        return listout
+        return numpy.array(listout)
 
     def copy(self):
         new = ConstraintSystem()
@@ -78,7 +78,22 @@ class ConstraintSystem(object):
         return ini, vertexdict
 
     def regenerate(self):
-        self.generated_variables = self.regenerate_inner()
+        del self.generated_variables
+        self.generated_variables
+        
+    @property
+    def generated_variables(self):
+        try:
+            return self._generated_variables
+        except AttributeError:
+            self._generated_variables = self.regenerate_inner()
+            return self._generated_variables
+    @generated_variables.deleter
+    def generated_variables(self):
+        try:
+            del self._generated_variables
+        except AttributeError:
+            pass
         
     def equations(self):
         equations = [eq for con in self.constraints for eq in con.generated_equations]
@@ -104,6 +119,8 @@ class ConstraintSystem(object):
         return constants
         
     def regenerate_inner(self):
+        ini, vertexdict = self.ini()
+        
         if len(self.constraints) > 0:
             objects = self.vertex_builder()
             if len(objects) > 0:
@@ -116,37 +133,41 @@ class ConstraintSystem(object):
 
                 self.build_constraint_mappings()
                 
-                J = equations_matrix.jacobian(sympy.Matrix(variables))
-
-                f_constraints = sympy.utilities.lambdify(variables,equations_matrix)
-                f_J = sympy.utilities.lambdify(variables,J)
-
                 def dq(q):
                     qlist = q.flatten().tolist()
-                    zero = f_constraints(*(qlist))
-                    zero = numpy.array(zero[:]).flatten()
+
+                    zero = numpy.zeros(num_equations,dtype=float)
+                    for constraint in self.constraints:
+                        result = constraint.mapped_f_constraints(*qlist[:])
+                        zero+=result
+
                     if num_variables > num_equations:
-                        zero = numpy.r_[zero, [0] * (num_variables - num_equations)]
+                        zero = numpy.r_[zero.flatten, [0] * (num_variables - num_equations)]
                     return zero
 
                 def j(q):
                     qlist = q.flatten().tolist()
-                    jnum = f_J(*(qlist))
-                    jnum = numpy.array(jnum[:])
-                    m, n = jnum.shape
-                    if n > m:
-                        jnum = numpy.r_[jnum, numpy.zeros((n - m, n))]
-                    return jnum
 
-                ini, vertexdict = self.ini()
+                    jnum = numpy.zeros((num_equations,num_variables))
+                    for constraint in self.constraints:
+                        jnum+=constraint.mapped_f_jacobian(*qlist[:])
+                    
+                    if num_variables > num_equations:
+                        jnum = numpy.r_[jnum, numpy.zeros((num_variables - num_equations, num_variables))]
+                    return jnum
 
                 return dq, variables, j, vertexdict, equations_matrix
 
+        return None
+        
     def update(self):
-        try:
+        if self.generated_variables is None:
+            pass
+        else:
             dq, variables, j, vertexdict, equations_matrix = self.generated_variables
             ini, vertexdict = self.ini()
-            qout = scipy.optimize.root(dq,numpy.array(self.inilist(variables,ini)),jac=j,tol=self.atol,method='lm')
+            q0 = self.inilist(variables,ini)
+            qout = scipy.optimize.root(dq,q0,jac=j,tol=self.atol,method='lm')
             qout = qout.x.tolist()
 
 #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
@@ -160,61 +181,49 @@ class ConstraintSystem(object):
 
             for ii, variable in enumerate(variables):
                 vertexdict[variable].setsymbol(variable, qout[ii])
-        except (AttributeError, TypeError):
-            pass
+#        except (AttributeError, TypeError):
+#            pass
 
     def update_selective(self,vertices):
-        try:
-            dq, variables, j, vertexdict, equations_matrix = self.generated_variables
-            ini, vertexdict = self.ini()
-            qout = scipy.optimize.root(dq,numpy.array(self.inilist(variables,ini)),jac=j,tol=self.atol,method='lm')
-            qout = qout.x.tolist()
-
-            for ii, variable in enumerate(variables):
-                vertexdict[variable].setsymbol(variable, qout[ii])
-        except (AttributeError, TypeError):
-            pass
-
+        self.update()
+        
     def constrained_shift(self, items):
         ini, vertexdict = self.ini()
-        try:
+        if self.generated_variables is None:
+            for vertex, dxdy in items:
+                vertex.shift(dxdy)
+        else:
             dq, variables, j, vertexdict, equations_matrix = self.generated_variables
-
+    
             dx_dict = {}
             for vertex, dxdy in items:
-                #            vertex.shift(dxdy)
                 key_x, key_y = vertex.constraints_ref().p()[:2]
                 dx_dict[key_x] = dxdy[0]
                 dx_dict[key_y] = dxdy[1]
-
+    
             dx = numpy.zeros(len(variables))
             for key in dx_dict:
                 if key in variables:
                     dx[variables.index(key)] = dx_dict[key]
                 else:
                     vertexdict[key].setsymbol(key, ini[key] + dx_dict[key])
-
+    
             x0 = numpy.array(self.inilist(variables, ini))
             Jnum = j(x0)
             L, S, R = scipy.linalg.svd(Jnum)
             aS = abs(S)
             m = (aS > (aS[0] / 100)).sum()
-            n = len(variables)
-#            d = n - m
-
+    
             rnull = R[m:]
             lnull = ((rnull**2).sum(1))**.5
             comp = ((rnull * dx).sum(1)) / lnull
             x_motion = (comp * rnull.T).sum(1)
-
+    
             x = x0 + x_motion
-
+    
             for ii, variable in enumerate(variables):
                 vertexdict[variable].setsymbol(variable, x[ii])
-        except (AttributeError, TypeError):
-            for vertex, dxdy in items:
-                vertex.shift(dxdy)
-
+#
     def cleanup(self):
         sketch_objects = self.vertex_builder()
         for ii in range(len(self.constraints))[::-1]:
@@ -386,7 +395,7 @@ class Constraint(object):
         try:
             return self._f_jacobian
         except AttributeError:
-            self._f_jacobian = sympy.utilities.lambdify(self.variables(),self.jacobian())
+            self._f_jacobian = sympy.utilities.lambdify(self.variables(),self.jacobian().tolist())
             return self._f_jacobian
             
     @property
@@ -394,8 +403,18 @@ class Constraint(object):
         try:
             return self._f_constraints
         except AttributeError:
-            self._f_constraints = sympy.utilities.lambdify(self.variables(),sympy.Matrix(self.generated_equations))
+            self._f_constraints = sympy.utilities.lambdify(self.variables(),self.generated_equations)
             return self._f_constraints
+            
+    def mapped_f_constraints(self,*args):
+        args = (self._B.dot(args))     
+        y = self._A.dot(self.f_constraints(*args))
+        return y
+
+    def mapped_f_jacobian(self,*args):
+        args = (self._B.dot(args))
+        y = self._A.dot(self.f_jacobian(*args)).dot(self._B)
+        return y
 
     def variables(self):
         variables = []
@@ -420,11 +439,11 @@ class Constraint(object):
         o = len(self.variables())
         p = len(sys_vars)
 
-        A = sympy.Matrix.zeros(m,n)
+        A = numpy.zeros((m,n))
         for ii,jj in zip(eq_indeces,range(len(self.generated_equations))):
             A[ii,jj] = 1
 
-        B = sympy.Matrix.zeros(o,p)
+        B = numpy.zeros((o,p))
         for ii,item in enumerate(self.variables()):
             jj = sys_vars.index(item)
             B[ii,jj] = 1
