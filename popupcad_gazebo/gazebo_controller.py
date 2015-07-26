@@ -405,9 +405,9 @@ def findMidPoint(shape, anchor):
     x = shape.exteriorpoints()[0][0] + shape.exteriorpoints()[1][0]
     y = shape.exteriorpoints()[0][1] + shape.exteriorpoints()[1][1]
     z = anchor.getLaminateThickness()    
-    x /= (2.0 * popupcad.internal_argument_scaling * popupcad.SI_length_scaling)
-    y /= (2.0 * popupcad.internal_argument_scaling * popupcad.SI_length_scaling)
-    z /= (2.0 * popupcad.internal_argument_scaling * popupcad.SI_length_scaling)
+    x /= (2.0  * popupcad.SI_length_scaling)
+    y /= (2.0  * popupcad.SI_length_scaling)
+    z /= (2.0  * popupcad.SI_length_scaling)
     return (x, y, z)
     
 def unitizeLine(shape):

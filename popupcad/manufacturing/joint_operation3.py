@@ -248,7 +248,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         return []
 
     def gen_geoms(self, joint_def, layerdef, design):
-        hinge_gap = joint_def.width * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
+        hinge_gap = joint_def.width *popupcad.csg_processing_scaling
         split_buffer = .1 * hinge_gap
 
         stiffness = joint_def.stiffness
@@ -285,9 +285,9 @@ class JointOperation2(Operation2, LayerBasedOperation):
         return allgeoms4, buffered_split, hingelines, joint_props
 
     def generate(self, design):
-        safe_buffer1 = .5 * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
-        safe_buffer2 = .5 * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
-        safe_buffer3 = .5 * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
+        safe_buffer1 = .5 *popupcad.csg_processing_scaling
+        safe_buffer2 = .5 *popupcad.csg_processing_scaling
+        safe_buffer3 = .5 *popupcad.csg_processing_scaling
 
         parent_id, parent_output_index = self.operation_links['parent'][0]
         parent_index = design.operation_index(parent_id)

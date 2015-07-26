@@ -20,7 +20,7 @@ class Cleanup3(MultiValueOperation3):
         operation_ref, output_index = self.operation_links['parent'][0]
         ls1 = design.op_from_ref(operation_ref).output[output_index].csg
 
-        value = self.values[0] * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
+        value = self.values[0] *popupcad.csg_processing_scaling
         res = int(self.values[1])
 
         ls11 = popupcad.algorithms.manufacturing_functions.cleanup3(

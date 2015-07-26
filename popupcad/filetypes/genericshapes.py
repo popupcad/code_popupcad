@@ -52,7 +52,7 @@ class GenericLine(GenericShapeBase):
         dxfattribs = {}
         if layer is not None:
             dxfattribs['layer']=layer
-        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
+        model_space.add_lwpolyline(self.exteriorpoints(),dxfattribs = dxfattribs)
         
 class GenericPolyline(GenericShapeBase):
     def condition_loop(self,loop):
@@ -90,7 +90,7 @@ class GenericPolyline(GenericShapeBase):
         dxfattribs = {}
         if layer is not None:
             dxfattribs['layer']=layer
-        model_space.add_lwpolyline(self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling),dxfattribs = dxfattribs)
+        model_space.add_lwpolyline(self.exteriorpoints(),dxfattribs = dxfattribs)
 
     def addvertex_exterior(self, vertex, special=False):
         self.addvertex_exterior_special(vertex,special)
@@ -159,9 +159,9 @@ class GenericPoly(GenericShapeBase):
         return self.segments_closed()
         
     def mass_properties(self,density,z_lower,z_upper,length_scaling = 1):
-        z_lower = z_lower*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
-        z_upper = z_upper*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
-        tris = numpy.array(self.triangles3())*length_scaling/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
+        z_lower = z_lower*length_scaling/popupcad.SI_length_scaling
+        z_upper = z_upper*length_scaling/popupcad.SI_length_scaling
+        tris = numpy.array(self.triangles3())*length_scaling/popupcad.SI_length_scaling
         shape = list(tris.shape)
         shape[2]+=1
         z_center = (z_lower+z_upper)/2
@@ -179,8 +179,8 @@ class GenericPoly(GenericShapeBase):
         return area,centroid,volume,mass,tris
 
     def inertia_tensor(self,about_point,density,z_lower,z_upper,tris):
-        z_lower = z_lower/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
-        z_upper = z_upper/popupcad.internal_argument_scaling/popupcad.SI_length_scaling
+        z_lower = z_lower/popupcad.SI_length_scaling
+        z_upper = z_upper/popupcad.SI_length_scaling
         import popupcad.algorithms.triangle as triangle
         tris3 = [triangle.Triangle(*tri) for tri in tris]
         tets = [tet for tri in tris3 for tet in tri.extrude(z_lower,z_upper)]
@@ -198,17 +198,17 @@ class GenericPoly(GenericShapeBase):
     #Returns the area scaled to match the appropiate size of the mesh
     def trueArea(self):
         p = self.exteriorpoints()
-        p = [[float(x)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for x in point] for point in p]#scales appropiately 
+        p = [[float(x)/popupcad.SI_length_scaling for x in point] for point in p]#scales appropiately 
         return 0.5 * abs(sum(x0*y1 - x1*y0
                              for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
    
     def output_dxf(self,model_space,layer = None):
-        exterior = self.exteriorpoints(scaling = 1./popupcad.internal_argument_scaling)
+        exterior = self.exteriorpoints()
         dxfattribs = {'closed':True}
         if layer is not None:
             dxfattribs['layer']=layer
         model_space.add_lwpolyline(exterior,dxfattribs=dxfattribs)
-        for interior in self.interiorpoints(scaling = 1./popupcad.internal_argument_scaling):
+        for interior in self.interiorpoints():
             dxfattribs = {'closed':True}
             if layer is not None:
                 dxfattribs['layer']=layer
@@ -217,20 +217,18 @@ class GenericPoly(GenericShapeBase):
 
     #Gets the center
     def get_center(self):
-        scaling_factor = popupcad.internal_argument_scaling*popupcad.SI_length_scaling
         points = self.exteriorpoints()
-        x_values = [point[0]/scaling_factor for point in points]
-        y_values = [point[1]/scaling_factor for point in points]
+        x_values = [point[0]/popupcad.SI_length_scaling for point in points]
+        y_values = [point[1]/popupcad.SI_length_scaling for point in points]
         x = float(sum(x_values)) / len(x_values)
         y = float(sum(y_values)) / len(y_values)
         return (x, y)
     
     def exterior_points_from_center(self):
-        scaling_factor = popupcad.internal_argument_scaling*popupcad.SI_length_scaling
         center = self.get_center()
         points = self.exteriorpoints()
-        x_values = [point[0]/scaling_factor - center[0] for point in points]
-        y_values = [point[1]/scaling_factor - center[1] for point in points]
+        x_values = [point[0]/popupcad.SI_length_scaling - center[0] for point in points]
+        y_values = [point[1]/popupcad.SI_length_scaling - center[1] for point in points]
         return list(zip(x_values, y_values))
         
 class GenericCircle(GenericShapeBase):
