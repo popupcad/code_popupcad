@@ -133,39 +133,24 @@ class ConstraintSystem(object):
 
                 self.build_constraint_mappings()
                 
-#                J = equations_matrix.jacobian(sympy.Matrix(variables))
-#
-#                f_constraints = sympy.utilities.lambdify(variables,equations_matrix)
-#                f_J = sympy.utilities.lambdify(variables,J)
-
                 def dq(q):
                     qlist = q.flatten().tolist()
-#                    zero = f_constraints(*(qlist[:]))
-#                    zero = numpy.array(zero[:]).flatten()
 
-                    zero = numpy.zeros((num_equations,1),dtype=float)
+                    zero = numpy.zeros(num_equations,dtype=float)
                     for constraint in self.constraints:
                         result = constraint.mapped_f_constraints(*qlist[:])
                         zero+=result
-#                    zero = numpy.array(zero2[:],dtype=float)
-
-#                    print(zero, zero3)
 
                     if num_variables > num_equations:
-                        zero = numpy.r_[zero.flatten(), [0] * (num_variables - num_equations)]
+                        zero = numpy.r_[zero.flatten, [0] * (num_variables - num_equations)]
                     return zero
 
                 def j(q):
                     qlist = q.flatten().tolist()
-#                    jnum = f_J(*(qlist[:]))
-#                    jnum = numpy.array(jnum[:])
 
                     jnum = numpy.zeros((num_equations,num_variables))
                     for constraint in self.constraints:
                         jnum+=constraint.mapped_f_jacobian(*qlist[:])
-#                    jnum = numpy.array(jnum2.tolist(),dtype = float)
-#                    
-#                    print(jnum,jnum3)
                     
                     if num_variables > num_equations:
                         jnum = numpy.r_[jnum, numpy.zeros((num_variables - num_equations, num_variables))]
@@ -418,12 +403,12 @@ class Constraint(object):
         try:
             return self._f_constraints
         except AttributeError:
-            self._f_constraints = sympy.utilities.lambdify(self.variables(),[self.generated_equations])
+            self._f_constraints = sympy.utilities.lambdify(self.variables(),self.generated_equations)
             return self._f_constraints
             
     def mapped_f_constraints(self,*args):
         args = (self._B.dot(args))     
-        y = self._A.dot(numpy.array(self.f_constraints(*args)).T)
+        y = self._A.dot(self.f_constraints(*args))
         return y
 
     def mapped_f_jacobian(self,*args):
