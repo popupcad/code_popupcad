@@ -133,35 +133,36 @@ class ConstraintSystem(object):
 
                 self.build_constraint_mappings()
                 
-                J = equations_matrix.jacobian(sympy.Matrix(variables))
-
-                f_constraints = sympy.utilities.lambdify(variables,equations_matrix)
-                f_J = sympy.utilities.lambdify(variables,J)
+#                J = equations_matrix.jacobian(sympy.Matrix(variables))
+#
+#                f_constraints = sympy.utilities.lambdify(variables,equations_matrix)
+#                f_J = sympy.utilities.lambdify(variables,J)
 
                 def dq(q):
                     qlist = q.flatten().tolist()
-                    zero = f_constraints(*(qlist[:]))
-                    zero = numpy.array(zero[:]).flatten()
+#                    zero = f_constraints(*(qlist[:]))
+#                    zero = numpy.array(zero[:]).flatten()
 
-#                    zero2 = sympy.Matrix.zeros(num_equations,1)
-#                    for constraint in self.constraints:
-#                        zero2+=constraint.mapped_f_constraints(*qlist[:])
+                    zero = numpy.zeros((num_equations,1),dtype=float)
+                    for constraint in self.constraints:
+                        result = constraint.mapped_f_constraints(*qlist[:])
+                        zero+=result
 #                    zero = numpy.array(zero2[:],dtype=float)
 
 #                    print(zero, zero3)
 
                     if num_variables > num_equations:
-                        zero = numpy.r_[zero, [0] * (num_variables - num_equations)]
+                        zero = numpy.r_[zero.flatten(), [0] * (num_variables - num_equations)]
                     return zero
 
                 def j(q):
                     qlist = q.flatten().tolist()
-                    jnum = f_J(*(qlist[:]))
-                    jnum = numpy.array(jnum[:])
+#                    jnum = f_J(*(qlist[:]))
+#                    jnum = numpy.array(jnum[:])
 
-#                    jnum2 = sympy.Matrix.zeros(num_equations,num_variables)
-#                    for constraint in self.constraints:
-#                        jnum2+=constraint.mapped_f_jacobian(*qlist[:])
+                    jnum = numpy.zeros((num_equations,num_variables))
+                    for constraint in self.constraints:
+                        jnum+=constraint.mapped_f_jacobian(*qlist[:])
 #                    jnum = numpy.array(jnum2.tolist(),dtype = float)
 #                    
 #                    print(jnum,jnum3)
@@ -409,7 +410,7 @@ class Constraint(object):
         try:
             return self._f_jacobian
         except AttributeError:
-            self._f_jacobian = sympy.utilities.lambdify(self.variables(),self.jacobian())
+            self._f_jacobian = sympy.utilities.lambdify(self.variables(),self.jacobian().tolist())
             return self._f_jacobian
             
     @property
@@ -417,17 +418,17 @@ class Constraint(object):
         try:
             return self._f_constraints
         except AttributeError:
-            self._f_constraints = sympy.utilities.lambdify(self.variables(),sympy.Matrix(self.generated_equations))
+            self._f_constraints = sympy.utilities.lambdify(self.variables(),[self.generated_equations])
             return self._f_constraints
             
     def mapped_f_constraints(self,*args):
-        args = (self._B*sympy.Matrix(args))[:]     
-        y = self._A*self.f_constraints(*args)
+        args = (self._B.dot(args))     
+        y = self._A.dot(numpy.array(self.f_constraints(*args)).T)
         return y
 
     def mapped_f_jacobian(self,*args):
-        args = (self._B*sympy.Matrix(args))[:]     
-        y = self._A*self.f_jacobian(*args)*self._B
+        args = (self._B.dot(args))
+        y = self._A.dot(self.f_jacobian(*args)).dot(self._B)
         return y
 
     def variables(self):
@@ -453,11 +454,11 @@ class Constraint(object):
         o = len(self.variables())
         p = len(sys_vars)
 
-        A = sympy.Matrix.zeros(m,n)
+        A = numpy.zeros((m,n))
         for ii,jj in zip(eq_indeces,range(len(self.generated_equations))):
             A[ii,jj] = 1
 
-        B = sympy.Matrix.zeros(o,p)
+        B = numpy.zeros((o,p))
         for ii,item in enumerate(self.variables()):
             jj = sys_vars.index(item)
             B[ii,jj] = 1
