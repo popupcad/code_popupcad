@@ -4,10 +4,8 @@ Created on Tue Jul 23 14:43:26 2013
 
 @author: danaukes
 """
-#import PySide
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-import numpy
 
 class TableWidget(qg.QTableWidget):
     def __init__(self,columnnames):
