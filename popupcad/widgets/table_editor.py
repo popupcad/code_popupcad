@@ -385,3 +385,23 @@ class TableControl(qg.QWidget):
         main_layout.addLayout(sublayout1)
         self.setLayout(main_layout)
 
+
+if __name__ =='__main__':
+    import sys
+    app = qg.QApplication(sys.argv)
+    class JointRow(Row):
+    
+        def __init__(self, get_sketches, get_layers):
+            elements = []
+            elements.append(SingleItemListElement('joint sketch', get_sketches))
+            elements.append(SingleItemListElement('joint layer', get_layers))
+            elements.append(MultiItemListElement('sublaminate layers', get_layers))
+            elements.append(FloatElement('hinge width'))
+            elements.append(FloatElement('stiffness'))
+            elements.append(FloatElement('damping'))
+            elements.append(FloatElement('preload'))
+            self.elements = elements
+    table = Table(JointRow(lambda:range(10),lambda:range(5)))
+    tc = TableControl(table)
+    tc.show()
+    sys.exit(app.exec_)
