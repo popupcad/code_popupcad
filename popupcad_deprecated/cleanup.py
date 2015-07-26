@@ -23,4 +23,4 @@ class Cleanup(MultiValueOperation2):
             self.operation_link1).output[
             self.getoutputref()].csg
         return popupcad.algorithms.morphology.cleanup(
-            ls1, self.values[0] * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling, int(self.values[1]))
+            ls1, self.values[0] * popupcad.csg_processing_scaling, int(self.values[1]))

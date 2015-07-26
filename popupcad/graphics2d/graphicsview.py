@@ -42,21 +42,8 @@ class ZoomHandling(object):
         scene_rect = self.scene().itemsBoundingRect()
         if scene_rect.isEmpty():
             width, height = popupcad.view_initial_size
-            s1 = popupcad.internal_argument_scaling
             s2 = popupcad.view_scaling
-            scene_rect = qc.QRect(-
-                                  width /
-                                  2 *
-                                  s1 *
-                                  s2, -
-                                  height /
-                                  2 *
-                                  s1 *
-                                  s2, width *
-                                  s1 *
-                                  s2, height *
-                                  s1 *
-                                  s2)
+            scene_rect = qc.QRect(-width / 2  * s2, -height /2  *s2, width  *s2, height *s2)
         else:
             w = scene_rect.width()
             h = scene_rect.height()

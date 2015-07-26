@@ -26,7 +26,7 @@ class LayerDef(object):
         zval = 0.
         for layer in self.layers[::1]:
             self.zvalue[layer] = zval
-            zval += layer.thickness * popupcad.internal_argument_scaling
+            zval += layer.thickness
 
     def __repr__(self):
         string = 'Laminate'
@@ -60,7 +60,7 @@ class LayerDef(object):
         z = 0.
         for layer in self.layers:
             zvalues[layer] = {'lower':z}
-            z += layer.thickness * popupcad.internal_argument_scaling
+            z += layer.thickness
             zvalues[layer]['upper'] = z
         return zvalues
         

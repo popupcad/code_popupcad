@@ -14,9 +14,6 @@ import scipy.linalg
 import popupcad
 from dev_tools.enum import enum
 
-internal_argument_scaling = popupcad.internal_argument_scaling
-
-
 class Variable(sympy.Symbol):
     pass
 
@@ -660,7 +657,7 @@ class distance(ValueConstraint, ExactlyTwoPoints):
         else:
             v1 = p1 - p0
             l1 = v1.dot(v1)**.5
-            eq = l1 - self.value * internal_argument_scaling
+            eq = l1 - self.value
             return [eq]
 
 
@@ -684,10 +681,10 @@ class distancex(ValueConstraint, AtLeastOnePoint):
     def symbolic_equations(self):
         vertices = self.getallvertices()
         if len(vertices) == 1:
-            eq = vertices[0].p()[0] - self.value * internal_argument_scaling
+            eq = vertices[0].p()[0] - self.value
         else:
             eq = ((vertices[1].p()[0] - vertices[0].p()[0])**2)**.5 - \
-                ((self.value * internal_argument_scaling)**2)**.5
+                ((self.value)**2)**.5
         return [eq]
 
 
@@ -701,11 +698,10 @@ class distancey(ValueConstraint, AtLeastOnePoint):
         else:
             temp = -1.
         if len(vertices) == 1:
-            eq = vertices[0].p()[1] - self.value * temp * \
-                internal_argument_scaling
+            eq = vertices[0].p()[1] - self.value * temp
         else:
             eq = ((vertices[1].p()[1] - vertices[0].p()[1])**2)**.5 - \
-                ((self.value * internal_argument_scaling)**2)**.5
+                ((self.value)**2)**.5
         return [eq]
 
 
@@ -794,7 +790,7 @@ class PointLine(ValueConstraint, ExactlyOnePointOneLine):
         else:
             v1 = p1 - p0
             l1 = v1.dot(v1)**.5
-            eq = l1 - self.value * internal_argument_scaling
+            eq = l1 - self.value
             return [eq]
 
 

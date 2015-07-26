@@ -23,5 +23,5 @@ class OuterSheet2(MultiValueOperation2):
             self.operation_link1).output[
             self.getoutputref()].csg
         ls, dummy = algorithms.web.supportsheet(design.return_layer_definition(
-        ), ls1, self.values[0] * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
+        ), ls1, self.values[0] *popupcad.csg_processing_scaling)
         return ls

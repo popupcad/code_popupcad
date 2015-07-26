@@ -752,11 +752,9 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                         for item in self.scene.selectedItems():
                             shift_val = (
                                 ii *
-                                x_val.value() *
-                                popupcad.internal_argument_scaling,
+                                x_val.value(),
                                 jj *
-                                y_val.value() *
-                                popupcad.internal_argument_scaling)
+                                y_val.value())
                             new = item.generic.copy(identical = False)
                             new.shift(shift_val)
                             copies.append(new)

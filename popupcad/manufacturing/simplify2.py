@@ -22,4 +22,4 @@ class Simplify2(MultiValueOperation3):
         return popupcad.algorithms.morphology.simplify(
             ls1,
             self.values[0] *
-            popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
+            popupcad.csg_processing_scaling)

@@ -161,7 +161,7 @@ class GenericLaminate(popupCADFile):
                 for tri in tris:
                     for point in tri:   
                         #Scales the mesh properly
-                        point = [float(a)/(popupcad.internal_argument_scaling*popupcad.SI_length_scaling) for a in point]
+                        point = [float(a)/(popupcad.SI_length_scaling) for a in point]
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
@@ -169,7 +169,7 @@ class GenericLaminate(popupCADFile):
         y = sum(yvalues) / len(yvalues)
         z = sum(zvalues) / len(zvalues)
         out = (x, y, z)
-        return out#[float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in out]
+        return out#[float(a)/popupcad.SI_length_scaling for a in out]
         
     def getDensity(self):
         total_densities = sum([layer.density for layer in self.layers()])
@@ -180,7 +180,7 @@ class GenericLaminate(popupCADFile):
         from lxml import etree        
         layerdef = self.layerdef
         tree_tags = []
-        scaling_factor = popupcad.internal_argument_scaling * popupcad.SI_length_scaling
+        scaling_factor = popupcad.SI_length_scaling
         counter = 0
         for layer in layerdef.layers:
             layer_node = etree.Element(tag, name=name_value + "-" + str(counter))
@@ -304,7 +304,7 @@ class GenericLaminate(popupCADFile):
             layer_thickness = layer.thickness    
             shapes = self.geoms[layer]
             zvalue = layerdef.zvalue[layer]        
-            height = float(zvalue) #* 100 #* 1/popupcad.internal_argument_scaling
+            height = float(zvalue) #* 100 #* 
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
             for s in shapes:
@@ -362,7 +362,7 @@ class GenericLaminate(popupCADFile):
         vertices.extend(sideTriangles)
         
         #This scales the verticies properly. So that they are in millimeters.
-        vert_floats = [float(x)/(popupcad.internal_argument_scaling*popupcad.SI_length_scaling) for x in vertices] 
+        vert_floats = [float(x)/(popupcad.SI_length_scaling) for x in vertices] 
         vert_src_name = str(self.get_basename()) + "-array"
         vert_src = collada.source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
         geom = collada.geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    
