@@ -13,7 +13,7 @@ from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
 import popupcad
 from popupcad.filetypes.laminate import Laminate
-from popupcad.widgets.table_editor import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row
+from popupcad.widgets.table_editor_delegate import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row,Delegate
 
 try:
     import itertools.izip as zip
@@ -80,7 +80,7 @@ class MainWidget(qg.QDialog):
         self.fixed = DraggableTreeWidget()
         self.fixed.linklist(self.operations)
 
-        self.table = Table(JointRow(self.get_sketches, self.get_layers))
+        self.table = Table(JointRow(self.get_sketches, self.get_layers),Delegate)
 
         button_add = qg.QPushButton('Add')
         button_remove = qg.QPushButton('Remove')

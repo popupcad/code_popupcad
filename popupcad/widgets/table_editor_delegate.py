@@ -7,7 +7,7 @@ Please see LICENSE.txt for full license.
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
-
+from popupcad.widgets.table_common import TableControl,Table,Delegate
 
 class ListWidgetItem(qg.QListWidgetItem):
 
@@ -50,134 +50,12 @@ class MultiListWidget(qg.QListWidget):
             if item.customdata in data:
                 item.setSelected(True)
 
-
-class Table(qg.QTableWidget):
-
-    def __init__(self, data_class):
-        super(Table, self).__init__()
-        self.setRowCount(0)
-        self.setColumnCount(data_class.column_count())
-        self.setShowGrid(False)
-        self.setAlternatingRowColors(True)
-        self.setHorizontalHeaderLabels(data_class.header_labels())
-        self.resizeColumnsToContents()
-        self.reset_min_width()
-        self.setItemDelegate(Delegate(data_class))
-        self.setHorizontalScrollBarPolicy(
-            qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.data_class = data_class
-
-    def calc_table_width(self):
-        w = sum([self.columnWidth(ii) for ii in range(self.columnCount())])
-        w2 = self.frameWidth() * 2
-        return w + w2
-
-    def calc_table_width2(self):
-        width = 0
-        width += self.verticalHeader().width()
-        width += sum([self.columnWidth(ii)
-                      for ii in range(self.columnCount())])
-        width += self.style().pixelMetric(qg.QStyle.PM_ScrollBarExtent)
-        width += self.frameWidth() * 2
-        return width
-
-    def reset_min_width(self):
-        self.horizontalHeader().setStretchLastSection(False)
-        self.setMinimumWidth(self.calc_table_width2())
-        self.horizontalHeader().setStretchLastSection(True)
-
-    def row_add(self, *args, **kwargs):
-        ii = self.rowCount()
-        self.setRowCount(ii + 1)
-        items = self.data_class.row_add(*args, **kwargs)
-        for jj, item in enumerate(items):
-            self.setItem(ii, jj, item)
-        self.reset_min_width()
-
-    def row_add_empty(self, *args, **kwargs):
-        ii = self.rowCount()
-        self.setRowCount(ii + 1)
-        items = self.data_class.row_add_empty(*args, **kwargs)
-        for jj, item in enumerate(items):
-            self.setItem(ii, jj, item)
-        self.reset_min_width()
-
-    def row_remove(self):
-        ii = self.currentRow()
-        kk = self.currentColumn()
-        self.removeRow(ii)
-        self.setCurrentCell(ii, kk)
-
-    def row_shift_up(self):
-        ii = self.currentRow()
-        kk = self.currentColumn()
-        if ii > 0:
-            cols = self.columnCount()
-            items_below = [self.takeItem(ii, jj) for jj in range(cols)]
-            items_above = [self.takeItem(ii - 1, jj) for jj in range(cols)]
-            [self.setItem(ii, jj, item)
-             for item, jj in zip(items_above, range(cols))]
-            [self.setItem(ii - 1, jj, item)
-             for item, jj in zip(items_below, range(cols))]
-        self.setCurrentCell(ii - 1, kk)
-
-    def row_shift_down(self):
-        ii = self.currentRow()
-        kk = self.currentColumn()
-        if ii < self.rowCount() - 1:
-            cols = self.columnCount()
-            items_below = [self.takeItem(ii + 1, jj) for jj in range(cols)]
-            items_above = [self.takeItem(ii, jj) for jj in range(cols)]
-            [self.setItem(ii + 1, jj, item)
-             for item, jj in zip(items_above, range(cols))]
-            [self.setItem(ii, jj, item)
-             for item, jj in zip(items_below, range(cols))]
-        self.setCurrentCell(ii + 1, kk)
-
-    def reset(self):
-        for ii in range(self.rowCount()):
-            self.removeRow(0)
-
-    def export_data(self):
-        return [
-            [
-                self.item(
-                    ii,
-                    jj).data(
-                    qc.Qt.ItemDataRole.UserRole) for jj in range(
-                    self.data_class.column_count())] for ii in range(
-                        self.rowCount())]
-
-
-class Delegate(qg.QStyledItemDelegate):
-
-    def __init__(self, data_class, parent=None):
-        super(Delegate, self).__init__(parent)
-        self.data_class = data_class
-
-    def createEditor(self, parent, option, index):
-        return self.data_class.create_editor(parent, option, index, self)
-
-    def commitAndCloseEditor(self):
-        editor = self.sender()
-        self.commitData.emit(editor)
-        self.closeEditor.emit(editor, qg.QAbstractItemDelegate.NoHint)
-
-    def updateEditorGeometry(self, editor, option, index):
-        return self.data_class.update_editor_geometry(editor, option, index)
-
-    def setEditorData(self, editor, index):
-        return self.data_class.set_editor_data(editor, index, self)
-
-    def setModelData(self, editor, model, index):
-        return self.data_class.set_model_data(editor, model, index, self)
-
-
 class Row(object):
 
     def __init__(self):
         self.elements = []
 
+    @property
     def column_count(self):
         return len(self.elements)
 
@@ -213,8 +91,12 @@ class Row(object):
         element = self.elements[ii]
         return element.set_model_data(editor, model, index, delegate)
 
+    @property
     def header_labels(self):
         return [element.name for element in self.elements]
+
+    def cell_clicked(self,*args,**kwargs):
+        pass
 
 
 class Element(object):
@@ -358,34 +240,6 @@ class FloatElement(Element):
         return editor
 
 
-class TableControl(qg.QWidget):
-
-    def __init__(self, table, *args, **kwargs):
-        super(TableControl, self).__init__(*args, **kwargs)
-        main_layout = qg.QHBoxLayout()
-
-        button_add = qg.QPushButton('+')
-        button_remove = qg.QPushButton('-')
-        button_up = qg.QPushButton('up')
-        button_down = qg.QPushButton('down')
-
-        button_add.clicked.connect(table.row_add_empty)
-        button_remove.clicked.connect(table.row_remove)
-        button_up.clicked.connect(table.row_shift_up)
-        button_down.clicked.connect(table.row_shift_down)
-
-        sublayout1 = qg.QVBoxLayout()
-        sublayout1.addWidget(button_add)
-        sublayout1.addWidget(button_remove)
-        sublayout1.addStretch()
-        sublayout1.addWidget(button_up)
-        sublayout1.addWidget(button_down)
-
-        main_layout.addWidget(table)
-        main_layout.addLayout(sublayout1)
-        self.setLayout(main_layout)
-
-
 if __name__ =='__main__':
     import sys
     app = qg.QApplication(sys.argv)
@@ -401,7 +255,7 @@ if __name__ =='__main__':
             elements.append(FloatElement('damping'))
             elements.append(FloatElement('preload'))
             self.elements = elements
-    table = Table(JointRow(lambda:range(10),lambda:range(5)))
+    table = Table(JointRow(lambda:range(10),lambda:range(5)),Delegate)
     tc = TableControl(table)
     tc.show()
     sys.exit(app.exec_)
