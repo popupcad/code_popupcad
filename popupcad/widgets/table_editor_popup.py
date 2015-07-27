@@ -9,6 +9,7 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.widgets.table_common import TableControl,Table
 import popupcad
+from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
 class UneditableItem(qg.QTableWidgetItem):
     def __init__(self,*args,**kwargs):
@@ -146,16 +147,62 @@ class SingleListDialog(qg.QDialog):
         results = []
         for ii in range(self.listwidget.count()):
             lwi = self.listwidget.item(ii)
-            lwi.setSelected(False)
-            data = lwi.data(qc.Qt.ItemDataRole.UserRole)
             if lwi.isSelected():
+                data = lwi.data(qc.Qt.ItemDataRole.UserRole)
                 results.append(data)
         return results
 
+class SingleListDialog_old(SingleListDialog):
+    def set_data(self,ini):
+        for ii in range(self.listwidget.count()):
+            lwi = self.listwidget.item(ii)
+            lwi.setSelected(False)
+            data = lwi.data(qc.Qt.ItemDataRole.UserRole)
+            if data == ini:
+                lwi.setSelected(True)
+                
+    def results(self):
+        for ii in range(self.listwidget.count()):
+            lwi = self.listwidget.item(ii)
+            if lwi.isSelected():
+                data = lwi.data(qc.Qt.ItemDataRole.UserRole)
+                return data
+        return None
+        
 class MultiListDialog(SingleListDialog):
     def __init__(self, *args,**kwargs):
         super(MultiListDialog, self).__init__(*args, **kwargs)
         self.listwidget.setSelectionMode(self.listwidget.SelectionMode.MultiSelection)
+
+class DraggableTreeDialog(qg.QDialog):
+    def __init__(self, list_in, *args, **kwargs):
+        super(DraggableTreeDialog, self).__init__(*args, **kwargs)
+        self.listwidget = DraggableTreeWidget()
+
+        button_ok = qg.QPushButton('Ok')
+        button_cancel = qg.QPushButton('Cancel')
+        
+        sub_layout1 = qg.QHBoxLayout()
+        sub_layout1.addWidget(button_ok)
+        sub_layout1.addWidget(button_cancel)
+
+        layout = qg.QVBoxLayout()
+        layout.addWidget(self.listwidget)
+        layout.addLayout(sub_layout1)
+
+        self.setLayout(layout)
+        button_ok.clicked.connect(self.accept)
+        button_cancel.clicked.connect(self.reject)
+
+        self.listwidget.linklist(list_in)
+
+    def set_data(self,ini):
+        self.listwidget.selectIndeces(ini)
+
+    def results(self):
+        return self.listwidget.currentIndeces2()
+        
+        
 
 class TextElement(object):
     def __init__(self,name,ini=''):
@@ -174,6 +221,24 @@ class FloatElement(object):
     def build_editor(self):
         dialog = FloatDialog()
         return dialog
+
+class SingleItemListElement_old(object):
+    def __init__(self,name,list_getter,ini=None):
+        self.name = name
+        self.my_list = list_getter
+        self.ini = ini
+
+    def build_editor(self):
+        dialog = SingleListDialog_old(self.my_list)
+        return dialog
+
+    @property
+    def my_list(self):
+        return self._get_list()
+
+    @my_list.setter
+    def my_list(self,val):
+        self._get_list = val
 
 class SingleItemListElement(object):
     def __init__(self,name,list_getter,ini=None):
@@ -194,11 +259,16 @@ class SingleItemListElement(object):
 
     @my_list.setter
     def my_list(self,val):
-        self._get_list = val
+        self._get_list = val        
         
 class MultiItemListElement(SingleItemListElement):
     def build_editor(self):
         dialog = MultiListDialog(self.my_list)
+        return dialog
+
+class DraggableTreeElement(SingleItemListElement):
+    def build_editor(self):
+        dialog = DraggableTreeDialog(self.my_list)
         return dialog
 
 if __name__ =='__main__':
@@ -215,7 +285,6 @@ if __name__ =='__main__':
             elements.append(FloatElement('damping'))
             elements.append(FloatElement('preload'))
             self.elements = elements
-
 
     app = qg.QApplication(sys.argv)
 #    dialog = Dialog1()

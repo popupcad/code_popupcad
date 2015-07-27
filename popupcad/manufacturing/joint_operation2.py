@@ -13,7 +13,7 @@ from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
 import popupcad
 from popupcad.filetypes.laminate import Laminate
-from popupcad.widgets.table_editor_delegate import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row,Delegate
+from popupcad.widgets.table_editor_popup import Table, SingleItemListElement,SingleItemListElement_old, MultiItemListElement, FloatElement, Row,Delegate
 
 try:
     import itertools.izip as zip
@@ -24,8 +24,8 @@ class JointRow(Row):
 
     def __init__(self, get_sketches, get_layers):
         elements = []
-        elements.append(SingleItemListElement('joint sketch', get_sketches))
-        elements.append(SingleItemListElement('joint layer', get_layers))
+        elements.append(SingleItemListElement_old('joint sketch', get_sketches))
+        elements.append(SingleItemListElement_old('joint layer', get_layers))
         elements.append(MultiItemListElement('sublaminate layers', get_layers))
         elements.append(FloatElement('hinge width'))
         elements.append(FloatElement('stiffness'))

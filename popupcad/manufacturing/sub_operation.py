@@ -7,9 +7,8 @@ Please see LICENSE.txt for full license.
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.filetypes.operation2 import Operation2
-from popupcad.widgets.table_editor_delegate import Table, SingleItemListElement, Row, TableControl, DraggableTreeElement,Delegate
+from popupcad.widgets.table_editor_popup import Table, SingleItemListElement, SingleItemListElement_old,Row, TableControl, DraggableTreeElement,Delegate
 from popupcad.widgets.listmanager import DesignListManager
-
 
 class InputData(object):
 
@@ -17,19 +16,16 @@ class InputData(object):
         self.ref1 = ref1
         self.ref2 = ref2
 
-
 class SketchData(object):
 
     def __init__(self, ref1, ref2):
         self.ref1 = ref1
         self.ref2 = ref2
 
-
 class OutputData(object):
 
     def __init__(self, ref1):
         self.ref1 = ref1
-
 
 class InputRow(Row):
 
@@ -39,15 +35,13 @@ class InputRow(Row):
         elements.append(DraggableTreeElement('replace with', get_layers))
         self.elements = elements
 
-
 class SketchRow(Row):
 
     def __init__(self, get_sketches, get_layers):
         elements = []
-        elements.append(SingleItemListElement('to replace', get_sketches))
-        elements.append(SingleItemListElement('replace with', get_layers))
+        elements.append(SingleItemListElement_old('to replace', get_sketches))
+        elements.append(SingleItemListElement_old('replace with', get_layers))
         self.elements = elements
-
 
 class OutputRow(Row):
 
