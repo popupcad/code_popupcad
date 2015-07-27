@@ -62,14 +62,8 @@ class MainWidget(qg.QDialog):
 
         self.designwidget = DesignListManager(design)
 
-        self.input_table = Table(
-            InputRow(
-                self.get_subdesign_operations,
-                self.get_operations),Delegate)
-        self.sketch_table = Table(
-            SketchRow(
-                self.get_subdesign_sketches,
-                self.get_sketches),Delegate)
+        self.input_table = Table(InputRow(self.get_subdesign_operations,self.get_operations),Delegate)
+        self.sketch_table = Table(SketchRow(self.get_subdesign_sketches,self.get_sketches),Delegate)
         self.output_table = Table(OutputRow(self.get_subdesign_operations),Delegate)
 
         self.sketch_control = TableControl(self.sketch_table, self)
