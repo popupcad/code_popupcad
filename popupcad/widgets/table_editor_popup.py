@@ -96,7 +96,7 @@ class TextDialog(qg.QDialog):
 class FloatDialog(TextDialog):
     bottom = -1e6
     top = 1e6
-    decimals = popupcad.distinguishable_number_difference
+    decimals = popupcad.geometry_round_value
     
     def __init__(self, *args,**kwargs):
         super(FloatDialog, self).__init__(*args, **kwargs)

@@ -10,6 +10,7 @@ from . import cleanup3
 from . import cross_section
 from . import freeze
 from . import joint_operation2
+from . import joint_operation3
 from . import laminateoperation2
 from . import layerop2
 from . import locateoperation3
