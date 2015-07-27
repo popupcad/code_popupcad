@@ -22,4 +22,5 @@ from . import shiftflip4
 from . import simplesketchoperation
 from . import simplify2
 from . import sub_operation
+from . import sub_operation2
 from . import transform
