@@ -14,12 +14,14 @@ import scipy.linalg
 import popupcad
 from dev_tools.enum import enum
 
-internal_argument_scaling = popupcad.internal_argument_scaling
-
-
 class Variable(sympy.Symbol):
     pass
 
+class UnknownType(Exception):
+    pass        
+        
+class WrongArguments(Exception):
+    pass        
 
 class ConstraintSystem(object):
     atol = 1e-10
@@ -46,7 +48,7 @@ class ConstraintSystem(object):
         listout = []
         for item in variables:
             listout.append(ini[item])
-        return listout
+        return numpy.array(listout)
 
     def copy(self):
         new = ConstraintSystem()
@@ -76,155 +78,152 @@ class ConstraintSystem(object):
         return ini, vertexdict
 
     def regenerate(self):
-        self.generated_variables = self.regenerate_inner()
+        del self.generated_variables
+        self.generated_variables
+        
+    @property
+    def generated_variables(self):
+        try:
+            return self._generated_variables
+        except AttributeError:
+            self._generated_variables = self.regenerate_inner()
+            return self._generated_variables
+    @generated_variables.deleter
+    def generated_variables(self):
+        try:
+            del self._generated_variables
+        except AttributeError:
+            pass
+        
+    def equations(self):
+        equations = [eq for con in self.constraints for eq in con.generated_equations]
+        return equations
+        
+    def variables(self):
+        variables = [item for equation in self.equations() for item in list(equation.atoms(Variable))]
+        variables = sorted(set(variables),key=lambda item:str(item))
+        return variables
 
+    def build_constraint_mappings(self):
+        ii = 0
+        m = len(self.equations())
+        variables = self.variables()
+        for constraint in self.constraints:
+            l=len(constraint.generated_equations)
+            constraint.build_system_mapping(variables,m,range(ii,ii+l))
+            ii+=l
+
+    def constants(self):
+        constants = [item for equation in self.equations() for item in list(equation.atoms(Variable))]
+        constants = sorted(set(constants),key=lambda item:str(item))
+        return constants
+        
     def regenerate_inner(self):
-        from popupcad.geometry.vertex import BaseVertex, ReferenceVertex
-        from popupcad.geometry.line import Line
-
+        ini, vertexdict = self.ini()
+        
         if len(self.constraints) > 0:
             objects = self.vertex_builder()
             if len(objects) > 0:
-                variables, qout = [], []
+                equations = self.equations()
+                num_equations = len(equations)
+                
+                equations_matrix = sympy.Matrix(self.equations())
+                variables = self.variables()
+                num_variables = len(variables)
 
-#                staticvertices = []
-#                for item in objects:
-#                    if isinstance(item, ReferenceVertex):
-#                        staticvertices.append(item)
-#                    elif isinstance(item, Line):
-#                        if isinstance(item.vertex1, ReferenceVertex):
-#                            staticvertices.append(item.vertex1)
-#                        if isinstance(item.vertex2, ReferenceVertex):
-#                            staticvertices.append(item.vertex2)
-#                constants = []
-#                for item in staticvertices:
-#                    constants.extend(SymbolicVertex(item.id).p()[:2])
-#                constants = list(set(constants))
-
-                constraint_eqs = sympy.Matrix(
-                    [equation for constraint in self.constraints for equation in constraint.generated_equations()])
-                allvariables = list(set(
-                    [item for equation in constraint_eqs for item in list(equation.atoms(Variable))]))
-#                constants_in_eq = list(
-#                    set(constants).intersection(allvariables))
-                constants_in_eq = []
-#                variables = list(set(allvariables) - set(constants_in_eq))
-                variables = allvariables[:]
-                J = constraint_eqs.jacobian(sympy.Matrix(variables))
-
-                f_constraints1 = sympy.utilities.lambdify(
-                    constants_in_eq,
-                    constraint_eqs)
-                f_J_1 = sympy.utilities.lambdify(constants_in_eq, J)
-
-                ini, vertexdict = self.ini()
-                constvals = self.inilist(constants_in_eq, ini)
-
-                f_constraints2 = sympy.utilities.lambdify(
-                    variables,
-                    sympy.Matrix(
-                        f_constraints1(
-                            *
-                            constvals)))
-                f_J_2 = sympy.utilities.lambdify(
-                    variables,
-                    sympy.Matrix(
-                        f_J_1(
-                            *
-                            constvals)))
-
+                self.build_constraint_mappings()
+                
                 def dq(q):
                     qlist = q.flatten().tolist()
-                    zero = f_constraints2(*(qlist))
-                    zero = numpy.array(zero[:]).flatten()
-                    n = len(zero)
-                    m = len(q)
-                    if m > n:
-                        zero = numpy.r_[zero, [0] * (m - n)]
+
+                    zero = numpy.zeros(num_equations,dtype=float)
+                    for constraint in self.constraints:
+                        result = constraint.mapped_f_constraints(*qlist[:])
+                        zero+=result
+
+                    if num_variables > num_equations:
+                        zero = numpy.r_[zero.flatten, [0] * (num_variables - num_equations)]
                     return zero
 
                 def j(q):
                     qlist = q.flatten().tolist()
-                    jnum = f_J_2(*(qlist))
-                    jnum = numpy.array(jnum[:])
-                    m, n = jnum.shape
-                    if n > m:
-                        jnum = numpy.r_[jnum, numpy.zeros((n - m, n))]
+
+                    jnum = numpy.zeros((num_equations,num_variables))
+                    for constraint in self.constraints:
+                        jnum+=constraint.mapped_f_jacobian(*qlist[:])
+                    
+                    if num_variables > num_equations:
+                        jnum = numpy.r_[jnum, numpy.zeros((num_variables - num_equations, num_variables))]
                     return jnum
-                return dq, variables, j, vertexdict, constraint_eqs, constants_in_eq, allvariables
 
+                return dq, variables, j, vertexdict, equations_matrix
+
+        return None
+        
     def update(self):
-        try:
-            dq, variables, j, vertexdict, constraint_eqs, constants_in_eq, allvariables = self.generated_variables
+        if self.generated_variables is None:
+            pass
+        else:
+            dq, variables, j, vertexdict, equations_matrix = self.generated_variables
             ini, vertexdict = self.ini()
-            qout = scipy.optimize.root(
-                dq,
-                numpy.array(
-                    self.inilist(
-                        variables,
-                        ini)),
-                jac=j,
-                tol=self.atol,
-                method='lm')
+            q0 = self.inilist(variables,ini)
+            qout = scipy.optimize.root(dq,q0,jac=j,tol=self.atol,method='lm')
             qout = qout.x.tolist()
-#            qout = self.inilist(variables,ini)
 
-    #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-    #            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-    #            qout = qout.tolist()
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
-    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
-    #            qout = qout.x.tolist()
+#            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+#            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+#            qout = qout.tolist()
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
+#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
+#            qout = qout.x.tolist()
 
             for ii, variable in enumerate(variables):
                 vertexdict[variable].setsymbol(variable, qout[ii])
-        except (AttributeError, TypeError):
-            pass
+#        except (AttributeError, TypeError):
+#            pass
 
+    def update_selective(self,vertices):
+        self.update()
+        
     def constrained_shift(self, items):
         ini, vertexdict = self.ini()
-        try:
-            dq, variables, j, vertexdict, constraint_eqs, constants_in_eq, allvariables = self.generated_variables
-
+        if self.generated_variables is None:
+            for vertex, dxdy in items:
+                vertex.shift(dxdy)
+        else:
+            dq, variables, j, vertexdict, equations_matrix = self.generated_variables
+    
             dx_dict = {}
             for vertex, dxdy in items:
-                #            vertex.shift(dxdy)
                 key_x, key_y = vertex.constraints_ref().p()[:2]
                 dx_dict[key_x] = dxdy[0]
                 dx_dict[key_y] = dxdy[1]
-
+    
             dx = numpy.zeros(len(variables))
             for key in dx_dict:
                 if key in variables:
                     dx[variables.index(key)] = dx_dict[key]
-                elif key in allvariables:
-                    pass
                 else:
                     vertexdict[key].setsymbol(key, ini[key] + dx_dict[key])
-
+    
             x0 = numpy.array(self.inilist(variables, ini))
             Jnum = j(x0)
             L, S, R = scipy.linalg.svd(Jnum)
             aS = abs(S)
             m = (aS > (aS[0] / 100)).sum()
-            n = len(variables)
-            d = n - m
-
+    
             rnull = R[m:]
             lnull = ((rnull**2).sum(1))**.5
             comp = ((rnull * dx).sum(1)) / lnull
             x_motion = (comp * rnull.T).sum(1)
-
+    
             x = x0 + x_motion
-
+    
             for ii, variable in enumerate(variables):
                 vertexdict[variable].setsymbol(variable, x[ii])
-        except (AttributeError, TypeError):
-            for vertex, dxdy in items:
-                vertex.shift(dxdy)
-
+#
     def cleanup(self):
         sketch_objects = self.vertex_builder()
         for ii in range(len(self.constraints))[::-1]:
@@ -239,7 +238,7 @@ class ExactlyTwoPoints(object):
         return len(set(self.vertex_ids + self.vertices_in_lines())) == 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need exactly two points')
 
 
 class AtLeastTwoPoints(object):
@@ -248,7 +247,7 @@ class AtLeastTwoPoints(object):
         return len(set(self.vertex_ids + self.vertices_in_lines())) >= 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least two points')
 
 
 class ExactlyTwoLines(object):
@@ -257,7 +256,7 @@ class ExactlyTwoLines(object):
         return len(self.segment_ids) == 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need exactly two lines')
 
 
 class AtLeastTwoLines(object):
@@ -266,7 +265,7 @@ class AtLeastTwoLines(object):
         return len(self.segment_ids) >= 2
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least two lines')
 
 
 class AtLeastOneLine(object):
@@ -275,7 +274,7 @@ class AtLeastOneLine(object):
         return len(self.segment_ids) >= 1
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least one line')
 
 
 class ExactlyOnePointOneLine(object):
@@ -284,7 +283,7 @@ class ExactlyOnePointOneLine(object):
         return len(self.segment_ids) == 1 and len(self.vertex_ids) == 1
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need exactly one point and one line')
 
 
 class AtLeastOnePoint(object):
@@ -293,7 +292,7 @@ class AtLeastOnePoint(object):
         return len(set(self.vertex_ids + self.vertices_in_lines())) >= 1
 
     def throwvalidityerror(self):
-        raise Exception
+        raise WrongArguments('Need at least one point')
 
 
 class SymbolicVertex(object):
@@ -351,8 +350,6 @@ class Constraint(object):
         self.vertex_ids = vertex_ids
         self.segment_ids = segment_ids
         self.id = id(self)
-#        self.init_symbolics()
-#        self.generate_equations()
 
     def init_symbolics(self):
         self._vertices = [SymbolicVertex(id) for id in self.vertex_ids]
@@ -366,24 +363,97 @@ class Constraint(object):
 
     @classmethod
     def new(cls, *objects):
-        temp = cls._define_internals(*objects)
-        obj = cls(*temp)
+        obj = cls(*cls._define_internals(*objects))
         if not obj.valid():
             obj.throwvalidityerror()
         return obj
-
+    
+    @property
     def generated_equations(self):
         try:
             return self._generated_equations
         except AttributeError:
-            self.generate_equations()
+            self._generated_equations = self.symbolic_equations()
             return self._generated_equations
 
-    def generate_equations(self):
-        self._generated_equations = self.equations()
+    @generated_equations.deleter
+    def generated_equations(self):
+        del self._generated_equations
 
+        try:
+            del self._f_constraints
+        except AttributeError:
+            pass
+
+        try:
+            del self._f_J
+        except AttributeError:
+            pass
+    
+    @property
+    def f_jacobian(self):
+        try:
+            return self._f_jacobian
+        except AttributeError:
+            self._f_jacobian = sympy.utilities.lambdify(self.variables(),self.jacobian().tolist())
+            return self._f_jacobian
+            
+    @property
+    def f_constraints(self):
+        try:
+            return self._f_constraints
+        except AttributeError:
+            self._f_constraints = sympy.utilities.lambdify(self.variables(),self.generated_equations)
+            return self._f_constraints
+            
+    def mapped_f_constraints(self,*args):
+        args = (self._B.dot(args))     
+        y = self._A.dot(self.f_constraints(*args))
+        return y
+
+    def mapped_f_jacobian(self,*args):
+        args = (self._B.dot(args))
+        y = self._A.dot(self.f_jacobian(*args)).dot(self._B)
+        return y
+
+    def variables(self):
+        variables = []
+        for equation in self.generated_equations:
+            variables.extend(equation.atoms(Variable))
+        variables = set(variables)
+        variables -= set(self.constants())
+        variables = sorted(variables,key=lambda var:str(var))
+        return variables
+        
+    def constants(self):
+        return []
+
+    def jacobian(self):
+        eq = sympy.Matrix(self.generated_equations)        
+        J = eq.jacobian(self.variables())
+        return J
+
+    def build_system_mapping(self,sys_vars,num_eq,eq_indeces):
+        m = num_eq
+        n = len(self.generated_equations)
+        o = len(self.variables())
+        p = len(sys_vars)
+
+        A = numpy.zeros((m,n))
+        for ii,jj in zip(eq_indeces,range(len(self.generated_equations))):
+            A[ii,jj] = 1
+
+        B = numpy.zeros((o,p))
+        for ii,item in enumerate(self.variables()):
+            jj = sys_vars.index(item)
+            B[ii,jj] = 1
+
+        self._A = A
+        self._B = B
+#        return A,B
+    
     def copy(self, identical=True):
-        new = type(self)(self.vertex_ids, self.segment_ids)
+        new = type(self)(self.vertex_ids[:], self.segment_ids[:])
         if identical:
             new.id = self.id
         return new
@@ -411,7 +481,7 @@ class Constraint(object):
             if isinstance(item, BaseVertex):
                 vertex_ids.append(item.id)
                 vertices.append(item.constraints_ref())
-            if isinstance(item, Line):
+            elif isinstance(item, Line):
                 segment_ids.append(
                     tuple(
                         sorted(
@@ -422,6 +492,8 @@ class Constraint(object):
 
                 segments.append(item.constraints_ref())
                 segment_vertices.extend(item.vertex_constraints_ref())
+            else:
+                print('wrong thing supplied')
         return vertex_ids, segment_ids
 
     def vertices_in_lines(self):
@@ -451,7 +523,7 @@ class Constraint(object):
             self.init_symbolics()
             return self._vertices
 
-    def equations(self):
+    def symbolic_equations(self):
         return []
 
     def properties(self):
@@ -476,7 +548,6 @@ class Constraint(object):
                 segment_ids.append((id1, id2))
         self.segment_ids = segment_ids
 
-
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'
 
@@ -486,22 +557,18 @@ class ValueConstraint(Constraint):
         self.value = value
 
         self.id = id(self)
-#        self.init_symbolics()
-
-#        self.generate_equations()
 
     @classmethod
     def new(cls, *objects):
         value, ok = cls.getValue()
         if ok:
-            vertex_ids, segment_ids = cls._define_internals(*objects)
-            obj = cls(value, vertex_ids, segment_ids)
+            obj = cls(value, *cls._define_internals(*objects))
             if not obj.valid():
                 obj.throwvalidityerror()
             return obj
 
     def copy(self, identical=True):
-        new = type(self)(self.value, self.vertex_ids, self.segment_ids)
+        new = type(self)(self.value, self.vertex_ids[:], self.segment_ids[:])
         if identical:
             new.id = self.id
         return new
@@ -516,7 +583,7 @@ class ValueConstraint(Constraint):
             None, "Edit Value", "Value:", self.value, -10000, 10000, 5)
         if ok:
             self.value = value
-        self.generate_equations()
+        del self.generated_equations
 
 
 class fixed(Constraint, AtLeastOnePoint):
@@ -527,8 +594,6 @@ class fixed(Constraint, AtLeastOnePoint):
         self.segment_ids = []
         self.values = values
         self.id = id(self)
-#        self.init_symbolics()
-#        self.generate_equations()
 
     @classmethod
     def new(cls, *objects):
@@ -562,7 +627,7 @@ class fixed(Constraint, AtLeastOnePoint):
             new.id = self.id
         return new
 
-    def equations(self):
+    def symbolic_equations(self):
         eqs = []
         for vertex, val in zip(self.getvertices(), self.values):
             eqs.append(vertex.p()[0] - val[0])
@@ -573,7 +638,7 @@ class fixed(Constraint, AtLeastOnePoint):
 class horizontal(Constraint, AtLeastTwoPoints):
     name = 'horizontal'
 
-    def equations(self):
+    def symbolic_equations(self):
         vertices = self.getallvertices()
         eqs = []
         vertex0 = vertices.pop(0)
@@ -586,7 +651,7 @@ class horizontal(Constraint, AtLeastTwoPoints):
 class vertical(Constraint, AtLeastTwoPoints):
     name = 'vertical'
 
-    def equations(self):
+    def symbolic_equations(self):
         vertices = self.getallvertices()
         eqs = []
         vertex0 = vertices.pop(0)
@@ -599,7 +664,7 @@ class vertical(Constraint, AtLeastTwoPoints):
 class distance(ValueConstraint, ExactlyTwoPoints):
     name = 'distance'
 
-    def equations(self):
+    def symbolic_equations(self):
         vertices = self.getallvertices()
         p0 = vertices[0].p()
         p1 = vertices[1].p()
@@ -611,14 +676,14 @@ class distance(ValueConstraint, ExactlyTwoPoints):
         else:
             v1 = p1 - p0
             l1 = v1.dot(v1)**.5
-            eq = l1 - self.value * internal_argument_scaling
+            eq = l1 - self.value
             return [eq]
 
 
 class coincident(Constraint, AtLeastTwoPoints):
     name = 'coincident'
 
-    def equations(self):
+    def symbolic_equations(self):
         vertices = self.getallvertices()
         eq = []
         p0 = vertices.pop().p()
@@ -632,31 +697,30 @@ class coincident(Constraint, AtLeastTwoPoints):
 class distancex(ValueConstraint, AtLeastOnePoint):
     name = 'distancex'
 
-    def equations(self):
+    def symbolic_equations(self):
         vertices = self.getallvertices()
         if len(vertices) == 1:
-            eq = vertices[0].p()[0] - self.value * internal_argument_scaling
+            eq = vertices[0].p()[0] - self.value
         else:
             eq = ((vertices[1].p()[0] - vertices[0].p()[0])**2)**.5 - \
-                ((self.value * internal_argument_scaling)**2)**.5
+                ((self.value)**2)**.5
         return [eq]
 
 
 class distancey(ValueConstraint, AtLeastOnePoint):
     name = 'distancey'
 
-    def equations(self):
+    def symbolic_equations(self):
         vertices = self.getallvertices()
         if popupcad.flip_y:
             temp = 1.
         else:
             temp = -1.
         if len(vertices) == 1:
-            eq = vertices[0].p()[1] - self.value * temp * \
-                internal_argument_scaling
+            eq = vertices[0].p()[1] - self.value * temp
         else:
             eq = ((vertices[1].p()[1] - vertices[0].p()[1])**2)**.5 - \
-                ((self.value * internal_argument_scaling)**2)**.5
+                ((self.value)**2)**.5
         return [eq]
 
 
@@ -664,7 +728,7 @@ class angle(ValueConstraint, AtLeastOneLine):
     name = 'angle'
     value_text = 'enter angle(in degrees)'
 
-    def equations(self):
+    def symbolic_equations(self):
         lines = self.getlines()[0:2]
 
         if len(lines) == 1:
@@ -691,7 +755,7 @@ class angle(ValueConstraint, AtLeastOneLine):
 class parallel(Constraint, AtLeastTwoLines):
     name = 'parallel'
 
-    def equations(self):
+    def symbolic_equations(self):
         lines = self.getlines()
         v1 = lines.pop(0).v()
         eq = []
@@ -704,7 +768,7 @@ class parallel(Constraint, AtLeastTwoLines):
 class equal(Constraint, AtLeastTwoLines):
     name = 'equal'
 
-    def equations(self):
+    def symbolic_equations(self):
         lines = self.getlines()
         vs = [line.v() for line in lines]
         lengths = [v.dot(v)**.5 for v in vs]
@@ -718,7 +782,7 @@ class equal(Constraint, AtLeastTwoLines):
 class perpendicular(Constraint, ExactlyTwoLines):
     name = 'perpendicular'
 
-    def equations(self):
+    def symbolic_equations(self):
         lines = self.getlines()[0:2]
         v1 = lines[0].v()
         v2 = lines[1].v()
@@ -728,7 +792,7 @@ class perpendicular(Constraint, ExactlyTwoLines):
 class PointLine(ValueConstraint, ExactlyOnePointOneLine):
     name = 'PointLineDistance'
 
-    def equations(self):
+    def symbolic_equations(self):
         line = self.getlines()[0]
         p1 = self.getvertices()[0].p()
         v1 = p1 - line.p1()
@@ -745,14 +809,14 @@ class PointLine(ValueConstraint, ExactlyOnePointOneLine):
         else:
             v1 = p1 - p0
             l1 = v1.dot(v1)**.5
-            eq = l1 - self.value * internal_argument_scaling
+            eq = l1 - self.value
             return [eq]
 
 
 class LineMidpoint(Constraint, ExactlyOnePointOneLine):
     name = 'Line Midpoint'
 
-    def equations(self):
+    def symbolic_equations(self):
         line = self.getlines()[0]
         p1 = self.getvertices()[0].p()
         p0 = (line.p1() + line.p2()) / 2
@@ -763,7 +827,12 @@ class LineMidpoint(Constraint, ExactlyOnePointOneLine):
         return eq
 
 if __name__ == '__main__':
-    a = SymbolicVertex(123)
-    b = SymbolicVertex(234)
-    c = tuple(sorted((a, b)))
-    d = tuple(sorted((a, b)))
+#    a = SymbolicVertex(1)
+#    b = SymbolicVertex(2)
+#    c = SymbolicVertex(3)
+#    d = SymbolicVertex(4)
+    
+#    line1 = a,b
+#    line2 = b,c
+
+    constraint = perpendicular([],[(1,2),(3,4)])

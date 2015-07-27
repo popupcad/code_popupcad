@@ -130,7 +130,6 @@ class Sketch(popupCADFile):
                         import numpy
                         points = numpy.array(
                             [entity.dxf.start[:2], entity.dxf.end[:2]])
-                        points *= popupcad.internal_argument_scaling
                         generics.append(
                             GenericLine.gen_from_point_lists(
                                 points.tolist(),
@@ -140,7 +139,6 @@ class Sketch(popupCADFile):
                         from popupcad.filetypes.genericshapes import GenericPoly
                         import numpy
                         points = numpy.array(entity.dxf.points)
-                        points *= popupcad.internal_argument_scaling
                         if entity.is_closed:
                             generics.append(
                                 GenericPoly.gen_from_point_lists(

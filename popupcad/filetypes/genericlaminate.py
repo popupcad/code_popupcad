@@ -51,7 +51,7 @@ class GenericLaminate(popupCADFile):
         return display_geometry_2d
 
     def to_triangles(self):
-        alltriangles = {}
+        triangles_by_layer = {}
         for layer, geoms in self.geoms.items():
             triangles = []
             for geom in geoms:
@@ -59,8 +59,8 @@ class GenericLaminate(popupCADFile):
                     triangles.extend(geom.triangles3())
                 except AttributeError:
                     pass
-            alltriangles[layer] = triangles
-        return alltriangles
+            triangles_by_layer[layer] = triangles
+        return triangles_by_layer
 
     def layers(self):
         return self.layerdef.layers
@@ -161,7 +161,7 @@ class GenericLaminate(popupCADFile):
                 for tri in tris:
                     for point in tri:   
                         #Scales the mesh properly
-                        point = [float(a)/(popupcad.internal_argument_scaling*popupcad.SI_length_scaling) for a in point]
+                        point = [float(a)/(popupcad.SI_length_scaling) for a in point]
                         xvalues.append(point[0])
                         yvalues.append(point[1])
                         zvalues.append(zvalue)
@@ -169,9 +169,8 @@ class GenericLaminate(popupCADFile):
         y = sum(yvalues) / len(yvalues)
         z = sum(zvalues) / len(zvalues)
         out = (x, y, z)
-        return out#[float(a)/popupcad.internal_argument_scaling/popupcad.SI_length_scaling for a in out]
-
-    #TODO REMOVE DEPRECATED CODE        
+        return out#[float(a)/popupcad.SI_length_scaling for a in out]
+        
     def getDensity(self):
         total_densities = sum([layer.density for layer in self.layers()])
         return total_densities / len(self.layers())
@@ -181,7 +180,7 @@ class GenericLaminate(popupCADFile):
         from lxml import etree        
         layerdef = self.layerdef
         tree_tags = []
-        scaling_factor = popupcad.internal_argument_scaling * popupcad.SI_length_scaling
+        scaling_factor = popupcad.SI_length_scaling
         counter = 0
         for layer in layerdef.layers:
             layer_node = etree.Element(tag, name=name_value + "-" + str(counter))
@@ -248,7 +247,6 @@ class GenericLaminate(popupCADFile):
         print(filename + " has been saved")
         os.chdir(old_path) #Change back to old directory
         
-
     #Allows the laminate to get exported as a DAE.
     def toDAE(self):
         """
@@ -262,7 +260,7 @@ class GenericLaminate(popupCADFile):
             layer_thickness = layer.thickness    
             shapes = self.geoms[layer]
             zvalue = layerdef.zvalue[layer]        
-            height = float(zvalue) #* 100 #* 1/popupcad.internal_argument_scaling
+            height = float(zvalue) #* 100 #* 
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
             for s in shapes:
@@ -287,13 +285,13 @@ class GenericLaminate(popupCADFile):
         vertices = s.extrudeVertices(thickness, z0=layer_num)
         
         #This scales the verticies properly. So that they are in millimeters.
-        vert_floats = [float(x)/(popupcad.internal_argument_scaling*popupcad.SI_length_scaling) for x in vertices] 
+        vert_floats = [float(x)/(popupcad.SI_length_scaling) for x in vertices] 
         vert_src_name = str(self.get_basename()) + "-array"
         vert_src = collada.source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
         geom = collada.geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    
         input_list = collada.source.InputList()
         input_list.addInput(0, 'VERTEX', "#" + vert_src_name)
-        indices = numpy.array(range(0,(len(vertices) / 3)));    
+        indices = numpy.array(range(0,(len(vertices) // 3)));    
         triset = geom.createTriangleSet(indices, input_list, "materialref")
         triset.generateNormals()    
         geom.primitives.append(triset)

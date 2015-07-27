@@ -24,7 +24,6 @@ class BufferOperation2(MultiValueOperation2):
             self.operation_link1).output[
             self.getoutputref()].csg
         return ls1.buffer(
-            self.values[0] *
-            popupcad.internal_argument_scaling*popupcad.csg_processing_scaling,
+            self.values[0] *popupcad.csg_processing_scaling,
             resolution=int(
                 self.values[1]))

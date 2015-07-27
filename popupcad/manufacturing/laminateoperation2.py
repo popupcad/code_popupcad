@@ -90,7 +90,7 @@ class Dialog(qg.QDialog):
 
 
 class LaminateOperation2(Operation2):
-    name = 'Laminate Op'
+    name = 'LaminateOp'
     unaryoperationtypes = ['union', 'intersection']
     pairoperationtypes = ['difference', 'symmetric_difference']
     displayorder = unaryoperationtypes + pairoperationtypes

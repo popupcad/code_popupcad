@@ -91,7 +91,7 @@ class GenericText(object):
 
     def outputshapely(self):
         import popupcad.geometry.customshapely as customshapely
-        dummy, exteriors_p = self.genpath(popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
+        dummy, exteriors_p = self.genpath(popupcad.csg_processing_scaling)
         objs = [
             customshapely.ShapelyPolygon(
                 exterior,
@@ -169,7 +169,7 @@ class TextParent(qg.QGraphicsPathItem, Common):
 #        self.scene().savesnapshot.emit()
 
     def refreshview(self):
-        path, dummy = self.generic.genpath(popupcad.internal_argument_scaling *popupcad.view_scaling)
+        path, dummy = self.generic.genpath(popupcad.view_scaling)
         self.setPath(path)
 
     def mouseDoubleClickEvent(self, event):
@@ -206,10 +206,6 @@ class TextItem(qg.QGraphicsTextItem, Common):
         self.parent.finish_edit()
 
     def updatefont(self):
-        font = qg.QFont(
-            self.generic.font,
-            pointSize=self.generic.fontsize *
-            popupcad.internal_argument_scaling *
-            popupcad.view_scaling)
+        font = qg.QFont(self.generic.font, pointSize=self.generic.fontsize * popupcad.view_scaling)
         font.setStyleStrategy(font.ForceOutline)
         self.setFont(font)

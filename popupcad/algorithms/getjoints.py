@@ -6,15 +6,9 @@ Please see LICENSE.txt for full license.
 """
 
 import popupcad
-import popupcad.algorithms.points as points
 import numpy
-import math
 
-roundvalue = 3
-tolerance = 10**(-roundvalue)
-
-
-def getjoints(geoms):
+def getjoints(geoms,roundvalue,tolerance):
     from popupcad.geometry.vertex import ShapeVertex
     from popupcad.filetypes.genericshapes import GenericLine
 

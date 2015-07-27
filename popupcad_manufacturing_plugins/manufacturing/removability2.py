@@ -11,7 +11,7 @@ import popupcad_manufacturing_plugins.algorithms as algorithms
 
 
 class Removability2(MultiValueOperation3):
-    name = 'Removability KeepOut'
+    name = 'Removability'
     valuenames = []
     defaults = []
     keepout_types = enum.enum(

@@ -182,7 +182,7 @@ class MainWidget(qg.QDialog):
 
 class SubOperation(Operation2):
     resolution = 2
-    name = 'Sub-Operation'
+    name = 'SubOp'
 
     def copy(self):
         new = type(self)(

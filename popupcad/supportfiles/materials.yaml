@@ -2,7 +2,7 @@ default_material_types:
   adhesive: !!python/object:popupcad.filetypes.material2.Material2
     E1: 1
     E2: 1
-    color: !!python/tuple [0.68359375, 0.31640625, 0.31640625, 0.2]
+    color: !!python/tuple [0.68359375, 0.31640625, 0.31640625, 0.5]
     density: 1
     id: 43436632
     is_adhesive: true
@@ -14,7 +14,7 @@ default_material_types:
   flexible: !!python/object:popupcad.filetypes.material2.Material2
     E1: 1
     E2: 1
-    color: !!python/tuple [1., 1., 0., .2]
+    color: !!python/tuple [1., 1., 0., .5]
     density: 1
     id: 43434840
     is_adhesive: false
@@ -26,7 +26,7 @@ default_material_types:
   rigid: !!python/object:popupcad.filetypes.material2.Material2
     E1: 1
     E2: 1
-    color: !!python/tuple [.2, 0.2, 0.2, .2]
+    color: !!python/tuple [.2, 0.2, 0.2, .5]
     density: 1
     id: 43405096
     is_adhesive: false

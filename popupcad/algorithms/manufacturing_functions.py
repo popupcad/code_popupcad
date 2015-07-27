@@ -50,8 +50,7 @@ def cross_section(layerdef, sketch, parent, scale_value):
                 #                for ii,layer in enumerate(result):
                 yshift = layerdef.zvalue[layerid] * popupcad.csg_processing_scaling * scale_value
                 layer = result.layer_sequence[layerid]
-                thickness = layerid.thickness * \
-                    popupcad.internal_argument_scaling * popupcad.csg_processing_scaling * scale_value
+                thickness = layerid.thickness * popupcad.csg_processing_scaling * scale_value
                 newgeoms = [item for item in layer.geoms]
                 newgeoms = [aff.affine_transform(item, a) for item in newgeoms]
 #                    newgeoms = [item.buffer(bufferval) for item in newgeoms]

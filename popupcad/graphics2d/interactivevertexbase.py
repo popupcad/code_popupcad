@@ -160,6 +160,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
 
     def mousePressEvent(self, event):
         self.changed_trigger = True
+        self.moved_trigger = False
         self.updatestate(self.states.state_pressed)
         self.scene().itemclicked.emit(self.get_generic())
         super(InteractiveVertexBase, self).mousePressEvent(event)
@@ -168,6 +169,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         import numpy
         if self.changed_trigger:
             self.changed_trigger = False
+            self.moved_trigger = True
             self.scene().savesnapshot.emit()
         dp = event.scenePos() - event.lastScenePos()
         dp = tuple(numpy.array(dp.toTuple()) / popupcad.view_scaling)
@@ -178,7 +180,9 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         super(InteractiveVertexBase, self).mouseReleaseEvent(event)
         self.updatestate(self.states.state_hover)
         self.changed_trigger = False
-        self.scene().refresh_request.emit()
+        if self.moved_trigger:
+            self.moved_trigger = False
+            self.scene().constraint_update_request.emit(self.generic)
 
     def setPos(self, pos):
         import numpy
@@ -204,11 +208,19 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         pos = qc.QPointF(*postuple)
         super(InteractiveVertexBase, self).setPos(pos)
 
-    def setcustomscale(self, scale):
-        self.setScale(scale)
+    def set_view_scale(self, view_scale):
+        self._view_scale = view_scale
+        self.setScale(view_scale)
+    def get_view_scale(self):
+        try:
+            return self._view_scale
+        except AttributeError:
+            self._view_scale = 1
+            return self._view_scale
+    view_scale = property(get_view_scale,set_view_scale)
 
     def updatescale(self):
         try:
-            self.setcustomscale(1 / self.scene().views()[0].zoom())
+            self.set_view_scale(1 / self.scene().views()[0].zoom())
         except AttributeError:
             pass

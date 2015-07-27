@@ -111,8 +111,7 @@ class Assembly(popupCADFile):
                                 b1,
                                 R2,
                                 b2,
-                                scalefactor *
-                                popupcad.internal_argument_scaling) for interior in loops]
+                                scalefactor) for interior in loops]
 
                         a = [
                             GenericPoly.gen_from_point_lists(
@@ -123,7 +122,7 @@ class Assembly(popupCADFile):
                             b = [
                                 item.simplify(
                                     cleanup *
-                                    popupcad.internal_argument_scaling*popupcad.csg_processing_scaling) for item in b]
+                                    popupcad.csg_processing_scaling) for item in b]
                         c = b.pop(0)
                         for item in b:
                             c = c.symmetric_difference(item)
@@ -133,7 +132,7 @@ class Assembly(popupCADFile):
                             [
                                 item.buffer(
                                     bufferval *
-                                    popupcad.internal_argument_scaling*popupcad.csg_processing_scaling,
+                                    popupcad.csg_processing_scaling,
                                     resolution=popupcad.default_buffer_resolution) for item in d])
                         f = [
                             GenericShapeBase.genfromshapely(item) for item in e]

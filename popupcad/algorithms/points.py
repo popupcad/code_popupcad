@@ -6,17 +6,22 @@ Please see LICENSE.txt for full license.
 """
 import numpy
 
-
 def twopointsthesame(pt1, pt2, tolerance):
     v = numpy.array(pt2) - numpy.array(pt1)
     l = v.dot(v)**.5
     return l < tolerance
 
+def rounded_equal(pt1,pt2,decimal_places):
+    a = numpy.array(pt1).round(decimal_places).tolist()
+    b = numpy.array(pt2).round(decimal_places).tolist()
+    return a==b
+
+def identical(pt1,pt2):
+    return all(numpy.array(pt1) == numpy.array(pt2))
 
 def pointinpoints(pt1, pts, tolerance):
     tests = [twopointsthesame(pt1, pt2, tolerance) for pt2 in pts]
     return True in tests
-
 
 def point_on_line(point, line, tolerance):
     point = numpy.array(point)
@@ -183,18 +188,4 @@ def convert_to_3d(listin):
 
 
 if __name__ == '__main__':
-    #    print(colinear([[0,0],[1,1]],[[.1,.1+.9e-3],[.9,.9]],1e-3))
-    #    print(point_within_line([2,0],[[0,0],[1,0]],1e-3))
-    #    print(colinear([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))
-    #    print(shared_edge([[0,0],[1,1]],[[-.1,-.1+.9e-3],[-.9,-.9]],1e-3))y
-    point = [.001, 0.001]
-    line = [[-1, -1], [1, 1]]
-    tol = 1e-10
-#    print(point_within_line(point,line,tol))
-
-    import random
-    points = [(random.random(), 1.1) for item in range(10)]
-    a = order_vertices(points, 1e-5)
-    segments = []
-    while points:
-        segments.append((points.pop(), points.pop()))
+    pass

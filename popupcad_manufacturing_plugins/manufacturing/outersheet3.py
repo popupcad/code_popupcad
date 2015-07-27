@@ -20,5 +20,5 @@ class OuterSheet3(MultiValueOperation3):
         operation_ref, output_index = self.operation_links['parent'][0]
         ls1 = design.op_from_ref(operation_ref).output[output_index].csg
         ls, dummy = web.supportsheet(design.return_layer_definition(), ls1, self.values[
-                                     0] * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
+                                     0] *popupcad.csg_processing_scaling)
         return ls

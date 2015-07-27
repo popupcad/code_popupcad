@@ -101,7 +101,7 @@ class Dialog(qg.QDialog):
 
 
 class ScrapOperation2(Operation2):
-    name = 'Scrap Operation'
+    name = 'Scrap'
     valuenames = ['device buffer']
     show = []
     defaults = [1.]
@@ -169,7 +169,7 @@ class ScrapOperation2(Operation2):
         device = design.op_from_ref(device_id).output[device_output].csg
 
         removable_both, removable_up, removable_down = removability.generate_removable_scrap(
-            device, sheet, device_buffer=self.values[0] * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling)
+            device, sheet, device_buffer=self.values[0] *popupcad.csg_processing_scaling)
 
         a = OperationOutput(removable_both, 'removable_both', self)
         b = OperationOutput(removable_up, 'removable_up', self)

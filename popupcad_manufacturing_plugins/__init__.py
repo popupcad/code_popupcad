@@ -8,6 +8,10 @@ Please see LICENSE.txt for full license.
 from . import manufacturing
 from . import algorithms
 
+#import external modules
+import PySide
+import numpy
+import shapely
 
 def initialize(program):
     from popupcad.supportfiles import Icon
@@ -29,7 +33,7 @@ def initialize(program):
                     manufacturing.autoweb4.AutoWeb4)}})
     scrap.append(
         {
-            'text': 'Scrap(Beta)',
+            'text': 'Scrap',
             'kwargs': {
                 'icon': Icon('scrap'),
                 'triggered': lambda: program.editor.newoperation(
@@ -54,7 +58,7 @@ def initialize(program):
     other = []
     other.append(
         {
-            'text': 'Keep-outs',
+            'text': 'Keep-out',
             'kwargs': {
                 'icon': Icon('firstpass'),
                 'triggered': lambda: program.editor.newoperation(

@@ -31,8 +31,6 @@ class GenericShapeBase(popupCADFile):
 
     display = ['construction', 'exterior', 'interiors']
     editable = ['construction']
-    roundvalue = 5
-    tolerance = 10.**-(roundvalue - 1)
     shapetypes = enum(
         line='line',
         polyline='polyline',
@@ -50,11 +48,9 @@ class GenericShapeBase(popupCADFile):
         super(GenericShapeBase, self).__init__()
         self.exterior = exterior
         self.interiors = interiors
-
-        self.exterior, self.interiors = self.condition_points(
-            self.exterior, self.interiors)
-
         self.construction = construction
+
+#        self.condition()
 
     def is_valid_bool(self):
         try: 
@@ -196,6 +192,24 @@ class GenericShapeBase(popupCADFile):
         self.exterior.append(vertex)
         self.update_handles()
 
+    def addvertex_exterior_special(self, vertex, special=False):
+        if len(self.get_exterior()) > 2:
+            if special:
+                a = [v.getpos() for v in self.get_exterior()]
+                b = list(zip(a, a[1:] + a[:1]))
+                c = numpy.array(b)
+                d = numpy.array(vertex.getpos())
+                e = c - d
+                f = e.reshape(-1, 4)
+                g = (f**2).sum(1)
+                h = g.argmin()
+                self.insert_exterior_vertex(h + 1, vertex)
+                self.update_handles()
+                return
+        self.append_exterior_vertex(vertex)
+        self.update_handles()
+
+
     def removevertex(self, vertex):
         if vertex in self.exterior:
             ii = self.exterior.index(vertex)
@@ -209,38 +223,61 @@ class GenericShapeBase(popupCADFile):
     def checkedge(self, edge):
         import popupcad.algorithms.points as points
         for pt1, pt2 in zip(edge[:-1], edge[1:]):
-            if points.twopointsthesame(pt1, pt2, self.tolerance):
+            if points.twopointsthesame(pt1, pt2, popupcad.distinguishable_number_difference):
                 raise Exception
 
-    @classmethod
-    def condition_points(cls, exterior, interiors):
-        exterior = cls.remove_redundant_points(exterior)
-        interiors = [
-            cls.remove_redundant_points(interior) for interior in interiors]
-        return exterior, interiors
-
-    @classmethod
-    def remove_redundant_points(cls, points, scaling=1,loop_test = True):
-        newpoints = []
-        if len(points)>0:
-            points = points[:]
-            newpoints.append(points.pop(0))
-            while not not points:
-                newpoint = points.pop(0)
-                if not cls.samepoint(newpoints[-1].getpos(scaling),newpoint.getpos(scaling)):
-                    if len(points)==0 and loop_test:
-                        if not cls.samepoint(newpoints[0].getpos(scaling),newpoint.getpos(scaling)):
-                            newpoints.append(newpoint)
+    @staticmethod
+    def _condition_loop(loop,round_vertices = False, test_rounded_vertices = True, remove_forward_redundancy=True, remove_loop_reduncancy=True,terminate_with_start = False,decimal_places = None):
+        if len(loop)>0:
+            if remove_forward_redundancy:
+                new_loop = [loop.pop(0)]
+                while not not loop:
+                    v1 = new_loop[-1]
+                    v2 = loop.pop(0)
+                    
+                    if test_rounded_vertices:
+                        equal = v1.rounded_is_equal(v2,decimal_places)
                     else:
-                        newpoints.append(newpoint)
-        return newpoints
+                        equal = v1.identical(v2)
+                    
+                    if not equal:
+                        new_loop.append(v2)
+            else:
+                new_loop = loop[:]
+            
+            v1 = new_loop[0]
+            v2 = new_loop[-1]
+            
+            if test_rounded_vertices:
+                equal = v1.rounded_is_equal(v2,decimal_places)
+            else:
+                equal = v1.identical(v2)
+            
+            if terminate_with_start:
+                if not equal:
+                    new_loop.append(v1.copy(identical=False))       
+    
+            if remove_loop_reduncancy:
+                if equal:
+                    new_loop.pop(-1)
+            
+            if round_vertices:
+                new_loop = [item.round(decimal_places) for item in new_loop]
+            return new_loop
+        else:
+            return loop
 
-    @classmethod
-    def samepoint(cls, point1, point2):
-        v = numpy.array(point2) - numpy.array(point1)
-        l = v.dot(v)**.5
-        return l < cls.tolerance
+    def _condition(self,round_vertices = False, test_rounded_vertices = True, remove_forward_redundancy=True, remove_loop_reduncancy=True,terminate_with_start = False,decimal_places = None):
+        self.exterior = self._condition_loop(self.exterior,round_vertices = False, test_rounded_vertices = True, remove_forward_redundancy=True, remove_loop_reduncancy=True,terminate_with_start = False,decimal_places = None)
+        self.interiors = [self._condition_loop(interior,round_vertices = False, test_rounded_vertices = True, remove_forward_redundancy=True, remove_loop_reduncancy=True,terminate_with_start = False,decimal_places = None) for interior in self.interiors]
 
+    def condition_loop(self,loop):
+        return self._condition_loop(loop)
+
+    def condition(self):
+        self.exterior = self.condition_loop(self.exterior)
+        self.interiors = [self.condition_loop(interior) for interior in self.interiors]
+                
     @staticmethod
     def buildvertices(exterior_p, interiors_p):
         exterior = GenericShapeBase.buildvertexlist(exterior_p)
@@ -330,7 +367,7 @@ class GenericShapeBase(popupCADFile):
                              for point in numpy.array(points)])
         return poly
 
-    def shape_is_equal(self, other):
+    def is_equal(self, other):
         if isinstance(self, type(other)):
             if len(
                 self.get_exterior()) == len(
@@ -339,14 +376,14 @@ class GenericShapeBase(popupCADFile):
                     other.get_interiors()):
                 for point1, point2 in zip(
                         self.get_exterior(), other.get_exterior()):
-                    if not point1.is_equal(point2, self.tolerance):
+                    if not point1.is_equal(point2, popupcad.distinguishable_number_difference):
                         return False
                 for interior1, interior2 in zip(
                         self.get_interiors(), other.get_interiors()):
                     if len(interior1) != len(interior2):
                         return False
                     for point1, point2 in zip(interior1, interior2):
-                        if not point1.is_equal(point2, self.tolerance):
+                        if not point1.is_equal(point2, popupcad.distinguishable_number_difference):
                             return False
                 return True
         return False

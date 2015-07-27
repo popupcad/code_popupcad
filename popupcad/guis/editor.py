@@ -32,34 +32,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     operationedited = qc.Signal(object)
     operationadded = qc.Signal(object)
 
-    def loggable(func):
-        def log(self, *args, **kwargs):
-            return func(self, *args, **kwargs)
-#            try:
-#                return func(self, *args, **kwargs)
-#            except Exception as ex:
-#                import traceback
-#                import sys
-#                tb = sys.exc_info()[2]
-#                exception_string = traceback.format_exception(type(ex), ex, tb)
-#                [self.error_log.appendText(item) for item in exception_string]
-#
-#                m = qg.QMessageBox()
-#                m.setIcon(m.Warning)
-#                m.setText(ex.args[0])
-#                try:
-#                    m.setInformativeText(str(ex.args[1]))
-#                except IndexError:
-#                    pass
-#                try:
-#                    m.setDetailedText(str(ex.args[2]))
-#                except IndexError:
-#                    pass
-#                m.exec_()
-#                raise
-
-        return log
-
     def __init__(self, parent=None, **kwargs):
         """Initialize Editor
 
@@ -72,7 +44,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.error_log = popupcad.widgets.errorlog.ErrorLog()
         self.safe_init(parent, **kwargs)
 
-    @loggable
+    
     def safe_init(self, parent=None, **kwargs):
         self.scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
         self.view_2d = popupcad.graphics2d.graphicsview.GraphicsView(
@@ -152,7 +124,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 #                '.cad'))
         self.design.backup(popupcad.backupdir,'_autosave_')
 
-    @loggable
+    
     def importscripts(self):
         self.scriptclasses = []
         searchstring = os.path.normpath(
@@ -164,7 +136,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             module = imp.load_source('module', script)
             self.scriptclasses.append(module.Script(self))
 
-    @loggable
+    
     def createActions(self):
         self.fileactions = []
         self.fileactions.append({'text': "&New",
@@ -336,7 +308,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                         popupcad.manufacturing.simplify2.Simplify2)}})
         self.tools1.append(
             {
-                'text': 'Joints',
+                'text': 'JointOp',
                 'kwargs': {
                     'triggered': lambda: self.newoperation(
                         popupcad.manufacturing.joint_operation2.JointOperation2)}})
@@ -350,7 +322,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                         popupcad.manufacturing.cross_section.CrossSection)}})
         self.tools1.append(
             {
-                'text': 'Sub-Operation',
+                'text': 'SubOp',
                 'kwargs': {
                     'triggered': lambda: self.newoperation(
                         popupcad.manufacturing.sub_operation.SubOperation)}})
@@ -446,7 +418,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     def get_design(self):
         return self.design
 
-    @loggable
+    
     def newoperation(self, operationclass):
         operationclass.new(
             self,
@@ -454,25 +426,25 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.operationeditor.currentRow(),
             self.operationadded)
 
-    @loggable
+    
     def editoperation(self, operation):
         operation.edit(self, self.design, self.operationedited)
 
     def regen_id(self):
         self.design.regen_id()
 
-    @loggable
+    
     def newoperationslot(self, operation):
         self.design.operations.append(operation)
         if self.act_autoreprocesstoggle.isChecked():
             self.reprocessoperations([operation])
 
-    @loggable
+    
     def editedoperationslot(self, operation):
         if self.act_autoreprocesstoggle.isChecked():
             self.reprocessoperations([operation])
 
-    @loggable
+    
     def reprocessoperations_outer(self,operations = None):
         self.reprocessoperations(operations)
         
@@ -487,7 +459,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         finally:
             self.operationeditor.refresh()
 
-    @loggable
+    
     def newfile(self):
         from popupcad.filetypes.layerdef import LayerDef
         import popupcad.filetypes.material2 as materials
@@ -498,7 +470,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.load_design(design)
         self.view_2d.zoomToFit()
 
-    @loggable
+    
     def open(self, filename=None):
         if filename is None:
             design = Design.open(self)
@@ -510,15 +482,15 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 self.reprocessoperations()
             self.view_2d.zoomToFit()
 
-    @loggable
+    
     def save(self):
         return self.design.save(self)
 
-    @loggable
+    
     def saveAs(self, parent=None):
         return self.design.saveAs(self)
 
-    @loggable
+    
     def load_design(self, design):
         self.design = design
         self.operationeditor.blockSignals(True)
@@ -535,7 +507,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.operationeditor.blockSignals(False)
         self.layerlistwidget.blockSignals(False)
 
-    @loggable
+    
     def editlayers(self):
         available_materials = popupcad.filetypes.material2.default_materials+popupcad.user_materials
         window = popupcad.widgets.materialselection.MaterialSelection(
@@ -548,7 +520,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.updatelayerlist()
         self.layerlistwidget.selectAll()
 
-    @loggable
+    
     def editlaminate(self):
         from dev_tools.propertyeditor import PropertyEditor
         dialog = self.builddialog(
@@ -557,7 +529,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         dialog.exec_()
         self.design.return_layer_definition().refreshzvalues()
 
-    @loggable
+    
     def sketchlist(self):
         from popupcad.widgets.listmanager import AdvancedSketchListManager
         widget = AdvancedSketchListManager(self.design)
@@ -565,7 +537,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         dialog.setWindowTitle('Sketches')
         dialog.exec_()
 
-    @loggable
+    
     def subdesigns(self):
         from popupcad.widgets.listmanager import AdvancedDesignListManager
         widget = AdvancedDesignListManager(self.design)
@@ -573,12 +545,12 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         dialog.setWindowTitle('Sub-Designs')
         dialog.exec_()
 
-    @loggable
+    
     def updatelayerlist(self):
         self.layerlistwidget.linklist(
             self.design.return_layer_definition().layers)
 
-    @loggable
+    
     def showcurrentoutput(self):
         if len(self.design.operations)>0:
             selected_indeces = self.operationeditor.currentIndeces2()
@@ -589,7 +561,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 self.operationeditor.selectIndeces([(ii, jj)])
             self.showcurrentoutput_inner(ii, jj)
 
-    @loggable
+    
     def showcurrentoutput_inner(self, ii, jj):
         self.scene.deleteall()
         self.view_3d.view.clear()
@@ -604,7 +576,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.show2dgeometry3(operationoutput, selectedlayers)
         self.show3dgeometry3(operationoutput, selectedlayers)
 
-    @loggable
+    
     def show2dgeometry3(self, operationoutput, selectedlayers,):
         display_geometry_2d = operationoutput.display_geometry_2d()
         self.scene.deleteall()
@@ -613,14 +585,10 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 self.scene.addItem(geom)
                 geom.setselectable(True)
 
-    @loggable
+    
     def show3dgeometry3(self, operationoutput, selectedlayers):
         if self.act_view_3d.isChecked():
-            tris = operationoutput.tris()
-            self.view_3d.view.update_object(
-                self.design.return_layer_definition().zvalue,
-                tris,
-                selectedlayers)
+            self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,operationoutput.triangles_by_layer,selectedlayers)
         else:
             self.clear3dgeometry()
 
@@ -632,7 +600,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             tris,
             [])
 
-    @loggable
+    
     def exportLayerSVG(self):
         from popupcad.graphics2d.svg_support import OutputSelection
 
@@ -687,13 +655,13 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             return False
         return True
 
-    @loggable
+    
     def preferences(self):
         import dev_tools.propertyeditor
         pe = dev_tools.propertyeditor.PropertyEditor(popupcad.local_settings)
         pe.show()
 
-    @loggable
+    
     def replace(self):
         d = qg.QDialog()
         operationlist = popupcad.widgets.dragndroptree.DraggableTreeWidget()
@@ -716,7 +684,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 operationlist.currentRefs()[0])
         self.reprocessoperations()
 
-    @loggable
+    
     def insert_and_replace(self):
         from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
         operation_ref, output_index = self.operationeditor.currentRefs()[0]
@@ -728,7 +696,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         newop.operation_links['unary'].append((operation_ref, output_index))
         self.reprocessoperations()
 
-    @loggable
+    
     def upgrade(self):
         try:
             self.load_design(self.design.upgrade())
@@ -739,15 +707,15 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.reprocessoperations()
         self.view_2d.zoomToFit()
 
-    @loggable
+    
     def download_installer(self):
         qg.QDesktopServices.openUrl(popupcad.update_url)
 
-    @loggable
+    
     def save_joint_def(self):
         self.design.save_joint_def()
 
-    @loggable
+    
     def screenshot_3d(self):
         time = popupcad.basic_functions.return_formatted_time()
         filename = os.path.normpath(
@@ -760,22 +728,22 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 #        self.view_3d.view.update()
         self.view_3d.view.grabFrameBuffer().save(filename)
 
-    @loggable
+    
     def export_laminate(self):
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         generic = output.csg.to_generic_laminate()
         generic.saveAs()
 
-    @loggable
+    
     def gen_icons(self):
         self.design.raster()
 
-    @loggable
+    
     def build_documentation(self):
         self.design.build_documentation()
 
-    @loggable
+    
     def export_dxf(self):
         import os
         ii, jj = self.operationeditor.currentIndeces2()[0]
@@ -783,20 +751,20 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         generic = output.generic_laminate()
         generic.save_dxf(os.path.normpath(os.path.join(popupcad.exportdir,self.design.get_basename() + '_'+str(self.design.operations[ii])+'.dxf')))
 
-    @loggable
+    
     def export_dae(self):
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         output.generic_laminate().toDAE()
 
-    @loggable
+    
     def export_stl(self):
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         output.generic_laminate().toSTL()
 
 
-    @loggable
+    
     def show_license(self):
         import sys
 

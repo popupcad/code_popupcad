@@ -69,7 +69,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.scene.savesnapshot.connect(self.undoredo.savesnapshot)
         self.scene.itemdeleted.connect(self.cleanupconstraints)
         self.scene.refresh_request.connect(self.refreshconstraints)
-
+        self.scene.constraint_update_request.connect(self.update_selective)
+        
         self.constraint_editor.signal_edit.connect(self.editItem)
         self.constraint_editor.itemPressed.connect(self.showconstraint_item)
         self.constraint_editor.itemdeleted.connect(self.constraint_deleted)
@@ -378,7 +379,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.constraintactions.append({'text': 'Midpoint', 'kwargs': {
                                       'triggered': lambda: self.add_constraint(constraints.LineMidpoint)}})
         self.constraintactions.append({'text': 'Update', 'kwargs': {
-                                      'triggered': self.refreshconstraints_button, 'icon': Icon('refresh')}})
+                                      'triggered': self.refreshconstraints, 'icon': Icon('refresh')}})
         self.constraintactions.append({'text': 'Cleanup', 'kwargs': {
                                       'triggered': self.cleanupconstraints, 'icon': Icon('broom')}})
 
@@ -440,14 +441,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 items.append(item.get_generic())
             elif isinstance(item, InteractiveEdge):
                 items.append(item.get_generic())
-#            elif isinstance(item, InteractiveLine):
-#                items.append(item.selectableedges[0].get_generic())
-#            elif isinstance(item, StaticLine):
-#                items.append(item.selectableedges[0].get_generic())
             elif isinstance(item, DrawingPoint):
                 items.append(item.get_generic())
-#            elif isinstance(item, StaticDrawingPoint):
-#                items.append(item.get_generic())
 
         new_constraint = constraintclass.new(*items)
         if new_constraint is not None:
@@ -455,9 +450,6 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             for constraint in new_constraints:
                 self.sketch.constraintsystem.add_constraint(constraint)
             self.refreshconstraints()
-
-    def refreshconstraints_button(self):
-        self.refreshconstraints()
 
     def constraint_deleted(self):
         self.refreshconstraints()
@@ -468,17 +460,18 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.scene.updateshape()
         self.constraint_editor.refresh()
 
-    def buildvertices(self):
-        self.buildsketch()
+    def update_constraints(self,vertices):
+        self.sketch.constraintsystem.update()
+        self.scene.updateshape()
+        self.constraint_editor.refresh()
 
-#        vertices = []
-#        control = [
-#            item.get_generic() for item in self.controlpoints +
-#            self.controllines]
-#
-#        for geom in self.sketch.operationgeometry + control:
-#            vertices.extend(geom.vertices())
-            
+    def update_selective(self,vertices):
+        self.sketch.constraintsystem.update_selective(vertices)
+        self.scene.updateshape()
+        self.constraint_editor.refresh()
+
+    def buildvertices(self):
+        self.update_sketch_geometries()
         vertices = [vertex for geom in self.sketch.operationgeometry for vertex in geom.vertices()]
         return vertices
 
@@ -530,7 +523,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.scene.showvertices(self.act_view_vertices.isChecked())
         self.scene.updatevertices()
 
-    def buildsketch(self):
+    def update_sketch_geometries(self):
         self.sketch.cleargeometries()
         geometries = [
             item.generic for item in self.scene.items() if isinstance(
@@ -543,7 +536,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.sketch.addoperationgeometries(geometries)
 
     def get_current_sketch(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         return self.sketch
 
     def newfile(self):
@@ -565,11 +558,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             self.undoredo.restartundoqueue()
 
     def save(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         self.sketch.save()
 
     def saveAs(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         self.sketch.saveAs()
 
     def adddrawingpoint(self):
@@ -618,7 +611,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             if isinstance(item, Interactive):
                 items.append(item.generic)
                 item.removefromscene()
-        genericlines = gj.getjoints(items)
+
+        roundvalue = 3
+        tolerance = 10**(-roundvalue)
+                
+        genericlines = gj.getjoints(items,roundvalue,tolerance)
         [self.scene.addItem(line) for line in genericlines]
 
     def showconstraint(self, row):
@@ -633,27 +630,13 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def reject(self):
         self.close()
 
-    def keyPressEvent(self, event):
-        if not self.keypressfiltering(event):
-            super(Sketcher, self).keyPressEvent(event)
-
     def loadpropwindow(self, obj):
         widget = obj.properties()
         self.propdock.setWidget(widget)
 
     def acceptdata(self):
-        self.buildsketch()
+        self.update_sketch_geometries()
         return self.sketch,
-
-    def keypressfiltering(self, event):
-        if event.key() == qc.Qt.Key_Escape:
-            return True
-        elif event.key() == qc.Qt.Key_Enter:
-            return True
-        elif event.key() == qc.Qt.Key_Return:
-            return True
-        else:
-            return False
 
     def load_references3(self, ii, jj):
         staticgeometries, controlpoints, controllines = [], [], []
@@ -769,17 +752,16 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                         for item in self.scene.selectedItems():
                             shift_val = (
                                 ii *
-                                x_val.value() *
-                                popupcad.internal_argument_scaling,
+                                x_val.value(),
                                 jj *
-                                y_val.value() *
-                                popupcad.internal_argument_scaling)
+                                y_val.value())
                             new = item.generic.copy(identical = False)
                             new.shift(shift_val)
                             copies.append(new)
         copies = [
             self.scene.addItem(
                 item.outputinteractive()) for item in copies]
+
     def set_construction(self,value):
         for item in self.scene.selectedItems():
             try:

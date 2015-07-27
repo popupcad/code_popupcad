@@ -140,7 +140,6 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
         self.highlightededge = HighlightedEdge()
         self.highlightededge.setParentItem(self)
 
-        self.scale = 1
         self.state = self.states.state_neutral
         self.updatemode(self.modes.mode_normal)
         self.updatestate(self.states.state_neutral)
@@ -155,8 +154,8 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
 
         self.changed_trigger = False
 
-    def shape(self, *args, **kwargs):
-        return super(InteractiveEdge, self).shape(*args, **kwargs)
+#    def shape(self, *args, **kwargs):
+#        return super(InteractiveEdge, self).shape(*args, **kwargs)
 
     def querypen(self):
         if self.mode == self.modes.mode_render:
@@ -165,14 +164,14 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
             hoverpen = qg.QPen(
                 self.defaultcolor,
                 self.hover_buffer *
-                self.scale,
+                self.view_scale,
                 self.style,
                 self.capstyle,
                 self.joinstyle)
             neutralpen = qg.QPen(
                 self.defaultcolor,
                 self.neutral_buffer *
-                self.scale,
+                self.view_scale,
                 self.style,
                 self.capstyle,
                 self.joinstyle)
@@ -186,19 +185,32 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
 
         return neutralpen
 
-    def setcustomscale(self, scale):
-        self.scale = scale
+    def set_view_scale(self, view_scale):
+        self._view_scale = view_scale
         self.setPen(self.querypen())
+        self.update_bounding_rect()
+
+    def get_view_scale(self):
+        try:
+            return self._view_scale
+        except AttributeError:
+            self._view_scale = 1
+            return self._view_scale
+
+    view_scale = property(get_view_scale,set_view_scale)
+
+#    def boundingRect(self):
+#        rect = super(InteractiveEdge, self).boundingRect()
+#        a = self.boundingrectbuffer * self.view_scale
+#        rect.adjust(-a, -a, a, a)
+#        return rect
 
     def boundingRect(self):
-        rect = super(InteractiveEdge, self).boundingRect()
-        a = self.boundingrectbuffer * self.scale
-        rect.adjust(-a, -a, a, a)
-        return rect
-
+        return self._bounding_rect
+        
     def updatescale(self):
         try:
-            self.setcustomscale(1 / self.scene().views()[0].zoom())
+            self.set_view_scale(1 / self.scene().views()[0].zoom())
         except AttributeError:
             pass
 
@@ -224,6 +236,14 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
         point1 = self.generic.vertex1.getpos(popupcad.view_scaling)
         point2 = self.generic.vertex2.getpos(popupcad.view_scaling)
         self.setLine(point1[0], point1[1], point2[0], point2[1])
+        self.update_bounding_rect()
+        
+    def update_bounding_rect(self):
+#        update bounding rect
+        rect = super(InteractiveEdge, self).boundingRect()
+        a = self.boundingrectbuffer * self.view_scale
+        rect.adjust(-a, -a, a, a)
+        self._bounding_rect = rect
 
     def hoverEnterEvent(self, event):
         super(InteractiveEdge, self).hoverEnterEvent(event)
@@ -241,6 +261,7 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
 
     def mousePressEvent(self, event):
         self.changed_trigger = True
+        self.moved_trigger = False
         self.updatestate(self.states.state_pressed)
         if self.ItemIsSelectable == (self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge, self).mousePressEvent(event)
@@ -251,6 +272,7 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
             if self.connectedinteractive.mode == self.connectedinteractive.modes.mode_edit:
                 if self.changed_trigger:
                     self.changed_trigger = False
+                    self.moved_trigger = True
                     self.scene().savesnapshot.emit()
                 dp = event.scenePos() - event.lastScenePos()
                 dp = tuple(numpy.array(dp.toTuple()) / popupcad.view_scaling)
@@ -267,7 +289,10 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
         if self.ItemIsSelectable == (self.ItemIsSelectable & self.flags()):
             super(InteractiveEdge, self).mouseReleaseEvent(event)
         self.changed_trigger = False
-        self.scene().refresh_request.emit()
+        if self.moved_trigger:
+            self.scene().constraint_update_request.emit(self.generic.vertices())
+            self.moved_trigger = False
+
 
 #    def notify(self):
 #        pass

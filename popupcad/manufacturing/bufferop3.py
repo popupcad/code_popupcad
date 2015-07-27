@@ -10,7 +10,7 @@ from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 
 
 class BufferOperation3(MultiValueOperation3):
-    name = 'Buffer'
+    name = 'Dilate/Erode'
     show = []
 #    function = 'buffer'
     valuenames = ['Buffer', 'Resolution']
@@ -21,6 +21,6 @@ class BufferOperation3(MultiValueOperation3):
         ls1 = design.op_from_ref(link).output[output].csg
         return ls1.buffer(
             self.values[0] *
-            popupcad.internal_argument_scaling*popupcad.csg_processing_scaling,
+            popupcad.csg_processing_scaling,
             resolution=int(
                 self.values[1]))

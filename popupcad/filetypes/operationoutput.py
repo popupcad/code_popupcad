@@ -65,7 +65,7 @@ class OperationOutput(UserData):
         for geom in all_geoms:
             is_unique = True
             for geom2 in unique_geoms:
-                if geom.shape_is_equal(geom2):
+                if geom.is_equal(geom2):
                     is_unique = False
                     break
             if is_unique:
@@ -94,12 +94,13 @@ class OperationOutput(UserData):
             self._display_geometry_2d = self.generic_laminate().to_static()
             return self._display_geometry_2d
 
-    def tris(self):
+    @property
+    def triangles_by_layer(self):
         try:
-            return self.alltriangles
+            return self._triangles_by_layer
         except AttributeError:
-            self.alltriangles = self.generic_laminate().to_triangles()
-            return self.alltriangles
+            self._triangles_by_layer = self.generic_laminate().to_triangles()
+            return self._triangles_by_layer
 
     def description_get(self):
         try:

@@ -140,7 +140,7 @@ class Dialog(qg.QDialog):
 
 
 class LayerOp2(Operation2, LayerBasedOperation):
-    name = 'Layer Op'
+    name = 'LayerOp'
     function = None
     pairoperationtypes = ['difference', 'symmetric_difference']
     unaryoperationtypes = ['union', 'intersection']

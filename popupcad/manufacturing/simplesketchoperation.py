@@ -86,7 +86,7 @@ class Dialog(qg.QDialog):
 
 
 class SimpleSketchOp(Operation2, LayerBasedOperation):
-    name = 'Sketch Operation'
+    name = 'SketchOp'
 
     def copy(self):
         new = type(self)(self.sketch_links, self.layer_links)

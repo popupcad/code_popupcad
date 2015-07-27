@@ -41,7 +41,7 @@ def find_outer(ls, minpoint):
             if points.pointinpoints(
                     minpoint,
                     GenericShapeBase.genfromshapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
-                    GenericShapeBase.tolerance):
+                    popupcad.distinguishable_number_difference):
                 outergeoms.append(geom)
             else:
                 innergeoms.append(geom)
@@ -65,7 +65,7 @@ def generate_web(robot, keepout, layerdef, value_outer, value_inner):
 
 def autosupport(robot, keepout, layerdef, value_inner, value_gap, cut_out):
     import popupcad
-    cleanup = 1e-3 * popupcad.internal_argument_scaling*popupcad.csg_processing_scaling
+    cleanup = 1e-3 *popupcad.csg_processing_scaling
     buffered_keepout = keepout.buffer(value_inner)
     allsupport = buffered_keepout.difference(keepout)
     invalidsupport = keepout.difference(robot)
