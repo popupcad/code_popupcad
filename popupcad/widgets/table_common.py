@@ -108,8 +108,6 @@ class Table(CommonTableWidget):
         super(Table,self).row_add_empty(items)
     def cell_clicked(self,row,column):
         self.data_class.cell_clicked(row,column,self)
-
-
     def export_data(self):
         return [
             [
