@@ -135,7 +135,6 @@ class ConstraintSystem(object):
                 equations = self.equations()
                 num_equations = len(equations)
                 
-                equations_matrix = sympy.Matrix(self.equations())
                 variables = self.variables()
                 num_variables = len(variables)
 
@@ -164,7 +163,7 @@ class ConstraintSystem(object):
                         jnum = numpy.r_[jnum, numpy.zeros((num_variables - num_equations, num_variables))]
                     return jnum
                 
-                return dq, variables, j, vertexdict, equations_matrix
+                return dq, variables, j, vertexdict
 
         return None
         
@@ -172,7 +171,7 @@ class ConstraintSystem(object):
         if self.generated_variables is None:
             pass
         else:
-            dq, variables, j, vertexdict, equations_matrix = self.generated_variables
+            dq, variables, j, vertexdict = self.generated_variables
             vertexdict = self.vertex_dict()
             ini = self.ini(vertexdict)
             q0 = self.inilist(variables,ini)
@@ -203,7 +202,7 @@ class ConstraintSystem(object):
             for vertex, dxdy in items:
                 vertex.shift(dxdy)
         else:
-            dq, variables, j, vertexdict, equations_matrix = self.generated_variables
+            dq, variables, j, vertexdict = self.generated_variables
     
             dx_dict = {}
             for vertex, dxdy in items:
