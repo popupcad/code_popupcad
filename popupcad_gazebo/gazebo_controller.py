@@ -41,6 +41,7 @@ def pause_simulation(world_name, pause=True):
         try:
             yield From(publisher.wait_for_listener())                
             yield From(publisher.publish(message))
+            yield From(trollius.sleep(1.0))
         except:
             pass
         print("Connection closed")
@@ -48,44 +49,42 @@ def pause_simulation(world_name, pause=True):
     loop = trollius.get_event_loop()    
     loop.run_until_complete(coroutine())
 
-def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
+
+def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
     """ Applies joint forces via Trollius over a specified duration.
     """    
     wait_net_service('localhost', 11345)        
     print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
-    def joint_force_loop(world_name, robot_name, joint_name, force, duration):
+    def joint_force_loop():
         manager = yield From(pygazebo.connect())
+        publisher = yield From(manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
+                               'gazebo.msgs.JointCmd'))
         print("connected")
         
-        publisher = yield From(
-            manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
-                              'gazebo.msgs.JointCmd'))
-    
-        message = pygazebo.msg.joint_cmd_pb2.JointCmd()
-        message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
-        message.force = force
-        
+        t_start = time.time()
         t_end = time.time() + duration # The time that you want the controller to stop
         while time.time() < t_end or duration == -1:
             try:
-                yield From(publisher.wait_for_listener())                
-                yield From(publisher.publish(message))
+                #print(str(time.time()) + "waiting for: " + str(t_end))
+                for joint_name, force in zip(joint_names, forces):                    
+                    yield From(publisher.wait_for_listener())                
+                    message = pygazebo.msg.joint_cmd_pb2.JointCmd()
+                    message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
+                    message.force = force
+                    yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
-            except:
-                pass
+            except Exception as e:
+                print("SOMETHING HAS GONE WRONG: " + str(e))                
                 break
+                raise e
         print("Connection closed")
-        
-    def loop_in_thread(loop, tasks):
-        trollius.set_event_loop(loop)
-        loop.run_until_complete(trollius.wait(tasks))
-        
+        #print("Duration =" + str(time.time() - t_start))
     tasks = []
-    for joint_name, force in zip(joint_names, forces):
-        tasks.append(trollius.Task(joint_force_loop(world_name, robot_name, joint_name, force, duration)))
-    
+    #for joint_name, force in zip(joint_names, forces):
+    #    tasks.append(trollius.Task(joint_force_loop(world_name, robot_name, joint_name, force)))
+    tasks.append(trollius.Task(joint_force_loop())) 
     
     loop = trollius.get_event_loop()    
 
@@ -247,8 +246,13 @@ def export_inner(operation, useDart=False):
         model_object.append(craftJoint(operation, joint_connection, counter))
         counter+=1
     
-
     
+    if useDart is True:
+        physics_engine = 'dart'
+    else:
+        physics_engine = 'simbody'
+        world_object.append(craftSimbodyPhysics())
+
     
     #Fixed joint method
     #joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
@@ -296,10 +300,6 @@ def export_inner(operation, useDart=False):
      #TODO replace with Subprocess to prevent pollution of STDOUT
     #subprocess.Popen("killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient", shell=True)    
     
-    if useDart is True:
-        physics_engine = 'dart'
-    else:
-        physics_engine = 'simbody'
     subprocess.Popen(['killall', 'gzserver'])
     gazebo = subprocess.Popen(["gazebo", "-e", physics_engine, file_output, '-u', '--verbose'])
     print("Gazebo is now open")
@@ -382,18 +382,23 @@ def createFloor():
     #etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
     floor_geo = etree.SubElement(floor_collision, "geometry")
     floor_box = etree.SubElement(floor_geo, "plane")
-    etree.SubElement(floor_box, "size").text = "10 10"
+    surface = etree.SubElement(floor_collision, "surface")    
+    bounce = etree.SubElement(surface, "bounce")    
+    etree.SubElement(bounce, "restitution_coefficient").text = str(0)    
+    etree.SubElement(floor_box, "size").text = "100 100"
     #floor_box = etree.SubElement(floor_geo, "box")    
     #etree.SubElement(floor_box, "size").text = "1000 1000 100"
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
     floor_visual.append(deepcopy(floor_geo))    
     
-    #material = etree.SubElement(floor_visual, "material")
-    #etree.SubElement(material, "ambient").text = "1 0 0 1"
-    #etree.SubElement(material, "diffuse").text = "1 0 0 1"
-    #etree.SubElement(material, "specular").text ="0.1 0.1 0.1 1"
-    #etree.SubElement(material, "emissive").text = "0 0 0 0"
+    
+    
+    material = etree.SubElement(floor_visual, "material")
+    etree.SubElement(material, "ambient").text = "0 0 0 0"
+    etree.SubElement(material, "diffuse").text = "0 0 0 0"
+    etree.SubElement(material, "specular").text ="0.1 0.1 0.1 1"
+    etree.SubElement(material, "emissive").text = "0 0 0 0"
 
     return floor
 
@@ -550,5 +555,15 @@ def approximateCollisions2(joint_laminate, centroid):
     thickness = joint_laminate.getLaminateThickness()
     thickness/=popupcad.SI_length_scaling    
     etree.SubElement(sphere, 'size').text = str(width) + ' ' + str(height) + ' ' + str(thickness)
+    surface = etree.SubElement(collision, "surface")    
+    bounce = etree.SubElement(surface, "bounce")    
+    etree.SubElement(bounce, "restitution_coefficient").text = str(0)    
     return collision
  
+def craftSimbodyPhysics():
+    physics_root = etree.Element("physics", {"name":"Simbody", "default":"true", "type":"revolute"})
+    simbody_physics = etree.SubElement(physics_root, "simbody")
+    contact = etree.SubElement(simbody_physics, "contact")
+    etree.SubElement(contact, "plastic_coef_restitution").text = str(0)
+    return physics_root
+    
