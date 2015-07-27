@@ -65,20 +65,24 @@ class ConstraintSystem(object):
         new.constraints = [constraint.upgrade() for constraint in self.constraints]
         return new
 
-    def ini(self):
+    def vertex_dict(self):
         objects = self.get_vertices
-        ini = {}
-        vertexdict = {}
+        vertex_dict = {}
         for vertex in objects:
             p = vertex.p()[0:2]
+            vertex_dict[p[0]] = vertex
+            vertex_dict[p[1]] = vertex
+        return vertex_dict
 
-            vertexdict[p[0]] = vertex
-            vertexdict[p[1]] = vertex
-
+    def ini(self,vertex_dict):
+        objects = self.get_vertices
+        ini = {}
+        for vertex in objects:
+            p = vertex.p()[0:2]
             pos = vertex.getpos()
             for key, value in zip(p, pos):
                 ini[key] = value
-        return ini, vertexdict
+        return ini
 
     def regenerate(self):
         del self.generated_variables
@@ -91,6 +95,7 @@ class ConstraintSystem(object):
         except AttributeError:
             self._generated_variables = self.regenerate_inner()
             return self._generated_variables
+            
     @generated_variables.deleter
     def generated_variables(self):
         try:
@@ -122,7 +127,7 @@ class ConstraintSystem(object):
         return constants
         
     def regenerate_inner(self):
-        ini, vertexdict = self.ini()
+        vertexdict = self.vertex_dict()
         
         if len(self.constraints) > 0:
             objects = self.get_vertices
@@ -158,7 +163,7 @@ class ConstraintSystem(object):
                     if num_variables > num_equations:
                         jnum = numpy.r_[jnum, numpy.zeros((num_variables - num_equations, num_variables))]
                     return jnum
-
+                
                 return dq, variables, j, vertexdict, equations_matrix
 
         return None
@@ -168,7 +173,8 @@ class ConstraintSystem(object):
             pass
         else:
             dq, variables, j, vertexdict, equations_matrix = self.generated_variables
-            ini, vertexdict = self.ini()
+            vertexdict = self.vertex_dict()
+            ini = self.ini(vertexdict)
             q0 = self.inilist(variables,ini)
             qout = scipy.optimize.root(dq,q0,jac=j,tol=self.atol,method='lm')
             qout = qout.x.tolist()
@@ -191,7 +197,8 @@ class ConstraintSystem(object):
         self.update()
         
     def constrained_shift(self, items):
-        ini, vertexdict = self.ini()
+        vertexdict = self.vertex_dict()
+        ini = self.ini(vertexdict)
         if self.generated_variables is None:
             for vertex, dxdy in items:
                 vertex.shift(dxdy)
