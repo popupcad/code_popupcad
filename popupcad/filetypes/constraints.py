@@ -32,14 +32,19 @@ class ConstraintSystem(object):
     def __init__(self):
         self.constraints = []
 
-    def link_vertex_builder(self, callback):
-        self._vertex_builder = callback
+    def get_vertices_callback(self, callback):
+        self._get_vertices = callback
 
-    def vertex_builder(self):
+    @property
+    def get_vertices(self):
         try:
-            return self._vertex_builder()
+            return self._get_vertices()
         except AttributeError:
             return []
+
+    @get_vertices.setter
+    def get_vertices(self,callback):
+        self._get_vertices = callback
 
     def add_constraint(self, constraint):
         self.constraints.append(constraint)
@@ -52,18 +57,16 @@ class ConstraintSystem(object):
 
     def copy(self):
         new = ConstraintSystem()
-        new.constraints = [constraint.copy()
-                           for constraint in self.constraints]
+        new.constraints = [constraint.copy() for constraint in self.constraints]
         return new
 
     def upgrade(self):
         new = ConstraintSystem()
-        new.constraints = [constraint.upgrade()
-                           for constraint in self.constraints]
+        new.constraints = [constraint.upgrade() for constraint in self.constraints]
         return new
 
     def ini(self):
-        objects = self.vertex_builder()
+        objects = self.get_vertices
         ini = {}
         vertexdict = {}
         for vertex in objects:
@@ -122,7 +125,7 @@ class ConstraintSystem(object):
         ini, vertexdict = self.ini()
         
         if len(self.constraints) > 0:
-            objects = self.vertex_builder()
+            objects = self.get_vertices
             if len(objects) > 0:
                 equations = self.equations()
                 num_equations = len(equations)
@@ -142,7 +145,7 @@ class ConstraintSystem(object):
                         zero+=result
 
                     if num_variables > num_equations:
-                        zero = numpy.r_[zero.flatten, [0] * (num_variables - num_equations)]
+                        zero = numpy.r_[zero.flatten(), [0] * (num_variables - num_equations)]
                     return zero
 
                 def j(q):
@@ -225,7 +228,7 @@ class ConstraintSystem(object):
                 vertexdict[variable].setsymbol(variable, x[ii])
 #
     def cleanup(self):
-        sketch_objects = self.vertex_builder()
+        sketch_objects = self.get_vertices
         for ii in range(len(self.constraints))[::-1]:
             if self.constraints[ii].cleanup(
                     sketch_objects) == Constraint.CleanupFlags.Deletable:
