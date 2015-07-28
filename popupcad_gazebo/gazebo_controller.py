@@ -191,12 +191,16 @@ def export(program):
     """
     design = program.editor.design
     from popupcad.manufacturing.joint_operation2 import JointOperation2
+    from popupcad.manufacturing.joint_operation3 import JointOperation3    
+    operation = None  
     for tmp_op in design.operations:
-        if isinstance(tmp_op, JointOperation2):
+        if (isinstance(tmp_op, JointOperation2) 
+                and (operation is None 
+                or not isinstance(operation, JointOperation3)) 
+                or isinstance(tmp_op, JointOperation3)):
             operation = tmp_op
-    try:
-        operation
-    except NameError as err:
+
+    if operation is None:            
         import PySide.QtGui as qg
         import PySide
         widget = qg.QMessageBox()
@@ -236,10 +240,8 @@ def export_inner(operation, useDart=False):
     include_sun = etree.SubElement(world_object, "include")
     etree.SubElement(include_sun, "uri").text = "model://sun"
     
-    counter = 0
-    for joint_laminate in joint_laminates:
-        model_object.append(createRobotPart(joint_laminate, counter, approxCollisions=(not useDart)))
-        counter+=1
+    #Sorts them in the correct order    
+    #operation.connections.sort(key=lambda tup: tup[0], reverse=True)    
     
     ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) for connection in operation.connections]
     from tree_node import spawnTreeFromList
@@ -247,6 +249,12 @@ def export_inner(operation, useDart=False):
     assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
     midpoints = [connect[0] for connect in operation.connections]
     #tree = spawnTreeFromList([[str(ordered_connect[0]), str(ordered_connect[1])] for ordered_connect in ordered_connection])        
+    
+    counter = 0
+    for joint_laminate in joint_laminates:
+        model_object.append(createRobotPart(joint_laminate, counter, tree, approxCollisions=(not useDart)))
+        counter+=1
+    
     joint_names = []               
     for joint_connection in zip(midpoints, ordered_connection):
         from tree_node import TreeNode
@@ -254,7 +262,7 @@ def export_inner(operation, useDart=False):
         name += tree.getNode(joint_connection[1][0]).getID()
         name += '|'
         name += tree.getNode(joint_connection[1][1]).getID()            
-        model_object.append(craftJoint(operation, list(joint_connection), name))
+        model_object.append(craftJoint(operation, list(joint_connection), name, tree))
         joint_names.append(name)
         
     if useDart is True:
@@ -262,23 +270,6 @@ def export_inner(operation, useDart=False):
     else:
         physics_engine = 'simbody'
         world_object.append(craftSimbodyPhysics())
-
-    
-    #Fixed joint method
-    #joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
-    #etree.SubElement(joint_root, 'parent').text = 'world'
-    #etree.SubElement(joint_root, 'child').text = str(operation.connections[0][1][0].id)
-    #axis = etree.SubElement(joint_root, "axis")
-    #etree.SubElement(axis, "xyz").text = "0 1 0"
-    #limit = etree.SubElement(axis, "limit")
-    #etree.SubElement(limit, "upper").text = '0'
-    #etree.SubElement(limit, "lower").text = '0'
-    
-    #Manually specify the physics engine
-    #physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
-    #etree.SubElement(physics, 'max_step_size').text = str(0.0001)
-    #etree.SubElement(physics, "real_time_factor").text = "0.1"
-
     
     #Saves the object
     file_output = popupcad.exportdir + os.path.sep + project_name + ".world"
@@ -333,14 +324,14 @@ def export_inner(operation, useDart=False):
     #TODO Make it possible to kill the process later if it needs to
 
 ##TODO name the joints better, maybe via user_defined names if possible
-def craftJoint(operation, connection, name):
+def craftJoint(operation, connection, name, tree):
     """
     Generates the SDf tag for a joint based off the connection and laminate generations.
     """    
     joint_pair = connection[1]
     joint_root = etree.Element("joint", {"name":name, "type":"revolute"})
-    etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
-    etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
+    etree.SubElement(joint_root, "parent").text = tree.getNode(joint_pair[0]).getID()
+    etree.SubElement(joint_root, "child").text = tree.getNode(joint_pair[1]).getID()
     joint_center = findMidPoint(connection[0], joint_pair[0])
     joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
     etree.SubElement(joint_root, "pose").text = joint_loc   
@@ -449,14 +440,16 @@ def reorder_pair(joint_pair, hierarchy_map):
     else:
         return joint_pair
     
-def createRobotPart(joint_laminate, counter, buildMesh=True, approxCollisions=False):
+def createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisions=False):
     """
     Creates the SDF for each link in the Robot
     """
     filename = str(joint_laminate.id)
     _, trueMass, center_of_mass, I =  joint_laminate.mass_properties()      
     
-    root_of_robot = etree.Element("link", name=filename)
+    xml_name = tree.getNode(joint_laminate).getID()   
+    
+    root_of_robot = etree.Element("link", name=xml_name)
     etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
     etree.SubElement(root_of_robot, "self_collide").text = str(not approxCollisions) 
     #To make the collision realistic.   
