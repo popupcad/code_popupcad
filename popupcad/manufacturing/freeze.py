@@ -69,9 +69,6 @@ class Freeze(Operation2):
         new.customname = self.customname
         return new
 
-    def getoutputref(self):
-        return self.outputref
-
     def operate(self, design):
         layerdef = design.return_layer_definition()
         csg = Laminate(layerdef)
@@ -96,5 +93,5 @@ class Freeze(Operation2):
             design,
             operations,
             selectedindex,
-            outputref=self.getoutputref())
+            outputref=self.outputref)
         return dialog

@@ -12,7 +12,6 @@ import lxml
 import multiprocessing
 import perlin_noise
 import pygazebo
-import syntax
 import trollius
 
 def initialize(program):

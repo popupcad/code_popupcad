@@ -145,13 +145,8 @@ def shift_flip(ls1, shift, flip, rotate):
             outshift = 0
             inshift = 0
         for layerout, layerin in zip(
-            layers[
-                outshift:], layers[
-                ::step][
-                inshift:]):
-            lsout.replacelayergeoms(
-                layerout,
-                ls1.layer_sequence[layerin].geoms)
+            layers[outshift:], layers[::step][inshift:]):
+            lsout.replacelayergeoms(layerout,ls1.layer_sequence[layerin].geoms)
     return lsout
 
 
