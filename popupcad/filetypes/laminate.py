@@ -178,3 +178,10 @@ class Laminate(IterableLaminate):
             genericgeometry[layer] = genericgeoms
         new = GenericLaminate(self.layerdef, genericgeometry)
         return new
+
+    def switch_layer_defs(self,layerdef_to):
+        new = Laminate(layerdef_to)
+        for layer_from, layer_to in zip(self.layerdef.layers,layerdef_to.layers):
+            new.layer_sequence[layer_to] = self.layer_sequence[layer_from]
+        return new
+            

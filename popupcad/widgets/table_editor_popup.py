@@ -109,6 +109,37 @@ class FloatDialog(TextDialog):
     def results(self):
         return float(self.text_edit.text())
 
+class IntegerDialog(qg.QDialog):
+    bottom = -1e6
+    top = 1e6
+    
+    def __init__(self, *args,**kwargs):
+        super(IntegerDialog,self).__init__()
+        self.spin_box = qg.QSpinBox()
+        self.spin_box.setRange(self.bottom, self.top)
+        self.spin_box.setSingleStep(1)
+
+        button_ok = qg.QPushButton('Ok')
+        button_cancel = qg.QPushButton('Cancel')
+        
+        sub_layout1 = qg.QHBoxLayout()
+        sub_layout1.addWidget(button_ok)
+        sub_layout1.addWidget(button_cancel)
+
+        layout = qg.QVBoxLayout()
+        layout.addWidget(self.spin_box)
+        layout.addLayout(sub_layout1)
+
+        self.setLayout(layout)
+        button_ok.clicked.connect(self.accept)
+        button_cancel.clicked.connect(self.reject)
+
+    def set_data(self,val):   
+        self.spin_box.setValue(val)
+        
+    def results(self):
+        return self.spin_box.value()
+
 class SingleListDialog(qg.QDialog):
     def __init__(self, list_in, *args, **kwargs):
         super(SingleListDialog, self).__init__(*args, **kwargs)
@@ -220,6 +251,15 @@ class FloatElement(object):
 
     def build_editor(self):
         dialog = FloatDialog()
+        return dialog
+
+class IntegerElement(object):
+    def __init__(self,name,ini=0):
+        self.name = name
+        self.ini = ini
+
+    def build_editor(self):
+        dialog = IntegerDialog()
         return dialog
 
 class SingleItemListElement_old(object):

@@ -237,7 +237,7 @@ class SubOperation(Operation2):
             except AttributeError:
                 pass
             new_operations.append(operation)
-        sketches = design.sketches
+        sketches = design.sketches.copy()
         for key,value in sketches.items():
             sketches[key] = value.copy()
         subdesign.sketches.update(sketches)
