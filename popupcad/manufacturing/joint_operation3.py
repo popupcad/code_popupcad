@@ -264,6 +264,8 @@ class JointOperation3(Operation2, LayerBasedOperation):
         stiffness = joint_def.stiffness
         damping = joint_def.damping
         preload_angle = joint_def.preload_angle
+        limit_negative = joint_def.limit_negative
+        limit_positive = joint_def.limit_positive
 
         sublaminate_layers = [
             layerdef.getlayer(item) for item in joint_def.sublaminate_layers]
@@ -290,7 +292,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
                     hinge_gap,
                     resolution=self.resolution))
 
-        joint_props = [(stiffness, damping, preload_angle)
+        joint_props = [(stiffness, damping, preload_angle, limit_negative, limit_positive)
                        for item in hingelines]
         return allgeoms4, buffered_split, hingelines, joint_props
 

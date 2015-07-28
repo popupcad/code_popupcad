@@ -361,7 +361,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
 
         self.output = []
         self.output.append(OperationOutput(safe,'Safe',self))        
-        self.output.append(OperationOutput(unsafe,'Unafe',self))        
+        self.output.append(OperationOutput(unsafe,'Unsafe',self))        
         self.output.append(OperationOutput(split1,'Split1',self))        
         self.output.append(OperationOutput(split2,'Split2',self))        
         self.output.extend([OperationOutput(item,'Fixed {0:d}'.format(ii),self) for ii,item in enumerate(fixed_csg)])        

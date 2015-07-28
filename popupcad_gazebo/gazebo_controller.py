@@ -132,7 +132,7 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
 #Allows for granular PID control
 #TODO Allow users to specify PID variables. 
 #Until other variables implemented, this is experimental.
-
+#WARNING: This method will crash Simbody
 def apply_joint_pos_seq(world_name, robot_name, joint_names, poses, duration=0):
    """ Applies joint positions sequentially using subprocesses. No Trollius at all, 
        just commandline arguements.
@@ -341,12 +341,25 @@ def craftJoint(operation, connection, name, tree, upper_limit='3.145159', lower_
     
     #etree.SubElement(axis, "use_parent_model_frame").text = "true"
     limit = etree.SubElement(axis, "limit")
-    etree.SubElement(limit, "lower").text = '-3.145159'
-    etree.SubElement(limit, "upper").text = '3.14519'
-            
+    
     #Add the properties of the joint
     midpoints = [op[0] for op in operation.connections]
-    joint_props = operation.all_joint_props[midpoints.index(connection[0])]
+    joint_index = midpoints.index(connection[0])
+    joint_props = operation.all_joint_props[joint_index]
+    
+    
+    from popupcad.manufacturing.joint_operation3 import JointOperation3            
+    if isinstance(operation, JointOperation3):
+        from math import radians
+        lower_limit = str(radians(joint_props[3]))
+        upper_limit = str(radians(joint_props[4]))
+    else:
+        lower_limit = '-3.145159'
+        upper_limit = '3.14519'
+    
+    etree.SubElement(limit, "lower").text = lower_limit
+    etree.SubElement(limit, "upper").text = upper_limit
+            
     #etree.SubElement(limit, "stiffness").text = str(joint_props[0])
     from math import radians    
     dynamics = etree.SubElement(axis, "dynamics")
