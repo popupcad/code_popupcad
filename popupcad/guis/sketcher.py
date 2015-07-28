@@ -8,6 +8,10 @@ import sys
 import PySide.QtGui as qg
 import PySide.QtCore as qc
 import popupcad
+import numpy
+
+import popupcad.filetypes.constraints as constraints
+
 from popupcad.geometry.vertex import ShapeVertex, DrawnPoint
 from popupcad.graphics2d.interactivevertex import InteractiveVertex, ReferenceInteractiveVertex, DrawingPoint, InteractiveVertexBase
 from popupcad.graphics2d.interactiveedge import InteractiveEdge, ReferenceInteractiveEdge
@@ -15,28 +19,19 @@ from popupcad.graphics2d.interactive import Interactive
 from popupcad.graphics2d.proto import ProtoLine, ProtoPath, ProtoCircle, ProtoPoly, ProtoRect2Point
 from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
-import popupcad.filetypes.constraints as constraints
 from popupcad.filetypes.sketch import Sketch
 from popupcad.widgets.listeditor import ListEditor
 from popupcad.supportfiles import Icon
-import numpy
 from popupcad.widgets.widgetcommon import WidgetCommon
 from popupcad.filetypes.undoredo import UndoRedo
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.manufacturing.nulloperation import NullOp
 from popupcad.graphics2d.text import TextParent
 
-
 class Sketcher(WidgetCommon, qg.QMainWindow):
     showprop = qc.Signal(object)
 
-    def __init__(
-            self,
-            parent,
-            sketch,
-            design=None,
-            accept_method=None,
-            selectops=False):
+    def __init__(self,parent,sketch,design=None,accept_method=None,selectops=False):
 
         qg.QMainWindow.__init__(self, parent)
         self.design = design
@@ -514,7 +509,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
         self.constraint_editor.linklist(
             self.sketch.constraintsystem.constraints)
-        self.sketch.constraintsystem.link_vertex_builder(self.buildvertices)
+        self.sketch.constraintsystem.get_vertices = self.buildvertices
         self.load_references()
 
     def showvertices(self):

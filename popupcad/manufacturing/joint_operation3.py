@@ -9,11 +9,13 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
 import PySide.QtGui as qg
 import PySide.QtCore as qc
+
+import popupcad
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
-import popupcad
 from popupcad.filetypes.laminate import Laminate
-from popupcad.widgets.table_editor import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row
+from popupcad.widgets.table_editor_popup import Table,SingleItemListElement_old, MultiItemListElement, FloatElement, Row,Delegate,TableControl
+from popupcad.widgets.listmanager import SketchListManager
 
 try:
     import itertools.izip as zip
@@ -24,27 +26,21 @@ class JointRow(Row):
 
     def __init__(self, get_sketches, get_layers):
         elements = []
-        elements.append(SingleItemListElement('joint sketch', get_sketches))
-        elements.append(SingleItemListElement('joint layer', get_layers))
+        elements.append(SingleItemListElement_old('joint sketch', get_sketches))
+        elements.append(SingleItemListElement_old('joint layer', get_layers))
         elements.append(MultiItemListElement('sublaminate layers', get_layers))
         elements.append(FloatElement('hinge width'))
         elements.append(FloatElement('stiffness'))
         elements.append(FloatElement('damping'))
         elements.append(FloatElement('preload'))
+        elements.append(FloatElement('limit negative',ini=-180))
+        elements.append(FloatElement('limit positive',ini=180))
         self.elements = elements
 
 
 class JointDef(object):
 
-    def __init__(
-            self,
-            sketch,
-            joint_layer,
-            sublaminate_layers,
-            width,
-            stiffness,
-            damping,
-            preload_angle):
+    def __init__(self,sketch,joint_layer,sublaminate_layers,width,stiffness,damping,preload_angle,limit_negative,limit_positive):
         self.sketch = sketch
         self.joint_layer = joint_layer
         self.sublaminate_layers = sublaminate_layers
@@ -52,6 +48,8 @@ class JointDef(object):
         self.stiffness = stiffness
         self.damping = damping
         self.preload_angle = preload_angle
+        self.limit_negative = limit_negative
+        self.limit_positive = limit_positive
 
     def copy(self):
         new = type(self)(
@@ -61,13 +59,15 @@ class JointDef(object):
             self.width,
             self.stiffness,
             self.damping,
-            self.preload_angle)
+            self.preload_angle,
+            self.limit_negative,
+            self.limit_positive)
         return new
 
 
 class MainWidget(qg.QDialog):
 
-    def __init__(self, design, sketches, layers, operations, jointop=None):
+    def __init__(self, design, sketches, layers, operations, jointop=None,sketch = None):
         super(MainWidget, self).__init__()
         self.design = design
         self.sketches = sketches
@@ -80,24 +80,15 @@ class MainWidget(qg.QDialog):
         self.fixed = DraggableTreeWidget()
         self.fixed.linklist(self.operations)
 
-        self.table = Table(JointRow(self.get_sketches, self.get_layers))
+        self.table = Table(JointRow(self.get_sketches, self.get_layers),Delegate)
+        table_control= TableControl(self.table, self)
 
-        button_add = qg.QPushButton('Add')
-        button_remove = qg.QPushButton('Remove')
-        button_up = qg.QPushButton('up')
-        button_down = qg.QPushButton('down')
 
-        button_add.clicked.connect(self.table.row_add_empty)
-        button_remove.clicked.connect(self.table.row_remove)
-        button_up.clicked.connect(self.table.row_shift_up)
-        button_down.clicked.connect(self.table.row_shift_down)
-
-        sublayout1 = qg.QHBoxLayout()
-        sublayout1.addWidget(button_add)
-        sublayout1.addWidget(button_remove)
-        sublayout1.addStretch()
-        sublayout1.addWidget(button_up)
-        sublayout1.addWidget(button_down)
+        self.sketchwidget = SketchListManager(self.design,name='Contact Points Sketch')
+        for ii in range(self.sketchwidget.itemlist.count()):
+            item = self.sketchwidget.itemlist.item(ii)
+            if item.value == sketch:
+                item.setSelected(True)
 
         button_ok = qg.QPushButton('Ok')
         button_cancel = qg.QPushButton('Cancel')
@@ -105,20 +96,34 @@ class MainWidget(qg.QDialog):
         button_ok.clicked.connect(self.accept)
         button_cancel.clicked.connect(self.reject)
                 
+        sublayout1 = qg.QHBoxLayout()
+        sublayout1_1 = qg.QVBoxLayout()
+        sublayout1_2 = qg.QVBoxLayout()
+        sublayout1_3 = qg.QVBoxLayout()
+
+        sublayout1_1.addWidget(qg.QLabel('Device'))
+        sublayout1_1.addWidget(self.operation_list)
+        sublayout1_2.addWidget(qg.QLabel('Fixed Region'))
+        sublayout1_2.addWidget(self.fixed)
+        sublayout1_3.addWidget(self.sketchwidget)
+
+        sublayout1.addLayout(sublayout1_1)
+        sublayout1.addLayout(sublayout1_2)
+        sublayout1.addLayout(sublayout1_3)
 
         sublayout2 = qg.QHBoxLayout()
+        sublayout2.addStretch()
         sublayout2.addWidget(button_ok)
         sublayout2.addWidget(button_cancel)
+        sublayout2.addStretch()
 
         layout = qg.QVBoxLayout()
-        layout.addWidget(qg.QLabel('Device'))
-        layout.addWidget(self.operation_list)
-        layout.addWidget(qg.QLabel('Fixed Region'))
-        layout.addWidget(self.fixed)
-        layout.addWidget(self.table)
         layout.addLayout(sublayout1)
+        layout.addWidget(table_control)
         layout.addLayout(sublayout2)
         
+        self.setLayout(layout)
+
         if jointop is not None:
             try:
                 op_ref, output_ii = jointop.operation_links['parent'][0]
@@ -148,12 +153,21 @@ class MainWidget(qg.QDialog):
                     item.width,
                     item.stiffness,
                     item.damping,
-                    item.preload_angle)            
+                    item.preload_angle,
+                    item.limit_negative,
+                    item.limit_positive)            
         else:
             self.table.row_add_empty()
 
-        self.setLayout(layout)
+        self.table.resizeColumnsToContents()
+        self.table.reset_min_width()
+        self.table.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
+    def contact_sketch(self):
+        try:
+            return self.sketchwidget.itemlist.selectedItems()[0].value
+        except IndexError:
+            return None
 
 
     def get_sketches(self):
@@ -182,28 +196,26 @@ class MainWidget(qg.QDialog):
                     ii,
                     5).data(
                     qc.Qt.ItemDataRole.UserRole))
-            preload_angle = (
-                self.table.item(
-                    ii, 6).data(
-                    qc.Qt.ItemDataRole.UserRole))
+            preload_angle = (self.table.item(ii, 6).data(qc.Qt.ItemDataRole.UserRole))
+            limit_negative = (self.table.item(ii, 7).data(qc.Qt.ItemDataRole.UserRole))
+            limit_positive = (self.table.item(ii, 8).data(qc.Qt.ItemDataRole.UserRole))
             jointdefs.append(JointDef(sketch.id,
                                       joint_layer.id,
                                       [item.id for item in sublaminate_layers],
                                       width,
                                       stiffness,
                                       damping,
-                                      preload_angle))
+                                      preload_angle,limit_negative,limit_positive))
         operation_links = {}
         operation_links['parent'] = self.operation_list.currentRefs()
         operation_links['fixed'] = self.fixed.currentRefs()
-        return operation_links, jointdefs
+        sketch_links = {}
+        sketch_links['contact_points'] = [self.contact_sketch().id]
+        return operation_links,sketch_links,jointdefs
 
-
-class JointOperation2(Operation2, LayerBasedOperation):
-    name = 'Joint Definition'
+class JointOperation3(Operation2, LayerBasedOperation):
+    name = 'JointOp'
     resolution = 2
-
-    name = 'Joint Operation'
 
     def copy(self):
         new = type(self)(
@@ -214,14 +226,13 @@ class JointOperation2(Operation2, LayerBasedOperation):
         return new
 
     def __init__(self, *args):
-        super(JointOperation2, self).__init__()
+        super(JointOperation3, self).__init__()
         self.editdata(*args)
         self.id = id(self)
 
-    def editdata(self, operation_links, joint_defs):
-        self.operation_links = operation_links
+    def editdata(self, operation_links,sketch_links,joint_defs):
+        super(JointOperation3,self).editdata(operation_links,sketch_links,{})
         self.joint_defs = joint_defs
-        self.clear_output()
 
     @classmethod
     def buildnewdialog(cls, design, currentop):
@@ -233,19 +244,19 @@ class JointOperation2(Operation2, LayerBasedOperation):
         return dialog
 
     def buildeditdialog(self, design):
+        sketch = design.sketches[self.sketch_links['contact_points'][0]]
         dialog = MainWidget(
             design,
             design.sketches.values(),
             design.return_layer_definition().layers,
             design.prioroperations(self),
-            self)
+            self,sketch)
         return dialog
 
     def sketchrefs(self):
-        return [item.sketch for item in self.joint_defs]
-
-    def subdesignrefs(self):
-        return []
+        items = super(JointOperation3,self).sketchrefs()
+        items.extend([item.sketch for item in self.joint_defs])
+        return items
 
     def gen_geoms(self, joint_def, layerdef, design):
         hinge_gap = joint_def.width *popupcad.csg_processing_scaling

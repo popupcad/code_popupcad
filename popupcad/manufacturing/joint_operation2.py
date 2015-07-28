@@ -9,11 +9,12 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
 import PySide.QtGui as qg
 import PySide.QtCore as qc
+
+import popupcad
 from popupcad.filetypes.operationoutput import OperationOutput
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
-import popupcad
 from popupcad.filetypes.laminate import Laminate
-from popupcad.widgets.table_editor import Table, SingleItemListElement, MultiItemListElement, FloatElement, Row
+from popupcad.widgets.table_editor_popup import Table, SingleItemListElement_old, MultiItemListElement, FloatElement, Row,Delegate,TableControl
 
 try:
     import itertools.izip as zip
@@ -24,8 +25,8 @@ class JointRow(Row):
 
     def __init__(self, get_sketches, get_layers):
         elements = []
-        elements.append(SingleItemListElement('joint sketch', get_sketches))
-        elements.append(SingleItemListElement('joint layer', get_layers))
+        elements.append(SingleItemListElement_old('joint sketch', get_sketches))
+        elements.append(SingleItemListElement_old('joint layer', get_layers))
         elements.append(MultiItemListElement('sublaminate layers', get_layers))
         elements.append(FloatElement('hinge width'))
         elements.append(FloatElement('stiffness'))
@@ -80,24 +81,8 @@ class MainWidget(qg.QDialog):
         self.fixed = DraggableTreeWidget()
         self.fixed.linklist(self.operations)
 
-        self.table = Table(JointRow(self.get_sketches, self.get_layers))
-
-        button_add = qg.QPushButton('Add')
-        button_remove = qg.QPushButton('Remove')
-        button_up = qg.QPushButton('up')
-        button_down = qg.QPushButton('down')
-
-        button_add.clicked.connect(self.table.row_add_empty)
-        button_remove.clicked.connect(self.table.row_remove)
-        button_up.clicked.connect(self.table.row_shift_up)
-        button_down.clicked.connect(self.table.row_shift_down)
-
-        sublayout1 = qg.QHBoxLayout()
-        sublayout1.addWidget(button_add)
-        sublayout1.addWidget(button_remove)
-        sublayout1.addStretch()
-        sublayout1.addWidget(button_up)
-        sublayout1.addWidget(button_down)
+        self.table = Table(JointRow(self.get_sketches, self.get_layers),Delegate)
+        table_control= TableControl(self.table, self)
 
         button_ok = qg.QPushButton('Ok')
         button_cancel = qg.QPushButton('Cancel')
@@ -105,19 +90,30 @@ class MainWidget(qg.QDialog):
         button_ok.clicked.connect(self.accept)
         button_cancel.clicked.connect(self.reject)
                 
+        sublayout1 = qg.QHBoxLayout()
+        sublayout1_1 = qg.QVBoxLayout()
+        sublayout1_2 = qg.QVBoxLayout()
+
+        sublayout1_1.addWidget(qg.QLabel('Device'))
+        sublayout1_1.addWidget(self.operation_list)
+        sublayout1_2.addWidget(qg.QLabel('Fixed Region'))
+        sublayout1_2.addWidget(self.fixed)
+
+        sublayout1.addLayout(sublayout1_1)
+        sublayout1.addLayout(sublayout1_2)
 
         sublayout2 = qg.QHBoxLayout()
+        sublayout2.addStretch()
         sublayout2.addWidget(button_ok)
         sublayout2.addWidget(button_cancel)
+        sublayout2.addStretch()
 
         layout = qg.QVBoxLayout()
-        layout.addWidget(qg.QLabel('Device'))
-        layout.addWidget(self.operation_list)
-        layout.addWidget(qg.QLabel('Fixed Region'))
-        layout.addWidget(self.fixed)
-        layout.addWidget(self.table)
         layout.addLayout(sublayout1)
+        layout.addWidget(table_control)
         layout.addLayout(sublayout2)
+
+        self.setLayout(layout)
         
         if jointop is not None:
             try:
@@ -152,9 +148,9 @@ class MainWidget(qg.QDialog):
         else:
             self.table.row_add_empty()
 
-        self.setLayout(layout)
-
-
+        self.table.resizeColumnsToContents()
+        self.table.reset_min_width()
+        self.table.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     def get_sketches(self):
         return self.sketches

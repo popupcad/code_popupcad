@@ -32,14 +32,19 @@ class ConstraintSystem(object):
     def __init__(self):
         self.constraints = []
 
-    def link_vertex_builder(self, callback):
-        self._vertex_builder = callback
+    def get_vertices_callback(self, callback):
+        self._get_vertices = callback
 
-    def vertex_builder(self):
+    @property
+    def get_vertices(self):
         try:
-            return self._vertex_builder()
+            return self._get_vertices()
         except AttributeError:
             return []
+
+    @get_vertices.setter
+    def get_vertices(self,callback):
+        self._get_vertices = callback
 
     def add_constraint(self, constraint):
         self.constraints.append(constraint)
@@ -52,30 +57,32 @@ class ConstraintSystem(object):
 
     def copy(self):
         new = ConstraintSystem()
-        new.constraints = [constraint.copy()
-                           for constraint in self.constraints]
+        new.constraints = [constraint.copy() for constraint in self.constraints]
         return new
 
     def upgrade(self):
         new = ConstraintSystem()
-        new.constraints = [constraint.upgrade()
-                           for constraint in self.constraints]
+        new.constraints = [constraint.upgrade() for constraint in self.constraints]
         return new
 
-    def ini(self):
-        objects = self.vertex_builder()
-        ini = {}
-        vertexdict = {}
+    def vertex_dict(self):
+        objects = self.get_vertices
+        vertex_dict = {}
         for vertex in objects:
             p = vertex.p()[0:2]
+            vertex_dict[p[0]] = vertex
+            vertex_dict[p[1]] = vertex
+        return vertex_dict
 
-            vertexdict[p[0]] = vertex
-            vertexdict[p[1]] = vertex
-
+    def ini(self,vertex_dict):
+        objects = self.get_vertices
+        ini = {}
+        for vertex in objects:
+            p = vertex.p()[0:2]
             pos = vertex.getpos()
             for key, value in zip(p, pos):
                 ini[key] = value
-        return ini, vertexdict
+        return ini
 
     def regenerate(self):
         del self.generated_variables
@@ -88,6 +95,7 @@ class ConstraintSystem(object):
         except AttributeError:
             self._generated_variables = self.regenerate_inner()
             return self._generated_variables
+            
     @generated_variables.deleter
     def generated_variables(self):
         try:
@@ -119,15 +127,14 @@ class ConstraintSystem(object):
         return constants
         
     def regenerate_inner(self):
-        ini, vertexdict = self.ini()
+        vertexdict = self.vertex_dict()
         
         if len(self.constraints) > 0:
-            objects = self.vertex_builder()
+            objects = self.get_vertices
             if len(objects) > 0:
                 equations = self.equations()
                 num_equations = len(equations)
                 
-                equations_matrix = sympy.Matrix(self.equations())
                 variables = self.variables()
                 num_variables = len(variables)
 
@@ -142,7 +149,7 @@ class ConstraintSystem(object):
                         zero+=result
 
                     if num_variables > num_equations:
-                        zero = numpy.r_[zero.flatten, [0] * (num_variables - num_equations)]
+                        zero = numpy.r_[zero.flatten(), [0] * (num_variables - num_equations)]
                     return zero
 
                 def j(q):
@@ -155,8 +162,8 @@ class ConstraintSystem(object):
                     if num_variables > num_equations:
                         jnum = numpy.r_[jnum, numpy.zeros((num_variables - num_equations, num_variables))]
                     return jnum
-
-                return dq, variables, j, vertexdict, equations_matrix
+                
+                return dq, variables, j, vertexdict
 
         return None
         
@@ -164,8 +171,9 @@ class ConstraintSystem(object):
         if self.generated_variables is None:
             pass
         else:
-            dq, variables, j, vertexdict, equations_matrix = self.generated_variables
-            ini, vertexdict = self.ini()
+            dq, variables, j, vertexdict = self.generated_variables
+            vertexdict = self.vertex_dict()
+            ini = self.ini(vertexdict)
             q0 = self.inilist(variables,ini)
             qout = scipy.optimize.root(dq,q0,jac=j,tol=self.atol,method='lm')
             qout = qout.x.tolist()
@@ -188,12 +196,13 @@ class ConstraintSystem(object):
         self.update()
         
     def constrained_shift(self, items):
-        ini, vertexdict = self.ini()
+        vertexdict = self.vertex_dict()
+        ini = self.ini(vertexdict)
         if self.generated_variables is None:
             for vertex, dxdy in items:
                 vertex.shift(dxdy)
         else:
-            dq, variables, j, vertexdict, equations_matrix = self.generated_variables
+            dq, variables, j, vertexdict = self.generated_variables
     
             dx_dict = {}
             for vertex, dxdy in items:
@@ -225,7 +234,7 @@ class ConstraintSystem(object):
                 vertexdict[variable].setsymbol(variable, x[ii])
 #
     def cleanup(self):
-        sketch_objects = self.vertex_builder()
+        sketch_objects = self.get_vertices
         for ii in range(len(self.constraints))[::-1]:
             if self.constraints[ii].cleanup(
                     sketch_objects) == Constraint.CleanupFlags.Deletable:
