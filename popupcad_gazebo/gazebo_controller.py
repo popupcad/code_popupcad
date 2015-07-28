@@ -241,11 +241,23 @@ def export_inner(operation, useDart=False):
         model_object.append(createRobotPart(joint_laminate, counter, approxCollisions=(not useDart)))
         counter+=1
     
-    counter = 0
-    for joint_connection in operation.connections:
-        model_object.append(craftJoint(operation, joint_connection, counter))
-        counter+=1
-    
+    ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) for connection in operation.connections]
+    from tree_node import spawnTreeFromList
+    tree = spawnTreeFromList(ordered_connection)   
+    assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
+    midpoints = [connect[0] for connect in operation.connections]
+    #tree = spawnTreeFromList([[str(ordered_connect[0]), str(ordered_connect[1])] for ordered_connect in ordered_connection])        
+    joint_names = []               
+    for joint_connection in zip(midpoints, ordered_connection):
+        from tree_node import TreeNode
+        name = "hingejoint"
+        name += tree.getNode(joint_connection[1][0]).getID()
+        name += '|'
+        name += tree.getNode(joint_connection[1][1]).getID()            
+        model_object.append(craftJoint(operation, list(joint_connection), name))
+        joint_names.append(name)
+
+    print joint_names
     
     if useDart is True:
         physics_engine = 'dart'
@@ -276,16 +288,12 @@ def export_inner(operation, useDart=False):
     f.write(etree.tostring(global_root, pretty_print=True))
     f.close()
     
-    joint_names = []        
-    for num in range(0, len(operation.all_joint_props)):
-        joint_names.append("hingejoint" + str(num))
-   
     def stringify(s1): #For local use to generate default Python code
         return "'{}'".format(s1)
     
     #Experimental Python IDE and Control System
     #TODO Sandbox this
-    from popupcad_gazebo.userinput import UserInputIDE
+    from popupcad.widgets.userinput import UserInputIDE
     mw = UserInputIDE()
     mw.setWindowTitle('Internal Python IDE')
     mw.appendText('#This code will control your robot during the simulation')
@@ -327,13 +335,12 @@ def export_inner(operation, useDart=False):
     #TODO Make it possible to kill the process later if it needs to
 
 ##TODO name the joints better, maybe via user_defined names if possible
-def craftJoint(operation, connection, counter):
+def craftJoint(operation, connection, name):
     """
     Generates the SDf tag for a joint based off the connection and laminate generations.
     """    
-    joint_pair = reorder_pair(connection[1], operation.get_laminate_generations())    
-    
-    joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
+    joint_pair = connection[1]
+    joint_root = etree.Element("joint", {"name":name, "type":"revolute"})
     etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
     etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
     joint_center = findMidPoint(connection[0], joint_pair[0])
@@ -349,7 +356,8 @@ def craftJoint(operation, connection, counter):
     etree.SubElement(limit, "upper").text = '3.14519'
             
     #Add the properties of the joint
-    joint_props = operation.all_joint_props[operation.connections.index(connection)]
+    midpoints = [op[0] for op in operation.connections]
+    joint_props = operation.all_joint_props[midpoints.index(connection[0])]
     #etree.SubElement(limit, "stiffness").text = str(joint_props[0])
     from math import radians    
     dynamics = etree.SubElement(axis, "dynamics")
@@ -437,11 +445,8 @@ def unitizeLine(shape):
 #TODO Ensure this actually works
 #Ensures the connection are in the right order
 def reorder_pair(joint_pair, hierarchy_map):
-    try:
-        first = hierarchy_map[joint_pair[0]]
-        second = hierarchy_map[joint_pair[1]]
-    except:
-        return joint_pair
+    first = hierarchy_map[joint_pair[0]]
+    second = hierarchy_map[joint_pair[1]]
     if first > second:
         return (joint_pair[1], joint_pair[0])
     else:
@@ -541,7 +546,7 @@ def approximateCollisions(joint_laminate, centroid):
     return collisions
     
 def approximateCollisions2(joint_laminate, centroid):    
-    x, y, z = centroid    
+    x, y, z = centroid
     x1, y1, x2, y2 = joint_laminate.getBoundingBox()
     width = abs(x2 - x1)
     height = abs(y2 - y1)
@@ -565,5 +570,5 @@ def craftSimbodyPhysics():
     simbody_physics = etree.SubElement(physics_root, "simbody")
     contact = etree.SubElement(simbody_physics, "contact")
     etree.SubElement(contact, "plastic_coef_restitution").text = str(0)
+    etree.SubElement(contact, "override_impact_capture_velocity").text = str(100000000)
     return physics_root
-    
