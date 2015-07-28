@@ -230,6 +230,44 @@ class GenericPoly(GenericShapeBase):
         x_values = [point[0]/popupcad.SI_length_scaling - center[0] for point in points]
         y_values = [point[1]/popupcad.SI_length_scaling - center[1] for point in points]
         return list(zip(x_values, y_values))
+
+    def extrudeVertices(self, extrusion_factor, z0=0):
+        """Extrudes the vertices of a shape and returns the three dimensional values
+        """
+        a = self.triangles3()
+        vertices = []
+        
+        for coord in a: 
+            for dec in coord:            
+                vertices.append(dec[0]) #x-axis
+                vertices.append(dec[1]) #y-axis            
+                vertices.append(z0) #z-axis
+        
+        for coord in a: 
+            for dec in reversed(coord):            
+                vertices.append(dec[0]) #x-axis
+                vertices.append(dec[1]) #y-axis            
+                vertices.append(z0 + extrusion_factor) #z-axi            
+            
+        raw_edges = self.exteriorpoints()        
+        top_edges = []
+        bottom_edges = []            
+        for dec in raw_edges:      
+            top_edges.append((dec[0], dec[1], z0)) #x-axis
+            bottom_edges.append((dec[0], dec[1], z0 + extrusion_factor))
+                    
+        sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
+        sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
+        sideTriangles.extend(sideTriangles2)
+        sideTriangles = [list(triangle) for triangle in sideTriangles]
+        import itertools
+        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))
+        sideTriangles = [list(point) for point in sideTriangles]
+        sideTriangles = list(itertools.chain.from_iterable(sideTriangles))            
+        vertices.extend(sideTriangles)
+                        
+        return vertices
+
         
 class GenericCircle(GenericShapeBase):
 

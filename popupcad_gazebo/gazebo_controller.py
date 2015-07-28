@@ -41,6 +41,7 @@ def pause_simulation(world_name, pause=True):
         try:
             yield From(publisher.wait_for_listener())                
             yield From(publisher.publish(message))
+            yield From(trollius.sleep(1.0))
         except:
             pass
         print("Connection closed")
@@ -48,44 +49,42 @@ def pause_simulation(world_name, pause=True):
     loop = trollius.get_event_loop()    
     loop.run_until_complete(coroutine())
 
-def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=0):
+
+def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1):
     """ Applies joint forces via Trollius over a specified duration.
     """    
     wait_net_service('localhost', 11345)        
     print("Net serviced detected. Proceeding")
 
     @trollius.coroutine
-    def joint_force_loop(world_name, robot_name, joint_name, force, duration):
+    def joint_force_loop():
         manager = yield From(pygazebo.connect())
+        publisher = yield From(manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
+                               'gazebo.msgs.JointCmd'))
         print("connected")
         
-        publisher = yield From(
-            manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
-                              'gazebo.msgs.JointCmd'))
-    
-        message = pygazebo.msg.joint_cmd_pb2.JointCmd()
-        message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
-        message.force = force
-        
+        t_start = time.time()
         t_end = time.time() + duration # The time that you want the controller to stop
         while time.time() < t_end or duration == -1:
             try:
-                yield From(publisher.wait_for_listener())                
-                yield From(publisher.publish(message))
+                #print(str(time.time()) + "waiting for: " + str(t_end))
+                for joint_name, force in zip(joint_names, forces):                    
+                    yield From(publisher.wait_for_listener())                
+                    message = pygazebo.msg.joint_cmd_pb2.JointCmd()
+                    message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
+                    message.force = force
+                    yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
-            except:
-                pass
+            except Exception as e:
+                print("SOMETHING HAS GONE WRONG: " + str(e))                
                 break
+                raise e
         print("Connection closed")
-        
-    def loop_in_thread(loop, tasks):
-        trollius.set_event_loop(loop)
-        loop.run_until_complete(trollius.wait(tasks))
-        
+        #print("Duration =" + str(time.time() - t_start))
     tasks = []
-    for joint_name, force in zip(joint_names, forces):
-        tasks.append(trollius.Task(joint_force_loop(world_name, robot_name, joint_name, force, duration)))
-    
+    #for joint_name, force in zip(joint_names, forces):
+    #    tasks.append(trollius.Task(joint_force_loop(world_name, robot_name, joint_name, force)))
+    tasks.append(trollius.Task(joint_force_loop())) 
     
     loop = trollius.get_event_loop()    
 
@@ -209,7 +208,7 @@ def export(program):
        
     
 #Export to Gazebo
-def export_inner(operation):
+def export_inner(operation, useDart=False):
     """ Continues the export process on the specified operation
     """    
     joint_laminates = operation.bodies_generic
@@ -239,7 +238,7 @@ def export_inner(operation):
     
     counter = 0
     for joint_laminate in joint_laminates:
-        model_object.append(createRobotPart(joint_laminate, counter))
+        model_object.append(createRobotPart(joint_laminate, counter, approxCollisions=(not useDart)))
         counter+=1
     
     counter = 0
@@ -247,8 +246,13 @@ def export_inner(operation):
         model_object.append(craftJoint(operation, joint_connection, counter))
         counter+=1
     
-
     
+    if useDart is True:
+        physics_engine = 'dart'
+    else:
+        physics_engine = 'simbody'
+        world_object.append(craftSimbodyPhysics())
+
     
     #Fixed joint method
     #joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
@@ -295,9 +299,12 @@ def export_inner(operation):
     user_input_code = compile(mw.te.toPlainText(), 'user_defined', 'exec')#Todo Sandbox this
      #TODO replace with Subprocess to prevent pollution of STDOUT
     #subprocess.Popen("killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient", shell=True)    
-    gazebo = subprocess.Popen(["gazebo", "-e", "dart", file_output, '-u'])
+    
+    subprocess.Popen(['killall', 'gzserver'])
+    gazebo = subprocess.Popen(["gazebo", "-e", physics_engine, file_output, '-u', '--verbose'])
     print("Gazebo is now open")
-    #Add quotes around file output to prevent injection later
+    
+    #Even with wait net service we run into issues.    
     wait_net_service('localhost', 11345)
     print("Gazebo is done waiting")
     
@@ -306,7 +313,7 @@ def export_inner(operation):
         
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
-    time.sleep(3)
+    time.sleep(4)
     pause_simulation(world_name, pause=False)
     code_process.start()    
     import PySide.QtGui as qg
@@ -375,18 +382,23 @@ def createFloor():
     #etree.SubElement(floor_collision, "pose").text = "0 0 0 0 0 0"
     floor_geo = etree.SubElement(floor_collision, "geometry")
     floor_box = etree.SubElement(floor_geo, "plane")
-    etree.SubElement(floor_box, "size").text = "10 10"
+    surface = etree.SubElement(floor_collision, "surface")    
+    bounce = etree.SubElement(surface, "bounce")    
+    etree.SubElement(bounce, "restitution_coefficient").text = str(0)    
+    etree.SubElement(floor_box, "size").text = "100 100"
     #floor_box = etree.SubElement(floor_geo, "box")    
     #etree.SubElement(floor_box, "size").text = "1000 1000 100"
     floor_visual = etree.SubElement(floor_root, "visual", name="floor visual")
     from copy import deepcopy #copys the element    
     floor_visual.append(deepcopy(floor_geo))    
     
-    #material = etree.SubElement(floor_visual, "material")
-    #etree.SubElement(material, "ambient").text = "1 0 0 1"
-    #etree.SubElement(material, "diffuse").text = "1 0 0 1"
-    #etree.SubElement(material, "specular").text ="0.1 0.1 0.1 1"
-    #etree.SubElement(material, "emissive").text = "0 0 0 0"
+    
+    
+    material = etree.SubElement(floor_visual, "material")
+    etree.SubElement(material, "ambient").text = "0 0 0 0"
+    etree.SubElement(material, "diffuse").text = "0 0 0 0"
+    etree.SubElement(material, "specular").text ="0.1 0.1 0.1 1"
+    etree.SubElement(material, "emissive").text = "0 0 0 0"
 
     return floor
 
@@ -435,7 +447,7 @@ def reorder_pair(joint_pair, hierarchy_map):
     else:
         return joint_pair
     
-def createRobotPart(joint_laminate, counter, buildMesh=True):
+def createRobotPart(joint_laminate, counter, buildMesh=True, approxCollisions=False):
     """
     Creates the SDF for each link in the Robot
     """
@@ -444,7 +456,8 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     
     root_of_robot = etree.Element("link", name=filename)
     etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
-    etree.SubElement(root_of_robot, "self_collide").text = "true" #To make the collision realistic.   
+    etree.SubElement(root_of_robot, "self_collide").text = str(not approxCollisions) 
+    #To make the collision realistic.   
     
     centroid_pose = str(center_of_mass[0]) + " " + str(center_of_mass[1]) + " " + str(center_of_mass[2]) + " 0 0 0"
     
@@ -460,17 +473,23 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
         joint_laminate.toDAE()      
         visual_of_robot = etree.SubElement(root_of_robot, "visual", name="basic_bot_visual" + str(counter))        
         etree.SubElement(visual_of_robot, "pose").text = "0 0 0 0 0 0"
-
+        
         geometry_of_robot = etree.Element("geometry")
         robo_mesh = etree.SubElement(geometry_of_robot, "mesh")
         etree.SubElement(robo_mesh, "uri").text = "file://" + popupcad.exportdir + os.path.sep  + filename + ".dae"
         #etree.SubElement(robo_mesh, "scale").text = "1 1 1000000"    #For debugging
         visual_of_robot.append(geometry_of_robot)
 
-        from copy import deepcopy #copys the element
-        collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))
-        collision.insert(0, deepcopy(geometry_of_robot))
-        collision.insert(0, surface_tree)
+        
+        if approxCollisions:
+            collision = approximateCollisions2(joint_laminate, center_of_mass)
+            #for collision in collisions:
+            root_of_robot.append(collision)
+        else:
+            from copy import deepcopy #copys the element
+            collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))        
+            collision.insert(0, deepcopy(geometry_of_robot))
+            collision.insert(0, surface_tree)
     else:
         visuals_of_robot = joint_laminate.toSDFTag("visual", "basic_bot_visual" + str(counter))    
         for visual_of_robot in visuals_of_robot:
@@ -498,3 +517,53 @@ def createRobotPart(joint_laminate, counter, buildMesh=True):
     return root_of_robot
 
 
+#Experimental and Deprecated
+def approximateCollisions(joint_laminate, centroid):    
+    collisions = []
+    layerdef = joint_laminate.layerdef
+    for layer in layerdef.layers:
+        shapes = joint_laminate.geoms[layer]#TODO Add it in for other shapes         
+        zvalue = layerdef.zvalue[layer]      
+        thickness = layer.thickness
+        if (len(shapes) == 0) : #In case there are no shapes.
+            print("No shapes skipping")            
+            continue
+        for s in shapes:
+            vertices = [vert/popupcad.SI_length_scaling for vert in s.extrudeVertices(thickness, z0=zvalue)]
+            for x, y, z in zip(vertices, vertices[1:], vertices[2:]):
+                joint_name = str(joint_laminate.id) + ':('+str(x)+','+str(y)+','+str(z)+')'
+                collision = etree.Element("collision", name=joint_name)
+                etree.SubElement(collision, 'pose').text = str(x) + ' ' + str(y) + ' ' + str(z) + ' 0 0 0'
+                geom = etree.SubElement(collision, 'geometry')
+                sphere = etree.SubElement(geom, 'sphere')
+                etree.SubElement(sphere, 'radius').text = str(0.01) #1cm will be the range of the collisions
+                collisions.append(collision)
+    return collisions
+    
+def approximateCollisions2(joint_laminate, centroid):    
+    x, y, z = centroid    
+    x1, y1, x2, y2 = joint_laminate.getBoundingBox()
+    width = abs(x2 - x1)
+    height = abs(y2 - y1)
+    width/=popupcad.SI_length_scaling
+    height/=popupcad.SI_length_scaling
+    joint_name = "collision:" + str(joint_laminate.id)
+    collision = etree.Element("collision", name=joint_name)
+    etree.SubElement(collision, 'pose').text = str(x) + ' ' + str(y) + ' ' + str(z) + ' 0 0 0'
+    geom = etree.SubElement(collision, 'geometry')
+    sphere = etree.SubElement(geom, 'box')
+    thickness = joint_laminate.getLaminateThickness()
+    thickness/=popupcad.SI_length_scaling    
+    etree.SubElement(sphere, 'size').text = str(width) + ' ' + str(height) + ' ' + str(thickness)
+    surface = etree.SubElement(collision, "surface")    
+    bounce = etree.SubElement(surface, "bounce")    
+    etree.SubElement(bounce, "restitution_coefficient").text = str(0)    
+    return collision
+ 
+def craftSimbodyPhysics():
+    physics_root = etree.Element("physics", {"name":"Simbody", "default":"true", "type":"revolute"})
+    simbody_physics = etree.SubElement(physics_root, "simbody")
+    contact = etree.SubElement(simbody_physics, "contact")
+    etree.SubElement(contact, "plastic_coef_restitution").text = str(0)
+    return physics_root
+    
