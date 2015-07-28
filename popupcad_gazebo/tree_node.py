@@ -128,14 +128,15 @@ class TreeNode(object):
         id_string = ""        
         index = 0
         for node in path:
-            if len(node.children) > 0:
+            if node.parent is None:
+                id_string += '*'
+            elif len(node.parent.children) > 0:
                 num = node.getSiblingIndex()
-                if num == -1:#Indicates the tree root
-                    id_string+="*"
-                else:
-                    id_string+= str(chr((65+num)))
-                    id_string+= str(index)
-                    index = 0
+                #if num == -1:#Indicates the tree root
+                #    num = -23
+                id_string+= str(chr((65+num)))
+                id_string+= str(index)
+                index = 0
             else:
                 index += 1
         if index > 0:
@@ -159,7 +160,7 @@ def spawnTreeFromList(lov, assert_connected=True):
         for tree in tree_list:
             if not tree.is_connected(tree_list[0]):
                 print("ERROR:" + str(tree) + "is not connected to the rest of the graph")
-                assert(false)
+                assert(False)
     return tree_list[0].top()
     
 if __name__=='__main__':

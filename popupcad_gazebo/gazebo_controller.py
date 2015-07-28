@@ -324,7 +324,7 @@ def export_inner(operation, useDart=False):
     #TODO Make it possible to kill the process later if it needs to
 
 ##TODO name the joints better, maybe via user_defined names if possible
-def craftJoint(operation, connection, name, tree):
+def craftJoint(operation, connection, name, tree, upper_limit='3.145159', lower_limit='-3.145159'):
     """
     Generates the SDf tag for a joint based off the connection and laminate generations.
     """    
