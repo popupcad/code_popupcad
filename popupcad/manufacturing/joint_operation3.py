@@ -219,8 +219,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
 
     def copy(self):
         new = type(self)(
-            self.operation_links, [
-                item.copy() for item in self.joint_defs])
+            self.operation_links, self.sketch_links,[item.copy() for item in self.joint_defs])
         new.id = self.id
         new.customname = self.customname
         return new
