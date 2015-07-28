@@ -211,6 +211,7 @@ def export(program):
 def export_inner(operation, useDart=False):
     """ Continues the export process on the specified operation
     """    
+    print("Beginnning Export")    
     joint_laminates = operation.bodies_generic
    
     project_name = "exported" #We can figure out a better way later.
@@ -227,7 +228,6 @@ def export_inner(operation, useDart=False):
     
     etree.SubElement(model_object, "static").text = "false"
     etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"    
-    print("made it here")
     etree.SubElement(model_object, "plugin", name="Model_Vel", 
                      filename="libmodel_vel.so")
     #world_object.append(createFloor())
@@ -256,9 +256,7 @@ def export_inner(operation, useDart=False):
         name += tree.getNode(joint_connection[1][1]).getID()            
         model_object.append(craftJoint(operation, list(joint_connection), name))
         joint_names.append(name)
-
-    print joint_names
-    
+        
     if useDart is True:
         physics_engine = 'dart'
     else:
@@ -434,7 +432,6 @@ def unitizeLine(shape):
     """
     Unitizes a line
     """
-    print(shape.exteriorpoints())
     (x, y, z) = extractLine(shape)    
     from math import sqrt
     length = sqrt(x * x + y * y)

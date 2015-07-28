@@ -130,19 +130,17 @@ class TreeNode(object):
         for node in path:
             if len(node.children) > 0:
                 num = node.getSiblingIndex()
-                print(node)
-                if num == -1:
-                    num = -23
+                if num == -1:#Indicates the tree root
                     id_string+="*"
                 else:
                     id_string+= str(chr((65+num)))
                     id_string+= str(index)
-                    id_string+=":"
                     index = 0
             else:
                 index += 1
         if index > 0:
-            id_string += str(index)
+            id_string+=":"
+            id_string+= str(index)
         return id_string
         
 def spawnTreeFromList(lov, assert_connected=True):    
