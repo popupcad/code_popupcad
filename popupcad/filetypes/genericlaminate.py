@@ -7,7 +7,6 @@ Please see LICENSE.txt for full license.
 import popupcad
 import numpy
 from popupcad.filetypes.popupcad_file import popupCADFile
-from popupcad.algorithms import tetrahedron
 
 try:
     import itertools.izip as zip
