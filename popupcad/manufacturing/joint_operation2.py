@@ -307,7 +307,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
             for jointline,jointprop in zip(hingelines,joint_props):
                 all_joint_props[jointline]=jointprop
 
-        allhingelines.sort()
+        #allhingelines.sort()
 
         safe_sections = []
         for ii in range(len(allgeoms)):

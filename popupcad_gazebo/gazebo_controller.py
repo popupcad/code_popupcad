@@ -245,9 +245,13 @@ def export_inner(operation, useDart=False):
     
     ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) for connection in operation.connections]
     from tree_node import spawnTreeFromList
-    tree = spawnTreeFromList(ordered_connection)   
+    tree = spawnTreeFromList(ordered_connection, sort=True)   
     assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
     midpoints = [connect[0] for connect in operation.connections]
+    print(midpoints)
+    #Ensures that the list of lines is properly sorted
+    #assert(all(midpoints[i] <= midpoints[i+1] for i in xrange(len(midpoints)-1)))
+    
     #tree = spawnTreeFromList([[str(ordered_connect[0]), str(ordered_connect[1])] for ordered_connect in ordered_connection])        
     
     counter = 0

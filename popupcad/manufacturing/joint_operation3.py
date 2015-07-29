@@ -258,6 +258,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
         return items
 
     def gen_geoms(self, joint_def, layerdef, design):
+        print('Generating geometry')        
         hinge_gap = joint_def.width *popupcad.csg_processing_scaling
         split_buffer = .1 * hinge_gap
 
@@ -324,8 +325,11 @@ class JointOperation3(Operation2, LayerBasedOperation):
             buffered_splits.append(buffered_split)
             for jointline,jointprop in zip(hingelines,joint_props):
                 all_joint_props[jointline]=jointprop
-
-        allhingelines.sort()
+        
+        #allhingelines, buffered_splits = zip(*sorted(zip(allhingelines, allgeoms, buffered_splits)))
+        #allhingelines = list(allhingelines)
+        #allgeoms = list(allgeoms)
+        #buffered_splits = list(buffered_splits)
 
         safe_sections = []
         for ii in range(len(allgeoms)):
@@ -378,8 +382,9 @@ class JointOperation3(Operation2, LayerBasedOperation):
                 fixed_csg.append(body)
 
         self.bodies_generic = bodies_generic
+        allhingelines.sort() #Sort here to prevent interfering with geometry. We only care about order of the joint props
         self.connections = [(key, connections[key]) for key in allhingelines if len(connections[key]) == 2]
-        self.all_joint_props = [all_joint_props[key] for key in allhingelines]
+        self.all_joint_props = [all_joint_props[key] for key in allhingelines if len(connections[key]) == 2]
 
         self.output = []
         self.output.append(OperationOutput(safe,'Safe',self))        
