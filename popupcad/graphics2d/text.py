@@ -42,6 +42,9 @@ class GenericText(object):
     def isValid(self):
         return True
 
+    def is_construction(self):
+        return False
+
     def genpath(self,scaling):
         text = self.text
         p = qg.QPainterPath()
@@ -107,6 +110,13 @@ class GenericText(object):
     def properties(self):
         from dev_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
+        
+    def output_dxf(self,model_space,layer = None):
+#        from popupcad.filetypes.genericshapebase import GenericShapeBase
+#        csg = self.outputshapely()
+#        new = GenericShapeBase.genfromshapely(csg)
+#        return new.output_dxf(model_space,layer)
+        pass
 
 
 class TextParent(qg.QGraphicsPathItem, Common):

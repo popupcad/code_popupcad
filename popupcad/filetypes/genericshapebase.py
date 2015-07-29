@@ -421,6 +421,11 @@ class GenericShapeBase(popupCADFile):
         self.exterior.append(vertex)
 
     def output_dxf(self,model_space,layer = None):
-        pass
+        csg = self.outputshapely()
+        new = self.genfromshapely(csg)
+        return new.output_dxf(model_space,layer)
+
+    
+    
     def __lt__(self,other):
         return self.exteriorpoints()[0]<other.exteriorpoints()[0]

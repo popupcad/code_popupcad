@@ -262,8 +262,10 @@ class DrawnPoint(BaseVertex):
         return new
 
     def output_dxf(self,model_space,layer = None):
-        pass
-    
+        dxfattribs = {}
+        if layer is not None:
+            dxfattribs['layer']=layer
+        model_space.add_point(self.getpos(),dxfattribs = dxfattribs)    
     @classmethod
     def delistify_0(cls, id, x, y, is_construction):
         new = cls((x/popupcad.deprecated_internal_argument_scaling, y/popupcad.deprecated_internal_argument_scaling))

@@ -138,8 +138,9 @@ class Sketch(popupCADFile):
                         from popupcad.filetypes.genericshapes import GenericPolyline
                         from popupcad.filetypes.genericshapes import GenericPoly
                         import numpy
-                        points = numpy.array(entity.dxf.points)
-                        if entity.is_closed:
+                        points = numpy.array([item for item in entity.get_points()])
+                        points = points[:,:2]
+                        if entity.closed:
                             generics.append(
                                 GenericPoly.gen_from_point_lists(
                                     points.tolist(),
