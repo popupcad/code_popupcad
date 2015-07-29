@@ -150,6 +150,10 @@ class Sketch(popupCADFile):
                                 GenericPolyline.gen_from_point_lists(
                                     points.tolist(),
                                     []))
+                    elif isinstance(entity, ezdxf.modern.graphics.Point):
+                        from popupcad.geometry.vertex import DrawnPoint
+                        point = DrawnPoint(numpy.array(entity.get_dxf_attrib('location')[:2]))
+                        generics.append(point)
                     else:
                         print(entity)
             new = cls()
