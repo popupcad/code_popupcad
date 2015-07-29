@@ -422,3 +422,5 @@ class GenericShapeBase(popupCADFile):
 
     def output_dxf(self,model_space,layer = None):
         pass
+    def __lt__(self,other):
+        return self.exteriorpoints()[0]<other.exteriorpoints()[0]
