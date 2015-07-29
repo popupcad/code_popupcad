@@ -297,14 +297,17 @@ class JointOperation2(Operation2, LayerBasedOperation):
         allgeoms = []
         allhingelines = []
         buffered_splits = []
-        all_joint_props = []
+        all_joint_props = {}
         for joint_def in self.joint_defs:
             allgeoms4, buffered_split, hingelines, joint_props = self.gen_geoms(
                 joint_def, layerdef, design)
             allgeoms.extend(allgeoms4)
             allhingelines.extend(hingelines)
             buffered_splits.append(buffered_split)
-            all_joint_props.extend(joint_props)
+            for jointline,jointprop in zip(hingelines,joint_props):
+                all_joint_props[jointline]=jointprop
+
+        allhingelines.sort()
 
         safe_sections = []
         for ii in range(len(allgeoms)):
@@ -338,6 +341,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         connections = {}
         connections2 = {}
 
+
         for line, geom in zip(allhingelines, safe_sections):
             connections[line] = []
             connections2[line] = []
@@ -357,7 +361,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
 
         self.bodies_generic = bodies_generic
         self.connections = [(key, connections[key]) for key in allhingelines if len(connections[key]) == 2]
-        self.all_joint_props = all_joint_props
+        self.all_joint_props = [all_joint_props[key] for key in allhingelines]
 
         self.output = []
         self.output.append(OperationOutput(safe,'Safe',self))        

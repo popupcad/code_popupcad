@@ -338,4 +338,13 @@ class GenericLaminate(popupCADFile):
         for geom,args in next_args:
             I+=geom.inertia_tensor(center_of_mass,*args)
         return volume_total,mass_total,center_of_mass,I
-            
+
+    def all_geoms(self):
+        allgeoms = []
+        for layer in self.layerdef.layers:
+            allgeoms.extend(self.geoms[layer])
+        return allgeoms
+        
+    def __lt__(self,other):
+        return self.all_geoms()[0]<other.all_geoms()[1]
+                    
