@@ -360,6 +360,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
                 fixed_csg.append(body)
 
         self.bodies_generic = bodies_generic
+        allhingelines.sort() #Sort here to prevent interfering with geometry. We only care about order of the joint props        
         self.connections = [(key, connections[key]) for key in allhingelines if len(connections[key]) == 2]
         self.all_joint_props = [all_joint_props[key] for key in allhingelines]
 
