@@ -24,7 +24,6 @@ class ShapeInvalid(Exception):
 class NotSimple(Exception):
     pass
 
-
 class GenericShapeBase(popupCADFile):
     filetypes = {'shape': 'Shape File'}
     defaultfiletype = 'shape'
@@ -311,10 +310,6 @@ class GenericShapeBase(popupCADFile):
             raise Exception
 
         return subclass(exterior, interiors)
-
-    @classmethod
-    def from_shapely(cls,*items):
-        pass
 
     @classmethod
     def gen_from_point_lists(cls, exterior_p, interiors_p, **kwargs):

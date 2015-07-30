@@ -5,7 +5,6 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.geometry import customshapely
 
 import numpy
 from popupcad.filetypes.genericshapebase import GenericShapeBase
@@ -108,11 +107,13 @@ class GenericShape(GenericShapeBase):
 
     @classmethod
     def genfromshapely(cls, obj):
-        exterior_p, interiors_p = obj.genpoints_generic()
+        import shapely.geometry as sg        
+        import popupcad.algorithms.shapely as pshapely
+        exterior_p, interiors_p = pshapely.get_generic_vertices(obj)
         exterior, interiors = cls.buildvertices(exterior_p, interiors_p)
-        if isinstance(obj, customshapely.ShapelyPolygon):
+        if isinstance(obj, sg.Polygon):
             shapetype = cls.shapetypes.polygon
-        elif isinstance(obj, customshapely.ShapelyLineString):
+        elif isinstance(obj, sg.LineString):
             shapetype = cls.shapetypes.polyline
         else:
             raise Exception
@@ -164,30 +165,31 @@ class GenericShape(GenericShapeBase):
 
     def outputshapely(self):
         import shapely.geometry
+        import shapely.geometry as sg        
 
         exterior_p = self.exteriorpoints()
         interiors_p = self.interiorpoints()
 
         if self.shapetype == self.shapetypes.line:
-            obj = customshapely.ShapelyLineString(exterior_p)
+            obj = sg.LineString(exterior_p)
         elif self.shapetype == self.shapetypes.polyline:
-            obj = customshapely.ShapelyLineString(exterior_p)
+            obj = sg.LineString(exterior_p)
         elif self.shapetype == self.shapetypes.polygon:
-            obj = customshapely.ShapelyPolygon(exterior_p, interiors_p)
+            obj = sg.Polygon(exterior_p, interiors_p)
         elif self.shapetype == self.shapetypes.circle:
             exterior = numpy.array(exterior_p)
             center = exterior[0]
             v = exterior[1] - exterior[0]
             r = v.dot(v)**.5
-            obj = shapely.geometry.Point(*center).buffer(r)
-            obj = customshapely.ShapelyPolygon(obj.boundary)
+            obj = sg.Point(*center).buffer(r)
+            obj = sg.Polygon(obj.boundary)
         elif self.shapetype == self.shapetypes.rect2point:
             corner1 = exterior_p[0]
             corner2 = (exterior_p[0][0], exterior_p[1][1])
             corner3 = exterior_p[1]
             corner4 = (exterior_p[1][0], exterior_p[0][1])
             corners = [corner1, corner2, corner3, corner4]
-            obj = customshapely.ShapelyPolygon(corners)
+            obj = sg.Polygon(corners)
         else:
             raise Exception
 
