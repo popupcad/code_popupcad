@@ -307,7 +307,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
             for jointline,jointprop in zip(hingelines,joint_props):
                 all_joint_props[jointline]=jointprop
 
-        allhingelines.sort()
+        #allhingelines.sort()
 
         safe_sections = []
         for ii in range(len(allgeoms)):
@@ -360,12 +360,13 @@ class JointOperation2(Operation2, LayerBasedOperation):
                 fixed_csg.append(body)
 
         self.bodies_generic = bodies_generic
+        allhingelines.sort() #Sort here to prevent interfering with geometry. We only care about order of the joint props        
         self.connections = [(key, connections[key]) for key in allhingelines if len(connections[key]) == 2]
         self.all_joint_props = [all_joint_props[key] for key in allhingelines]
 
         self.output = []
         self.output.append(OperationOutput(safe,'Safe',self))        
-        self.output.append(OperationOutput(unsafe,'Unafe',self))        
+        self.output.append(OperationOutput(unsafe,'Unsafe',self))        
         self.output.append(OperationOutput(split1,'Split1',self))        
         self.output.append(OperationOutput(split2,'Split2',self))        
         self.output.extend([OperationOutput(item,'Fixed {0:d}'.format(ii),self) for ii,item in enumerate(fixed_csg)])        
@@ -406,8 +407,3 @@ class JointOperation2(Operation2, LayerBasedOperation):
             #Queues up the next batch of children
             child_queue.extend([child for child in children if child not in visited_set])
         return hierarchy_map    
-    
-    #Generates the XML Tree for the joint
-    
-        #come back and implement rather stuff
-    

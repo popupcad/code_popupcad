@@ -258,12 +258,15 @@ class JointOperation3(Operation2, LayerBasedOperation):
         return items
 
     def gen_geoms(self, joint_def, layerdef, design):
+        print('Generating geometry')        
         hinge_gap = joint_def.width *popupcad.csg_processing_scaling
         split_buffer = .1 * hinge_gap
 
         stiffness = joint_def.stiffness
         damping = joint_def.damping
         preload_angle = joint_def.preload_angle
+        limit_negative = joint_def.limit_negative
+        limit_positive = joint_def.limit_positive
 
         sublaminate_layers = [
             layerdef.getlayer(item) for item in joint_def.sublaminate_layers]
@@ -290,7 +293,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
                     hinge_gap,
                     resolution=self.resolution))
 
-        joint_props = [(stiffness, damping, preload_angle)
+        joint_props = [(stiffness, damping, preload_angle, limit_negative, limit_positive)
                        for item in hingelines]
         return allgeoms4, buffered_split, hingelines, joint_props
 
@@ -322,8 +325,11 @@ class JointOperation3(Operation2, LayerBasedOperation):
             buffered_splits.append(buffered_split)
             for jointline,jointprop in zip(hingelines,joint_props):
                 all_joint_props[jointline]=jointprop
-
-        allhingelines.sort()
+        
+        #allhingelines, buffered_splits = zip(*sorted(zip(allhingelines, allgeoms, buffered_splits)))
+        #allhingelines = list(allhingelines)
+        #allgeoms = list(allgeoms)
+        #buffered_splits = list(buffered_splits)
 
         safe_sections = []
         for ii in range(len(allgeoms)):
@@ -376,12 +382,13 @@ class JointOperation3(Operation2, LayerBasedOperation):
                 fixed_csg.append(body)
 
         self.bodies_generic = bodies_generic
-        self.connections = [(key, connections[key]) for key in allhingelines if len(connections[key]) == 2]
-        self.all_joint_props = [all_joint_props[key] for key in allhingelines]
+        allhingelines.sort() #Sort here to prevent interfering with geometry. We only care about order of the joint props
+        self.connections = sorted([(key, connections[key]) for key in allhingelines if len(connections[key]) == 2])
+        self.all_joint_props = [all_joint_props[key] for key in allhingelines if len(connections[key]) == 2]
 
         self.output = []
         self.output.append(OperationOutput(safe,'Safe',self))        
-        self.output.append(OperationOutput(unsafe,'Unafe',self))        
+        self.output.append(OperationOutput(unsafe,'Unsafe',self))        
         self.output.append(OperationOutput(split1,'Split1',self))        
         self.output.append(OperationOutput(split2,'Split2',self))        
         self.output.extend([OperationOutput(item,'Fixed {0:d}'.format(ii),self) for ii,item in enumerate(fixed_csg)])        
@@ -422,8 +429,3 @@ class JointOperation3(Operation2, LayerBasedOperation):
             #Queues up the next batch of children
             child_queue.extend([child for child in children if child not in visited_set])
         return hierarchy_map    
-    
-    #Generates the XML Tree for the joint
-    
-        #come back and implement rather stuff
-    

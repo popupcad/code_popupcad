@@ -132,7 +132,7 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
 #Allows for granular PID control
 #TODO Allow users to specify PID variables. 
 #Until other variables implemented, this is experimental.
-
+#WARNING: This method will crash Simbody
 def apply_joint_pos_seq(world_name, robot_name, joint_names, poses, duration=0):
    """ Applies joint positions sequentially using subprocesses. No Trollius at all, 
        just commandline arguements.
@@ -191,12 +191,16 @@ def export(program):
     """
     design = program.editor.design
     from popupcad.manufacturing.joint_operation2 import JointOperation2
+    from popupcad.manufacturing.joint_operation3 import JointOperation3    
+    operation = None  
     for tmp_op in design.operations:
-        if isinstance(tmp_op, JointOperation2):
+        if (isinstance(tmp_op, JointOperation2) 
+                and (operation is None 
+                or not isinstance(operation, JointOperation3)) 
+                or isinstance(tmp_op, JointOperation3)):
             operation = tmp_op
-    try:
-        operation
-    except NameError as err:
+
+    if operation is None:            
         import PySide.QtGui as qg
         import PySide
         widget = qg.QMessageBox()
@@ -211,6 +215,7 @@ def export(program):
 def export_inner(operation, useDart=False):
     """ Continues the export process on the specified operation
     """    
+    print("Beginnning Export")    
     joint_laminates = operation.bodies_generic
    
     project_name = "exported" #We can figure out a better way later.
@@ -227,7 +232,6 @@ def export_inner(operation, useDart=False):
     
     etree.SubElement(model_object, "static").text = "false"
     etree.SubElement(model_object, "pose").text = "0 0 0 0 0 0"    
-    print("made it here")
     etree.SubElement(model_object, "plugin", name="Model_Vel", 
                      filename="libmodel_vel.so")
     #world_object.append(createFloor())
@@ -236,39 +240,40 @@ def export_inner(operation, useDart=False):
     include_sun = etree.SubElement(world_object, "include")
     etree.SubElement(include_sun, "uri").text = "model://sun"
     
+    #Sorts them in the correct order    
+    #operation.connections.sort(key=lambda tup: tup[0], reverse=True)    
+        
+    ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) for connection in operation.connections]
+    from tree_node import spawnTreeFromList
+    tree = spawnTreeFromList(ordered_connection, sort=True)   
+    assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
+    midpoints = [connect[0] for connect in operation.connections]
+    print(midpoints)
+    #Ensures that the list of lines is properly sorted    
+    #assert(all(midpoints[i] <= midpoints[i+1] for i in xrange(len(midpoints)-1)))
+    
+    #tree = spawnTreeFromList([[str(ordered_connect[0]), str(ordered_connect[1])] for ordered_connect in ordered_connection])        
+    
     counter = 0
     for joint_laminate in joint_laminates:
-        model_object.append(createRobotPart(joint_laminate, counter, approxCollisions=(not useDart)))
+        model_object.append(createRobotPart(joint_laminate, counter, tree, approxCollisions=(not useDart)))
         counter+=1
     
-    counter = 0
-    for joint_connection in operation.connections:
-        model_object.append(craftJoint(operation, joint_connection, counter))
-        counter+=1
-    
-    
+    joint_names = []               
+    for joint_connection in zip(midpoints, ordered_connection):
+        from tree_node import TreeNode
+        name = "hingejoint"
+        name += tree.getNode(joint_connection[1][0]).getID()
+        name += '|'
+        name += tree.getNode(joint_connection[1][1]).getID()            
+        model_object.append(craftJoint(operation, list(joint_connection), name, tree))
+        joint_names.append(name)
+        
     if useDart is True:
         physics_engine = 'dart'
     else:
         physics_engine = 'simbody'
         world_object.append(craftSimbodyPhysics())
-
-    
-    #Fixed joint method
-    #joint_root = etree.SubElement(model_object, "joint", {'name':'atlas', 'type':'revolute'})
-    #etree.SubElement(joint_root, 'parent').text = 'world'
-    #etree.SubElement(joint_root, 'child').text = str(operation.connections[0][1][0].id)
-    #axis = etree.SubElement(joint_root, "axis")
-    #etree.SubElement(axis, "xyz").text = "0 1 0"
-    #limit = etree.SubElement(axis, "limit")
-    #etree.SubElement(limit, "upper").text = '0'
-    #etree.SubElement(limit, "lower").text = '0'
-    
-    #Manually specify the physics engine
-    #physics = etree.SubElement(world_object, 'physics', {'name':'default', 'default':'true', 'type':'dart'})
-    #etree.SubElement(physics, 'max_step_size').text = str(0.0001)
-    #etree.SubElement(physics, "real_time_factor").text = "0.1"
-
     
     #Saves the object
     file_output = popupcad.exportdir + os.path.sep + project_name + ".world"
@@ -276,16 +281,12 @@ def export_inner(operation, useDart=False):
     f.write(etree.tostring(global_root, pretty_print=True))
     f.close()
     
-    joint_names = []        
-    for num in range(0, len(operation.all_joint_props)):
-        joint_names.append("hingejoint" + str(num))
-   
     def stringify(s1): #For local use to generate default Python code
         return "'{}'".format(s1)
     
     #Experimental Python IDE and Control System
     #TODO Sandbox this
-    from popupcad_gazebo.userinput import UserInputIDE
+    from popupcad.widgets.userinput import UserInputIDE
     mw = UserInputIDE()
     mw.setWindowTitle('Internal Python IDE')
     mw.appendText('#This code will control your robot during the simulation')
@@ -327,15 +328,14 @@ def export_inner(operation, useDart=False):
     #TODO Make it possible to kill the process later if it needs to
 
 ##TODO name the joints better, maybe via user_defined names if possible
-def craftJoint(operation, connection, counter):
+def craftJoint(operation, connection, name, tree, upper_limit='3.145159', lower_limit='-3.145159'):
     """
     Generates the SDf tag for a joint based off the connection and laminate generations.
     """    
-    joint_pair = reorder_pair(connection[1], operation.get_laminate_generations())    
-    
-    joint_root = etree.Element("joint", {"name":"hingejoint" + str(counter), "type":"revolute"})
-    etree.SubElement(joint_root, "parent").text = str(joint_pair[0].id)
-    etree.SubElement(joint_root, "child").text = str(joint_pair[1].id)
+    joint_pair = connection[1]
+    joint_root = etree.Element("joint", {"name":name, "type":"revolute"})
+    etree.SubElement(joint_root, "parent").text = tree.getNode(joint_pair[0]).getID()
+    etree.SubElement(joint_root, "child").text = tree.getNode(joint_pair[1]).getID()
     joint_center = findMidPoint(connection[0], joint_pair[0])
     joint_loc = str(joint_center[0]) + " " + str(joint_center[1]) + " " + str(joint_center[2]) + " 0 0 0"
     etree.SubElement(joint_root, "pose").text = joint_loc   
@@ -345,11 +345,25 @@ def craftJoint(operation, connection, counter):
     
     #etree.SubElement(axis, "use_parent_model_frame").text = "true"
     limit = etree.SubElement(axis, "limit")
-    etree.SubElement(limit, "lower").text = '-3.145159'
-    etree.SubElement(limit, "upper").text = '3.14519'
-            
+    
     #Add the properties of the joint
-    joint_props = operation.all_joint_props[operation.connections.index(connection)]
+    midpoints = [op[0] for op in operation.connections]
+    joint_index = midpoints.index(connection[0])
+    joint_props = operation.all_joint_props[joint_index]
+    
+    
+    from popupcad.manufacturing.joint_operation3 import JointOperation3            
+    if isinstance(operation, JointOperation3):
+        from math import radians
+        lower_limit = str(radians(joint_props[3]))
+        upper_limit = str(radians(joint_props[4]))
+    else:
+        lower_limit = '-3.145159'
+        upper_limit = '3.14519'
+    
+    etree.SubElement(limit, "lower").text = lower_limit
+    etree.SubElement(limit, "upper").text = upper_limit
+            
     #etree.SubElement(limit, "stiffness").text = str(joint_props[0])
     from math import radians    
     dynamics = etree.SubElement(axis, "dynamics")
@@ -426,7 +440,6 @@ def unitizeLine(shape):
     """
     Unitizes a line
     """
-    print(shape.exteriorpoints())
     (x, y, z) = extractLine(shape)    
     from math import sqrt
     length = sqrt(x * x + y * y)
@@ -437,24 +450,23 @@ def unitizeLine(shape):
 #TODO Ensure this actually works
 #Ensures the connection are in the right order
 def reorder_pair(joint_pair, hierarchy_map):
-    try:
-        first = hierarchy_map[joint_pair[0]]
-        second = hierarchy_map[joint_pair[1]]
-    except:
-        return joint_pair
+    first = hierarchy_map[joint_pair[0]]
+    second = hierarchy_map[joint_pair[1]]
     if first > second:
         return (joint_pair[1], joint_pair[0])
     else:
         return joint_pair
     
-def createRobotPart(joint_laminate, counter, buildMesh=True, approxCollisions=False):
+def createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisions=False):
     """
     Creates the SDF for each link in the Robot
     """
     filename = str(joint_laminate.id)
     _, trueMass, center_of_mass, I =  joint_laminate.mass_properties()      
     
-    root_of_robot = etree.Element("link", name=filename)
+    xml_name = tree.getNode(joint_laminate).getID()   
+    
+    root_of_robot = etree.Element("link", name=xml_name)
     etree.SubElement(root_of_robot, "gravity").text = "true" # For Testing purposes disable gravity
     etree.SubElement(root_of_robot, "self_collide").text = str(not approxCollisions) 
     #To make the collision realistic.   
@@ -541,7 +553,7 @@ def approximateCollisions(joint_laminate, centroid):
     return collisions
     
 def approximateCollisions2(joint_laminate, centroid):    
-    x, y, z = centroid    
+    x, y, z = centroid
     x1, y1, x2, y2 = joint_laminate.getBoundingBox()
     width = abs(x2 - x1)
     height = abs(y2 - y1)
@@ -565,5 +577,5 @@ def craftSimbodyPhysics():
     simbody_physics = etree.SubElement(physics_root, "simbody")
     contact = etree.SubElement(simbody_physics, "contact")
     etree.SubElement(contact, "plastic_coef_restitution").text = str(0)
+    etree.SubElement(contact, "override_impact_capture_velocity").text = str(100000000)
     return physics_root
-    
