@@ -313,6 +313,10 @@ class GenericShapeBase(popupCADFile):
         return subclass(exterior, interiors)
 
     @classmethod
+    def from_shapely(cls,*items):
+        pass
+
+    @classmethod
     def gen_from_point_lists(cls, exterior_p, interiors_p, **kwargs):
         exterior, interiors = cls.buildvertices(exterior_p, interiors_p)
         return cls(exterior, interiors, **kwargs)
