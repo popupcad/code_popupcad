@@ -174,7 +174,7 @@ class Laminate(IterableLaminate):
             geometry = self.layer_sequence[layer].geoms
             genericgeoms = []
             for geom in geometry:
-                genericgeoms.append(7)
+                genericgeoms.append(GenericShapeBase.genfromshapely(geom))
             genericgeometry[layer] = genericgeoms
         new = GenericLaminate(self.layerdef, genericgeometry)
         return new
