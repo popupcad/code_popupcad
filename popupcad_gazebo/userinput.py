@@ -14,6 +14,7 @@ Please see LICENSE.txt for full license.
 
 import PySide.QtGui as qg
 import PySide.QtCore as qc
+from popupcad.algorithms.python_syntax_formatter import PythonHighlighter
 
 class UserInputIDE(qg.QDialog):
 
@@ -35,8 +36,7 @@ class UserInputIDE(qg.QDialog):
         layout.addWidget(self.te)
         layout.addWidget(self.ok)
         self.setLayout(layout)
-        from popupcad_gazebo import syntax
-        syntax.PythonHighlighter(self.te.document())
+        PythonHighlighter(self.te.document())
 
     def appendText(self, text):
         current = self.te.toPlainText()

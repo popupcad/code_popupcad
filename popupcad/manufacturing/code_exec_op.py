@@ -6,13 +6,14 @@ Please see LICENSE.txt for full license.
 """
 
 from popupcad.filetypes.operation2 import Operation2
+from popupcad.widgets.userinput import UserInputIDE
 
 class CodeExecOperation(Operation2):
     name = 'Code Execution Operation'
     code = ""    
     
     def __init__(self, *args):
-        super(MultiValueOperation3, self).__init__()
+        super(CodeExecOperation, self).__init__()
         self.id = id(self)
         self.editdata(*args)
 
@@ -40,7 +41,7 @@ class CodeExecOperation(Operation2):
         mw.setWindowTitle('Internal Python IDE')
         mw.te.setReadOnly(False)
         mw.te.setPlainText(self.code)     
-        return dialog
+        return mw
 
     def operate(self, design):
         exec(self.code)

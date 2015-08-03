@@ -11,3 +11,4 @@ from . import morphology
 from . import points
 from . import manufacturing_functions
 from . import design_documentation
+from . import python_syntax_formatter
