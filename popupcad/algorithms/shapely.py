@@ -67,7 +67,7 @@ def from_shapely(entity):
     from popupcad.geometry.vertex import DrawnPoint
     from popupcad.geometry.vertex import ShapeVertex
 
-    exterior_p, interiors_p = get_shapely_vertices(entity)
+    exterior_p, interiors_p = get_shapely_vertices(entity,1/popupcad.csg_processing_scaling)
     exterior = [ShapeVertex(point) for point in exterior_p]
     interiors= [[ShapeVertex(point) for point in interior] for interior in interiors_p]
 
