@@ -63,7 +63,7 @@ def cross_section(layerdef, sketch, parent, scale_value):
                     newgeoms2.append(newgeom)
                 newgeoms = newgeoms2
                 newgeoms = [aff.translate(item,yoff=yshift) for item in newgeoms]
-                newgeoms = popupcad.algorithms.csg_shapely.from_shapely(*newgeoms)
+                newgeoms = popupcad.algorithms.csg_shapely.condition_shapely_entities(*newgeoms)
                 laminate2[ii] = newgeoms
             return laminate2
 
