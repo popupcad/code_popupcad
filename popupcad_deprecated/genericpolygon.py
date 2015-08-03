@@ -97,33 +97,14 @@ class GenericShape(GenericShapeBase):
         self.exterior.append(vertex)
         self.update_handles()
 
-    @staticmethod
-    def buildvertices(exterior_p, interiors_p):
-        exterior = GenericShape.buildvertexlist(exterior_p)
-        interiors = []
-        for interior_p in interiors_p:
-            interiors.append(GenericShape.buildvertexlist(interior_p))
-        return exterior, interiors
-
-    @classmethod
-    def genfromshapely(cls, obj):
-        import shapely.geometry as sg        
-        import popupcad.algorithms.shapely as pshapely
-        exterior_p, interiors_p = pshapely.get_generic_vertices(obj)
-        exterior, interiors = cls.buildvertices(exterior_p, interiors_p)
-        if isinstance(obj, sg.Polygon):
-            shapetype = cls.shapetypes.polygon
-        elif isinstance(obj, sg.LineString):
-            shapetype = cls.shapetypes.polyline
-        else:
-            raise Exception
-
-        return cls(exterior, interiors, shapetype)
-
     @classmethod
     def gengenericpoly(cls, exterior_p, interiors_p, **kwargs):
-        exterior, interiors = cls.buildvertices(exterior_p, interiors_p)
+        from popupcad.geometry.vertex import ShapeVertex
+
+        exterior = [ShapeVertex(point) for point in exterior_p]
+        interiors= [[ShapeVertex(point) for point in interior] for interior in interiors_p]
         shapetype = cls.shapetypes.polygon
+
         return cls(exterior, interiors, shapetype, **kwargs)
 
     def outputinteractive(self):

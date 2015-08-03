@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.filetypes.genericshapes import GenericShapeBase, GenericPoly
+from popupcad.filetypes.genericshapes import GenericPoly
 from popupcad.filetypes.laminate import Laminate
 import numpy
 import popupcad
@@ -14,7 +14,7 @@ def supportsheet(layerdef, lsin, value):
     allext = []
     for layer, layer_geometry in lsin.layer_sequence.items():
         for geom in layer_geometry.geoms:
-            geom2 = GenericShapeBase.genfromshapely(geom)
+            geom2 = popupcad.algorithms.shapely.from_shapely(geom)
             allext.extend(geom2.exteriorpoints(scaling = popupcad.csg_processing_scaling))
     allext = numpy.array(allext)
     minx = allext[:, 0].min() - value
@@ -40,7 +40,7 @@ def find_outer(ls, minpoint):
         for geom in layer_geometry.geoms:
             if points.pointinpoints(
                     minpoint,
-                    GenericShapeBase.genfromshapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
+                    popupcad.algorithms.shapely.from_shapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
                     popupcad.distinguishable_number_difference):
                 outergeoms.append(geom)
             else:

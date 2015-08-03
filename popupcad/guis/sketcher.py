@@ -465,7 +465,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.scene.updateshape()
         self.constraint_editor.refresh()
 
-    def buildvertices(self):
+    def get_sketch_vertices(self):
         self.update_sketch_geometries()
         vertices = [vertex for geom in self.sketch.operationgeometry for vertex in geom.vertices()]
         return vertices
@@ -509,7 +509,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
         self.constraint_editor.linklist(
             self.sketch.constraintsystem.constraints)
-        self.sketch.constraintsystem.get_vertices = self.buildvertices
+        self.sketch.constraintsystem.get_vertices = self.get_sketch_vertices
         self.load_references()
 
     def showvertices(self):

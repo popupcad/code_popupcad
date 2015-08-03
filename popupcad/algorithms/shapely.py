@@ -6,6 +6,7 @@ Created on Thu Jul 30 11:13:54 2015
 """
 
 import shapely.geometry as sg
+import popupcad
 
 filter_list = [sg.Polygon,sg.LineString,sg.Point]
 
@@ -62,12 +63,13 @@ def get_shapely_vertices(entity,scaling = 1.0):
 
 def from_shapely(entity):
     import shapely.geometry as sg
-    from popupcad.filetypes.genericshapebase import GenericShapeBase
     from popupcad.filetypes.genericshapes import GenericPoly, GenericPolyline
     from popupcad.geometry.vertex import DrawnPoint
+    from popupcad.geometry.vertex import ShapeVertex
 
-    exterior_p, interiors_p = GenericShapeBase.get_shapely_vertices(entity)
-    exterior, interiors = GenericShapeBase.buildvertices(exterior_p, interiors_p)
+    exterior_p, interiors_p = get_shapely_vertices(entity)
+    exterior = [ShapeVertex(point) for point in exterior_p]
+    interiors= [[ShapeVertex(point) for point in interior] for interior in interiors_p]
 
     if isinstance(entity, sg.Polygon):
         subclass = GenericPoly

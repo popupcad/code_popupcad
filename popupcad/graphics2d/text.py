@@ -83,11 +83,6 @@ class GenericText(object):
                      for item in exteriors]
         return p2,exteriors
 
-    def buildvertices(self, exteriors_p):
-        exteriors = [[ShapeVertex(pos) for pos in exterior_p]
-                     for exterior_p in exteriors_p]
-        return exteriors
-
     def outputinteractive(self):
         tp = TextParent(self)
         return tp
@@ -114,7 +109,7 @@ class GenericText(object):
     def output_dxf(self,model_space,layer = None):
 #        from popupcad.filetypes.genericshapebase import GenericShapeBase
 #        csg = self.outputshapely()
-#        new = GenericShapeBase.genfromshapely(csg)
+#        new = popupcad.algorithms.shapely.from_shapely(csg)
 #        return new.output_dxf(model_space,layer)
         pass
 

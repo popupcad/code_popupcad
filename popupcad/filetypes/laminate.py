@@ -174,7 +174,7 @@ class Laminate(IterableLaminate):
             geometry = self.layer_sequence[layer].geoms
             genericgeoms = []
             for geom in geometry:
-                genericgeoms.append(GenericShapeBase.genfromshapely(geom))
+                genericgeoms.append(popupcad.algorithms.shapely.from_shapely(geom))
             genericgeometry[layer] = genericgeoms
         new = GenericLaminate(self.layerdef, genericgeometry)
         return new

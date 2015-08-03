@@ -6,7 +6,6 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.geometry import customshapely
 from popupcad.geometry.vertex import ShapeVertex
 
 import numpy
@@ -277,43 +276,12 @@ class GenericShapeBase(popupCADFile):
         self.exterior = self.condition_loop(self.exterior)
         self.interiors = [self.condition_loop(interior) for interior in self.interiors]
                 
-    @staticmethod
-    def buildvertices(exterior_p, interiors_p):
-        exterior = GenericShapeBase.buildvertexlist(exterior_p)
-        interiors = []
-        for interior_p in interiors_p:
-            interiors.append(GenericShapeBase.buildvertexlist(interior_p))
-        return exterior, interiors
-
-    @staticmethod
-    def buildvertexlist(points):
-        exterior = []
-        for point in points:
-            v = ShapeVertex(point)
-            exterior.append(v)
-        return exterior
-
-    @classmethod
-    def genfromshapely(cls, obj):
-        from popupcad.filetypes.genericshapes import GenericPoly, GenericPolyline
-        exterior_p, interiors_p = obj.genpoints_generic()
-        exterior, interiors = cls.buildvertices(exterior_p, interiors_p)
-        if isinstance(obj, customshapely.ShapelyPolygon):
-            subclass = GenericPoly
-        elif isinstance(obj, customshapely.ShapelyLineString):
-            subclass = GenericPolyline
-        elif isinstance(obj, customshapely.ShapelyPoint):
-            from popupcad.geometry.vertex import DrawnPoint
-            s = DrawnPoint(exterior_p[0])
-            return s
-        else:
-            raise Exception
-
-        return subclass(exterior, interiors)
-
     @classmethod
     def gen_from_point_lists(cls, exterior_p, interiors_p, **kwargs):
-        exterior, interiors = cls.buildvertices(exterior_p, interiors_p)
+
+        exterior = [ShapeVertex(point) for point in exterior_p]
+        interiors= [[ShapeVertex(point) for point in interior] for interior in interiors_p]
+
         return cls(exterior, interiors, **kwargs)
 
     def genInteractiveVertices(self):
@@ -331,8 +299,7 @@ class GenericShapeBase(popupCADFile):
             pass
 
         exterior = [vertex.gen_interactive() for vertex in self.get_exterior()]
-        interiors = [[vertex.gen_interactive() for vertex in interior]
-                     for interior in self.get_interiors()]
+        interiors = [[vertex.gen_interactive() for vertex in interior] for interior in self.get_interiors()]
 
         handles = exterior[:]
         [handles.extend(interior) for interior in interiors]
@@ -421,10 +388,8 @@ class GenericShapeBase(popupCADFile):
 
     def output_dxf(self,model_space,layer = None):
         csg = self.outputshapely()
-        new = self.genfromshapely(csg)
+        new = popupcad.algorithms.shapely.from_shapely(csg)
         return new.output_dxf(model_space,layer)
 
-    
-    
     def __lt__(self,other):
         return self.exteriorpoints()[0]<other.exteriorpoints()[0]
