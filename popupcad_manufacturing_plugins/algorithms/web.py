@@ -14,7 +14,7 @@ def supportsheet(layerdef, lsin, value):
     allext = []
     for layer, layer_geometry in lsin.layer_sequence.items():
         for geom in layer_geometry.geoms:
-            geom2 = popupcad.algorithms.shapely.from_shapely(geom)
+            geom2 = popupcad.algorithms.csg_shapely.from_shapely(geom)
             allext.extend(geom2.exteriorpoints(scaling = popupcad.csg_processing_scaling))
     allext = numpy.array(allext)
     minx = allext[:, 0].min() - value
@@ -40,7 +40,7 @@ def find_outer(ls, minpoint):
         for geom in layer_geometry.geoms:
             if points.pointinpoints(
                     minpoint,
-                    popupcad.algorithms.shapely.from_shapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
+                    popupcad.algorithms.csg_shapely.from_shapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
                     popupcad.distinguishable_number_difference):
                 outergeoms.append(geom)
             else:

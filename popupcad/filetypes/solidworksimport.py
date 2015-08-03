@@ -125,7 +125,7 @@ class Assembly(popupCADFile):
                             c = c.symmetric_difference(item)
                         d = cs.multiinit(c)
                         e = cs.multiinit(*[item.buffer(bufferval * popupcad.csg_processing_scaling,resolution=popupcad.default_buffer_resolution) for item in d])
-                        f = [popupcad.algorithms.shapely.from_shapely(item) for item in e]
+                        f = [popupcad.algorithms.csg_shapely.from_shapely(item) for item in e]
                         self.geoms.extend(f)
                     except NotSimple:
                         pass

@@ -63,7 +63,7 @@ def cross_section(layerdef, sketch, parent, scale_value):
                     newgeoms2.append(newgeom)
                 newgeoms = newgeoms2
                 newgeoms = [aff.translate(item,yoff=yshift) for item in newgeoms]
-                newgeoms = popupcad.algorithms.shapely.from_shapely(*newgeoms)
+                newgeoms = popupcad.algorithms.csg_shapely.from_shapely(*newgeoms)
                 laminate2[ii] = newgeoms
             return laminate2
 
@@ -107,8 +107,8 @@ def transform(
                                     scale_y=scale_y)))
                     except IndexError:
                         pass
-        result1 = popupcad.algorithms.shapely.unary_union_safe(newgeoms)
-        results2 = popupcad.algorithms.shapely.condition_shapely_entities(result1)
+        result1 = popupcad.algorithms.csg_shapely.unary_union_safe(newgeoms)
+        results2 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result1)
         lsout.replacelayergeoms(layerout, results2)
 
     return lsout

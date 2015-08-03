@@ -6,10 +6,10 @@ Please see LICENSE.txt for full license.
 """
 from . import autobridge
 from . import body_detection
+from . import csg_shapely
 from . import keepout
 from . import morphology
 from . import points
 from . import manufacturing_functions
 from . import design_documentation
 from . import python_syntax_formatter
-from . import shapely

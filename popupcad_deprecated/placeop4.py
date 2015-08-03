@@ -14,7 +14,6 @@ from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.design import NoOperation
 from popupcad.filetypes.design import Design
-import popupcad.geometry.customshapely as customshapely
 
 from dev_tools.enum import enum
 from popupcad.algorithms.points import calctransformfrom2lines
@@ -277,8 +276,8 @@ class PlaceOperation4(Operation):
                                 geom.exteriorpoints(),
                                 scale_x=scale_x,
                                 scale_y=scale_y)))
-            newgeoms = customshapely.unary_union_safe(newgeoms)
-            newgeoms = popupcad.geometry.customshapely.multiinit(newgeoms)
+            newgeoms = popupcad.algorithms.csg_shapely.unary_union_safe(newgeoms)
+            newgeoms = popupcad.algorithms.csg_shapely.condition_shapely_entities(newgeoms)
             lsout.replacelayergeoms(layerout, newgeoms)
 
         return lsout

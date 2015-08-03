@@ -4,14 +4,11 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import shapely.ops as ops
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.layer import Layer
 from popupcad.filetypes.sketch import Sketch
 import popupcad.widgets
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.design import NoOperation
-import popupcad.geometry.customshapely as customshapely
 
 
 class SketchOperation(Operation):
@@ -21,10 +18,6 @@ class SketchOperation(Operation):
         'intersection',
         'difference',
         'symmetric_difference']
-
-#    attr_init = 'sketch','operation_link1','layer_links','function'
-#    attr_init_k = tuple()
-#    attr_copy = 'id','customname'
 
     def copy(self):
         new = type(self)(

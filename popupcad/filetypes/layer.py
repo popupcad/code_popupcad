@@ -43,8 +43,8 @@ class Layer(object):
     @classmethod
     def unary_union(cls, layers):
         geoms = [geom for layer in layers for geom in layer.geoms]
-        result1 = popupcad.algorithms.shapely.unary_union_safe(geoms)
-        result2 = popupcad.algorithms.shapely.condition_shapely_entities(result1)
+        result1 = popupcad.algorithms.csg_shapely.unary_union_safe(geoms)
+        result2 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result1)
         return cls(result2)
 
     def binaryoperation(self, layer2, functionname):
@@ -54,18 +54,18 @@ class Layer(object):
         if sourcegeoms == []:
             sourcegeom = sg.Polygon()
         else:
-            sourcegeom = popupcad.algorithms.shapely.unary_union_safe(sourcegeoms)
+            sourcegeom = popupcad.algorithms.csg_shapely.unary_union_safe(sourcegeoms)
 
         if operationgeoms == []:
             operationgeom = sg.Polygon()
         else:
-            operationgeom = popupcad.algorithms.shapely.unary_union_safe(operationgeoms)
+            operationgeom = popupcad.algorithms.csg_shapely.unary_union_safe(operationgeoms)
 
         function = getattr(sourcegeom, functionname)
         newgeom = function(operationgeom)
 
-        result1 = popupcad.algorithms.shapely.unary_union_safe([newgeom])
-        result2 = popupcad.algorithms.shapely.condition_shapely_entities(result1)
+        result1 = popupcad.algorithms.csg_shapely.unary_union_safe([newgeom])
+        result2 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result1)
         return type(self)(result2)
 
     def valueoperation(self, functionname, *args, **kwargs):
@@ -74,12 +74,12 @@ class Layer(object):
         if sourcegeoms == []:
             sourcegeom = sg.Polygon()
         else:
-            sourcegeom = popupcad.algorithms.shapely.unary_union_safe(sourcegeoms)
+            sourcegeom = popupcad.algorithms.csg_shapely.unary_union_safe(sourcegeoms)
 
         function = getattr(sourcegeom, functionname)
         newgeom = function(*args, **kwargs)
-        result1 = popupcad.algorithms.shapely.unary_union_safe([newgeom])
-        result2 = popupcad.algorithms.shapely.condition_shapely_entities(result1)
+        result1 = popupcad.algorithms.csg_shapely.unary_union_safe([newgeom])
+        result2 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result1)
         return type(self)(result2)
 
     def isEmpty(self):

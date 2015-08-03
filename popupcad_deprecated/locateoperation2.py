@@ -5,18 +5,10 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
-import shapely.ops as ops
 import popupcad
 from popupcad.filetypes.laminate import Laminate
-from popupcad.filetypes.layer import Layer
-from popupcad.filetypes.sketch import Sketch
-import popupcad.widgets
 from popupcad.filetypes.operation import Operation
-from popupcad.filetypes.design import NoOperation
-import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.listmanager import SketchListManager
-from popupcad.widgets.dragndroptree import DraggableTreeWidget
-from popupcad.manufacturing.nulloperation import NullOp
 
 
 class Dialog(qg.QDialog):
@@ -89,13 +81,13 @@ class LocateOperation2(Operation):
 
     def operate(self, design):
         sketch = design.sketches[self.sketchid]
-        operationgeom = customshapely.unary_union_safe(
+        operationgeom = popupcad.algorithms.csg_shapely.unary_union_safe(
             [item.outputshapely() for item in sketch.operationgeometry])
         lsout = Laminate(design.return_layer_definition())
         for layer in design.return_layer_definition().layers:
             lsout.replacelayergeoms(
                 layer,
-                customshapely.multiinit(operationgeom))
+                popupcad.algorithms.csg_shapely.condition_shapely_entities(operationgeom))
         return lsout
 
     def locationgeometry(self):

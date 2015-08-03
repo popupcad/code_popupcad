@@ -7,9 +7,8 @@ Please see LICENSE.txt for full license.
 import PySide.QtGui as qg
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2
-import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.listmanager import SketchListManager
-
+import popupcad
 
 class Dialog(qg.QDialog):
 
@@ -79,13 +78,13 @@ class LocateOperation3(Operation2):
     def operate(self, design):
         sketchid = self.sketch_links['sketch'][0]
         sketch = design.sketches[sketchid]
-        operationgeom = customshapely.unary_union_safe(
+        operationgeom = popupcad.algorithms.csg_shapely.unary_union_safe(
             [item.outputshapely() for item in sketch.operationgeometry])
         lsout = Laminate(design.return_layer_definition())
         for layer in design.return_layer_definition().layers:
             lsout.replacelayergeoms(
                 layer,
-                customshapely.multiinit(operationgeom))
+                popupcad.algorithms.csg_shapely.condition_shapely_entities(operationgeom))
         return lsout
 
     def locationgeometry(self):

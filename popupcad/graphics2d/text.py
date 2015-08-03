@@ -107,7 +107,7 @@ class GenericText(object):
     def output_dxf(self,model_space,layer = None):
 #        from popupcad.filetypes.genericshapebase import GenericShapeBase
 #        csg = self.outputshapely()
-#        new = popupcad.algorithms.shapely.from_shapely(csg)
+#        new = popupcad.algorithms.csg_shapely.from_shapely(csg)
 #        return new.output_dxf(model_space,layer)
         pass
 

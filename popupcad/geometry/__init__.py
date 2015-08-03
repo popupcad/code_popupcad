@@ -5,6 +5,5 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from . import customshapely
 from . import line
 from . import vertex

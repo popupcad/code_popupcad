@@ -5,17 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
-#import shapely.ops as ops
 import popupcad
-from popupcad.filetypes.laminate import Laminate
-#from popupcad.filetypes.layer import Layer
-#from popupcad.filetypes.sketch import Sketch
-import popupcad.widgets
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
-#from popupcad.filetypes.design import NoOperation
-#import popupcad.geometry.customshapely as customshapely
 from popupcad.widgets.listmanager import SketchListManager
-#from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.manufacturing.nulloperation import NullOp
 
 

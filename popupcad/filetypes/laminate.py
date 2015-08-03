@@ -138,8 +138,8 @@ class Laminate(IterableLaminate):
         for layer in selectedinputlayers:
             layer2 = self.layer_sequence[layer]
             layer1 = layer1.binaryoperation(layer2, functionname)
-        result = popupcad.algorithms.shapely.unary_union_safe(layer1.geoms)
-        geoms1 = popupcad.algorithms.shapely.condition_shapely_entities(result)
+        result = popupcad.algorithms.csg_shapely.unary_union_safe(layer1.geoms)
+        geoms1 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result)
         lsout = Laminate(self.layerdef)
         for layer in selectedoutputlayers:
             lsout.replacelayergeoms(layer, geoms1)
@@ -172,7 +172,7 @@ class Laminate(IterableLaminate):
             geometry = self.layer_sequence[layer].geoms
             genericgeoms = []
             for geom in geometry:
-                genericgeoms.append(popupcad.algorithms.shapely.from_shapely(geom))
+                genericgeoms.append(popupcad.algorithms.csg_shapely.from_shapely(geom))
             genericgeometry[layer] = genericgeoms
         new = GenericLaminate(self.layerdef, genericgeometry)
         return new
