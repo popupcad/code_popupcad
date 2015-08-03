@@ -5,8 +5,6 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
 
-from popupcad.geometry import customshapely
-
 import popupcad
 import shapely.geometry
 import numpy
@@ -19,6 +17,7 @@ try: #Hack to ensure Python 2 & 3 support
 except ImportError:
     pass
 
+import shapely.geometry as sg
 
 from popupcad.filetypes.genericshapebase import GenericShapeBase
 
@@ -42,7 +41,7 @@ class GenericLine(GenericShapeBase):
 
     def outputshapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
-        obj = customshapely.ShapelyLineString(exterior_p)
+        obj = sg.LineString(exterior_p)
         return obj
 
     def segments(self):
@@ -73,7 +72,7 @@ class GenericPolyline(GenericShapeBase):
 
     def outputshapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
-        obj = customshapely.ShapelyLineString(exterior_p)
+        obj = sg.LineString(exterior_p)
         return obj
 
     def segments(self):
@@ -149,7 +148,7 @@ class GenericPoly(GenericShapeBase):
     def outputshapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
         interiors_p = self.interiorpoints(scaling = popupcad.csg_processing_scaling)
-        obj = customshapely.ShapelyPolygon(exterior_p, interiors_p)
+        obj = sg.Polygon(exterior_p, interiors_p)
         return obj
 
     def addvertex_exterior(self, vertex, special=False):
@@ -303,7 +302,7 @@ class GenericCircle(GenericShapeBase):
         v = exterior[1] - exterior[0]
         r = v.dot(v)**.5
         obj = shapely.geometry.Point(*center).buffer(r)
-        obj = customshapely.ShapelyPolygon(obj.boundary)
+        obj = sg.Polygon(obj.boundary)
         return obj
 
     def segments(self):
@@ -336,7 +335,7 @@ class GenericTwoPointRect(GenericShapeBase):
         corner3 = exterior_p[1]
         corner4 = (exterior_p[1][0], exterior_p[0][1])
         corners = [corner1, corner2, corner3, corner4]
-        obj = customshapely.ShapelyPolygon(corners)
+        obj = sg.Polygon(corners)
         return obj
 
     def segments(self):

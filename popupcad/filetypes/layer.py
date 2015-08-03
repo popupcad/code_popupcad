@@ -4,7 +4,6 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import popupcad.geometry.customshapely as customshapely
 import shapely.geometry as sg
 import popupcad
 
@@ -44,8 +43,9 @@ class Layer(object):
     @classmethod
     def unary_union(cls, layers):
         geoms = [geom for layer in layers for geom in layer.geoms]
-        result = customshapely.unary_union_safe(geoms)
-        return cls(customshapely.multiinit(result))
+        result1 = popupcad.algorithms.shapely.unary_union_safe(geoms)
+        result2 = popupcad.algorithms.shapely.condition_shapely_entities(result1)
+        return cls(result2)
 
     def binaryoperation(self, layer2, functionname):
         sourcegeoms = self.geoms
@@ -54,18 +54,19 @@ class Layer(object):
         if sourcegeoms == []:
             sourcegeom = sg.Polygon()
         else:
-            sourcegeom = customshapely.unary_union_safe(sourcegeoms)
+            sourcegeom = popupcad.algorithms.shapely.unary_union_safe(sourcegeoms)
 
         if operationgeoms == []:
             operationgeom = sg.Polygon()
         else:
-            operationgeom = customshapely.unary_union_safe(operationgeoms)
+            operationgeom = popupcad.algorithms.shapely.unary_union_safe(operationgeoms)
 
         function = getattr(sourcegeom, functionname)
         newgeom = function(operationgeom)
 
-        result = customshapely.unary_union_safe([newgeom])
-        return type(self)(customshapely.multiinit(result))
+        result1 = popupcad.algorithms.shapely.unary_union_safe([newgeom])
+        result2 = popupcad.algorithms.shapely.condition_shapely_entities(result1)
+        return type(self)(result2)
 
     def valueoperation(self, functionname, *args, **kwargs):
         sourcegeoms = self.geoms
@@ -73,12 +74,13 @@ class Layer(object):
         if sourcegeoms == []:
             sourcegeom = sg.Polygon()
         else:
-            sourcegeom = customshapely.unary_union_safe(sourcegeoms)
+            sourcegeom = popupcad.algorithms.shapely.unary_union_safe(sourcegeoms)
 
         function = getattr(sourcegeom, functionname)
         newgeom = function(*args, **kwargs)
-        result = customshapely.unary_union_safe([newgeom])
-        return type(self)(customshapely.multiinit(result))
+        result1 = popupcad.algorithms.shapely.unary_union_safe([newgeom])
+        result2 = popupcad.algorithms.shapely.condition_shapely_entities(result1)
+        return type(self)(result2)
 
     def isEmpty(self):
         return len(self.geoms) == 0

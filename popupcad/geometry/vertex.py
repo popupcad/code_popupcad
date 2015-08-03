@@ -8,6 +8,7 @@ Please see LICENSE.txt for full license.
 import numpy
 from popupcad.filetypes.constraints import SymbolicVertex
 import popupcad
+import shapely.geometry as sg
 
 class BaseVertex(object):
     editable = ['position']
@@ -240,9 +241,7 @@ class DrawnPoint(BaseVertex):
         return iv
 
     def outputshapely(self):
-        from popupcad.geometry.customshapely import ShapelyPoint
-#        from shapely.geometry import Point
-        p = ShapelyPoint(*self.getpos(scaling = popupcad.csg_processing_scaling))
+        p = sg.Point(*self.getpos(scaling = popupcad.csg_processing_scaling))
         return p
 
     def is_construction(self):

@@ -4,8 +4,6 @@ Written by Daniel M. Aukes.
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE.txt for full license.
 """
-import popupcad.geometry.customshapely as customshapely
-from popupcad.filetypes.genericshapebase import GenericShapeBase
 from popupcad.filetypes.layer import Layer
 import popupcad
 
@@ -140,8 +138,8 @@ class Laminate(IterableLaminate):
         for layer in selectedinputlayers:
             layer2 = self.layer_sequence[layer]
             layer1 = layer1.binaryoperation(layer2, functionname)
-        result = customshapely.unary_union_safe(layer1.geoms)
-        geoms1 = customshapely.multiinit(result)
+        result = popupcad.algorithms.shapely.unary_union_safe(layer1.geoms)
+        geoms1 = popupcad.algorithms.shapely.condition_shapely_entities(result)
         lsout = Laminate(self.layerdef)
         for layer in selectedoutputlayers:
             lsout.replacelayergeoms(layer, geoms1)

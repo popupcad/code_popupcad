@@ -10,8 +10,7 @@ import PySide.QtGui as qg
 import numpy
 from popupcad.graphics2d.graphicsitems import Common
 import popupcad
-from popupcad.geometry.vertex import ShapeVertex
-
+import shapely.geometry as sg
 
 class GenericText(object):
     editable = ['*']
@@ -88,10 +87,9 @@ class GenericText(object):
         return tp
 
     def outputshapely(self):
-        import popupcad.geometry.customshapely as customshapely
         dummy, exteriors_p = self.genpath(popupcad.csg_processing_scaling)
         objs = [
-            customshapely.ShapelyPolygon(
+            sg.Polygon(
                 exterior,
                 []) for exterior in exteriors_p]
         if len(objs) > 1:

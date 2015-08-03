@@ -72,7 +72,6 @@ class Sketch(popupCADFile):
         self.constraintsystem = sketch.constraintsystem
 
     def output_csg(self):
-        import popupcad.geometry.customshapely
         shapelygeoms = []
         for item in self.operationgeometry:
             try:
@@ -84,9 +83,8 @@ class Sketch(popupCADFile):
             except AttributeError as ex:
                 shapelyitem = item.outputshapely()
                 shapelygeoms.append(shapelyitem)
-        shapelygeoms = popupcad.geometry.customshapely.unary_union_safe(
-            shapelygeoms)
-        shapelygeoms = popupcad.geometry.customshapely.multiinit(shapelygeoms)
+        shapelygeoms = popupcad.algorithms.shapely.unary_union_safe(shapelygeoms)
+        shapelygeoms = popupcad.algorithms.shapely.condition_shapely_entities(shapelygeoms)
         return shapelygeoms
 
     @classmethod
