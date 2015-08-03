@@ -12,7 +12,7 @@ import sys
 from PySide.QtCore import QRegExp
 from PySide.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
-def format(color, style=''):
+def syntax_format(color, style=''):
     """Return a QTextCharFormat with the given attributes.
     """
     _color = QColor()
@@ -30,15 +30,15 @@ def format(color, style=''):
 
 # Syntax styles that can be shared by all languages
 STYLES = {
-    'keyword': format('blue'),
-    'operator': format('red'),
-    'brace': format('darkGray'),
-    'defclass': format('black', 'bold'),
-    'string': format('magenta'),
-    'string2': format('darkMagenta'),
-    'comment': format('darkGreen', 'italic'),
-    'self': format('black', 'italic'),
-    'numbers': format('brown'),
+    'keyword': syntax_format('blue'),
+    'operator': syntax_format('red'),
+    'brace': syntax_format('darkGray'),
+    'defclass': syntax_format('black', 'bold'),
+    'string': syntax_format('magenta'),
+    'string2': syntax_format('darkMagenta'),
+    'comment': syntax_format('darkGreen', 'italic'),
+    'self': syntax_format('black', 'italic'),
+    'numbers': syntax_format('brown'),
 }
 
 
@@ -124,14 +124,14 @@ class PythonHighlighter (QSyntaxHighlighter):
         """Apply syntax highlighting to the given block of text.
         """
         # Do other syntax formatting
-        for expression, nth, format in self.rules:
+        for expression, nth, my_format in self.rules:
             index = expression.indexIn(text, 0)
 
             while index >= 0:
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = len(expression.cap(nth))
-                self.setFormat(index, length, format)
+                self.setFormat(index, length, my_format)
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)

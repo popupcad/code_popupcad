@@ -22,18 +22,18 @@ class TreeNode(object):
 
     def _add_children(self,children):
         self.children.extend(children)
-        self.children = list(set(self.children))
+        self.children = unique_seq(self.children)
 
     def _add_decendents(self,decendents,recursive = True):
         self.decendents.extend(decendents)
-        self.decendents = list(set(self.decendents))
+        self.decendents = unique_seq(self.decendents)
         if recursive:
             if self.parent!=None:
                 self.parent._add_decendents(decendents,recursive)
 
     def _add_ancestors(self,ancestors):
         self.ancestors.extend(ancestors)
-        self.ancestors = list(set(self.ancestors))
+        self.ancestors = unique_seq(self.ancestors)
 
     def top(self):
         if self.parent==None:
@@ -41,10 +41,12 @@ class TreeNode(object):
         else:
             return self.parent.top()
             
-    def getDescendentFromValue(self, value):
-        for descendent in (self.decendents + self.ancestors + [self]):
-            if descendent.value == value:
-                return descendent
+    def getNode(self, value):
+        for item in ([self] + self.decendents + self.ancestors):
+            if item.value == value:
+                return item
+        print("Warning: Could not find " + str(value) + " in tree.")
+        return None
             
     def path_to_top(self,path_in=None):
         if path_in == None:
@@ -77,7 +79,7 @@ class TreeNode(object):
         return a[:ii:-1]+b[ii:]
 
     def path_from_top(self):
-        parent = self.parent
+        parent = self.top()
         if parent is None:
             return [self]
         return parent.path_to(self)
@@ -95,6 +97,9 @@ class TreeNode(object):
         leaves = [item for item in top.decendents if not item.children]
         return leaves
 
+    def __contains__(self, *item):
+        other_values = [node.value for node in (self.decendents + self.ancestors)]
+        return item == self.value or item in other_values
     
     def __str__(self, level=0):
         ret = "\t"*level+repr(self)+"\n"
@@ -123,21 +128,31 @@ class TreeNode(object):
         id_string = ""        
         index = 0
         for node in path:
-            if len(node.children) > 0:
+            if node.parent is None:
+                id_string += '*'
+            elif len(node.parent.children) > 0:
                 num = node.getSiblingIndex()
-                id_string+= str(index) +"-" + str(num) + ":"
+                #if num == -1:#Indicates the tree root
+                #    num = -23
+                id_string+= str(chr((65+num)))
+                id_string+= str(index)
                 index = 0
             else:
                 index += 1
         if index > 0:
-            id_string += str(index)
+            id_string+=":"
+            id_string+= str(index)
         return id_string
+    
+def unique_seq(seq):
+    seen = list()
+    seen_add = seen.append
+    return [ x for x in seq if not (x in seen or seen_add(x))]
         
-def spawnTreeFromList(lov):    
+def spawnTreeFromList(lov, assert_connected=True, sort=True):    
     import itertools
     values = list(itertools.chain.from_iterable(lov))
-    cleanlist = []    
-    [cleanlist.append(x) for x in values if x not in cleanlist]
+    cleanlist = unique_seq(values)    
     tree_list = [(TreeNode()) for value in cleanlist]    
     value_node_dict = dict()    
     for tree, value in zip(tree_list, cleanlist):
@@ -145,10 +160,28 @@ def spawnTreeFromList(lov):
         value_node_dict[value] = tree
     for parent, child in lov:
         value_node_dict[parent].add_branch(value_node_dict[child])
-    print(tree_list)
+    if sort:
+        #tree_list = [node.children.so for node in tree_list]
+        for node in tree_list:
+            node.children.sort
+    if assert_connected:
+        for tree in tree_list:
+            if not tree.is_connected(tree_list[0]):
+                print("ERROR:" + str(tree) + "is not connected to the rest of the graph")
+                assert(False)
     return tree_list[0].top()
     
 if __name__=='__main__':
+    is_sorted = lambda l: (all(l[i] <= l[i+1] for i in xrange(len(l)-1)))
+    def check_sorted_children(node):
+        cur_node = node
+        if not is_sorted(cur_node.children):
+            return False
+        for child in cur_node.children:
+            if not check_sorted_children(child):
+                return False
+        return True
+    
     A = TreeNode()
     B = TreeNode()
     C = TreeNode()
@@ -168,7 +201,10 @@ if __name__=='__main__':
         parent.add_branch(child)
     
     connections2 = [['E','F'], ['A','B'], ['B','C'], ['A','D'], ['D','E']]
-    top1 = connections[1][0].top()    
-    top2 = spawnTreeFromList(connections2)
+    top1 = connections[1][0].top()
+    top2 = spawnTreeFromList(connections2, assert_connected=False)
     assert(top1.value == top2.value)
-    
+    print("Checking if tree is sorted")
+    assert(check_sorted_children(top1))
+    assert(check_sorted_children(top2))
+    print("All tests passed!")

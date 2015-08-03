@@ -16,6 +16,7 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.algorithms.python_syntax_formatter import PythonHighlighter
 
+
 class UserInputIDE(qg.QDialog):
 
     def __init__(self):

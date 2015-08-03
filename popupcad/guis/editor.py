@@ -318,12 +318,8 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                         popupcad.manufacturing.cross_section.CrossSection)}})
         self.tools1.append({'text': 'SubOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation.SubOperation)}})
         self.tools1.append({'text': 'SubOp(New)','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation2.SubOperation2)}})
-        self.tools1.append(
-            {
-                'text': 'Transform',
-                'kwargs': {
-                    'triggered': lambda: self.newoperation(
-                        popupcad.manufacturing.transform.TransformOperation)}})
+        self.tools1.append({'text': 'Transform','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.transform.TransformOperation)}})
+#        self.tools1.append({'text': 'Code Exec','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.code_exec_op.CodeExecOperation)}})
 
         self.operationactions = []
         self.operationactions.append(
