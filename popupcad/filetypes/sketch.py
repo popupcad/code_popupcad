@@ -76,12 +76,12 @@ class Sketch(popupCADFile):
         for item in self.operationgeometry:
             try:
                 if not item.is_construction():
-                    shapelyitem = item.outputshapely()
+                    shapelyitem = item.to_shapely()
                     shapelygeoms.append(shapelyitem)
             except ValueError as ex:
                 print(ex)
             except AttributeError as ex:
-                shapelyitem = item.outputshapely()
+                shapelyitem = item.to_shapely()
                 shapelygeoms.append(shapelyitem)
         shapelygeoms = popupcad.algorithms.csg_shapely.unary_union_safe(shapelygeoms)
         shapelygeoms = popupcad.algorithms.csg_shapely.condition_shapely_entities(shapelygeoms)

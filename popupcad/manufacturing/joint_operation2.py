@@ -265,7 +265,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
 
         allgeoms4 = []
         for geom in hingelines:
-            geom = geom.outputshapely()
+            geom = geom.to_shapely()
             laminate = Laminate(layerdef)
             for layer in sublaminate_layers:
                 laminate.replacelayergeoms(layer, [geom])

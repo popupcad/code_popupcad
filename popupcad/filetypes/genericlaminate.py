@@ -36,7 +36,7 @@ class GenericLaminate(popupCADFile):
         from popupcad.filetypes.laminate import Laminate
         new = Laminate(self.layerdef)
         for ii, layer in enumerate(self.layerdef.layers):
-            geoms = [item.outputshapely() for item in self.geoms[layer]]
+            geoms = [item.to_shapely() for item in self.geoms[layer]]
             new.replacelayergeoms(layer, geoms)
         return new
 
@@ -307,7 +307,7 @@ class GenericLaminate(popupCADFile):
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
             all_shapes.extend(shapes)
-        all_shapes = [shape.outputshapely() for shape in shapes]
+        all_shapes = [shape.to_shapely() for shape in shapes]
         master_shape = all_shapes[0]
         for shape in all_shapes[1:]:
             master_shape = master_shape.union(shape)

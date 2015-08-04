@@ -32,7 +32,7 @@ class GenericShape(GenericShapeBase):
 
         self.construction = construction
         if test_shapely:
-            shapely = self.outputshapely()
+            shapely = self.to_shapely()
             if not shapely.is_simple:
                 raise(NotSimple)
             if not shapely.is_valid:
@@ -144,7 +144,7 @@ class GenericShape(GenericShapeBase):
         drawable = staticclass(self, color=color)
         return drawable
 
-    def outputshapely(self):
+    def to_shapely(self):
         import shapely.geometry
         import shapely.geometry as sg        
 

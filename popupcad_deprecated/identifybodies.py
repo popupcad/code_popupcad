@@ -65,7 +65,7 @@ class IdentifyBodies(MultiValueOperation2):
                 geom = geom_dict_whole[item_id]
                 laminate.insertlayergeoms(
                     layer_dict[item_id], [
-                        geom.outputshapely()])
+                        geom.to_shapely()])
             laminates.append(laminate)
 
         laminates = sort_lams(laminates, values)

@@ -114,7 +114,7 @@ class Assembly(popupCADFile):
                             GenericPoly.gen_from_point_lists(
                                 loop,
                                 []) for loop in ints_c]
-                        b = [item.outputshapely() for item in a]
+                        b = [item.to_shapely() for item in a]
                         if cleanup >= 0:
                             b = [
                                 item.simplify(
@@ -125,7 +125,7 @@ class Assembly(popupCADFile):
                             c = c.symmetric_difference(item)
                         d = cs.multiinit(c)
                         e = cs.multiinit(*[item.buffer(bufferval * popupcad.csg_processing_scaling,resolution=popupcad.default_buffer_resolution) for item in d])
-                        f = [popupcad.algorithms.csg_shapely.from_shapely(item) for item in e]
+                        f = [popupcad.algorithms.csg_shapely.to_generic(item) for item in e]
                         self.geoms.extend(f)
                     except NotSimple:
                         pass
@@ -155,12 +155,12 @@ class Assembly(popupCADFile):
     def filter_small_areas(self, area_ratio):
         areas = []
         for geom in self.geoms:
-            shape = geom.outputshapely()
+            shape = geom.to_shapely()
             areas.append(abs(shape.area))
         goodgeoms = []
         badgeoms = []
         for geom in self.geoms:
-            shape = geom.outputshapely()
+            shape = geom.to_shapely()
             if abs(shape.area) < max(areas) * area_ratio:
                 badgeoms.append(geom)
             else:

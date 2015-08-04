@@ -50,7 +50,7 @@ def find(generic_laminate):
             geom = geom_dict_whole[item_id]
             laminate.insertlayergeoms(
                 layer_dict[item_id], [
-                    geom.outputshapely()])
+                    geom.to_shapely()])
         laminates.append(laminate)
     laminates = sort_lams(laminates, values)
     return laminates
@@ -80,13 +80,13 @@ def findallconnectedneighborgeoms(
 def findconnectedneighborgeoms(geomid, generic_laminate, geom_dict, layerdef):
     '''find geoms in neighboring layers which are overlapping'''
     geom = geom_dict[geomid]
-    geom = geom.outputshapely()
+    geom = geom.to_shapely()
     layer = findgeomlayerinstep(geomid, generic_laminate)
     neighbors = layerdef.connected_neighbors(layer)
     validneighbors = []
     for neighbor in neighbors:
         for item in generic_laminate.geoms[neighbor]:
-            shapelygeom = item.outputshapely()
+            shapelygeom = item.to_shapely()
             result = geom.intersection(shapelygeom)
             if not result.is_empty:
                 validneighbors.append(item.id)

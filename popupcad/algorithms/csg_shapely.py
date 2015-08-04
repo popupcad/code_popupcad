@@ -61,7 +61,7 @@ def get_shapely_vertices(entity,scaling = 1.0):
 
     return exterior, interiors
 
-def from_shapely(entity):
+def to_generic(entity):
     import shapely.geometry as sg
     from popupcad.filetypes.genericshapes import GenericPoly, GenericPolyline
     from popupcad.geometry.vertex import DrawnPoint

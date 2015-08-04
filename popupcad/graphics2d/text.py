@@ -86,7 +86,7 @@ class GenericText(object):
         tp = TextParent(self)
         return tp
 
-    def outputshapely(self):
+    def to_shapely(self):
         dummy, exteriors_p = self.genpath(popupcad.csg_processing_scaling)
         objs = [
             sg.Polygon(
@@ -106,8 +106,8 @@ class GenericText(object):
         
     def output_dxf(self,model_space,layer = None):
 #        from popupcad.filetypes.genericshapebase import GenericShapeBase
-#        csg = self.outputshapely()
-#        new = popupcad.algorithms.csg_shapely.from_shapely(csg)
+#        csg = self.to_shapely()
+#        new = popupcad.algorithms.csg_shapely.to_generic(csg)
 #        return new.output_dxf(model_space,layer)
         pass
 

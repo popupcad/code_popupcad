@@ -30,7 +30,7 @@ class JointOp(SimpleSketchOp):
         hingelayer_ii = layerdef.getlayer_ii(self.layer_links[0])
 
         safe_sections = []
-        allgeoms2 = [geom.outputshapely() for geom in hingelines]
+        allgeoms2 = [geom.to_shapely() for geom in hingelines]
         allgeoms3 = [Laminate(layerdef) for item in allgeoms2]
         allgeoms4 = []
         for laminate, geom in zip(allgeoms3, allgeoms2):

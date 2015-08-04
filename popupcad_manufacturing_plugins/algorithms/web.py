@@ -14,7 +14,7 @@ def supportsheet(layerdef, lsin, value):
     allext = []
     for layer, layer_geometry in lsin.layer_sequence.items():
         for geom in layer_geometry.geoms:
-            geom2 = popupcad.algorithms.csg_shapely.from_shapely(geom)
+            geom2 = popupcad.algorithms.csg_shapely.to_generic(geom)
             allext.extend(geom2.exteriorpoints(scaling = popupcad.csg_processing_scaling))
     allext = numpy.array(allext)
     minx = allext[:, 0].min() - value
@@ -24,7 +24,7 @@ def supportsheet(layerdef, lsin, value):
     exterior = [[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy]]
     exterior_scaled = (numpy.array(exterior)/popupcad.csg_processing_scaling).tolist()
     geom = GenericPoly.gen_from_point_lists(exterior_scaled, [])
-    geom = geom.outputshapely()
+    geom = geom.to_shapely()
     ls = Laminate(layerdef)
     [ls.replacelayergeoms(layer, [geom]) for layer in layerdef.layers]
     return ls, exterior[0]
@@ -40,7 +40,7 @@ def find_outer(ls, minpoint):
         for geom in layer_geometry.geoms:
             if points.pointinpoints(
                     minpoint,
-                    popupcad.algorithms.csg_shapely.from_shapely(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
+                    popupcad.algorithms.csg_shapely.to_generic(geom).exteriorpoints(scaling = popupcad.csg_processing_scaling),
                     popupcad.distinguishable_number_difference):
                 outergeoms.append(geom)
             else:

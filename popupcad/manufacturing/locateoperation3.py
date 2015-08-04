@@ -79,7 +79,7 @@ class LocateOperation3(Operation2):
         sketchid = self.sketch_links['sketch'][0]
         sketch = design.sketches[sketchid]
         operationgeom = popupcad.algorithms.csg_shapely.unary_union_safe(
-            [item.outputshapely() for item in sketch.operationgeometry])
+            [item.to_shapely() for item in sketch.operationgeometry])
         lsout = Laminate(design.return_layer_definition())
         for layer in design.return_layer_definition().layers:
             lsout.replacelayergeoms(

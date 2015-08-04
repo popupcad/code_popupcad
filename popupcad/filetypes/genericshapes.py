@@ -39,7 +39,7 @@ class GenericLine(GenericShapeBase):
         path.addPolygon(self.generateQPolygon(exterior))
         return path
 
-    def outputshapely(self):
+    def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
         obj = sg.LineString(exterior_p)
         return obj
@@ -70,7 +70,7 @@ class GenericPolyline(GenericShapeBase):
         path.addPolygon(self.generateQPolygon(exterior))
         return path
 
-    def outputshapely(self):
+    def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
         obj = sg.LineString(exterior_p)
         return obj
@@ -145,7 +145,7 @@ class GenericPoly(GenericShapeBase):
         tris = (numpy.array(tris)/popupcad.triangulation_scaling).tolist()
         return tris
 
-    def outputshapely(self):
+    def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
         interiors_p = self.interiorpoints(scaling = popupcad.csg_processing_scaling)
         obj = sg.Polygon(exterior_p, interiors_p)
@@ -295,7 +295,7 @@ class GenericCircle(GenericShapeBase):
         path.addEllipse(rect)
         return path
 
-    def outputshapely(self):
+    def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
         exterior = numpy.array(exterior_p)
         center = exterior[0]
@@ -328,7 +328,7 @@ class GenericTwoPointRect(GenericShapeBase):
         path.addRect(rect)
         return path
 
-    def outputshapely(self):
+    def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
         corner1 = exterior_p[0]
         corner2 = (exterior_p[0][0], exterior_p[1][1])

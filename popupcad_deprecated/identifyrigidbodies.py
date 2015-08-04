@@ -31,7 +31,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
         layer_dict = dict(
             [(geom.id, layer) for layer, geoms in generic.geoms.items() for geom in geoms])
 #        geom_dict = dict([(geom.id,geom) for layer,geoms in generic.items() for geom in geoms])
-#        csg_dict = dict([(geom.id,geom.outputshapely()) for layer,geoms in generic.items() for geom in geoms])
+#        csg_dict = dict([(geom.id,geom.to_shapely()) for layer,geoms in generic.items() for geom in geoms])
 
         layerdef = design.return_layer_definition()
         rigid_geoms = []
@@ -44,7 +44,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
                 while not not source_geoms:
                     source_geom = source_geoms.pop()
                     new_geoms = [dict(
-                        [('csg', geom.outputshapely()), ('id', geom.id)]) for geom in generic.geoms[layer]]
+                        [('csg', geom.to_shapely()), ('id', geom.id)]) for geom in generic.geoms[layer]]
                     for new_geom in new_geoms:
                         connection = source_geom[
                             'csg'].intersection(new_geom['csg'])
@@ -56,7 +56,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
                 new_source_geoms = []
                 while not not source_geoms:
                     source_geom = source_geoms.pop()
-                    layer_geoms = [geom.outputshapely()
+                    layer_geoms = [geom.to_shapely()
                                    for geom in generic.geoms[layer]]
                     for layer_geom in layer_geoms:
                         new_geom = source_geom['csg'].intersection(layer_geom)
@@ -110,7 +110,7 @@ class IdentifyRigidBodies(MultiValueOperation2):
                 new_csg.insertlayergeoms(
                     layer_dict[
                         geom.id], [
-                        geom.outputshapely()])
+                        geom.to_shapely()])
             new_csgs.append(new_csg)
 
         self.output = []

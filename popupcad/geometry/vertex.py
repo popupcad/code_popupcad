@@ -240,7 +240,7 @@ class DrawnPoint(BaseVertex):
         iv.updateshape()
         return iv
 
-    def outputshapely(self):
+    def to_shapely(self):
         p = sg.Point(*self.getpos(scaling = popupcad.csg_processing_scaling))
         return p
 
