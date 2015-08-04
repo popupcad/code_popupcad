@@ -28,18 +28,18 @@ def iscollection(item):
     
 def extract_individual_entities_recursive(list_in,entity_in):
     if iscollection(entity_in):
-        for item in entity_in.geoms:
-            extract_individual_entities_recursive(list_in,item)
+        [extract_individual_entities_recursive(list_in,item) for item in entity_in.geoms]
     else:
         list_in.append(entity_in)
             
 def extract_individual_entities(entities):
-    entities_out = [extract_individual_entities_recursive(item) for item in entities]
+    entities_out = []
+    [extract_individual_entities_recursive(entities_out,item) for item in entities]
     return entities_out
 
 def condition_shapely_entities(*entities):
     entities = extract_individual_entities(entities)
-    entities = [item for item in entities if item in filter_list]
+    entities = [item for item in entities if any([isinstance(item,classitem) for classitem in filter_list])]
     entities = [item for item in entities if not item.is_empty]
 #    entities = [item for item in entities if not item.is_valid]
     return entities
