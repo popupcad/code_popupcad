@@ -145,7 +145,51 @@ def apply_joint_pos_seq(world_name, robot_name, joint_names, poses, duration=0):
    print("Joint poses applied")
    time.sleep(duration)    
 
-#TODO make method to apply forces sequentially, maybe via commandline
+#Time is defined in nanoseconds
+def wait_until_sim_time(target_time):
+    ''' This function waits until the specified target_time in seconds.'''    
+    import pygazebo.msg.world_stats_pb2
+    
+    @trollius.coroutine
+    def sub_loop():
+        manager = yield From(pygazebo.connect()) 
+        
+        sub_loop.is_waiting = True        
+                
+        
+        def callback(data):
+            if not sub_loop.is_waiting:
+                return
+            message = pygazebo.msg.world_stats_pb2.WorldStatistics.FromString(data)        
+            sim_time = message.sim_time
+            print('hi')            
+            import math
+            sim_time = sim_time.sec + sim_time.nsec/math.pow(10, 9)
+            print(sim_time)
+            sub_loop.is_waiting = sim_time < target_time
+                            
+                
+        subscriber = manager.subscribe('/gazebo/world/world_stats',
+                         'gazebo.msgs.WorldStatistics',
+                         callback)
+    
+        yield From(subscriber.wait_for_connection())
+        while(sub_loop.is_waiting):
+            yield From(trollius.sleep(1.0))
+        
+        #subscriber.remove() #TODO This feature in PyGazebo is bugged.
+        #Reimplement or hack around
+        #print('Subscriber removed')
+        print('Done waiting!')
+            
+    loop = trollius.get_event_loop()
+    loop.run_until_complete(sub_loop())
+    
+#TODO Reimplement with pyGazebo or ROS    
+def follow_model(robot_name, camera_name="gzclient_camera"):
+    subprocess.call(["gz", "camera", "-c", camera_name, '-f', robot_name])
+    print("Now following: " + robot_name)
+    
     
 def wait_net_service(server, port, timeout=None):
     """ Wait for network service to appear 
@@ -315,6 +359,7 @@ def export_inner(operation, useDart=False):
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
     time.sleep(4)
+    follow_model(robot_name)
     pause_simulation(world_name, pause=False)
     code_process.start()    
     import PySide.QtGui as qg
@@ -507,14 +552,19 @@ def createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisi
         for visual_of_robot in visuals_of_robot:
             #Feel free tocomment these out for optional model prettyness. 
             #Note though it may cause additional lag
-            #etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
+            etree.SubElement(visual_of_robot, "cast_shadows").text = "true"
             #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
             root_of_robot.append(visual_of_robot)     
-        collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
-        for collision in collisions:    
-            collision.insert(0, surface_tree)
-            root_of_robot.append(collision)    
-        
+        if approxCollisions:
+            collision = approximateCollisions2(joint_laminate, center_of_mass)
+            #for collision in collisions:
+            root_of_robot.append(collision)
+        else:
+            collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
+            for collision in collisions:    
+                collision.insert(0, surface_tree)
+                root_of_robot.append(collision)    
+                
     inertial = etree.SubElement(root_of_robot, "inertial")
     #trueMass = joint_laminate.calculateTrueVolume() * joint_laminate.getDensity() 
     etree.SubElement(inertial, "mass").text = str(trueMass) 
