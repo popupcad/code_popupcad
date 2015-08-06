@@ -75,8 +75,14 @@ class GenericPolyline(GenericShapeBase):
 
     def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
-        obj = sg.LineString(exterior_p)
-        return obj
+        try:
+            obj = sg.LineString(exterior_p)
+            return obj
+        except ValueError as e:
+            if e.args[0]=='LineStrings must have at least 2 coordinate tuples':
+                return sg.LineString()
+            else:
+                raise
 
     def segments(self):
         return self.segments_open()
