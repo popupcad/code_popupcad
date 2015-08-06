@@ -49,6 +49,9 @@ class GenericShapeBase(popupCADFile):
         self.construction = construction
 
 #        self.condition()
+        self.exterior = self.remove_redundant_points(self.exterior)
+        self.interiors = [self.remove_redundant_points(interior) for interior in self.interiors]
+
 
     def is_valid_bool(self):
         try: 
@@ -393,3 +396,20 @@ class GenericShapeBase(popupCADFile):
 
     def __lt__(self,other):
         return self.exteriorpoints()[0]<other.exteriorpoints()[0]
+
+    @classmethod
+    def remove_redundant_points(cls, points, scaling=1,loop_test = True):
+        newpoints = []
+        if len(points)>0:
+            points = points[:]
+            newpoints.append(points.pop(0))
+            while not not points:
+                newpoint = points.pop(0)
+                if not popupcad.algorithms.points.twopointsthesame(newpoints[-1].getpos(scaling),newpoint.getpos(scaling),popupcad.distinguishable_number_difference):
+                    if len(points)==0 and loop_test:
+                        if not popupcad.algorithms.points.twopointsthesame(newpoints[0].getpos(scaling),newpoint.getpos(scaling),popupcad.distinguishable_number_difference):
+                            newpoints.append(newpoint)
+                    else:
+                        newpoints.append(newpoint)
+        return newpoints
+        

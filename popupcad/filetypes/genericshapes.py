@@ -56,6 +56,9 @@ class GenericLine(GenericShapeBase):
 class GenericPolyline(GenericShapeBase):
     def condition_loop(self,loop):
         return self._condition_loop(loop,remove_loop_reduncancy=False)
+    @classmethod
+    def remove_redundant_points(cls, points, scaling=1):
+        return GenericShapeBase.remove_redundant_points(points,scaling,loop_test = False)
 
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractivePath
