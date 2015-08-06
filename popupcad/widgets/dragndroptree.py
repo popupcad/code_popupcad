@@ -381,9 +381,10 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
             menu.exec_(self.mapToGlobal(point))
 
     def set_main_image(self, item):
-        self.design = self.get_design()
-        if isinstance(item, ParentItem):
-            self.design.set_main_operation(self.currentRefs()[0])
+#        self.design = self.get_design()
+#        if isinstance(item, ParentItem):
+#            self.design.set_main_operation(self.currentRefs()[0])
+        pass
 
     def show_parents(self, item):
         self.tree_generator()

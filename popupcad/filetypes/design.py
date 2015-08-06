@@ -40,7 +40,6 @@ class Design(popupCADFile):
         self.id = id(self)
         self.sketches = {}
         self.subdesigns = {}
-#        self._main_operation = None
 
     def define_layers(self, layerdef):
         self._layerdef = layerdef
@@ -128,7 +127,6 @@ class Design(popupCADFile):
         new.define_layers(self.return_layer_definition())
         if identical:
             new.id = self.id
-        new.main_operation = self.main_operation
         new.sketches = {}
         for key, value in self.sketches.items():
             new.sketches[key] = value.copy(identical=True)
@@ -151,7 +149,6 @@ class Design(popupCADFile):
         new.define_layers(self.return_layer_definition().upgrade())
         if identical:
             new.id = self.id
-        new.main_operation = self.main_operation
         new.sketches = {}
         for key, value in self.sketches.items():
             new.sketches[key] = value.upgrade(identical=True)
@@ -351,20 +348,9 @@ class Design(popupCADFile):
             #            yaml.dump(new.dictify2(),f)
 #        new.save_yaml(file)
 
-    def set_main_operation(self, op):
-        self._main_operation = op
-
-    def get_main_operation(self):
-        try:
-            return self._main_operation
-        except AttributeError:
-            try:
-                self._main_operation = self.operations[0].id, 0
-            except IndexError:
-                self._main_operation = None
-
-            return self._main_operation
-    main_operation = property(get_main_operation, set_main_operation)
+    @property
+    def main_operation(self):
+        return self.operations[0].id, 0
 
     @classmethod
     def load_yaml(cls, filename):
