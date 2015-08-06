@@ -123,8 +123,8 @@ class Assembly(popupCADFile):
                         c = b.pop(0)
                         for item in b:
                             c = c.symmetric_difference(item)
-                        d = cs.multiinit(c)
-                        e = cs.multiinit(*[item.buffer(bufferval * popupcad.csg_processing_scaling,resolution=popupcad.default_buffer_resolution) for item in d])
+                        d = popupcad.algorithms.csg_shapely.condition_shapely_entities(c)
+                        e = popupcad.algorithms.csg_shapely.condition_shapely_entities(*[item.buffer(bufferval * popupcad.csg_processing_scaling,resolution=popupcad.default_buffer_resolution) for item in d])
                         f = [popupcad.algorithms.csg_shapely.to_generic(item) for item in e]
                         self.geoms.extend(f)
                     except NotSimple:

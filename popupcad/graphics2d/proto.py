@@ -48,16 +48,15 @@ class Proto(Common):
         self.setBrush(self.basicbrush)
 
     def painterpath(self):
-        ep = self.exteriorpoints()
+        ep = self.exteriorpoints(popupcad.view_scaling)
         ip = self.generic.interiorpoints(scaling=popupcad.view_scaling)
         return self.generic.gen_painterpath(ep, ip)
 
-    def exteriorpoints(self):
-        ep = self.generic.exteriorpoints(scaling=popupcad.view_scaling)
+    def exteriorpoints(self,scaling=1):
+        ep = self.generic.exteriorpoints(scaling=scaling)
         if self.temphandle is not None:
             ep.append(
-                self.temphandle.generic.getpos(
-                    scaling=popupcad.view_scaling))
+                self.temphandle.generic.getpos(scaling=scaling))
         return ep
 
     def deltemphandle(self):

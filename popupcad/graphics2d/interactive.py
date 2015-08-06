@@ -137,8 +137,8 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     def painterpath(self):
         return self.generic.painterpath()
 
-    def exteriorpoints(self):
-        return self.generic.exteriorpoints()
+    def exteriorpoints(self,scaling=1):
+        return self.generic.exteriorpoints(scaling)
 
     def hidechildren(self, children):
         for child in children:

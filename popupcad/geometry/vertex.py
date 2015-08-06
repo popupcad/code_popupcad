@@ -207,8 +207,8 @@ class DrawnPoint(BaseVertex):
         super(DrawnPoint, self).__init__(position,scaling)
         self.set_construction(construction)
 
-    def exteriorpoints(self):
-        return [self.getpos()]
+    def exteriorpoints(self,scaling = 1):
+        return [self.getpos(scaling)]
 
     def interiorpoints(self):
         return []

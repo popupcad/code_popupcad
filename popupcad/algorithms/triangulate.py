@@ -10,7 +10,7 @@ from popupcad.filetypes.genericshapes import GenericPoly
 from scipy.spatial import Delaunay
 
 
-def joinedges(vertices):
+def convex_hull(vertices):
     '''Create a convex polygon from given points'''
     delaunay = Delaunay(vertices)
 
@@ -40,13 +40,10 @@ def joinedges(vertices):
     return poly
 
 
-def autobridge(vertices):
+def triangulate(vertices):
     '''Create the triangulation of a set of points, and output the resulting triangles'''
     from scipy.spatial import Delaunay
     d = Delaunay(vertices)
     polys = d.points[d.vertices].tolist()
-    genericpolys = [
-        GenericPoly.gen_from_point_lists(
-            poly,
-            []) for poly in polys]
+    genericpolys = [GenericPoly.gen_from_point_lists(poly,[]) for poly in polys]
     return genericpolys

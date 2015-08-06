@@ -59,8 +59,8 @@ class Static(Common):
     def painterpath(self):
         return self.generic.painterpath()
 
-    def exteriorpoints(self):
-        return self.generic.exteriorpoints()
+    def exteriorpoints(self,scaling = 1):
+        return self.generic.exteriorpoints(scaling)
 
     def setselectable(self, test):
         self.selectable = test

@@ -102,7 +102,6 @@ class LaminateOperation2(Operation2):
 
     def editdata(self, operation_links, function):
         super(LaminateOperation2, self).editdata(operation_links, {}, {})
-        self.operation_links = operation_links
         self.function = function
 
     def copy(self):
