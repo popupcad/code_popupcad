@@ -7,7 +7,7 @@ from random import random
 
 from PIL import Image
 
-from enhanced_grid import *
+from .enhanced_grid import *
 
 ## Converts a sequence of floats (ranged 0 to 1) to integers (ranged 0 to 155).
 def int_sequence(seq):

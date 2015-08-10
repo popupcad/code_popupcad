@@ -56,6 +56,7 @@ local_modules = []
 local_modules.append('autoweb3')
 local_modules.append('bufferop2')
 local_modules.append('cleanup')
+local_modules.append('customshapely')
 local_modules.append('customsupport2')
 local_modules.append('customsupport3')
 local_modules.append('cutop')
@@ -154,6 +155,9 @@ modules_remap.append(
 modules_remap.append(
     ('popupcad.manufacturing.freeze',
      'popupcad.manufacturing.flatten'))
+modules_remap.append(
+    ('customshapely',
+     'popupcad.geometry.customshapely'))
 #modules_remap.append(
 #    ('materials',
 #     'popupcad.materials.materials'))

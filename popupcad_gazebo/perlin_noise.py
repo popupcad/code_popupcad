@@ -13,9 +13,9 @@ from math import cos
 from math import pi
 from math import sqrt
 
-from enhanced_grid import Grid1D
-from enhanced_grid import Grid2D
-from enhanced_grid import Grid3D
+from .enhanced_grid import Grid1D
+from .enhanced_grid import Grid2D
+from .enhanced_grid import Grid3D
 
 ##Generates a Grid with uniform noise, generated 
 ##between 0 and 1.

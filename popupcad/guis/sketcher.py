@@ -252,19 +252,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
         self.tools = []
 #        self.drawingactions.append(None)
-        self.tools.append({'text': 'convex hull',
-                           'kwargs': {'triggered': self.joinedges,
-                                      'icon': Icon('joinedges')}})
-        self.tools.append({'text': 'triangulate',
-                           'kwargs': {'triggered': self.autobridge,
-                                      'icon': Icon('autobridge')}})
-        self.tools.append({'text': 'shared edges',
-                           'kwargs': {'triggered': self.getjoints,
-                                      'icon': Icon('getjoints2')}})
-        self.tools.append(
-            {'text': 'flip direction', 'kwargs': {'triggered': self.flipdirection}})
-        self.tools.append(
-            {'text': 'hollow', 'kwargs': {'triggered': self.hollow}})
+        self.tools.append({'text': 'convex hull','kwargs': {'triggered': self.convex_hull,'icon': Icon('convex_hull')}})
+        self.tools.append({'text': 'triangulate','kwargs': {'triggered': self.triangulate,'icon': Icon('triangulate')}})
+        self.tools.append({'text': 'shared edges','kwargs': {'triggered': self.getjoints,'icon': Icon('getjoints2')}})
+        self.tools.append({'text': 'flip direction', 'kwargs': {'triggered': self.flipdirection}})
+        self.tools.append({'text': 'hollow', 'kwargs': {'triggered': self.hollow}})
         self.tools.append({'text': 'fill', 'kwargs': {'triggered': self.fill}})
         self.tools.append({'text': 'Construction', 'kwargs': {'triggered': lambda: self.set_construction(True)}})
         self.tools.append({'text': 'Not Construction', 'kwargs': {'triggered': lambda: self.set_construction(False)}})
@@ -568,7 +560,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.graphicsview.turn_off_drag()
         self.scene.addpolygon(proto)
 
-    def joinedges(self):
+    def convex_hull(self):
         from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
 
@@ -581,10 +573,10 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 genericvertices.extend(item.get_generic().vertices())
         vertices2 = [vertex.getpos() for vertex in genericvertices]
         vertices2 = numpy.array(vertices2)
-        poly = popupcad.algorithms.autobridge.joinedges(vertices2)
+        poly = popupcad.algorithms.triangulate.convex_hull(vertices2)
         self.scene.addItem(poly.outputinteractive())
 
-    def autobridge(self):
+    def triangulate(self):
         from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
 
@@ -596,11 +588,10 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             elif isinstance(item, InteractiveEdge):
                 genericvertices.extend(item.get_generic().vertices())
         vertices2 = [vertex.getpos() for vertex in genericvertices]
-        polys = popupcad.algorithms.autobridge.autobridge(vertices2)
+        polys = popupcad.algorithms.triangulate.triangulate(vertices2)
         [self.scene.addItem(poly.outputinteractive()) for poly in polys]
 
     def getjoints(self):
-        import popupcad.algorithms.getjoints as gj
         items = []
         for item in self.scene.items():
             if isinstance(item, Interactive):
@@ -608,10 +599,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 item.removefromscene()
 
         roundvalue = 3
-        tolerance = 10**(-roundvalue)
                 
-        genericlines = gj.getjoints(items,roundvalue,tolerance)
-        [self.scene.addItem(line) for line in genericlines]
+        genericlines = popupcad.algorithms.getjoints.getjoints(items,roundvalue)
+        interactive_lines = [segment.outputinteractive() for segment in genericlines]
+
+        [self.scene.addItem(line) for line in interactive_lines]
 
     def showconstraint(self, row):
         item = self.constraint_editor.item(row)
