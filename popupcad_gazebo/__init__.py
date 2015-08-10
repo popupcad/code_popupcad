@@ -5,12 +5,12 @@ from . import gazebo_controller
 import PIL
 import PySide
 import array
-import enhanced_grid
-import gradient
-import image
+from . import enhanced_grid
+from . import gradient
+from . import image
 import lxml
 import multiprocessing
-import perlin_noise
+from . import perlin_noise
 import pygazebo
 import trollius
 
