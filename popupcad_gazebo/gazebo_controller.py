@@ -629,3 +629,38 @@ def craftSimbodyPhysics():
     etree.SubElement(contact, "plastic_coef_restitution").text = str(0)
     etree.SubElement(contact, "override_impact_capture_velocity").text = str(100000000)
     return physics_root
+    
+#TODO Move these import mesh function to a proper home.
+def import_STL(filename):
+    '''
+    Imports an STL File. 
+    The vectors, normals, and individual vertices are contained as numpy arrays within the object.
+    '''
+    from stl import mesh
+    mesh = mesh.Mesh.from_file(filename)
+    return mesh
+    
+#TODO test collada. Unable to test because our DAE files are badly formatted
+#TODO Ensure collada files are better formatted in the future. Materials are not loaded.
+def import_Collada(filename):
+    '''
+    Returns a list of objects represented as a list of triangles. 
+    A triangle is list of vertices. 
+    A vertex is a list of points.
+    '''
+    from collada import Collada
+    from StringIO import StringIO 
+    
+    import sys, inspect #This allows it to except bad Collada files by ignore all errors
+    clsmembers = inspect.getmembers(sys.modules['collada.common'], inspect.isclass)
+    ignore_types = [cls[1] for cls in clsmembers]    
+
+    mesh = Collada(filename, ignore=ignore_types)        
+    geoms = mesh.geometries #This is the list of geometries
+    geom_tris = []    
+    for geom in geoms:
+        for primitive in geom.primitives:
+            triangles = list(primitive)
+            #Appends each triangles set with each triangle being just a list of vertice
+            geom_tris.append([tri.vertices for tri in triangles])
+    return geom_tris
