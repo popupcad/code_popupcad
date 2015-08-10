@@ -167,7 +167,7 @@ class ProcessManager(object):
             
     def print_debug(self,*args,**kwargs):
         if self.debug:
-            print(*args,**kwargs)
+            print(args,kwargs)
 
 
 if __name__ == '__main__':
