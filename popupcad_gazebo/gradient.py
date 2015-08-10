@@ -2,8 +2,8 @@
 # Functions for handling colour gradients.
 
 from math import floor
-from enhanced_grid import Grid2D
-from image import mix_color
+from .enhanced_grid import Grid2D
+from .image import mix_color
 
 ## A gradient without any interpolation.
 class DiscreteGradient:
