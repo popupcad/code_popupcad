@@ -1,3 +1,4 @@
+from __future__ import division
 # -*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes.
@@ -266,8 +267,8 @@ class GenericLaminate(popupCADFile):
                 geom = self.createDAEFromShape(s, height, mesh, layer_thickness)
                 mesh.geometries.append(geom) 
                 effect = collada.material.Effect("effect", [], "phone", diffuse=(1,0,0), specular=(0,1,0))
-                mat = collada.material.Material("material", "mymaterial", effect)    
-                matnode = collada.scene.MaterialNode("materialref", mat, inputs=[])
+                mat = collada.material.Material("material", "mymaterial" + str(s.id), effect)    
+                matnode = collada.scene.MaterialNode("materialref" + str(s.id), mat, inputs=[])
                 mesh.effects.append(effect)
                 mesh.materials.append(mat)
                 geomnode = collada.scene.GeometryNode(geom, [matnode])
@@ -285,13 +286,13 @@ class GenericLaminate(popupCADFile):
         
         #This scales the verticies properly. So that they are in millimeters.
         vert_floats = [float(x)/(popupcad.SI_length_scaling) for x in vertices] 
-        vert_src_name = str(self.get_basename()) + "-array"
+        vert_src_name = str(self.get_basename()) + '|' + str(s.id) + "-array"
         vert_src = collada.source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
-        geom = collada.geometry.Geometry(mesh, "geometry-" + str(self.id), str(self.get_basename()), [vert_src])    
+        geom = collada.geometry.Geometry(mesh, "geometry-" + str(s.id), str(self.get_basename()), [vert_src])
         input_list = collada.source.InputList()
         input_list.addInput(0, 'VERTEX', "#" + vert_src_name)
         indices = numpy.array(range(0,(len(vertices) // 3)));    
-        triset = geom.createTriangleSet(indices, input_list, "materialref")
+        triset = geom.createTriangleSet(indices, input_list, "materialref" + str(s.id))
         triset.generateNormals()    
         geom.primitives.append(triset)
         return geom

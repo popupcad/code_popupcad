@@ -300,7 +300,7 @@ def export_inner(operation, useDart=False):
     
     counter = 0
     for joint_laminate in joint_laminates:
-        model_object.append(createRobotPart(joint_laminate, counter, tree, approxCollisions=(not useDart)))
+        model_object.append(createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisions=(not useDart)))
         counter+=1
     
     joint_names = []               
@@ -359,7 +359,7 @@ def export_inner(operation, useDart=False):
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
     time.sleep(4)
-    follow_model(robot_name)
+    #follow_model(robot_name)
     pause_simulation(world_name, pause=False)
     code_process.start()    
     import PySide.QtGui as qg
