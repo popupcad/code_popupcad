@@ -308,6 +308,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                         popupcad.manufacturing.simplify2.Simplify2)}})
         self.tools1.append({'text': 'JointOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation2.JointOperation2)}})
         self.tools1.append({'text': 'JointOp(New)','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation3.JointOperation3)}})
+        self.tools1.append({'text': 'HoleOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.hole_operation.HoleOperation)}})
         self.tools1.append({'text': 'Freeze', 'kwargs': {
                            'triggered': lambda: self.newoperation(popupcad.manufacturing.freeze.Freeze)}})
         self.tools1.append(
