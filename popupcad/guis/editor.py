@@ -306,19 +306,13 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                     'icon': Icon('simplify'),
                     'triggered': lambda: self.newoperation(
                         popupcad.manufacturing.simplify2.Simplify2)}})
-        self.tools1.append({'text': 'JointOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation2.JointOperation2)}})
-        self.tools1.append({'text': 'JointOp(New)','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation3.JointOperation3)}})
+#        self.tools1.append({'text': 'JointOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation2.JointOperation2)}})
+        self.tools1.append({'text': 'JointOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation3.JointOperation3)}})
         self.tools1.append({'text': 'HoleOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.hole_operation.HoleOperation)}})
-        self.tools1.append({'text': 'Freeze', 'kwargs': {
-                           'triggered': lambda: self.newoperation(popupcad.manufacturing.freeze.Freeze)}})
-        self.tools1.append(
-            {
-                'text': 'Cross-Section',
-                'kwargs': {
-                    'triggered': lambda: self.newoperation(
-                        popupcad.manufacturing.cross_section.CrossSection)}})
-        self.tools1.append({'text': 'SubOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation.SubOperation)}})
-        self.tools1.append({'text': 'SubOp(New)','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation2.SubOperation2)}})
+        self.tools1.append({'text': 'Freeze', 'kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.freeze.Freeze)}})
+        self.tools1.append({'text': 'Cross-Section','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.cross_section.CrossSection)}})
+#        self.tools1.append({'text': 'SubOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation.SubOperation)}})
+        self.tools1.append({'text': 'SubOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation2.SubOperation2)}})
         self.tools1.append({'text': 'Transform','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.transform.TransformOperation)}})
 #        self.tools1.append({'text': 'Code Exec','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.code_exec_op.CodeExecOperation)}})
 
