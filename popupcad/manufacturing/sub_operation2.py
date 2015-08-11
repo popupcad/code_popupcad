@@ -88,7 +88,7 @@ class MainWidget(qg.QDialog):
         self.setLayout(layout)
 
         if jointop is not None:
-            subdesign = design.subdesigns[jointop.design_links['source']]
+            subdesign = design.subdesigns[jointop.design_links['source'][0]]
             for ii in range(self.designwidget.itemlist.count()):
                 item = self.designwidget.itemlist.item(ii)
                 if item.value == subdesign:
@@ -152,7 +152,7 @@ class MainWidget(qg.QDialog):
             output_list.append(OutputData((op1_ref, op1_output),shift))
 
         design_links = {}
-        design_links['source'] = self.subdesign().id
+        design_links['source'] = [self.subdesign().id]
 
         return design_links, sketch_list, input_list, output_list
 
@@ -170,6 +170,21 @@ class SubOperation2(Operation2):
         new.id = self.id
         new.customname = self.customname
         return new
+
+    def upgrade(self):
+        if isinstance(self.design_links['source'],int):
+            design_links = {'source':[self.design_links['source']]}
+            new = type(self)(
+                design_links,
+                self.sketch_list[:],
+                self.input_list[:],
+                self.output_list[:])
+            new.id = self.id
+            new.customname = self.customname
+            return new
+        else:
+            return self
+        
 
     def __init__(self, *args):
         super(SubOperation2, self).__init__()
@@ -215,7 +230,7 @@ class SubOperation2(Operation2):
         import yaml
         from popupcad.manufacturing.dummy_operation1 import DummyOp1
         
-        subdesign_orig = design.subdesigns[self.design_links['source']]
+        subdesign_orig = design.subdesigns[self.design_links['source'][0]]
         subdesign = subdesign_orig.copy_yaml()
 
         sketches = design.sketches.copy()
