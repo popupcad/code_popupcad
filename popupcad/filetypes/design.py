@@ -146,7 +146,9 @@ class Design(popupCADFile):
             samesame = operations_old == operations_new
             operations_old = operations_new
         new.operations = operations_new
-        new.define_layers(self.return_layer_definition().upgrade())
+        old_layer_def = self.return_layer_definition()
+        new_layer_def = old_layer_def.upgrade()
+        new.define_layers(new_layer_def)
         if identical:
             new.id = self.id
         new.sketches = {}
@@ -156,20 +158,19 @@ class Design(popupCADFile):
         for key, value in self.subdesigns.items():
             new.subdesigns[key] = value.upgrade(identical=True)
         self.copy_file_params(new, identical)
-        new.upgrade_operations2()
+        new.upgrade_operations2(old_layer_def,new_layer_def)
         return new
 
-    def upgrade_operations2(self):
+    def upgrade_operations2(self,old_layer_def,new_layer_def):
         from popupcad_deprecated.sketchoperation2 import SketchOperation2
         from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
         from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
+        from popupcad.manufacturing.freeze import Freeze
         newoperations = []
         ops_to_remove = []
         replacements = []
         for op0 in self.operations:
-            if isinstance(
-                    op0,
-                    SketchOperation2) and op0.operation_link1 is not None:
+            if isinstance(op0,SketchOperation2) and op0.operation_link1 is not None:
                 sketch_links = {'sketch': [op0.sketchid]}
                 op1 = SimpleSketchOp(sketch_links, op0.layer_links)
                 a = (op0.operation_link1, op0.outputref)
@@ -190,6 +191,21 @@ class Design(popupCADFile):
                 newoperations.append(op2)
 #                replacements.append(((op0.id,0),(op2.id,0)))
 #                ops_to_remove.append(op0)
+            elif isinstance(op0,Freeze):
+                if isinstance(op0.generic,dict):
+                    dict1 = dict([(layer.id,layer) for layer in op0.generic.keys()])
+                    new_geoms = dict([(layer,op0.generic[dict1[layer.id]]) for layer in new_layer_def.layers])                        
+                    new_generic = popupcad.filetypes.genericlaminate.GenericLaminate(new_layer_def,new_geoms)
+                    op0.generic = new_generic
+                elif isinstance(op0.generic,popupcad.filetypes.genericlaminate.GenericLaminate):
+#                    dict1 = dict([(layer.id,layer) for layer in op0.generic.layerdef.layers])
+#                    new_geoms = dict([(layer,op0.generic.geoms[dict1[layer.id]]) for layer in new_layer_def.layers])                        
+#                    new_generic = popupcad.filetypes.genericlaminate.GenericLaminate(new_layer_def,new_geoms)
+#                    op0.generic = new_generic
+                    pass
+                else:
+                    raise TypeError()
+                newoperations.append(op0)
             else:
                 newoperations.append(op0)
 

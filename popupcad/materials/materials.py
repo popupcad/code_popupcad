@@ -25,6 +25,14 @@ class Material(object):
     def __repr__(self):
         return str(self)
 
+    def __hash__(self):
+        return self.id
+
+    def __eq__(self, other):
+        if isinstance(other, type(self)):
+            return self.id == other.id
+        return False
+
     def upgrade(self):
         from popupcad.filetypes.material2 import Material2
         new = Material2(self.name,self.color,self.thickness,E1 = 1,E2 = 1,density = 1,poisson = .5,is_adhesive = self.is_adhesive,is_rigid = self.is_rigid,is_conductive = False)

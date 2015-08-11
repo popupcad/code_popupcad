@@ -9,6 +9,7 @@ from . import constraints
 from . import classtools
 from . import design
 from . import popupcad_file
+from . import genericlaminate
 from . import genericshapebase
 from . import genericshapes
 from . import laminate
