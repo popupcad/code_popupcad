@@ -198,11 +198,11 @@ class Design(popupCADFile):
                     new_generic = popupcad.filetypes.genericlaminate.GenericLaminate(new_layer_def,new_geoms)
                     op0.generic = new_generic
                 elif isinstance(op0.generic,popupcad.filetypes.genericlaminate.GenericLaminate):
-#                    dict1 = dict([(layer.id,layer) for layer in op0.generic.layerdef.layers])
-#                    new_geoms = dict([(layer,op0.generic.geoms[dict1[layer.id]]) for layer in new_layer_def.layers])                        
-#                    new_generic = popupcad.filetypes.genericlaminate.GenericLaminate(new_layer_def,new_geoms)
-#                    op0.generic = new_generic
-                    pass
+                    dict1 = dict([(layer.id,layer) for layer in op0.generic.layerdef.layers])
+                    new_geoms = dict([(layer,op0.generic.geoms[dict1[layer.id]]) for layer in new_layer_def.layers])                        
+                    new_generic = popupcad.filetypes.genericlaminate.GenericLaminate(new_layer_def,new_geoms)
+                    op0.generic = new_generic
+#                    pass
                 else:
                     raise TypeError()
                 newoperations.append(op0)

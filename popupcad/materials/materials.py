@@ -25,13 +25,13 @@ class Material(object):
     def __repr__(self):
         return str(self)
 
-    def __hash__(self):
-        return self.id
-
-    def __eq__(self, other):
-        if isinstance(other, type(self)):
-            return self.id == other.id
-        return False
+#    def __hash__(self):
+#        return self.id
+#
+#    def __eq__(self, other):
+#        if isinstance(other, type(self)):
+#            return self.id == other.id
+#        return False
 
     def upgrade(self):
         from popupcad.filetypes.material2 import Material2
