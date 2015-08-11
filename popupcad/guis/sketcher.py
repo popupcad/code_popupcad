@@ -503,6 +503,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             self.sketch.constraintsystem.constraints)
         self.sketch.constraintsystem.get_vertices = self.get_sketch_vertices
         self.load_references()
+        self.update_window_title()
+        
 
     def showvertices(self):
         if self.act_view_vertices.isChecked():
@@ -547,10 +549,12 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def save(self):
         self.update_sketch_geometries()
         self.sketch.save()
+        self.update_window_title()
 
     def saveAs(self):
         self.update_sketch_geometries()
         self.sketch.saveAs()
+        self.update_window_title()
 
     def adddrawingpoint(self):
         self.graphicsview.turn_off_drag()
@@ -755,6 +759,10 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 item.generic.set_construction(value)
             except AttributeError:
                 pass
+
+    def update_window_title(self):
+        basename = self.sketch.get_basename()
+        self.setWindowTitle('Editor'+' - '+basename)
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)

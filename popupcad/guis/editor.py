@@ -473,12 +473,14 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     
     def save(self):
-        return self.design.save(self)
-
+        value = self.design.save(self)
+        self.update_window_title()
+        return value
     
     def saveAs(self, parent=None):
-        return self.design.saveAs(self)
-
+        value = self.design.saveAs(self)
+        self.update_window_title()
+        return value
     
     def load_design(self, design):
         self.design = design
@@ -495,7 +497,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.layerlistwidget.selectAll()
         self.operationeditor.blockSignals(False)
         self.layerlistwidget.blockSignals(False)
-
+        self.update_window_title()
     
     def editlayers(self):
         available_materials = popupcad.filetypes.material2.default_materials+popupcad.user_materials
@@ -777,6 +779,11 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         f = lambda: qc.QSize(600,400)
         w.sizeHint = f
         w.exec_()
+    
+    def update_window_title(self):
+        basename = self.design.get_basename()
+        self.setWindowTitle('Editor'+' - '+basename)
+
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
