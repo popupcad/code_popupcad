@@ -23,8 +23,9 @@ from popupcad.filetypes.genericshapebase import GenericShapeBase
 
 
 class GenericLine(GenericShapeBase):
-    def condition_loop(self,loop):
-        return self._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
+    @classmethod
+    def condition_loop(cls,loop):
+        return cls._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
 
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveLine
@@ -54,8 +55,9 @@ class GenericLine(GenericShapeBase):
         model_space.add_lwpolyline(self.exteriorpoints(),dxfattribs = dxfattribs)
         
 class GenericPolyline(GenericShapeBase):
-    def condition_loop(self,loop):
-        return self._condition_loop(loop,remove_loop_reduncancy=False)
+    @classmethod
+    def condition_loop(cls,loop):
+        return cls._condition_loop(loop,remove_loop_reduncancy=False)
     @classmethod
     def remove_redundant_points(cls, points, scaling=1):
         return GenericShapeBase.remove_redundant_points(points,scaling,loop_test = False)
@@ -278,9 +280,9 @@ class GenericPoly(GenericShapeBase):
 
         
 class GenericCircle(GenericShapeBase):
-
-    def condition_loop(self,loop):
-        return self._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
+    @classmethod
+    def condition_loop(cls,loop):
+        cls._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
 
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveCircle
@@ -319,8 +321,9 @@ class GenericCircle(GenericShapeBase):
 
 
 class GenericTwoPointRect(GenericShapeBase):
-    def condition_loop(self,loop):
-        return self._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
+    @classmethod
+    def condition_loop(cls,loop):
+        return cls._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
 
     def outputinteractive(self):
         from popupcad.graphics2d.interactive import InteractiveRect2Point

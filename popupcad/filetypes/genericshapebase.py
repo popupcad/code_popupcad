@@ -48,7 +48,9 @@ class GenericShapeBase(popupCADFile):
         self.interiors = interiors
         self.construction = construction
 
-#        self.condition()
+#        self.exterior = self.condition_loop(self.exterior)
+#        self.interiors = [self.condition_loop(interior) for interior in self.interiors]
+
         self.exterior = self.remove_redundant_points(self.exterior)
         self.interiors = [self.remove_redundant_points(interior) for interior in self.interiors]
 
@@ -59,6 +61,7 @@ class GenericShapeBase(popupCADFile):
             return True
         except:
             return False
+            
     def is_valid(self):
         shapely = self.to_shapely()
         if not shapely.is_simple:
@@ -272,12 +275,13 @@ class GenericShapeBase(popupCADFile):
         self.exterior = self._condition_loop(self.exterior,round_vertices = False, test_rounded_vertices = True, remove_forward_redundancy=True, remove_loop_reduncancy=True,terminate_with_start = False,decimal_places = None)
         self.interiors = [self._condition_loop(interior,round_vertices = False, test_rounded_vertices = True, remove_forward_redundancy=True, remove_loop_reduncancy=True,terminate_with_start = False,decimal_places = None) for interior in self.interiors]
 
-    def condition_loop(self,loop):
-        return self._condition_loop(loop)
+    @classmethod    
+    def condition_loop(cls,loop):
+        return cls._condition_loop(loop)
 
-    def condition(self):
-        self.exterior = self.condition_loop(self.exterior)
-        self.interiors = [self.condition_loop(interior) for interior in self.interiors]
+#    def condition(self):
+#        self.exterior = self.condition_loop(self.exterior)
+#        self.interiors = [self.condition_loop(interior) for interior in self.interiors]
                 
     @classmethod
     def gen_from_point_lists(cls, exterior_p, interiors_p, **kwargs):

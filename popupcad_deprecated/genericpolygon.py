@@ -27,7 +27,6 @@ class GenericShape(GenericShapeBase):
         self.shapetype = shapetype
         self._basename = self.genbasename()
 
-#        self.condition()
         self.exterior = self.remove_redundant_points(self.exterior)
         self.interiors = [self.remove_redundant_points(interior) for interior in self.interiors]
 

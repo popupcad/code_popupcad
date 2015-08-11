@@ -80,8 +80,9 @@ class Proto(Common):
         scene.childfinished()
 
     def mousedoubleclick(self, point):
-        self.finish_definition()
-        self.updateshape()
+        if self.generic.is_valid_bool():
+            self.finish_definition()
+            self.updateshape()
 
     def mouserelease(self, point):
         pass
@@ -130,10 +131,11 @@ class ProtoMultiPoint(Proto):
 
         self.updateshape()
 
-    def mousedoubleclick(self, point):
-        if self.generic.len_exterior() > 2:
-            self.finish_definition()
-            self.updateshape()
+#    def mousedoubleclick(self, point):
+#        if self.generic.csg_valid() and self.generic.isValid():
+#            if self.generic.len_exterior() > 2:
+#                self.finish_definition()
+#                self.updateshape()
 
 
 class ProtoTwoPoint(Proto):
