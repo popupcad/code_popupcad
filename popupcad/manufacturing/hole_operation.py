@@ -198,10 +198,10 @@ class HoleOperation(Operation2, LayerBasedOperation):
         items.extend([item.sketch for item in self.joint_defs])
         return items
 
-    def gen_geoms(self, joint_def, layerdef, design):
+    def gen_geoms(self, joint_def, layerdef, design,split_buffer):
         print('Generating geometry')        
         hinge_gap = joint_def.width *popupcad.csg_processing_scaling
-        split_buffer = .1 * hinge_gap
+#        split_buffer = .1 * hinge_gap
 
         sublaminate_layers = [
             layerdef.getlayer(item) for item in joint_def.sublaminate_layers]
@@ -230,10 +230,10 @@ class HoleOperation(Operation2, LayerBasedOperation):
 
         return allgeoms4, buffered_split, hingelines
 
-    def generate(self, design):
-        safe_buffer1 = .01 *popupcad.csg_processing_scaling
-        safe_buffer2 = .01 *popupcad.csg_processing_scaling
-        safe_buffer3 = .01 *popupcad.csg_processing_scaling
+    def operate(self, design):
+        safe_buffer1 = self.buffer_val * popupcad.csg_processing_scaling
+        safe_buffer2 = self.buffer_val * popupcad.csg_processing_scaling
+        safe_buffer3 = self.buffer_val * popupcad.csg_processing_scaling
 
         parent_id, parent_output_index = self.operation_links['parent'][0]
         parent_index = design.operation_index(parent_id)
@@ -246,8 +246,7 @@ class HoleOperation(Operation2, LayerBasedOperation):
         allhingelines = []
         buffered_splits = []
         for joint_def in self.joint_defs:
-            allgeoms4, buffered_split, hingelines = self.gen_geoms(
-                joint_def, layerdef, design)
+            allgeoms4, buffered_split, hingelines = self.gen_geoms(joint_def, layerdef, design,self.buffer_val)
             allgeoms.extend(allgeoms4)
             allhingelines.extend(hingelines)
             buffered_splits.append(buffered_split)
@@ -264,11 +263,11 @@ class HoleOperation(Operation2, LayerBasedOperation):
         unsafe = Laminate.unaryoperation(allgeoms,'union').difference(safe_buffer)
         unsafe2 = unsafe.buffer(safe_buffer3, resolution=self.resolution)
         split1 = parent.difference(unsafe2)
-
-        self.output = []
-        self.output.append(OperationOutput(safe,'Safe',self))        
-        self.output.append(OperationOutput(unsafe,'Unsafe',self))        
-        self.output.append(OperationOutput(split1,'Split1',self))        
+        return split1
+#        self.output = []
+#        self.output.append(OperationOutput(safe,'Safe',self))        
+#        self.output.append(OperationOutput(unsafe,'Unsafe',self))        
+#        self.output.append(OperationOutput(split1,'Split1',self))        
 
     def switch_layer_defs(self, layerdef_old, layerdef_new):
         new = self.copy()
