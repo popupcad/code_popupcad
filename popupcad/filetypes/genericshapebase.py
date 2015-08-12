@@ -403,7 +403,26 @@ class GenericShapeBase(popupCADFile):
 
     def find_minimal_enclosing_circle(self):
         from popupcad.algorithms.minimal_enclosing_circle import numerical_stable_circle
-        return numerical_stable_circle(self.exteriorpoints())
+        renumerical_stable_circle(self.exteriorpoints)
+
+    #Gets the center
+    def get_center(self):
+        '''Retrieves the center point of the shape'''
+        points = self.exteriorpoints()
+        x_values = [point[0]/popupcad.SI_length_scaling for point in points]
+        y_values = [point[1]/popupcad.SI_length_scaling for point in points]
+        x = float(sum(x_values)) / len(x_values)
+        y = float(sum(y_values)) / len(y_values)
+        return (x, y)
+    
+    def exterior_points_from_center(self):
+        '''Retrieves the exterior points relative to the center'''
+        center = self.get_center()
+        points = self.exteriorpoints()
+        x_values = [point[0]/popupcad.SI_length_scaling - center[0] for point in points]
+        y_values = [point[1]/popupcad.SI_length_scaling - center[1] for point in points]
+        return list(zip(x_values, y_values))
+
 
     @classmethod
     def remove_redundant_points(cls, points, scaling=1,loop_test = True):

@@ -204,7 +204,8 @@ class GenericPoly(GenericShapeBase):
             newloop = [vertex.copy(identical = False) for vertex in loop+loop[0:1]]
             polylines.append(GenericPolyline(newloop,[],self.is_construction()))
         return polylines
-        
+            
+   
     def output_dxf(self,model_space,layer = None):
         exterior = self.exteriorpoints()
         dxfattribs = {'closed':True}
@@ -218,19 +219,7 @@ class GenericPoly(GenericShapeBase):
             model_space.add_lwpolyline(interior,dxfattribs=dxfattribs)
         
 
-
-        
-class GenericCircle(GenericShapeBase):
-    @classmethod
-    def condition_loop(cls,loop):
-        cls._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
-
-    def outputinteractive(self):
-        from popupcad.graphics2d.interactive import InteractiveCircle
-        return InteractiveCircle(self)
-
-    def outputstatic(self, *args, **kwargs):
-        from popupcad.graphics2d.static import StaticCircle    #Gets the center
+    #Gets the center
     def get_center(self):
         points = self.exteriorpoints()
         x_values = [point[0]/popupcad.SI_length_scaling for point in points]
@@ -279,6 +268,18 @@ class GenericCircle(GenericShapeBase):
                         
         return vertices
 
+        
+class GenericCircle(GenericShapeBase):
+    @classmethod
+    def condition_loop(cls,loop):
+        cls._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
+
+    def outputinteractive(self):
+        from popupcad.graphics2d.interactive import InteractiveCircle
+        return InteractiveCircle(self)
+
+    def outputstatic(self, *args, **kwargs):
+        from popupcad.graphics2d.static import StaticCircle
         return StaticCircle(self, *args, **kwargs)
 
     def gen_painterpath(self, exterior, interiors):
