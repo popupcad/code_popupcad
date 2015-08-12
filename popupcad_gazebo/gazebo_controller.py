@@ -298,21 +298,33 @@ def export_inner(operation, useDart=False):
     
     #tree = spawnTreeFromList([[str(ordered_connect[0]), str(ordered_connect[1])] for ordered_connect in ordered_connection])        
     
+    #This key function tells it to ignore the following special characters when sorting.
+    link_sort = lambda string: str(string).replace('|', '\x02').replace('*','\x01') 
+    
     counter = 0
-    for joint_laminate in joint_laminates:
-        model_object.append(createRobotPart(joint_laminate, counter, tree, approxCollisions=(not useDart)))
+    for joint_laminate in sorted(joint_laminates,key=link_sort):
+        model_object.append(createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisions=(not useDart)))
         counter+=1
     
-    joint_names = []               
+    joint_names = []
+    joints = []
     for joint_connection in zip(midpoints, ordered_connection):
         from tree_node import TreeNode
         name = "hingejoint"
         name += tree.getNode(joint_connection[1][0]).getID()
         name += '|'
         name += tree.getNode(joint_connection[1][1]).getID()            
-        model_object.append(craftJoint(operation, list(joint_connection), name, tree))
+        joints.append(craftJoint(operation, list(joint_connection), name, tree))
         joint_names.append(name)
         
+    joint_sort = lambda joint: link_sort(joint.get('name'))
+        
+    for joint in sorted(joints, key=joint_sort):
+        print(joints)        
+        model_object.append(joint)
+        
+    joint_names.sort(key=link_sort)
+    
     if useDart is True:
         physics_engine = 'dart'
     else:
@@ -359,7 +371,7 @@ def export_inner(operation, useDart=False):
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
     time.sleep(4)
-    follow_model(robot_name)
+    #follow_model(robot_name)
     pause_simulation(world_name, pause=False)
     code_process.start()    
     import PySide.QtGui as qg
