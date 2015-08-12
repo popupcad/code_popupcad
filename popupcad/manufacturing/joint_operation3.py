@@ -1,4 +1,4 @@
-from __future__ import print_function #Fixes crossplatform print issues
+from __future__ import print_function, division #Fixes crossplatform print issues
 # -*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes.
@@ -363,7 +363,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
         connections = {}
         connections2 = {}
 
-
+        
         for line, geom in zip(allhingelines, safe_sections):
             connections[line] = []
             connections2[line] = []
@@ -391,6 +391,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
         self.output.append(OperationOutput(unsafe,'Unsafe',self))        
         self.output.append(OperationOutput(split1,'Split1',self))        
         self.output.append(OperationOutput(split2,'Split2',self))        
+        #TODO Change output to match the names that get exported to Gazebo
         self.output.extend([OperationOutput(item,'Fixed {0:d}'.format(ii),self) for ii,item in enumerate(fixed_csg)])        
         self.output.extend([OperationOutput(item,'Body {0:d}'.format(ii),self) for ii,item in enumerate(bodies)])        
         self.output.extend([OperationOutput(item,'Connection {0:d}'.format(ii),self) for ii,item in enumerate(connections2.values())])        

@@ -287,23 +287,21 @@ def export_inner(operation, useDart=False):
     #Sorts them in the correct order    
     #operation.connections.sort(key=lambda tup: tup[0], reverse=True)    
         
-    ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) for connection in operation.connections]
+    ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) 
+                            for connection in operation.connections]
     from tree_node import spawnTreeFromList
     tree = spawnTreeFromList(ordered_connection, sort=True)   
     assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
     midpoints = [connect[0] for connect in operation.connections]
     print(midpoints)
-    #Ensures that the list of lines is properly sorted    
-    #assert(all(midpoints[i] <= midpoints[i+1] for i in xrange(len(midpoints)-1)))
-    
-    #tree = spawnTreeFromList([[str(ordered_connect[0]), str(ordered_connect[1])] for ordered_connect in ordered_connection])        
     
     #This key function tells it to ignore the following special characters when sorting.
     link_sort = lambda string: str(string).replace('|', '\x02').replace('*','\x01') 
     
     counter = 0
     for joint_laminate in sorted(joint_laminates,key=link_sort):
-        model_object.append(createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisions=(not useDart)))
+        model_object.append(createRobotPart(joint_laminate, counter, tree, buildMesh=True, 
+                                                            approxCollisions=(not useDart)))
         counter+=1
     
     joint_names = []
@@ -507,6 +505,7 @@ def unitizeLine(shape):
 #TODO Ensure this actually works
 #Ensures the connection are in the right order
 def reorder_pair(joint_pair, hierarchy_map):
+    '''Reorders the pair based it's hiearchy map'''
     first = hierarchy_map[joint_pair[0]]
     second = hierarchy_map[joint_pair[1]]
     if first > second:
@@ -551,9 +550,9 @@ def createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisi
 
         
         if approxCollisions:
-            collision = approximateCollisions2(joint_laminate, center_of_mass)
-            #for collision in collisions:
-            root_of_robot.append(collision)
+            collisions = approximateCollisions4(joint_laminate, center_of_mass)
+            for collision in collisions:
+                root_of_robot.append(collision)
         else:
             from copy import deepcopy #copys the element
             collision = etree.SubElement(root_of_robot, "collision", name="basic_bot_collision" + str(counter))        
@@ -568,9 +567,9 @@ def createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisi
             #etree.SubElement(visual_of_robot, "transparency").text = str(0.5) #prevents it from being transparent.
             root_of_robot.append(visual_of_robot)     
         if approxCollisions:
-            collision = approximateCollisions2(joint_laminate, center_of_mass)
-            #for collision in collisions:
-            root_of_robot.append(collision)
+            collisions = approximateCollisions4(joint_laminate, center_of_mass)
+            for collision in collisions:
+                root_of_robot.append(collision)
         else:
             collisions = joint_laminate.toSDFTag("collision", "basic_bot_collision" + str(counter))
             for collision in collisions:    
@@ -592,7 +591,8 @@ def createRobotPart(joint_laminate, counter, tree, buildMesh=True, approxCollisi
 
 
 #Experimental and Deprecated
-def approximateCollisions(joint_laminate, centroid):    
+def approximateCollisions(joint_laminate, centroid):
+    '''Makes a tiny sphere at each vertice on the mesh. So slow it causes Gazebo to crash.'''    
     collisions = []
     layerdef = joint_laminate.layerdef
     for layer in layerdef.layers:
@@ -604,7 +604,7 @@ def approximateCollisions(joint_laminate, centroid):
             continue
         for s in shapes:
             vertices = [vert/popupcad.SI_length_scaling for vert in s.extrudeVertices(thickness, z0=zvalue)]
-            for x, y, z in zip(vertices, vertices[1:], vertices[2:]):
+            for x, y, z in zip(vertices, vertices[1::3], vertices[2::3]):
                 joint_name = str(joint_laminate.id) + ':('+str(x)+','+str(y)+','+str(z)+')'
                 collision = etree.Element("collision", name=joint_name)
                 etree.SubElement(collision, 'pose').text = str(x) + ' ' + str(y) + ' ' + str(z) + ' 0 0 0'
@@ -614,7 +614,8 @@ def approximateCollisions(joint_laminate, centroid):
                 collisions.append(collision)
     return collisions
     
-def approximateCollisions2(joint_laminate, centroid):    
+def approximateCollisions2(joint_laminate, centroid):
+    '''Uses classic hitboxes to detect collisions'''
     x, y, z = centroid
     x1, y1, x2, y2 = joint_laminate.getBoundingBox()
     width = abs(x2 - x1)
@@ -631,11 +632,70 @@ def approximateCollisions2(joint_laminate, centroid):
     etree.SubElement(sphere, 'size').text = str(width) + ' ' + str(height) + ' ' + str(thickness)
     surface = etree.SubElement(collision, "surface")    
     bounce = etree.SubElement(surface, "bounce")    
-    etree.SubElement(bounce, "restitution_coefficient").text = str(0)    
-    return collision
+    etree.SubElement(bounce, "restitution_coefficient").text = str(0)    #HARDCODED
+    return [collision]
+ 
+def approximateCollisions3(joint_laminate, centroid):
+    '''This method attempts to approximate collisions by taking three points
+    from the top and bottom of each shape'''
+    collisions = []
+    layerdef = joint_laminate.layerdef
+    layers = layerdef.layers
+    for layer in layers[::len(layers) - 1]:
+        shapes = joint_laminate.geoms[layer]#TODO Add it in for other shapes         
+        zvalue = layerdef.zvalue[layer]
+        thickness = layer.thickness
+        if (len(shapes) == 0) : #In case there are no shapes.
+            print("No shapes skipping")            
+            continue
+        for s in shapes:
+            triangulize = lambda tri: tri[0::len(tri)//3]
+            top_edges, bottom_edges = s.extrudeExteriorPoints(thickness, z0=zvalue)
+            top_edges = triangulize(top_edges)
+            bottom_edges = triangulize(bottom_edges)
+            extruded_points = top_edges + bottom_edges            
+            vertices = [[value/popupcad.SI_length_scaling for value in vert] for vert in extruded_points]
+            for x, y, z in vertices: #Vertices is a list of tuples
+                print('(' + str(x) + ',' + str(y) + ',' + str(z) + ')')
+                joint_name = str(joint_laminate.id) + ':('+str(x)+','+str(y)+','+str(z)+')'
+                collision = etree.Element("collision", name=joint_name)
+                etree.SubElement(collision, 'pose').text = str(x) + ' ' + str(y) + ' ' + str(z) + ' 0 0 0'
+                geom = etree.SubElement(collision, 'geometry')
+                sphere = etree.SubElement(geom, 'sphere')
+                etree.SubElement(sphere, 'radius').text = str(0.00001) #1cm will be the range of the collisions
+                collisions.append(collision)
+    return collisions
+
+def approximateCollisions4(joint_laminate, centroid):
+    '''This method attempts to approximate collisions by finding the minimal enscribing circle'''
+    collisions = []
+    layerdef = joint_laminate.layerdef
+    layers = layerdef.layers
+    for layer in layers[::len(layers) - 1]:
+        shapes = joint_laminate.geoms[layer]#TODO Add it in for other shapes         
+        zvalue = layerdef.zvalue[layer]/popupcad.SI_length_scaling
+        thickness = layer.thickness/popupcad.SI_length_scaling
+        if (len(shapes) == 0) : #In case there are no shapes.
+            print("No shapes skipping")            
+            continue
+        for s in shapes:
+            x, y, radius = [value/popupcad.SI_length_scaling for value in s.find_minimal_enclosing_circle()]
+            z = zvalue            
+            print('(' + str(x) + ',' + str(y) + ',' + str(z) + ')')
+            joint_name = str(joint_laminate.id) + ':('+str(x)+','+str(y)+','+str(z)+')'
+            collision = etree.Element("collision", name=joint_name)
+            etree.SubElement(collision, 'pose').text = str(x) + ' ' + str(y) + ' ' + str(z) + ' 0 0 0'
+            geom = etree.SubElement(collision, 'geometry')
+            cylinder = etree.SubElement(geom, 'cylinder')
+            etree.SubElement(cylinder, 'radius').text = str(radius)
+            etree.SubElement(cylinder, 'length').text = str(thickness)
+            collisions.append(collision)
+    return collisions
  
 def craftSimbodyPhysics():
-    physics_root = etree.Element("physics", {"name":"Simbody", "default":"true", "type":"revolute"})
+    '''This generates the physics portion of the code specifying 
+    all the characteristics of the physics engine'''
+    physics_root = etree.Element("physics", {"name":"Simbody", "default":"true", "type":"simbody"})
     simbody_physics = etree.SubElement(physics_root, "simbody")
     contact = etree.SubElement(simbody_physics, "contact")
     etree.SubElement(contact, "plastic_coef_restitution").text = str(0)

@@ -204,14 +204,7 @@ class GenericPoly(GenericShapeBase):
             newloop = [vertex.copy(identical = False) for vertex in loop+loop[0:1]]
             polylines.append(GenericPolyline(newloop,[],self.is_construction()))
         return polylines
-            
-    #Returns the area scaled to match the appropiate size of the mesh
-    def trueArea(self):
-        p = self.exteriorpoints()
-        p = [[float(x)/popupcad.SI_length_scaling for x in point] for point in p]#scales appropiately 
-        return 0.5 * abs(sum(x0*y1 - x1*y0
-                             for ((x0, y0), (x1, y1)) in zip(p, p[1:] + [p[0]])))
-   
+        
     def output_dxf(self,model_space,layer = None):
         exterior = self.exteriorpoints()
         dxfattribs = {'closed':True}
@@ -225,7 +218,19 @@ class GenericPoly(GenericShapeBase):
             model_space.add_lwpolyline(interior,dxfattribs=dxfattribs)
         
 
-    #Gets the center
+
+        
+class GenericCircle(GenericShapeBase):
+    @classmethod
+    def condition_loop(cls,loop):
+        cls._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
+
+    def outputinteractive(self):
+        from popupcad.graphics2d.interactive import InteractiveCircle
+        return InteractiveCircle(self)
+
+    def outputstatic(self, *args, **kwargs):
+        from popupcad.graphics2d.static import StaticCircle    #Gets the center
     def get_center(self):
         points = self.exteriorpoints()
         x_values = [point[0]/popupcad.SI_length_scaling for point in points]
@@ -258,14 +263,10 @@ class GenericPoly(GenericShapeBase):
                 vertices.append(dec[0]) #x-axis
                 vertices.append(dec[1]) #y-axis            
                 vertices.append(z0 + extrusion_factor) #z-axi            
+                
+        top_edges = self.exteriorpoints_3d(z0=z0)
+        bottom_edges = self.exteriorpoint_3d(z0=z0 + extrusion_factor)
             
-        raw_edges = self.exteriorpoints()        
-        top_edges = []
-        bottom_edges = []            
-        for dec in raw_edges:      
-            top_edges.append((dec[0], dec[1], z0)) #x-axis
-            bottom_edges.append((dec[0], dec[1], z0 + extrusion_factor))
-                    
         sideTriangles = list(zip(top_edges, top_edges[1:] + top_edges[:1], bottom_edges))
         sideTriangles2 = list(zip(bottom_edges[1:] + bottom_edges[:1], bottom_edges, top_edges[1:] + top_edges[:1]))
         sideTriangles.extend(sideTriangles2)
@@ -278,18 +279,6 @@ class GenericPoly(GenericShapeBase):
                         
         return vertices
 
-        
-class GenericCircle(GenericShapeBase):
-    @classmethod
-    def condition_loop(cls,loop):
-        cls._condition_loop(loop,remove_loop_reduncancy=False,remove_forward_redundancy=False)
-
-    def outputinteractive(self):
-        from popupcad.graphics2d.interactive import InteractiveCircle
-        return InteractiveCircle(self)
-
-    def outputstatic(self, *args, **kwargs):
-        from popupcad.graphics2d.static import StaticCircle
         return StaticCircle(self, *args, **kwargs)
 
     def gen_painterpath(self, exterior, interiors):
