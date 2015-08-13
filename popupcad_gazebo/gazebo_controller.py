@@ -17,6 +17,7 @@ import popupcad
 from lxml import etree
 import subprocess
 import os
+from .tree_node import TreeNode,spawnTreeFromList
 
 try:
     import itertools.izip as zip
@@ -25,6 +26,7 @@ except ImportError:
 
 def pause_simulation(world_name, pause=True):
     wait_net_service('localhost', 11345)
+    print("Unpausing")
     
     @trollius.coroutine
     def coroutine():
@@ -73,6 +75,7 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
                     message = pygazebo.msg.joint_cmd_pb2.JointCmd()
                     message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
                     message.force = force
+                    print(message.force)
                     yield From(publisher.publish(message))
                 yield From(trollius.sleep(1.0))
             except Exception as e:
@@ -85,7 +88,7 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
     #for joint_name, force in zip(joint_names, forces):
     #    tasks.append(trollius.Task(joint_force_loop(world_name, robot_name, joint_name, force)))
     tasks.append(trollius.Task(joint_force_loop())) 
-    
+    print(tasks)
     loop = trollius.get_event_loop()    
 
     loop.run_until_complete(trollius.wait(tasks))
@@ -215,16 +218,18 @@ def wait_net_service(server, port, timeout=None):
                 else:
                     s.settimeout(next_timeout)
             s.connect((server, port))
-        except socket.timeout as err:
+        except socket.timeout:
             # this exception occurs only if timeout is set
             if timeout:
                 return False
       
         except socket.error as err:
-            # catch timeout exception from underlying network library
-            # this one is different from socket.timeout
-            if type(err.args) != tuple or (err[0] != errno.ETIMEDOUT and err[0] != errno.ECONNREFUSED):
+#             catch timeout exception from underlying network library
+#             this one is different from socket.timeout
+            if not (isinstance(err,ConnectionRefusedError) or isinstance(err,TimeoutError)):
                 raise err
+#            if type(err.args) != tuple or (err[0] != errno.ETIMEDOUT and err[0] != errno.ECONNREFUSED):
+#                raise err
         else:
             s.close()
             return True
@@ -289,7 +294,6 @@ def export_inner(operation, useDart=False):
         
     ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) 
                             for connection in operation.connections]
-    from tree_node import spawnTreeFromList
     tree = spawnTreeFromList(ordered_connection, sort=True)   
     assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
     midpoints = [connect[0] for connect in operation.connections]
@@ -307,7 +311,6 @@ def export_inner(operation, useDart=False):
     joint_names = []
     joints = []
     for joint_connection in zip(midpoints, ordered_connection):
-        from tree_node import TreeNode
         name = "hingejoint"
         name += tree.getNode(joint_connection[1][0]).getID()
         name += '|'
@@ -331,7 +334,7 @@ def export_inner(operation, useDart=False):
     
     #Saves the object
     file_output = popupcad.exportdir + os.path.sep + project_name + ".world"
-    f = open(file_output,"w")
+    f = open(file_output,"wb")
     f.write(etree.tostring(global_root, pretty_print=True))
     f.close()
     
@@ -368,7 +371,7 @@ def export_inner(operation, useDart=False):
         
     from multiprocessing import Process
     code_process = Process(target=exec_, args=(user_input_code,))
-    time.sleep(4)
+    time.sleep(5)
     #follow_model(robot_name)
     pause_simulation(world_name, pause=False)
     code_process.start()    
