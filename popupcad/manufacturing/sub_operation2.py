@@ -11,7 +11,6 @@ from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.table_editor_popup import Table, SingleItemListElement,IntegerElement,Row, TableControl, DraggableTreeElement,Delegate
 from popupcad.widgets.listmanager import DesignListManager
 
-
 class SketchData(object):
     def __init__(self, ref1, ref2):
         self.ref1 = ref1
@@ -122,7 +121,6 @@ class MainWidget(qg.QDialog):
 
     def get_subdesign_sketches(self):
         return self.subdesign().sketches.values()
-#        return []
 
     def subdesign(self):
         try:
@@ -185,7 +183,6 @@ class SubOperation2(Operation2):
         else:
             return self
         
-
     def __init__(self, *args):
         super(SubOperation2, self).__init__()
         self.editdata(*args)
@@ -226,8 +223,6 @@ class SubOperation2(Operation2):
         return dialog
 
     def generate(self, design):
-        from popupcad.manufacturing.freeze import Freeze
-        import yaml
         from popupcad.manufacturing.dummy_operation1 import DummyOp1
         
         subdesign_orig = design.subdesigns[self.design_links['source'][0]]
@@ -237,17 +232,6 @@ class SubOperation2(Operation2):
         for key,value in sketches.items():
             sketches[key] = value.copy()
         subdesign.sketches.update(sketches)
-
-#        layerdef_old = subdesign.return_layer_definition()
-#        layerdef_new = design.return_layer_definition()
-#        new_operations = []
-#        for operation in subdesign.operations:
-#            try:
-#                operation = operation.switch_layer_defs(layerdef_old,layerdef_new)
-#            except AttributeError:
-#                pass
-#            new_operations.append(operation)
-#        subdesign.operations = new_operations
 
         layerdef_subdesign = subdesign.return_layer_definition()
         layerdef_design = design.return_layer_definition()
@@ -262,21 +246,16 @@ class SubOperation2(Operation2):
             to_ref = input_data.ref2
 
             csg = design.op_from_ref(to_ref[0]).output[to_ref[1]].csg
-#            op_to_insert = yaml.load(yaml.dump(op_to_insert.copy()))
-#            op_to_insert = op_to_insert.switch_layer_defs(layerdef_design,layerdef_subdesign)
-#            csg = op_to_insert.output[to_ref[1]].csg
             csg2 = popupcad.algorithms.manufacturing_functions.shift_flip(csg,input_data.shift,False,False)
             csg3 = csg2.switch_layer_defs(layerdef_subdesign)
             dummy_op = DummyOp1(csg3)
-#            to2 = Freeze(0,0,op_to_insert.output[to_ref[1]].generic_laminate())
             to_ref2 = (dummy_op.id,0)
             subdesign.operations.insert(0, dummy_op)
             subdesign.replace_op_refs_force(from_ref, to_ref2)
 
-#        subdesign.define_layers(layerdef_new)
         subdesign.reprocessoperations()
-        self.output = []
 
+        self.output = []
         for output_data in self.output_list:
             new_output = subdesign.op_from_ref(output_data.ref1[0]).output[output_data.ref1[1]]
             csg= new_output.csg
