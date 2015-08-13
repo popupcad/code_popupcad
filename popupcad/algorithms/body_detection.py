@@ -27,10 +27,8 @@ def find(generic_laminate):
     layerdef = generic_laminate.layerdef
     from popupcad.filetypes.laminate import Laminate
 
-    layer_dict = dict([(geom.id, layer)
-                       for layer, geoms in generic.items() for geom in geoms])
-    geom_dict = dict([(geom.id, geom)
-                      for layer, geoms in generic.items() for geom in geoms])
+    layer_dict = dict([(geom.id, layer) for layer, geoms in generic.items() for geom in geoms])
+    geom_dict = dict([(geom.id, geom) for layer, geoms in generic.items() for geom in geoms])
     geom_dict_whole = geom_dict.copy()
 
     laminates = []
@@ -38,19 +36,14 @@ def find(generic_laminate):
     while len(geom_dict) > 0:
         laminate = Laminate(layerdef)
         key = list(geom_dict.keys())[0]
-        gs = findallconnectedneighborgeoms(
-            key,
-            generic_laminate,
-            geom_dict,
-            layerdef)
+        gs = findallconnectedneighborgeoms(key,generic_laminate,geom_dict,layerdef)
         geom_mins = numpy.array(
             [find_minimum_xy(geom_dict_whole[geom_id]) for geom_id in gs])
         values.append(tuple(geom_mins.min(0)))
         for item_id in gs:
             geom = geom_dict_whole[item_id]
-            laminate.insertlayergeoms(
-                layer_dict[item_id], [
-                    geom.to_shapely()])
+            if geom.is_valid_bool():
+                laminate.insertlayergeoms(layer_dict[item_id], [geom.to_shapely()])
         laminates.append(laminate)
     laminates = sort_lams(laminates, values)
     return laminates
@@ -79,19 +72,19 @@ def findallconnectedneighborgeoms(
 
 def findconnectedneighborgeoms(geomid, generic_laminate, geom_dict, layerdef):
     '''find geoms in neighboring layers which are overlapping'''
-    geom = geom_dict[geomid]
-    geom = geom.to_shapely()
-    layer = findgeomlayerinstep(geomid, generic_laminate)
-    neighbors = layerdef.connected_neighbors(layer)
     validneighbors = []
-    for neighbor in neighbors:
-        for item in generic_laminate.geoms[neighbor]:
-            shapelygeom = item.to_shapely()
-            result = geom.intersection(shapelygeom)
-            if not result.is_empty:
-                validneighbors.append(item.id)
-            else:
-                pass
+    geom = geom_dict[geomid]
+    if geom.is_valid_bool():
+        geom = geom.to_shapely()
+        layer = findgeomlayerinstep(geomid, generic_laminate)
+        neighbors = layerdef.connected_neighbors(layer)
+        for neighbor in neighbors:
+            for item in generic_laminate.geoms[neighbor]:
+                if item.is_valid_bool():
+                    shapelygeom = item.to_shapely()
+                    result = geom.intersection(shapelygeom)
+                    if not result.is_empty:
+                        validneighbors.append(item.id)
     return validneighbors
 
 

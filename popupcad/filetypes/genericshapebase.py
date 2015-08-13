@@ -403,7 +403,7 @@ class GenericShapeBase(popupCADFile):
 
     def find_minimal_enclosing_circle(self):
         from popupcad.algorithms.minimal_enclosing_circle import numerical_stable_circle
-        renumerical_stable_circle(self.exteriorpoints)
+        return numerical_stable_circle(self.exteriorpoints)
 
     #Gets the center
     def get_center(self):
