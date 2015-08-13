@@ -73,8 +73,7 @@ class Freeze(Operation2):
         layerdef = design.return_layer_definition()
         csg = Laminate(layerdef)
         for layer in layerdef.layers:
-            shapelygeoms = [geom.to_shapely()
-                            for geom in self.generic.geoms[layer]]
+            shapelygeoms = [geom.to_shapely() for geom in self.generic.geoms[layer] if geom.is_valid_bool()]
             csg.insertlayergeoms(layer, shapelygeoms)
         return csg
 
