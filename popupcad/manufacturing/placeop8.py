@@ -292,17 +292,8 @@ class PlaceOperation8(Operation2):
 
         layerdef = design.return_layer_definition()
         layerdef_subdesign = subdesign.return_layer_definition()
-        return popupcad.algorithms.manufacturing_functions.transform(
-            layerdef,
-            layerdef_subdesign,
-            inshift,
-            outshift,
-            step,
-            sketch,
-            designgeometry,
-            locateline,
-            scale_x,
-            scale_y)
+        return popupcad.algorithms.manufacturing_functions.transform(layerdef,layerdef_subdesign,inshift,outshift,step,
+                                                                     sketch,designgeometry,locateline,scale_x,scale_y)
 
     def fromQTransform(self, tin):
         tout = numpy.array([[tin.m11(), tin.m12(), tin.m13()], [
