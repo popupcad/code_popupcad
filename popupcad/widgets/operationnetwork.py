@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 plt.ion()
 matplotlib.rcParams['backend.qt4']='PySide'
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import numpy
 
@@ -86,26 +86,9 @@ class GraphView(qg.QWidget):
     def text(self,*args,**kwargs):
         self.axes.text(*args,**kwargs)
 
-def drawlabels(edges,labels,pos,w):
-    from matplotlib.patches import FancyArrowPatch
-    labelpos = dict((key,value+[-0.1,0]) for key,value in pos.items())
-
-    w.clear()
-    
-    for link,(x,y) in labelpos.items():
-        w.text(x, y,labels[link],**text_style)
-
-    for edge in edges:
-        w.add_patch(FancyArrowPatch(pos[edge[0]],pos[edge[1]],**arrow_style))
-        
-    circlepos = numpy.array([item for item in pos.values()])
-    w.scatter(circlepos[:,0],circlepos[:,1],**circle_style)        
-
-    w.axes.axis('tight')
-    w.axes.axis('off')
-    w.draw()
 
 def action_method(parentwidget):
+    from matplotlib.patches import FancyArrowPatch
     plt.ion()
     operations = parentwidget.design.operations
     ids = [operation.id for operation in operations]
@@ -120,11 +103,23 @@ def action_method(parentwidget):
     y = numpy.r_[spacing*len(ids):0:-1*spacing]
     xy = numpy.c_[y*0,y]    
     pos = dict([(item,pos) for item,pos in zip(ids,xy)])
+
     w = GraphView(parentwidget)
     w.axes.autoscale(True)
-    drawlabels(edges,labels,pos,w)
-#    plt.show()
+    labelpos = dict((key,value+[-0.1,0]) for key,value in pos.items())
+
+    w.clear()
+    for link,(x,y) in labelpos.items():
+        w.text(x, y,labels[link],**text_style)
+    for edge in edges:
+        w.add_patch(FancyArrowPatch(pos[edge[0]],pos[edge[1]],**arrow_style))
+    circlepos = numpy.array([item for item in pos.values()])
+    w.scatter(circlepos[:,0],circlepos[:,1],**circle_style)        
+    w.axes.axis('equal')
+    w.axes.axis('off')
+    w.draw()
     return w
+
 if __name__ == '__main__':
 
     mbox = [['Dan','Sara'],['Dan','Bill'],['Sara','Bill']]
