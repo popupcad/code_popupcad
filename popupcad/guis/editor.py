@@ -161,6 +161,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.projectactions.append({'text': 'SubDesigns...', 'kwargs': {'triggered': self.subdesigns}})
         self.projectactions.append({'text': 'Replace...', 'kwargs': {'triggered': self.replace}})
         self.projectactions.append({'text': 'Insert Laminate Op and Replace...', 'kwargs': {'triggered': self.insert_and_replace}})
+        self.projectactions.append({'text': 'Hierarchy', 'kwargs': {'triggered': self.operation_network}})
 
         self.viewactions = []
 
@@ -224,6 +225,17 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.showhide2(self.operationdock, self.act_view_ops)
         self.showhide2(self.layerlistwidgetdock, self.act_view_layers)
         self.showhide2(self.error_log, self.act_view_errors)
+
+    def operation_network(self):
+        import popupcad.widgets.operationnetwork
+        widget = popupcad.widgets.operationnetwork.action_method(self)
+        hierarchy_dock = qg.QDockWidget()
+        hierarchy_dock.setWidget(widget)
+        hierarchy_dock.setAllowedAreas(qc.Qt.AllDockWidgetAreas)
+        hierarchy_dock.setWindowTitle('Hierarchy')
+        self.addDockWidget(qc.Qt.RightDockWidgetArea, hierarchy_dock)
+
+#        widget.show()
 
     def get_design(self):
         return self.design
