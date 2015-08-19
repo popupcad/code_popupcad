@@ -5,14 +5,15 @@ from . import gazebo_controller
 import PIL
 import PySide
 import array
+import lxml
+import multiprocessing
+import pygazebo
+import trollius
+
 from . import enhanced_grid
 from . import gradient
 from . import image
-import lxml
-import multiprocessing
 from . import perlin_noise
-import pygazebo
-import trollius
 
 #from popupcad.supportfiles import Icon
 import popupcad.guis.icons

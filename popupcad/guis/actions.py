@@ -36,24 +36,20 @@ def build(editor):
     menu_file = qg.QMenu('File')
     [menu_file.addAction(item) for item in file_actions]
     return menu_file
-#
+
+
+
 #self.fileactions = []
-#self.fileactions.append({'text': "&New",'kwargs': {'icon': Icon('new'),'shortcut': qg.QKeySequence.New,'statusTip': "Create a new file",'triggered': self.newfile}})
-#self.fileactions.append({'text': "&Open...",'kwargs': {'icon': Icon('open'),'shortcut': qg.QKeySequence.Open,'statusTip': "Open an existing file",'triggered': self.open}})
-#self.fileactions.append({'text': "&Save",'kwargs': {'icon': Icon('save'),'shortcut': qg.QKeySequence.Save,'statusTip': "Save the document to disk",'triggered': self.save}})
-#self.fileactions.append({'text': "Save &As...",'kwargs': {'icon': Icon('saveas'),'shortcut': qg.QKeySequence.SaveAs,'statusTip': "Save the document under a new name",'triggered': self.saveAs}})
+#self.fileactions.append({'text': "&New",'kwargs': {'icon': icons['new'],'shortcut': qg.QKeySequence.New,'statusTip': "Create a new file",'triggered': self.newfile}})
+#self.fileactions.append({'text': "&Open...",'kwargs': {'icon': icons['open'],'shortcut': qg.QKeySequence.Open,'statusTip': "Open an existing file",'triggered': self.open}})
+#self.fileactions.append({'text': "&Save",'kwargs': {'icon': icons['save'],'shortcut': qg.QKeySequence.Save,'statusTip': "Save the document to disk",'triggered': self.save}})
+#self.fileactions.append({'text': "Save &As...",'kwargs': {'icon': icons['save'],'shortcut': qg.QKeySequence.SaveAs,'statusTip': "Save the document under a new name",'triggered': self.saveAs}})
 #self.fileactions.append({'text': "Upgrade",'kwargs': {'statusTip': "Upgrade the file",'triggered': self.upgrade}})
-#self.fileactions.append({'text': '&Export to SVG', 'kwargs': {'icon': Icon('export'), 'triggered': self.exportLayerSVG}})
-#self.fileactions.append({'text': 'Export to dxf', 'kwargs': {'icon': Icon('export'),'statusTip': "Exports to a dxf file",'triggered': self.export_dxf}})
-#self.fileactions.append({'text': 'Export to dae', 'kwargs': {'icon': Icon('export'),'statusTip': "Exports to a dae file",'triggered': self.export_dae}})
+#self.fileactions.append({'text': 'Export to stl', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a stl file",'triggered': self.export_stl}})
+#self.fileactions.append({'text': '&Export to SVG', 'kwargs': {'icon': icons['export'], 'triggered': self.exportLayerSVG}})
+#self.fileactions.append({'text': 'Export to dxf', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dxf file",'triggered': self.export_dxf}})
+#self.fileactions.append({'text': 'Export to dae', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dae file",'triggered': self.export_dae}})
 #
-##Tests as numpy-stl is installed
-#try: 
-#    from stl import mesh
-#    self.fileactions.append({'text': 'Export to stl', 'kwargs': {'icon': Icon('export'),'statusTip': "Exports to a stl file",'triggered': self.export_stl}})
-#except ImportError:
-#    print('STL export feature not loaded since "numpy-stl" was not installed.')            
-#            
 #self.fileactions.append({'text': "Save Joint Defs", 'kwargs': {'triggered': self.save_joint_def}})
 #self.fileactions.append({'text': "Export Laminate", 'kwargs': {'triggered': self.export_laminate}})
 #self.fileactions.append({'text': "Regen ID", 'kwargs': {'triggered': self.regen_id, }})
@@ -64,7 +60,7 @@ def build(editor):
 #self.fileactions.append({'text': "Update...",'kwargs': {'triggered': self.download_installer}})
 #
 #self.projectactions = []
-#self.projectactions.append({'text': '&Rebuild','kwargs': {'icon': Icon('refresh'),'shortcut': 'Ctrl+Shift+R','triggered': self.reprocessoperations_outer}})
+#self.projectactions.append({'text': '&Rebuild','kwargs': {'icon': icons['refresh'],'shortcut': 'Ctrl+Shift+R','triggered': self.reprocessoperations_outer}})
 #
 #def dummy(action):
 #    action.setCheckable(True)
@@ -86,19 +82,19 @@ def build(editor):
 #    action.setCheckable(True)
 #    action.setChecked(False)
 #    self.act_view_3d = action
-#self.viewactions.append({'prepmethod': dummy,'text': '3D View','kwargs': {'icon': Icon('3dview'),'triggered': lambda: self.showhide2(self.view_3d_dock,self.act_view_3d)}})
+#self.viewactions.append({'prepmethod': dummy,'text': '3D View','kwargs': {'icon': icons['printapede'],'triggered': lambda: self.showhide2(self.view_3d_dock,self.act_view_3d)}})
 #
 #def dummy(action):
 #    action.setCheckable(True)
 #    action.setChecked(True)
 #    self.act_view_ops = action
-#self.viewactions.append({'prepmethod': dummy,'text': 'Operations','kwargs': {'icon': Icon('operations'),'triggered': lambda: self.showhide2(self.operationdock,self.act_view_ops)}})
+#self.viewactions.append({'prepmethod': dummy,'text': 'Operations','kwargs': {'icon': icons['operations'],'triggered': lambda: self.showhide2(self.operationdock,self.act_view_ops)}})
 #
 #def dummy(action):
 #    action.setCheckable(True)
 #    action.setChecked(True)
 #    self.act_view_layers = action
-#self.viewactions.append({'prepmethod': dummy,'text': 'Layers','kwargs': {'icon': Icon('layers'),'triggered': lambda: self.showhide2(self.layerlistwidgetdock,self.act_view_layers)}})
+#self.viewactions.append({'prepmethod': dummy,'text': 'Layers','kwargs': {'icon': icons['layers'],'triggered': lambda: self.showhide2(self.layerlistwidgetdock,self.act_view_layers)}})
 #
 #def dummy(action):
 #    action.setCheckable(True)
@@ -106,14 +102,14 @@ def build(editor):
 #    self.act_view_errors = action
 #self.viewactions.append({'prepmethod': dummy, 'text': 'Error Log', 'kwargs': {'triggered': lambda: self.showhide2(self.error_log, self.act_view_errors)}})
 #
-#self.viewactions.append({'text': 'Zoom Fit','kwargs': {'triggered': self.view_2d.zoomToFit,'shortcut': qc.Qt.CTRL + qc.Qt.Key_F}})
-#self.viewactions.append({'text': 'Screenshot','kwargs': {'triggered': self.scene.screenShot,'shortcut': qc.Qt.CTRL + qc.Qt.Key_R}})
+#self.viewactions.append({'text': 'Zoom Fit','kwargs': {'triggered': self.view_2d.zoomToFit,'shortcut': 'Ctrl+F'}})
+#self.viewactions.append({'text': 'Screenshot','kwargs': {'triggered': self.scene.screenShot,'shortcut': 'Ctrl+R'}})
 #self.viewactions.append({'text': '3D Screenshot', 'kwargs': {'triggered': self.screenshot_3d}})
 #
 #self.tools1 = []
-#self.tools1.append({'text': 'Cleanup','kwargs': {'icon': Icon('cleanup'),'triggered': lambda: self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)}})
-#self.tools1.append({'text': 'New Cleanup','kwargs': {'icon': Icon('cleanup'),'triggered': lambda: self.newoperation(popupcad.manufacturing.cleanup3.Cleanup3)}})
-#self.tools1.append({'text': 'Simplify','kwargs': {'icon': Icon('simplify'),'triggered': lambda: self.newoperation(popupcad.manufacturing.simplify2.Simplify2)}})
+#self.tools1.append({'text': 'Cleanup','kwargs': {'icon': icons['cleanup'],'triggered': lambda: self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)}})
+#self.tools1.append({'text': 'New Cleanup','kwargs': {'icon': icons['cleanup'],'triggered': lambda: self.newoperation(popupcad.manufacturing.cleanup3.Cleanup3)}})
+#self.tools1.append({'text': 'Simplify','kwargs': {'icon': icons['simplify'],'triggered': lambda: self.newoperation(popupcad.manufacturing.simplify2.Simplify2)}})
 #self.tools1.append({'text': 'JointOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation3.JointOperation3)}})
 #self.tools1.append({'text': 'HoleOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.hole_operation.HoleOperation)}})
 #self.tools1.append({'text': 'Freeze', 'kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.freeze.Freeze)}})
@@ -123,18 +119,26 @@ def build(editor):
 ##        self.tools1.append({'text': 'Code Exec','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.code_exec_op.CodeExecOperation)}})
 #
 #self.operationactions = []
-#self.operationactions.append({'text': '&SketchOp','kwargs': {'icon': Icon('polygons'),'shortcut': qc.Qt.CTRL +qc.Qt.SHIFT +qc.Qt.Key_S,'triggered': lambda: self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})
-#self.operationactions.append({'text': '&LaminateOp','kwargs': {'icon': Icon('metaop'),'shortcut': qc.Qt.CTRL +qc.Qt.SHIFT +qc.Qt.Key_M,'triggered': lambda: self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)}})
-#self.operationactions.append({'text': '&Dilate/Erode','kwargs': {'icon': Icon('bufferop'),'shortcut': qc.Qt.CTRL +qc.Qt.SHIFT +qc.Qt.Key_B,'triggered': lambda: self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
-#self.operationactions.append({'text': '&PlaceOp','kwargs': {'icon': Icon('placeop'),'shortcut': qc.Qt.CTRL +qc.Qt.SHIFT +qc.Qt.Key_P,'triggered': lambda: self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
-#self.operationactions.append({'text': 'L&ocateOp','kwargs': {'icon': Icon('locate'),'shortcut': qc.Qt.CTRL +qc.Qt.SHIFT +qc.Qt.Key_O,'triggered': lambda: self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
-#self.operationactions.append({'text': 'Shift/Flip','kwargs': {'icon': Icon('shiftflip'),'triggered': lambda: self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)}})
-#self.operationactions.append({'text': '&LayerOp','kwargs': {'icon': Icon('layerop'),'shortcut': qc.Qt.CTRL +qc.Qt.SHIFT +qc.Qt.Key_L,'triggered': lambda: self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
+#self.operationactions.append({'text': '&SketchOp','kwargs': {'icon': icons['polygons'],'shortcut': 'Ctrl+Shift+S','triggered': lambda: self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})
+#self.operationactions.append({'text': '&LaminateOp','kwargs': {'icon': icons['metaop'],'shortcut': 'Ctrl+Shift+M','triggered': lambda: self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)}})
+#self.operationactions.append({'text': '&Dilate/Erode','kwargs': {'icon': icons['bufferop'],'shortcut': 'Ctrl+Shift+B','triggered': lambda: self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
+#self.operationactions.append({'text': '&PlaceOp','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
+#self.operationactions.append({'text': 'L&ocateOp','kwargs': {'icon': icons['locate'],'shortcut': 'Ctrl+Shift+O','triggered': lambda: self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
+#self.operationactions.append({'text': 'Shift/Flip','kwargs': {'icon': icons['shiftflip'],'triggered': lambda: self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)}})
+#self.operationactions.append({'text': '&LayerOp','kwargs': {'icon': icons['layerop'],'shortcut': 'Ctrl+Shift+L','triggered': lambda: self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
 #self.operationactions.append({'text': 'More...', 'submenu': self.tools1, 'kwargs': {}})
 #
 #self.menu_file = self.addMenu(self.fileactions, name='File')
 #self.menu_project = self.addMenu(self.projectactions, name='Project')
 #self.menu_view = self.addMenu(self.viewactions, name='View')
-#self.toolbar_operations, self.menu_operations = self.addToolbarMenu(
-#    self.operationactions, name='Operations')
-#    
+#self.toolbar_operations, self.menu_operations = self.addToolbarMenu(self.operationactions, name='Operations')
+#
+##        menu_file = popupcad.guis.actions.build(self)
+##        menu_bar = qg.QMenuBar()
+##        menu_bar.addMenu(menu_file)
+##        self.setMenuBar(menu_bar)
+#
+#self.showhide2(self.view_3d_dock, self.act_view_3d)
+#self.showhide2(self.operationdock, self.act_view_ops)
+#self.showhide2(self.layerlistwidgetdock, self.act_view_layers)
+#self.showhide2(self.error_log, self.act_view_errors)

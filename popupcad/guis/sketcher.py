@@ -21,7 +21,6 @@ from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
 from popupcad.filetypes.sketch import Sketch
 from popupcad.widgets.listeditor import ListEditor
-from popupcad.supportfiles import Icon
 from popupcad.widgets.widgetcommon import WidgetCommon
 from popupcad.filetypes.undoredo import UndoRedo
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
@@ -164,7 +163,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.fileactions.append({'text': "Save &As...",
                                  'kwargs': {'triggered': self.saveAs,
                                             'shortcut': qg.QKeySequence.SaveAs,
-                                            'icon': icons['saveas']}})
+                                            'icon': icons['save']}})
         self.fileactions.append(
             {'text': "Regen ID", 'kwargs': {'triggered': self.regen_id}})
 
@@ -220,19 +219,19 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                                 'triggered': lambda: self.showhide2(self.propdock, self.act_view_properties)}})
         self.viewactions.append({'text': 'select',
                                  'kwargs': {'triggered': self.graphicsview.rubberband,
-                                            'shortcut': qc.Qt.CTRL + qc.Qt.SHIFT + qc.Qt.Key_S,
-                                            'icon': icons['select']}})
+                                            'shortcut': 'Ctrl+Shift+S',
+                                            'icon': icons['pointer']}})
         self.viewactions.append({'text': 'pan',
                                  'kwargs': {'triggered': self.graphicsview.scrollhand,
-                                            'shortcut': qc.Qt.CTRL + qc.Qt.SHIFT + qc.Qt.Key_P,
-                                            'icon': icons['pan']}})
+                                            'shortcut': 'Ctrl+Shift+P',
+                                            'icon': icons['hand']}})
         self.viewactions.append(None)
         self.viewactions.append({'text': 'Zoom Fit',
                                  'kwargs': {'triggered': self.graphicsview.zoomToFit,
-                                            'shortcut': qc.Qt.CTRL + qc.Qt.Key_F}})
+                                            'shortcut': 'Ctrl+F'}})
         self.viewactions.append({'text': 'Screenshot',
                                  'kwargs': {'triggered': self.scene.screenShot,
-                                            'shortcut': qc.Qt.CTRL + qc.Qt.Key_R}})
+                                            'shortcut': 'Ctrl+R'}})
 
         self.drawingactions = []
         self.drawingactions.append({'text': 'point',

@@ -24,7 +24,7 @@ class Program(object):
                 args.pop(args.index(item))
 
         self.app = app
-        self.app.setWindowIcon(popupcad.guis.icons.icons['popupcad'])
+        self.app.setWindowIcon(popupcad.guis.icons.icons['printapede'])
         self.editor = popupcad.guis.editor.Editor()
 
         if len(args) > 1 and not '--' in args[-1]:
