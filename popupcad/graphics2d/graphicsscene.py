@@ -61,7 +61,7 @@ class SketcherSupport(object):
         self.setItemIndexMethod(self.NoIndex)
         self.constraints_on = False
         self.setSceneRect(qc.QRectF(0, 0, 1000, 1000))
-        self.setBackgroundBrush(qg.QBrush(qg.QPixmap(popupcad.backgroundpath)))
+        self.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(*popupcad.graphics_scene_background_color),qc.Qt.SolidPattern))
         self.temp = None
         self.extraobjects = []
         self.nextgeometry = None

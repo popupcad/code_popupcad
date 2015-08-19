@@ -47,13 +47,11 @@ def cross_section(layerdef, sketch, parent, scale_value):
             result = parent.intersection(laminate)
             laminate2 = Laminate(layerdef)
             for ii, layerid in enumerate(layerdef.layers):
-                #                for ii,layer in enumerate(result):
                 yshift = layerdef.zvalue[layerid] * popupcad.csg_processing_scaling * scale_value
                 layer = result.layer_sequence[layerid]
                 thickness = layerid.thickness * popupcad.csg_processing_scaling * scale_value
                 newgeoms = [item for item in layer.geoms]
                 newgeoms = [aff.affine_transform(item, a) for item in newgeoms]
-#                    newgeoms = [item.buffer(bufferval) for item in newgeoms]
                 newgeoms2 = []
                 for geom in newgeoms:
                     newgeom = sg.box(geom.coords[0][0],
@@ -70,41 +68,24 @@ def cross_section(layerdef, sketch, parent, scale_value):
     return laminate
 
 
-def transform(
-        layerdef,
-        layerdef_subdesign,
-        inshift,
-        outshift,
-        step,
-        sketch,
-        designgeometry,
-        locateline,
-        scale_x,
-        scale_y):
+def transform(layerdef,layerdef_subdesign,inshift,outshift,step,sketch,designgeometry,locateline,scale_x,scale_y):
     from popupcad.filetypes.laminate import Laminate
     import shapely.affinity as aff
     from popupcad.algorithms.points import calctransformfrom2lines
 
     lsout = Laminate(layerdef)
 
-    for layerout, layerin in zip(
-        layerdef.layers[
-            outshift:], layerdef_subdesign.layers[
-            ::step][
-                inshift:]):
+    for layerout, layerin in zip(layerdef.layers[outshift:], layerdef_subdesign.layers[::step][inshift:]):
         newgeoms = []
         for geom in sketch.operationgeometry:
             if not geom.is_construction():
                 for designgeom in designgeometry.layer_sequence[layerin].geoms:
                     try:
-                        newgeoms.append(
-                            aff.affine_transform(
-                                designgeom,
-                                calctransformfrom2lines(
-                                    locateline.exteriorpoints(scaling = popupcad.csg_processing_scaling),
-                                    geom.exteriorpoints(scaling = popupcad.csg_processing_scaling),
-                                    scale_x=scale_x,
-                                    scale_y=scale_y)))
+                        from_line = locateline.exteriorpoints(scaling = popupcad.csg_processing_scaling)
+                        to_line = geom.exteriorpoints(scaling = popupcad.csg_processing_scaling)
+                        transform = calctransformfrom2lines(from_line,to_line,scale_x=scale_x,scale_y=scale_y)
+                        transformed_geom = aff.affine_transform(designgeom,transform)
+                        newgeoms.append(transformed_geom)
                     except IndexError:
                         pass
         result1 = popupcad.algorithms.csg_shapely.unary_union_safe(newgeoms)
@@ -114,7 +95,7 @@ def transform(
     return lsout
 
 
-def shift_flip(ls1, shift, flip, rotate):
+def shift_flip_rotate(ls1, shift, flip, rotate):
     from popupcad.filetypes.laminate import Laminate
     lsout = Laminate(ls1.layerdef)
     layers = ls1.layerdef.layers
@@ -140,8 +121,7 @@ def shift_flip(ls1, shift, flip, rotate):
         else:
             outshift = 0
             inshift = 0
-        for layerout, layerin in zip(
-            layers[outshift:], layers[::step][inshift:]):
+        for layerout, layerin in zip(layers[outshift:], layers[::step][inshift:]):
             lsout.replacelayergeoms(layerout,ls1.layer_sequence[layerin].geoms)
     return lsout
 

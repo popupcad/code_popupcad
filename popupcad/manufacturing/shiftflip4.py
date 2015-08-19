@@ -129,7 +129,7 @@ class ShiftFlip4(Operation2,LayerBasedOperation):
     def operate(self, design):
         operation_link1, outputref = self.operation_links['parent'][0]
         ls1 = design.op_from_ref(operation_link1).output[outputref].csg
-        return popupcad.algorithms.manufacturing_functions.shift_flip(
+        return popupcad.algorithms.manufacturing_functions.shift_flip_rotate(
             ls1,
             self.shift,
             self.flip,

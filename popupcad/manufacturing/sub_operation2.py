@@ -246,7 +246,7 @@ class SubOperation2(Operation2):
             to_ref = input_data.ref2
 
             csg = design.op_from_ref(to_ref[0]).output[to_ref[1]].csg
-            csg2 = popupcad.algorithms.manufacturing_functions.shift_flip(csg,input_data.shift,False,False)
+            csg2 = popupcad.algorithms.manufacturing_functions.shift_flip_rotate(csg,input_data.shift,False,False)
             csg3 = csg2.switch_layer_defs(layerdef_subdesign)
             dummy_op = DummyOp1(csg3)
             to_ref2 = (dummy_op.id,0)
@@ -260,6 +260,6 @@ class SubOperation2(Operation2):
             new_output = subdesign.op_from_ref(output_data.ref1[0]).output[output_data.ref1[1]]
             csg= new_output.csg
             csg2 = csg.switch_layer_defs(layerdef_design)
-            csg3 = popupcad.algorithms.manufacturing_functions.shift_flip(csg2,output_data.shift,False,False)
+            csg3 = popupcad.algorithms.manufacturing_functions.shift_flip_rotate(csg2,output_data.shift,False,False)
             output2 = popupcad.filetypes.operationoutput.OperationOutput(csg3,new_output.name)
             self.output.append(output2)
