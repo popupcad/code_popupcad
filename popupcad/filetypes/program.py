@@ -12,7 +12,7 @@ import traceback
 
 class Program(object):
 
-    def __init__(self, plugins, *args, **kwargs):
+    def __init__(self, app,plugins, *args, **kwargs):
 
         args = list(args)
 
@@ -23,16 +23,18 @@ class Program(object):
                 sys.modules['popupcad.deprecated'] = popupcad_deprecated
                 args.pop(args.index(item))
 
-        self.app = qg.QApplication(args[0])
-        self.app.setWindowIcon(popupcad.supportfiles.Icon('popupcad'))
+        self.app = app
+        self.app.setWindowIcon(popupcad.guis.icons.icons['popupcad'])
         self.editor = popupcad.guis.editor.Editor()
 
         if len(args) > 1 and not '--' in args[-1]:
             self.editor.open(filename=args[-1])
         self.editor.show()
+        self.create_exception_listener()
+
         for plugin in plugins:
             plugin.initialize(self)
-        self.create_exception_listener()
+
     def create_exception_listener(self):
         logging.basicConfig(filename=popupcad.error_log_filename,filemode='w',level=logging.DEBUG)
         import sys

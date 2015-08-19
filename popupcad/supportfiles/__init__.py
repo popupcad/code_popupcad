@@ -6,6 +6,7 @@ Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg
 import popupcad
+import os
 
 icon = {}
 icon['3dview'] = 'printapede.png'
@@ -70,14 +71,3 @@ icon['getjoints2'] = 'getjoints2.png'
 icon['customsupport'] = 'customsupport.png'
 icon['dotdotdot'] = 'dotdotdot.png'
 icon['simplify'] = 'simplify.png'
-
-
-class Icon(qg.QIcon):
-
-    def __init__(self, label, *args, **kwargs):
-        import os
-        filename = os.path.normpath(
-            os.path.join(
-                popupcad.supportfiledir,
-                popupcad.supportfiles.icon[label]))
-        super(Icon, self).__init__(filename, *args, **kwargs)

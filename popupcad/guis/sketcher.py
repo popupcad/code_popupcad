@@ -144,26 +144,27 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.refreshconstraints()
 
     def createActions(self):
+        icons = popupcad.guis.icons.icons
         self.fileactions = []
         self.fileactions.append({'text': "&New",
                                  'kwargs': {'triggered': self.newfile,
                                             'shortcut': qg.QKeySequence.New,
-                                            'icon': Icon('new')}})
+                                            'icon': icons['new']}})
         self.fileactions.append({'text': "&Open...",
                                  'kwargs': {'triggered': self.open,
                                             'shortcut': qg.QKeySequence.Open,
-                                            'icon': Icon('open')}})
+                                            'icon': icons['open']}})
         self.fileactions.append({'text': "Import...",
                                  'kwargs': {'triggered': self.solidworksimport,
-                                            'icon': Icon('import')}})
+                                            'icon': icons['import']}})
         self.fileactions.append({'text': "&Save",
                                  'kwargs': {'triggered': self.save,
                                             'shortcut': qg.QKeySequence.Save,
-                                            'icon': Icon('save')}})
+                                            'icon': icons['save']}})
         self.fileactions.append({'text': "Save &As...",
                                  'kwargs': {'triggered': self.saveAs,
                                             'shortcut': qg.QKeySequence.SaveAs,
-                                            'icon': Icon('saveas')}})
+                                            'icon': icons['saveas']}})
         self.fileactions.append(
             {'text': "Regen ID", 'kwargs': {'triggered': self.regen_id}})
 
@@ -171,11 +172,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.editactions.append({'text': 'Undo',
                                  'kwargs': {'triggered': self.undoredo.undo,
                                             'shortcut': qg.QKeySequence.Undo,
-                                            'icon': Icon('undo')}})
+                                            'icon': icons['undo']}})
         self.editactions.append({'text': 'Redo',
                                  'kwargs': {'triggered': self.undoredo.redo,
                                             'shortcut': qg.QKeySequence.Redo,
-                                            'icon': Icon('redo')}})
+                                            'icon': icons['redo']}})
         self.editactions.append(None)
         self.editactions.append({'text': 'Cut',
                                  'kwargs': {'triggered': self.cut_to_clipboard,
@@ -220,11 +221,11 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.viewactions.append({'text': 'select',
                                  'kwargs': {'triggered': self.graphicsview.rubberband,
                                             'shortcut': qc.Qt.CTRL + qc.Qt.SHIFT + qc.Qt.Key_S,
-                                            'icon': Icon('select')}})
+                                            'icon': icons['select']}})
         self.viewactions.append({'text': 'pan',
                                  'kwargs': {'triggered': self.graphicsview.scrollhand,
                                             'shortcut': qc.Qt.CTRL + qc.Qt.SHIFT + qc.Qt.Key_P,
-                                            'icon': Icon('pan')}})
+                                            'icon': icons['pan']}})
         self.viewactions.append(None)
         self.viewactions.append({'text': 'Zoom Fit',
                                  'kwargs': {'triggered': self.graphicsview.zoomToFit,
@@ -236,25 +237,25 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.drawingactions = []
         self.drawingactions.append({'text': 'point',
                                     'kwargs': {'triggered': self.adddrawingpoint,
-                                               'icon': Icon('points')}})
+                                               'icon': icons['points']}})
         self.drawingactions.append({'text': 'line', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoLine), 'icon': Icon('line')}})
+                                   'triggered': lambda: self.addproto(ProtoLine), 'icon': icons['line']}})
         self.drawingactions.append({'text': 'polyline', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoPath), 'icon': Icon('polyline')}})
+                                   'triggered': lambda: self.addproto(ProtoPath), 'icon': icons['polyline']}})
         self.drawingactions.append({'text': 'rect', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoRect2Point), 'icon': Icon('rectangle')}})
+                                   'triggered': lambda: self.addproto(ProtoRect2Point), 'icon': icons['rectangle']}})
         self.drawingactions.append({'text': 'circle', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoCircle), 'icon': Icon('circle')}})
+                                   'triggered': lambda: self.addproto(ProtoCircle), 'icon': icons['circle']}})
         self.drawingactions.append({'text': 'poly', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoPoly), 'icon': Icon('polygon')}})
+                                   'triggered': lambda: self.addproto(ProtoPoly), 'icon': icons['polygon']}})
         self.drawingactions.append({'text': 'text', 'kwargs': {
-                                   'triggered': lambda: self.addproto(TextParent), 'icon': Icon('text')}})
+                                   'triggered': lambda: self.addproto(TextParent), 'icon': icons['text']}})
 
         self.tools = []
 #        self.drawingactions.append(None)
-        self.tools.append({'text': 'convex hull','kwargs': {'triggered': self.convex_hull,'icon': Icon('convex_hull')}})
-        self.tools.append({'text': 'triangulate','kwargs': {'triggered': self.triangulate,'icon': Icon('triangulate')}})
-        self.tools.append({'text': 'shared edges','kwargs': {'triggered': self.getjoints,'icon': Icon('getjoints2')}})
+        self.tools.append({'text': 'convex hull','kwargs': {'triggered': self.convex_hull,'icon': icons['convex_hull']}})
+        self.tools.append({'text': 'triangulate','kwargs': {'triggered': self.triangulate,'icon': icons['triangulate']}})
+        self.tools.append({'text': 'shared edges','kwargs': {'triggered': self.getjoints,'icon': icons['getjoints2']}})
         self.tools.append({'text': 'flip direction', 'kwargs': {'triggered': self.flipdirection}})
         self.tools.append({'text': 'hollow', 'kwargs': {'triggered': self.hollow}})
         self.tools.append({'text': 'fill', 'kwargs': {'triggered': self.fill}})
@@ -268,28 +269,28 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.coincident),
-                    'icon': Icon('coincident')}})
+                    'icon': icons['coincident']}})
         distanceactions.append(
             {
                 'text': 'Distance',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.distance),
-                    'icon': Icon('distance')}})
+                    'icon': icons['distance']}})
         distanceactions.append(
             {
                 'text': 'DistanceX',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.distancex),
-                    'icon': Icon('distancex')}})
+                    'icon': icons['distancex']}})
         distanceactions.append(
             {
                 'text': 'DistanceY',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.distancey),
-                    'icon': Icon('distancey')}})
+                    'icon': icons['distancey']}})
         distanceactions.append({'text': 'Fixed', 'kwargs': {
                                'triggered': lambda: self.add_constraint(constraints.fixed)}})
 
@@ -300,42 +301,42 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.angle),
-                    'icon': Icon('angle')}})
+                    'icon': icons['angle']}})
         twolineactions.append(
             {
                 'text': 'Parallel',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.parallel),
-                    'icon': Icon('parallel')}})
+                    'icon': icons['parallel']}})
         twolineactions.append(
             {
                 'text': 'Perpendicular',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.perpendicular),
-                    'icon': Icon('perpendicular')}})
+                    'icon': icons['perpendicular']}})
         twolineactions.append(
             {
                 'text': 'Equal',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.equal),
-                    'icon': Icon('equal')}})
+                    'icon': icons['equal']}})
         twolineactions.append(
             {
                 'text': 'Horizontal',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.horizontal),
-                    'icon': Icon('horizontal')}})
+                    'icon': icons['horizontal']}})
         twolineactions.append(
             {
                 'text': 'Vertical',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.vertical),
-                    'icon': Icon('vertical')}})
+                    'icon': icons['vertical']}})
 
         self.constraintactions = []
 
@@ -350,25 +351,25 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 'text': 'Constraints On',
                 'kwargs': {
                     'triggered': self.showvertices,
-                    'icon': Icon('showconstraints')}})
+                    'icon': icons['showconstraints']}})
         self.constraintactions.append(None)
         self.constraintactions.append(
-            {'text': 'Distance', 'submenu': distanceactions, 'kwargs': {'icon': Icon('distance')}})
+            {'text': 'Distance', 'submenu': distanceactions, 'kwargs': {'icon': icons['distance']}})
         self.constraintactions.append(
-            {'text': 'Lines', 'submenu': twolineactions, 'kwargs': {'icon': Icon('parallel')}})
+            {'text': 'Lines', 'submenu': twolineactions, 'kwargs': {'icon': icons['parallel']}})
         self.constraintactions.append(
             {
                 'text': 'PointLine',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
                         constraints.PointLine),
-                    'icon': Icon('pointline')}})
+                    'icon': icons['pointline']}})
         self.constraintactions.append({'text': 'Midpoint', 'kwargs': {
                                       'triggered': lambda: self.add_constraint(constraints.LineMidpoint)}})
         self.constraintactions.append({'text': 'Update', 'kwargs': {
-                                      'triggered': self.refreshconstraints, 'icon': Icon('refresh')}})
+                                      'triggered': self.refreshconstraints, 'icon': icons['refresh']}})
         self.constraintactions.append({'text': 'Cleanup', 'kwargs': {
-                                      'triggered': self.cleanupconstraints, 'icon': Icon('broom')}})
+                                      'triggered': self.cleanupconstraints, 'icon': icons['broom']}})
 
         self.menu_file = self.addMenu(self.fileactions, name='File')
         self.menu_edit = self.addMenu(self.editactions, name='Edit')
