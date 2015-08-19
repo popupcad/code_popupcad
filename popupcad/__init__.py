@@ -35,7 +35,6 @@ from . import graphics3d
 from . import guis
 from . import manufacturing
 from . import materials
-from . import supportfiles
 from . import widgets
 
 import yaml

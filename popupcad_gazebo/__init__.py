@@ -15,7 +15,6 @@ from . import gradient
 from . import image
 from . import perlin_noise
 
-#from popupcad.supportfiles import Icon
 import popupcad.guis.icons
 icons = popupcad.guis.icons.icons
 def initialize(program):
