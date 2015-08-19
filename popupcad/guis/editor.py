@@ -121,7 +121,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             self.scriptclasses.append(module.Script(self))
     
     def createActions(self):
-        icons = popupcad.guis.icons.icons
+        icons = popupcad.guis.icons.build()
 
         self.fileactions = []
         self.fileactions.append({'text': "&New",'kwargs': {'icon': icons['new'],'shortcut': qg.QKeySequence.New,'statusTip': "Create a new file",'triggered': self.newfile}})
@@ -563,7 +563,8 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
-    app.setWindowIcon(popupcad.guis.icons.icons['printapede'])
+    icons = popupcad.guis.icons.build()
+    app.setWindowIcon(icons['printapede'])
     mw = Editor()
     mw.show()
     mw.raise_()

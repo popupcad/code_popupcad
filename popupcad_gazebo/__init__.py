@@ -15,8 +15,6 @@ from . import gradient
 from . import image
 from . import perlin_noise
 
-import popupcad.guis.icons
-icons = popupcad.guis.icons.icons
 def initialize(program):
     projectactions =[]
     projectactions.append({'text': 'Run Simulation', 'kwargs': {'triggered': lambda:gazebo_controller.export(program)}})

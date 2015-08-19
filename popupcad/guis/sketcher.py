@@ -143,7 +143,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.refreshconstraints()
 
     def createActions(self):
-        icons = popupcad.guis.icons.icons
+        icons = popupcad.guis.icons.build()
         self.fileactions = []
         self.fileactions.append({'text': "&New",
                                  'kwargs': {'triggered': self.newfile,

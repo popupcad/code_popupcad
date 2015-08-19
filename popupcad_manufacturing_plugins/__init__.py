@@ -14,9 +14,9 @@ import numpy
 import shapely
 
 import popupcad.guis.icons
-icons = popupcad.guis.icons.icons
 
 def initialize(program):
+    icons = popupcad.guis.icons.build()
 
     scrap = []
     scrap.append(
