@@ -118,7 +118,11 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinxdoc'
+#html_theme = 'sphinxdoc'
+
+from better import better_theme_path
+html_theme_path = [better_theme_path]
+html_theme = 'better'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -130,10 +134,10 @@ html_theme = 'sphinxdoc'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = 'popupCAD API'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = 'popupCAD API'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -179,10 +183,10 @@ html_static_path = ['_static']
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
+html_show_sphinx = False
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 #html_show_copyright = True
@@ -216,7 +220,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'popupCAD.tex', u'popupCAD Documentation',
+    ('index', 'popupCAD.tex', u'popupCAD API',
      u'Daniel M. Aukes', 'manual'),
 ]
 
@@ -246,7 +250,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'popupcad', u'popupCAD Documentation',
+    ('index', 'popupcad', u'popupCAD API',
      [u'Daniel M. Aukes'], 1)
 ]
 
@@ -260,7 +264,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'popupCAD', u'popupCAD Documentation',
+    ('index', 'popupCAD', u'popupCAD API',
      u'Daniel M. Aukes', 'popupCAD', 'One line description of project.',
      'Miscellaneous'),
 ]
