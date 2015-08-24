@@ -16,7 +16,7 @@ import dev_tools.process_manager as pm
 from popupcad.algorithms.checker import Checker,Checker2
             
 class Widget(qg.QWidget):
-    max_processes = 2
+    max_processes = 4
     def __init__(self,*args,**kwargs):
         super(Widget,self).__init__(*args,**kwargs)
         main_layout = qg.QVBoxLayout()

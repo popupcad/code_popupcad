@@ -7,7 +7,8 @@ Please see LICENSE.txt for full license.
 import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
 from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph
-import PySide.QtGui as qg
+import yaml
+import os
 
 class UpgradeError(Exception):
     pass
@@ -248,27 +249,27 @@ class Design(popupCADFile):
             if not isinstance(op, LocateOperation):
                 return op
 
-    def subdesigns_are_reprocessed(self, setvalue=None):
-        if setvalue is None:
-            try:
-                return self.subdesigns_reprocessed
-            except AttributeError:
-                self.subdesigns_reprocessed = False
-                return self.subdesigns_reprocessed
-        else:
-            self.subdesigns_reprocessed = setvalue
+    @property
+    def subdesigns_are_reprocessed(self):
+        try:
+            return self._subdesigns_are_reprocessed
+        except AttributeError:
+            self._subdesigns_are_reprocessed = False
+            return self._subdesigns_are_reprocessed
+
+    @subdesigns_are_reprocessed.setter
+    def subdesigns_are_reprocessed(self,value):
+        self._subdesigns_are_reprocessed = value
 
     def reprocessoperations(self, operations=None):
-        import sys
-        if not self.subdesigns_are_reprocessed():
+        if not self.subdesigns_are_reprocessed:
             for subdesign in self.subdesigns.values():
                 subdesign.reprocessoperations()
-            self.subdesigns_are_reprocessed(True)
+            self.subdesigns_are_reprocessed=True
 
         if operations is None:
             operations = self.operations
 
-        exceptions = []        
         for op in self.operations:
             op.generate(self)
             
@@ -298,22 +299,12 @@ class Design(popupCADFile):
             self.sketches.pop(key)
 
     def save_joint_def(self):
-        import yaml
-        import os
         for op in self.operations:
             try:
                 filename = os.path.normpath(
-                    os.path.join(
-                        self.filename() +
-                        '.joints',
-                    ))
+                    os.path.join(self.filename() + '.joints',))
                 with open(filename, 'w') as f:
-                    yaml.dump(
-                        (op.bodies_generic,
-                         op.connections,
-                         op.fixed_bodies,
-                         op.all_joint_props),
-                        f)
+                    yaml.dump((op.bodies_generic,op.connections,op.fixed_bodies,op.all_joint_props),f)
             except AttributeError:
                 pass
 
@@ -344,7 +335,6 @@ class Design(popupCADFile):
                     gv)
 
     def build_documentation(self,parent_dir = None):
-        import os
         import popupcad.algorithms.design_documentation as design_doc
         if len(self.operations)>0:
             base,ext = os.path.splitext(self.get_basename())
@@ -369,8 +359,11 @@ class Design(popupCADFile):
         return self.operations[0].id, 0
 
     @classmethod
-    def load_yaml(cls, filename):
+    def load_yaml(cls, filename,upgrade = True):
         obj1 = popupCADFile.load_yaml(filename)
-        obj1.backup(popupcad.backupdir,'_pre-upgrade_')
-        obj2 = obj1.upgrade()
-        return obj2
+        if upgrade:
+            obj1.backup(popupcad.backupdir,'_pre-upgrade_')
+            obj2 = obj1.upgrade()
+            return obj2
+        else:
+            return obj1
