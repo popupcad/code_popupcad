@@ -6,8 +6,9 @@ This class
 
 @author: skylion
 """
-import trollius #NOTE: Trollius requires protobuffer from Google
-from trollius import From
+import asyncio #NOTE: Trollius requires protobuffer from Google
+#import trollius #This is what is changed
+#from trollius import from This is necessary for Python 2 support until I fix it
 
 import pygazebo
 import pygazebo.msg.joint_cmd_pb2
@@ -17,7 +18,7 @@ import popupcad
 from lxml import etree
 import subprocess
 import os
-from .tree_node import TreeNode,spawnTreeFromList
+from .tree_node import TreeNode,spawnTreefromList
 
 try:
     import itertools.izip as zip
@@ -30,10 +31,10 @@ def pause_simulation(world_name, pause=True):
     
     @trollius.coroutine
     def coroutine():
-        manager = yield From(pygazebo.connect())
+        manager = yield from(pygazebo.connect())
         print("connected")
         
-        publisher = yield From(
+        publisher = yield from(
             manager.advertise("/gazebo/" + world_name + "/world_control",
                               'gazebo.msgs.WorldControl'))
     
@@ -41,9 +42,9 @@ def pause_simulation(world_name, pause=True):
         message.pause = pause
         
         try:
-            yield From(publisher.wait_for_listener())                
-            yield From(publisher.publish(message))
-            yield From(trollius.sleep(1.0))
+            yield from(publisher.wait_for_listener())                
+            yield from(publisher.publish(message))
+            yield from(trollius.sleep(1.0))
         except:
             pass
         print("Connection closed")
@@ -60,8 +61,8 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
 
     @trollius.coroutine
     def joint_force_loop():
-        manager = yield From(pygazebo.connect())
-        publisher = yield From(manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
+        manager = yield from(pygazebo.connect())
+        publisher = yield from(manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
                                'gazebo.msgs.JointCmd'))
         print("connected")
         
@@ -71,13 +72,13 @@ def apply_joint_forces(world_name, robot_name, joint_names, forces, duration=-1)
             try:
                 #print(str(time.time()) + "waiting for: " + str(t_end))
                 for joint_name, force in zip(joint_names, forces):                    
-                    yield From(publisher.wait_for_listener())                
+                    yield from(publisher.wait_for_listener())                
                     message = pygazebo.msg.joint_cmd_pb2.JointCmd()
                     message.name = robot_name + '::' + joint_name #format should be: name_of_robot + '::name_of_joint'
                     message.force = force
                     print(message.force)
-                    yield From(publisher.publish(message))
-                yield From(trollius.sleep(1.0))
+                    yield from(publisher.publish(message))
+                yield from(trollius.sleep(1.0))
             except Exception as e:
                 print("SOMETHING HAS GONE WRONG: " + str(e))                
                 break
@@ -102,8 +103,8 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
     
     @trollius.coroutine
     def joint_pose_loop(world_name, robot_name, joint_name, pose):
-        manager = yield From(pygazebo.connect())
-        publisher = yield From(
+        manager = yield from(pygazebo.connect())
+        publisher = yield from(
                 manager.advertise('/gazebo/' + world_name + '/' + robot_name + '/joint_cmd',
                                   'gazebo.msgs.JointCmd'))
         print("connected")         
@@ -117,9 +118,9 @@ def apply_joint_pos(world_name, robot_name, joint_names, poses, duration=0):
         
         try:
             
-            yield From(publisher.wait_for_listener())
+            yield from(publisher.wait_for_listener())
             #This is needed to ensure that they are ready to publish.
-            yield From(publisher.publish(message))
+            yield from(publisher.publish(message))
         except:
             pass
         print("Connection closed")
@@ -155,7 +156,7 @@ def wait_until_sim_time(target_time):
     
     @trollius.coroutine
     def sub_loop():
-        manager = yield From(pygazebo.connect()) 
+        manager = yield from(pygazebo.connect()) 
         
         sub_loop.is_waiting = True        
                 
@@ -163,7 +164,7 @@ def wait_until_sim_time(target_time):
         def callback(data):
             if not sub_loop.is_waiting:
                 return
-            message = pygazebo.msg.world_stats_pb2.WorldStatistics.FromString(data)        
+            message = pygazebo.msg.world_stats_pb2.WorldStatistics.fromString(data)        
             sim_time = message.sim_time
             print('hi')            
             import math
@@ -176,9 +177,9 @@ def wait_until_sim_time(target_time):
                          'gazebo.msgs.WorldStatistics',
                          callback)
     
-        yield From(subscriber.wait_for_connection())
+        yield from(subscriber.wait_for_connection())
         while(sub_loop.is_waiting):
-            yield From(trollius.sleep(1.0))
+            yield from(trollius.sleep(1.0))
         
         #subscriber.remove() #TODO This feature in PyGazebo is bugged.
         #Reimplement or hack around
@@ -226,13 +227,14 @@ def wait_net_service(server, port, timeout=None):
         except socket.error as err:
 #             catch timeout exception from underlying network library
 #             this one is different from socket.timeout
-            if not (isinstance(err,ConnectionRefusedError) or isinstance(err,TimeoutError)):
-                raise err
-#            if type(err.args) != tuple or (err[0] != errno.ETIMEDOUT and err[0] != errno.ECONNREFUSED):
-#                raise err
-        else:
+            try:
+                if not (isinstance(err,ConnectionRefusedError) or isinstance(err,TimeoutError)):
+                    raise err
+            except NameError:
+                if type(err.args) != tuple or (err[0] != errno.ETIMEDOUT and err[0] != errno.ECONNREFUSED):
+                    raise err
             s.close()
-            return True
+        return True
 
 def export(program):
     """
@@ -294,7 +296,7 @@ def export_inner(operation, useDart=False):
         
     ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) 
                             for connection in operation.connections]
-    tree = spawnTreeFromList(ordered_connection, sort=True)   
+    tree = spawnTreefromList(ordered_connection, sort=True)   
     assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
     midpoints = [connect[0] for connect in operation.connections]
     print(midpoints)
