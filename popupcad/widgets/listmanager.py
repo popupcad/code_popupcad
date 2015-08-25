@@ -38,7 +38,8 @@ class ListItem(qg.QListWidgetItem):
 
 
 class ListManager(qg.QWidget):
-
+    items_updated = qc.Signal()
+    
     def __init__(self, items, parent=None, name=None):
         super(ListManager, self).__init__(parent)
 
@@ -90,6 +91,7 @@ class ListManager(qg.QWidget):
         for item in self.itemlist.selectedItems():
             self.items.pop(item.value.id)
         self.refresh_list()
+        self.items_updated.emit()
 
     def save_item(self):
         for item in self.itemlist.selectedItems():
