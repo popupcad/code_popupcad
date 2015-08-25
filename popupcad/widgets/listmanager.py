@@ -102,7 +102,9 @@ class ListManager(qg.QWidget):
             self.items[newitem.id] = newitem
         self.refresh_list(newitem)
 
-    def refresh_list(self, lastselected=None):
+    def refresh_list(self, lastselected=None,new_items = None):
+        if new_items is not None:
+            self.items = new_items
         self.itemlist.clear()
         [self.itemlist.addItem(ListItem(value))
          for key, value in self.items.items()]
@@ -110,6 +112,9 @@ class ListManager(qg.QWidget):
             item = self.itemlist.item(ii)
             item.setSelected(item.value == lastselected)
 
+    def clear_selected(self):
+        for ii in range(self.itemlist.count()):
+            self.itemlist.item(ii).setSelected(False)
 
 class Dummy(object):
     pass
@@ -173,7 +178,6 @@ class AdvancedSketchListManager(SketchListManager):
         widgets.extend(super(AdvancedSketchListManager, self).widgets())
         widgets.append(self.buildButtonItem('Delete', self.remove_item))
         return widgets
-
 
 class DesignListManager(ListManager):
 
