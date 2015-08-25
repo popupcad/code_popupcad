@@ -30,9 +30,6 @@ class Dialog(qg.QDialog):
         self.prioroperations = prioroperations
         self.design = design
 
-        self.designwidget = DesignListManager(design)
-        self.use_main_operations_checkbox = qg.QCheckBox('Use Sub-Design')
-
         self.operation_list = DraggableTreeWidget()
         self.operation_list.linklist(prioroperations)
 
@@ -95,8 +92,6 @@ class Dialog(qg.QDialog):
         layout2.addWidget(button2)
 
         layout = qg.QVBoxLayout()
-        layout.addWidget(self.use_main_operations_checkbox)
-        layout.addWidget(self.designwidget)
         layout.addWidget(qg.QLabel('Operations'))
         layout.addWidget(self.operation_list)
 #        layout.addWidget(qg.QLabel('Sketch'))
@@ -150,13 +145,6 @@ class Dialog(qg.QDialog):
         self.use_main_operations_checkbox.setChecked(self.placeop.use_main_operations)
         self.use_main_operations_checkbox.stateChanged.connect(self.update_design_option)
         self.update_design_option()
-        
-    def update_design_option(self):
-        if self.use_main_operations_checkbox.isChecked():
-            self.designwidget.hide()
-        else:
-            self.designwidget.show()
-            
         
     def build_sketch_links(self):
         try:
