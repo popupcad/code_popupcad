@@ -172,8 +172,7 @@ class Dialog(qg.QDialog):
 
 
 class TransformInternal(Operation2):
-    name = 'PlaceOp(Internal)'
-    operationtypes = ['placement']
+    name = 'Internal Transform'
     transformtypes = enum(scale='scale', custom='custom')
 
     def copy(self):

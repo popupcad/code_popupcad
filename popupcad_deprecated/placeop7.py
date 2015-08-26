@@ -204,7 +204,6 @@ class Dialog(qg.QDialog):
 
 class PlaceOperation7(Operation):
     name = 'PlacementOp'
-    operationtypes = ['placement']
     transformtypes = enum(scale='scale', custom='custom')
 
     def copy(self, identical=True):

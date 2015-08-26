@@ -194,7 +194,6 @@ class Dialog(qg.QDialog):
 
 class PlaceOperation5(Operation):
     name = 'PlacementOp'
-    operationtypes = ['placement']
     transformtypes = enum(
         place='place',
         stretch='stretch',
