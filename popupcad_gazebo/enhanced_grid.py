@@ -1,8 +1,10 @@
 ## @package enhanced_grid 
 
-"""Written by Daniel M. Aukes.
+"""
+Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
-Please see LICENSE.txt for full license."""
+Please see LICENSE for full license.
+"""
 
 ## @brief Contains 2D and 3D Grid containers that supports extended slicing syntax.
 ## 

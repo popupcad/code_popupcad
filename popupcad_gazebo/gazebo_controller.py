@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Written by Daniel M. Aukes.
+Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
-Please see LICENSE.txt for full license.
+Please see LICENSE for full license.
 """
 import asyncio #NOTE: Trollius requires protobuffer from Google
 #import trollius #This is what is changed
