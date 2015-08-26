@@ -1,4 +1,9 @@
 ## @package gradient 
+
+"""Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license."""
+
 # Functions for handling colour gradients.
 
 from math import floor

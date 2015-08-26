@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jul  9 12:57:33 2015
-
-Based off python image code from code-spot
-@author: skylion
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 ## @package perlin_demo 
 # Illustrates some functions in the perlin_noise module.

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Copyright © 2013, 2014 Daniel M. Aukes.  All Rights Reserved.
-Created on Thu Oct 03 12:05:45 2013
-
-@author: danaukes
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 import PySide.QtGui as qg    
 import matplotlib

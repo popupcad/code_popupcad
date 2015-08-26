@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jul  2 12:52:50 2015
-
-This class
-
-@author: skylion
+Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license.
 """
 import asyncio #NOTE: Trollius requires protobuffer from Google
 #import trollius #This is what is changed

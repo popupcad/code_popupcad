@@ -1,4 +1,9 @@
 ## @package perlin_noise
+
+"""Written by Daniel M. Aukes.
+Email: danaukes<at>seas.harvard.edu.
+Please see LICENSE.txt for full license."""
+
 ## @brief Contains the algorithms for producing perlin noise.
 ## Tutorial: http://www.luma.co.za/labs/2008/01/20/perlin-noise/
 
