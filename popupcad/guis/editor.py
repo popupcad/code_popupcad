@@ -200,24 +200,28 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.tools1.append({'text': 'Freeze', 'kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.freeze.Freeze)}})
         self.tools1.append({'text': 'Cross-Section','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.cross_section.CrossSection)}})
         self.tools1.append({'text': 'SubOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation2.SubOperation2)}})
-        self.tools1.append({'text': 'Transform','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.transform.TransformOperation)}})
 #        self.tools1.append({'text': 'Code Exec','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.code_exec_op.CodeExecOperation)}})
 
-        self.operationactions = []
-        self.operationactions.append({'text': '&SketchOp','kwargs': {'icon': icons['polygons'],'shortcut': 'Ctrl+Shift+S','triggered': lambda: self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})
-        self.operationactions.append({'text': '&LaminateOp','kwargs': {'icon': icons['metaop'],'shortcut': 'Ctrl+Shift+M','triggered': lambda: self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)}})
-        self.operationactions.append({'text': '&Dilate/Erode','kwargs': {'icon': icons['bufferop'],'shortcut': 'Ctrl+Shift+B','triggered': lambda: self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
-        self.operationactions.append({'text': '&PlaceOp','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
-        self.operationactions.append({'text': '&PlaceOp','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.placeop9.PlaceOperation9)}})
-        self.operationactions.append({'text': 'L&ocateOp','kwargs': {'icon': icons['locate'],'shortcut': 'Ctrl+Shift+O','triggered': lambda: self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
-        self.operationactions.append({'text': 'Shift/Flip','kwargs': {'icon': icons['shiftflip'],'triggered': lambda: self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)}})
-        self.operationactions.append({'text': '&LayerOp','kwargs': {'icon': icons['layerop'],'shortcut': 'Ctrl+Shift+L','triggered': lambda: self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
-        self.operationactions.append({'text': 'More...', 'submenu': self.tools1, 'kwargs': {}})
+        transform = []
+        transform.append({'text': 'Internal Transform','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.transform_internal.TransformInternal)}})
+        transform.append({'text': 'External Transform','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.transform_external.TransformExternal)}})
+        transform.append({'text': '&PlaceOp(External)','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
+        transform.append({'text': 'L&ocateOp','kwargs': {'icon': icons['locate'],'shortcut': 'Ctrl+Shift+O','triggered': lambda: self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
+        transform.append({'text': 'Shift/Flip','kwargs': {'icon': icons['shiftflip'],'triggered': lambda: self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)}})
+#        transform.append({'text': 'Transform','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.transform.TransformOperation)}})
+
+        operationactions = []
+        operationactions.append({'text': '&SketchOp','kwargs': {'icon': icons['polygons'],'shortcut': 'Ctrl+Shift+S','triggered': lambda: self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})
+        operationactions.append({'text': '&LaminateOp','kwargs': {'icon': icons['metaop'],'shortcut': 'Ctrl+Shift+M','triggered': lambda: self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)}})
+        operationactions.append({'text': '&Dilate/Erode','kwargs': {'icon': icons['bufferop'],'shortcut': 'Ctrl+Shift+B','triggered': lambda: self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
+        operationactions.append({'text': 'Transform', 'submenu': transform,'kwargs':{'icon': icons['placeop']}})
+        operationactions.append({'text': '&LayerOp','kwargs': {'icon': icons['layerop'],'shortcut': 'Ctrl+Shift+L','triggered': lambda: self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
+        operationactions.append({'text': 'More...', 'submenu': self.tools1, 'kwargs': {}})
 
         self.menu_file = self.addMenu(self.fileactions, name='File')
         self.menu_project = self.addMenu(self.projectactions, name='Project')
         self.menu_view = self.addMenu(self.viewactions, name='View')
-        self.toolbar_operations, self.menu_operations = self.addToolbarMenu(self.operationactions, name='Operations')
+        self.toolbar_operations, self.menu_operations = self.addToolbarMenu(operationactions, name='Operations')
 
 #        menu_file = popupcad.guis.actions.build(self)
 #        menu_bar = qg.QMenuBar()

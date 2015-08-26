@@ -64,11 +64,12 @@ class ListManager(qg.QWidget):
 
         for widget in self.widgets():
             self.layout2.addWidget(widget)
-        self.itemlist.setSelectionMode(
-            self.itemlist.SelectionMode.SingleSelection)
+        self.itemlist.setSelectionMode(self.itemlist.SelectionMode.SingleSelection)
         self.itemlist.doubleClicked.connect(self.itemDoubleClicked)
         self.layout2.addStretch()
 
+#        self.itemlist.itemChanged.connect(self.items_updated)
+        
     def buildButtonItem(self, name, method):
         button = qg.QPushButton(name)
         button.clicked.connect(method)
@@ -103,16 +104,31 @@ class ListManager(qg.QWidget):
             newitem.regen_id()
             self.items[newitem.id] = newitem
         self.refresh_list(newitem)
+        self.items_updated.emit()
 
-    def refresh_list(self, lastselected=None,new_items = None):
-        if new_items is not None:
-            self.items = new_items
+    def update_list(self,new_items):
+        self.items = new_items
+        self.refresh_list()
+        
+    def selected_items(self):
+        selected_items = []
+        for ii in range(self.itemlist.count()):
+            item = self.itemlist.item(ii)
+            if item.isSelected():
+                selected_items.append(item.value)
+        return selected_items
+        
+    def refresh_list(self, selected_item=None,retain_selection = False):
+        if retain_selection:
+            selected_items = self.selected_items()
+            if len(selected_items)>0:
+                selected_item = selected_items[0]
         self.itemlist.clear()
         [self.itemlist.addItem(ListItem(value))
          for key, value in self.items.items()]
         for ii in range(self.itemlist.count()):
             item = self.itemlist.item(ii)
-            item.setSelected(item.value == lastselected)
+            item.setSelected(item.value == selected_item)
 
     def clear_selected(self):
         for ii in range(self.itemlist.count()):
@@ -140,6 +156,8 @@ class SketchListManager(ListManager):
         def accept_method(sketch):
             self.design.sketches[sketch.id] = sketch
             self.refresh_list(sketch)
+            self.items_updated.emit()
+
         sketcher = Sketcher(
             None,
             Sketch(),
@@ -154,6 +172,7 @@ class SketchListManager(ListManager):
         newitem = Sketch.open()
         self.items[newitem.id] = newitem
         self.refresh_list(newitem)
+        self.items_updated.emit()
 
     def widgets(self):
         actions = []
@@ -173,6 +192,7 @@ class AdvancedSketchListManager(SketchListManager):
     def cleanup(self):
         self.design.cleanup_sketches()
         self.refresh_list()
+        self.items_updated.emit()
 
     def widgets(self):
         widgets = []
@@ -198,6 +218,7 @@ class DesignListManager(ListManager):
         newitem.reprocessoperations()
         self.items[newitem.id] = newitem
         self.refresh_list(newitem)
+        self.items_updated.emit()
 
     def widgets(self):
         actions = []
@@ -215,6 +236,7 @@ class AdvancedDesignListManager(DesignListManager):
     def cleanup(self):
         self.design.cleanup_subdesigns()
         self.refresh_list()
+        self.items_updated.emit()
 
     def widgets(self):
         widgets = []

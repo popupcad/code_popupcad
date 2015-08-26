@@ -20,7 +20,6 @@ from . import locateoperation3
 from . import multivalueoperation3
 from . import nulloperation
 from . import placeop8
-from . import placeop9
 from . import shiftflip3
 from . import shiftflip4
 from . import simplesketchoperation
@@ -28,3 +27,5 @@ from . import simplify2
 from . import sub_operation
 from . import sub_operation2
 from . import transform
+from . import transform_internal
+from . import transform_external
