@@ -16,7 +16,7 @@ import popupcad
 from lxml import etree
 import subprocess
 import os
-from .tree_node import TreeNode,spawnTreefromList
+from . import tree_node
 
 try:
     import itertools.izip as zip
@@ -294,7 +294,7 @@ def export_inner(operation, useDart=False):
         
     ordered_connection = [reorder_pair(connection[1], operation.get_laminate_generations()) 
                             for connection in operation.connections]
-    tree = spawnTreefromList(ordered_connection, sort=True)   
+    tree = tree_node.spawnTreefromList(ordered_connection, sort=True)   
     assert(len(tree.decendents) == len(operation.bodies_generic) - 1)
     midpoints = [connect[0] for connect in operation.connections]
     print(midpoints)
