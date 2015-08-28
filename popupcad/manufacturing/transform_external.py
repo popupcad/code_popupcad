@@ -118,10 +118,10 @@ class Dialog(qg.QDialog):
         if self.placeop.sketch_links is not None:
             sketch_to = self.design.sketches[self.placeop.sketch_links['sketch_to'][0]]
 
-        for ii in range(self.sketchwidget_to.itemlist.count()):
-            item = self.sketchwidget_to.itemlist.item(ii)
-            if item.value == sketch_to:
-                item.setSelected(True)
+            for ii in range(self.sketchwidget_to.itemlist.count()):
+                item = self.sketchwidget_to.itemlist.item(ii)
+                if item.value == sketch_to:
+                    item.setSelected(True)
 
         self.loadoperations()
 

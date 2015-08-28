@@ -64,6 +64,9 @@ class UserInputIDE(qg.QDialog):
         infile = open(fname, 'w')
         infile.write(self.te.toPlainText())
         infile.close()
+
+    def acceptdata(self):
+        return self.te.toPlainText(),
         
 if __name__ == "__main__":
     import sys

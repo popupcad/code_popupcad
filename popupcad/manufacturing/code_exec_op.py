@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
+#import popupcad
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.userinput import UserInputIDE
 
@@ -18,15 +19,13 @@ class CodeExecOperation(Operation2):
         self.editdata(*args)
 
     def copy(self):
-        new = type(self)(
-            self.operation_links.copy(),
-            self.code)
+        new = type(self)(self.code)
         new.id = self.id
         new.customname = self.customname
         return new
 
-    def editdata(self, operation_links, code):
-        super(CodeExecOperation, self).editdata(operation_links, {}, {})
+    def editdata(self, code):
+        super(CodeExecOperation, self).editdata({}, {}, {})
         self.code = code
         
     @classmethod
@@ -44,4 +43,9 @@ class CodeExecOperation(Operation2):
         return mw
 
     def operate(self, design):
-        exec(self.code)
+        result = None
+        my_locals = {'design':design,'result':result}
+        exec(self.code,globals(),my_locals)
+#        print(my_loc`als)
+        result = my_locals['result']
+        return result

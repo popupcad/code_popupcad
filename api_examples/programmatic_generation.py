@@ -56,7 +56,7 @@ while ii<5:
     top_design.sketches[joints_sketch.id] = joints_sketch
     
     design_links = {}
-    design_links['source'] = single_layer_joint_manufacturing.id
+    design_links['source'] = [single_layer_joint_manufacturing.id]
     sketch_list = []
     sketch_list.append(popupcad.manufacturing.sub_operation2.SketchData(sub_body_sketch.id,body_sketch.id))
     sketch_list.append(popupcad.manufacturing.sub_operation2.SketchData(sub_joint_sketch.id,joints_sketch.id))
