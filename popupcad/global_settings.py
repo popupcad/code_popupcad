@@ -20,7 +20,6 @@ else:
     localpath = sys.modules['popupcad'].__path__[0]
 
 supportfiledir = os.path.normpath(os.path.join(localpath, 'supportfiles'))
-documentation_directory = os.path.normpath(os.path.join(localpath, 'docs'))
 iconfile = os.path.normpath(os.path.join(supportfiledir, 'printapede.ico'))
 graphics_scene_background_color = (.8,.8,.8,1)
 

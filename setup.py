@@ -28,7 +28,7 @@ packages.append('pypoly2tri')
 
 package_data = {}
 
-package_data['popupcad'] = ['docs/*', 'docs/source/*', 'supportfiles/*','supportfiles/icons/*']
+package_data['popupcad'] = ['supportfiles/*','supportfiles/icons/*']
 
 setup(name=popupcad.program_name,
       version=popupcad.version,
