@@ -236,7 +236,7 @@ class TransformInternal(Operation2):
             inshift = 0
 
         layerdef = design.return_layer_definition()
-        return popupcad.algorithms.manufacturing_functions.transform2(layerdef,inshift,outshift,step,geom_from,geoms_to,CSG,scale_x,scale_y)
+        return popupcad.algorithms.manufacturing_functions.transform_csg(layerdef,layerdef,inshift,outshift,step,geom_from,geoms_to,CSG,scale_x,scale_y)
 
     @classmethod
     def buildnewdialog(cls, design, currentop):

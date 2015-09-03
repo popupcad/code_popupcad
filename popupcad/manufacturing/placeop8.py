@@ -253,18 +253,15 @@ class PlaceOperation8(Operation2):
     def operate(self, design):
         subdesign = design.subdesigns[self.design_links['subdesign'][0]]
 
-        locateline = subdesign.findlocateline()
+        sketch_to_id = self.sketch_links['place'][0]
+        sketch_to = design.sketches[sketch_to_id]
 
         operation_ref, output_index = self.subopref
-        try:
-            designgeometry = subdesign.operations[
-                subdesign.operation_index(operation_ref)].output[output_index].csg
-        except AttributeError:
-            #            subdesign.reprocessoperations()
-            designgeometry = subdesign.operations[
-                subdesign.operation_index(operation_ref)].output[output_index].csg
+        csg_laminate = subdesign.operations[subdesign.operation_index(operation_ref)].output[output_index].csg
 
-        sketch = design.sketches[self.sketch_links['place'][0]]
+        geom_from = subdesign.findlocateline()
+
+        geoms_to = [geom for geom in sketch_to.operationgeometry if not geom.is_construction()]
 
         if self.transformtype_x == self.transformtypes.scale:
             scale_x = None
@@ -289,10 +286,9 @@ class PlaceOperation8(Operation2):
             outshift = 0
             inshift = 0
 
-        layerdef = design.return_layer_definition()
-        layerdef_subdesign = subdesign.return_layer_definition()
-        return popupcad.algorithms.manufacturing_functions.transform(layerdef,layerdef_subdesign,inshift,outshift,step,
-                                                                     sketch,designgeometry,locateline,scale_x,scale_y)
+        layerdef_from = subdesign.return_layer_definition()
+        layerdef_to = design.return_layer_definition()
+        return popupcad.algorithms.manufacturing_functions.transform_csg(layerdef_from,layerdef_to,inshift,outshift,step,geom_from,geoms_to,csg_laminate,scale_x,scale_y)
 
     def fromQTransform(self, tin):
         tout = numpy.array([[tin.m11(), tin.m12(), tin.m13()], [

@@ -268,9 +268,9 @@ class TransformExternal(Operation2):
             outshift = 0
             inshift = 0
 
-        layerdef = design.return_layer_definition()
-        layerdef_subdesign = subdesign.return_layer_definition()
-        return popupcad.algorithms.manufacturing_functions.transform3(layerdef,layerdef_subdesign,inshift,outshift,step,geom_from,geoms_to,csg_laminate,scale_x,scale_y)
+        layerdef_from = subdesign.return_layer_definition()
+        layerdef_to = design.return_layer_definition()
+        return popupcad.algorithms.manufacturing_functions.transform_csg(layerdef_from,layerdef_to,inshift,outshift,step,geom_from,geoms_to,csg_laminate,scale_x,scale_y)
 
     @classmethod
     def buildnewdialog(cls, design, currentop):

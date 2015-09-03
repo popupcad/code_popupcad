@@ -67,44 +67,17 @@ def cross_section(layerdef, sketch, parent, scale_value):
 
     return laminate
 
-
-def transform(layerdef,layerdef_subdesign,inshift,outshift,step,sketch,designgeometry,locateline,scale_x,scale_y):
+def transform_csg(layerdef_from,layerdef_to,inshift,outshift,step,geom_from,geoms_to,csg_laminate,scale_x,scale_y):
     from popupcad.filetypes.laminate import Laminate
     import shapely.affinity as aff
     from popupcad.algorithms.points import calctransformfrom2lines
 
-    lsout = Laminate(layerdef)
+    lsout = Laminate(layerdef_to)
 
-    for layerout, layerin in zip(layerdef.layers[outshift:], layerdef_subdesign.layers[::step][inshift:]):
-        newgeoms = []
-        for geom in sketch.operationgeometry:
-            if not geom.is_construction():
-                for designgeom in designgeometry.layer_sequence[layerin].geoms:
-                    try:
-                        from_line = locateline.exteriorpoints(scaling = popupcad.csg_processing_scaling)
-                        to_line = geom.exteriorpoints(scaling = popupcad.csg_processing_scaling)
-                        transform = calctransformfrom2lines(from_line,to_line,scale_x=scale_x,scale_y=scale_y)
-                        transformed_geom = aff.affine_transform(designgeom,transform)
-                        newgeoms.append(transformed_geom)
-                    except IndexError:
-                        pass
-        result1 = popupcad.algorithms.csg_shapely.unary_union_safe(newgeoms)
-        results2 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result1)
-        lsout.replacelayergeoms(layerout, results2)
-
-    return lsout
-
-def transform3(layerdef,layerdef_subdesign,inshift,outshift,step,geom_from,geoms_to,csg_laminate,scale_x,scale_y):
-    from popupcad.filetypes.laminate import Laminate
-    import shapely.affinity as aff
-    from popupcad.algorithms.points import calctransformfrom2lines
-
-    lsout = Laminate(layerdef)
-
-    for layerout, layerin in zip(layerdef.layers[outshift:], layerdef_subdesign.layers[::step][inshift:]):
+    for layer_from,layer_to in zip(layerdef_from.layers[::step][inshift:], layerdef_to.layers[outshift:]):
         newgeoms = []
         for geom in geoms_to:
-            for designgeom in csg_laminate.layer_sequence[layerin].geoms:
+            for designgeom in csg_laminate.layer_sequence[layer_from].geoms:
                 try:
                     from_line = geom_from.exteriorpoints(scaling = popupcad.csg_processing_scaling)
                     to_line = geom.exteriorpoints(scaling = popupcad.csg_processing_scaling)
@@ -115,35 +88,9 @@ def transform3(layerdef,layerdef_subdesign,inshift,outshift,step,geom_from,geoms
                     pass
         result1 = popupcad.algorithms.csg_shapely.unary_union_safe(newgeoms)
         results2 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result1)
-        lsout.replacelayergeoms(layerout, results2)
+        lsout.replacelayergeoms(layer_to, results2)
 
     return lsout
-
-def transform2(layerdef,inshift,outshift,step,geom_from,geoms_to,csg_laminate,scale_x,scale_y):
-    from popupcad.filetypes.laminate import Laminate
-    import shapely.affinity as aff
-    from popupcad.algorithms.points import calctransformfrom2lines
-
-    lsout = Laminate(layerdef)
-
-    for layerout, layerin in zip(layerdef.layers[outshift:], layerdef.layers[::step][inshift:]):
-        newgeoms = []
-        for geom_to in geoms_to:
-            for geom in csg_laminate.layer_sequence[layerin].geoms:
-                try:
-                    from_line = geom_from.exteriorpoints()
-                    to_line = geom_to.exteriorpoints()
-                    transform = calctransformfrom2lines(from_line,to_line,scale_x=scale_x,scale_y=scale_y)
-                    transformed_geom = aff.affine_transform(geom,transform)
-                    newgeoms.append(transformed_geom)
-                except IndexError:
-                    pass
-        result1 = popupcad.algorithms.csg_shapely.unary_union_safe(newgeoms)
-        results2 = popupcad.algorithms.csg_shapely.condition_shapely_entities(result1)
-        lsout.replacelayergeoms(layerout, results2)
-
-    return lsout
-
 
 def shift_flip_rotate(ls1, shift, flip, rotate):
     from popupcad.filetypes.laminate import Laminate
