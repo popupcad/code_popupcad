@@ -200,6 +200,12 @@ class SubOperation(Operation2):
                 item.ref2 = refnew
         self.clear_output()
 
+    def replace_op_refs2(self, refold, refnew):
+        for item in self.input_list:
+            if item.ref2[0] == refold:
+                item.ref2 = (refnew,item.ref2[1])
+        self.clear_output()
+
     def parentrefs(self):
         return [item.ref2[0] for item in self.input_list]
 

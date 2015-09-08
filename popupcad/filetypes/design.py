@@ -73,6 +73,15 @@ class Design(popupCADFile):
                 failed_ops.append(op)
         return failed_ops
 
+    def replace_op_refs2(self, oldref, newref):
+        failed_ops = []
+        for op in self.operations:
+            try:
+                op.replace_op_refs2(oldref, newref)
+            except AttributeError:
+                failed_ops.append(op)
+        return failed_ops
+
     def replace_sketch_refs_force(self, oldref, newref):
         failed_ops = []
         for op in self.operations:
@@ -167,6 +176,7 @@ class Design(popupCADFile):
         from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
         from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
         from popupcad.manufacturing.freeze import Freeze
+        from popupcad.manufacturing.placeop8 import PlaceOperation8
         newoperations = []
         ops_to_remove = []
         replacements = []
@@ -207,6 +217,9 @@ class Design(popupCADFile):
                 else:
                     raise TypeError()
                 newoperations.append(op0)
+            elif isinstance(op0,PlaceOperation8):
+                op1 = op0.upgrade_special(self)
+                newoperations.append(op1)
             else:
                 newoperations.append(op0)
 
@@ -237,9 +250,16 @@ class Design(popupCADFile):
     def findlocateline(self):
         for op in self.operations[::-1]:
             try:
-                for geom in self.sketches[op.locationgeometry()].operationgeometry:
+                for geom in self.sketches[self.findlocatesketch_id()].operationgeometry:
                     if not geom.is_construction():
                         return geom
+            except AttributeError:
+                pass
+
+    def findlocatesketch_id(self):
+        for op in self.operations[::-1]:
+            try:
+                return op.locationgeometry()
             except AttributeError:
                 pass
 

@@ -223,6 +223,27 @@ class PlaceOperation8(Operation2):
         new.id = self.id
         return new
 
+    def upgrade_special(self,design):
+        subdesign = design.subdesigns[self.design_links['subdesign'][0]]
+        sub_sketch_id = subdesign.findlocatesketch_id()
+        from popupcad.manufacturing.transform_external import TransformExternal
+        sketch_links = {}
+        sketch_links['sketch_to'] = self.sketch_links['place']        
+        new = TransformExternal(
+            sketch_links,
+            self.design_links,
+            self.subopref,
+            sub_sketch_id,
+            self.transformtype_x,
+            self.transformtype_y,
+            self.shift,
+            self.flip,
+            self.scalex,
+            self.scaley)
+        new.customname = self.customname
+        new.id = self.id
+        return new
+
     def __init__(self, *args):
         super(PlaceOperation8, self).__init__()
         self.editdata(*args)

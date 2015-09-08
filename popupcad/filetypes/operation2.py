@@ -54,6 +54,13 @@ class Operation2(Node, UserData):
                 list1[list1.index(refold)] = refnew
         self.clear_output()
 
+    def replace_op_refs2(self, refold, refnew):
+        for key, list1 in self.operation_links.items():
+            for ii in range(len(list1)):
+                if list1[ii][0]==refold:
+                    list1[ii] = (refnew,list1[ii][1])
+        self.clear_output()
+
     def replace_sketch_refs(self, refold, refnew):
         for key, list1 in self.sketch_links.items():
             while refold in list1:
