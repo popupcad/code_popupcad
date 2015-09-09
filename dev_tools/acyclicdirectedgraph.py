@@ -25,6 +25,12 @@ class Node(object):
 
     def decendents(self):
         return self.network.itemchildren(self.network.B, self)
+        
+    def parents(self):
+        return self.network.itemparents(self.network.A, self)
+
+    def children(self):
+        return self.network.itemchildren(self.network.A, self)
 
 
 class AcyclicDirectedGraph(object):
