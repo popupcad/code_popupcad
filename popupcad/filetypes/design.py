@@ -55,14 +55,17 @@ class Design(popupCADFile):
 
     def operation_index(self, operation_ref):
         try:
-            indeces = dict([(op.id, ii)
-                            for ii, op in enumerate(self.operations)])
+            indeces = dict([(op.id, ii) for ii, op in enumerate(self.operations)])
             return indeces[operation_ref]
         except KeyError:
             raise(NoOperation)
 
     def op_from_ref(self, ref):
         return self.operations[self.operation_index(ref)]
+
+    @property
+    def operation_dict(self):
+        return dict([(item.id,item) for item in self.operations])
 
     def replace_op_refs_force(self, oldref, newref):
         failed_ops = []

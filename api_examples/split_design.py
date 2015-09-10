@@ -28,6 +28,7 @@ parents = set([item for op in ops for item in op.parents()])
 inputs = parents-set(ops)
 input_ids = [item.id for item in inputs]
 
+
 children = set([item for op in ops for item in op.children()])
 outputs = children-set(ops)
 
@@ -52,10 +53,25 @@ for op in ops:
         
 parent_links = list(set(parent_links))
 
+from popupcad.manufacturing.freeze import Freeze
 input_list = []    
+inner_inputs = {}
+replacements = []
+
 for link in parent_links:
     if link[0] in input_ids:
-        input_list.append(sub_operation.InputData(link,link,0))
+        parent = design.operation_dict[link[0]]
+        csg = design.operation_dict[link[0]].output[link[1]].csg.to_generic_laminate()
+        inner = Freeze(link[0],link[1],csg)
+        inner_inputs[parent.id]=inner
+        input_list.append(sub_operation.InputData(link,(inner.id,0),0))
+        replacements.append((link,(inner.id,0)))
+
+[subdesign.replace_op_refs_force(*item) for item in replacements]
+
+for key,value in inner_inputs.items():
+    ii = subdesign.operations.index(subdesign.operation_dict[key])
+    subdesign.operations[ii] = value
 
 required_outputs = []
 for op in children:
