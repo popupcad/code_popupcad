@@ -64,7 +64,7 @@ for link in parent_links:
         csg = design.operation_dict[link[0]].output[link[1]].csg.to_generic_laminate()
         inner = Freeze(link[0],link[1],csg)
         inner_inputs[parent.id]=inner
-        input_list.append(sub_operation.InputData(link,(inner.id,0),0))
+        input_list.append(sub_operation.InputData((inner.id,0),link,0))
         replacements.append((link,(inner.id,0)))
 
 [subdesign.replace_op_refs_force(*item) for item in replacements]
@@ -86,5 +86,18 @@ for link in required_outputs:
         output_list.append(sub_operation.OutputData(link,0))
 
 subop = sub_operation.SubOperation2(design_links,sketch_list,input_list,output_list)
+
 filename = 'C:/Users/danaukes/desktop/test6.cad'
 subdesign.save_yaml(filename)
+
+for ii,link in enumerate(required_outputs):
+    design.replace_op_refs_force(link, (subop.id,ii))
+
+for op in ops:
+    del design.operations[design.operations.index(op)]
+
+design.operations.insert(3,subop)
+design.subdesigns[subdesign.id] = subdesign
+
+filename = 'C:/Users/danaukes/desktop/test7.cad'
+design.save_yaml(filename)

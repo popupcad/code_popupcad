@@ -50,8 +50,9 @@ class Operation2(Node, UserData):
 
     def replace_op_refs(self, refold, refnew):
         for key, list1 in self.operation_links.items():
-            while refold in list1:
-                list1[list1.index(refold)] = refnew
+            for ii,item in enumerate(list1):
+                if item==refold:
+                    list1[ii] = refnew
         self.clear_output()
 
     def replace_op_refs2(self, refold, refnew):
@@ -63,8 +64,9 @@ class Operation2(Node, UserData):
 
     def replace_sketch_refs(self, refold, refnew):
         for key, list1 in self.sketch_links.items():
-            while refold in list1:
-                list1[list1.index(refold)] = refnew
+            for ii,item in enumerate(list1):
+                if item==refold:
+                    list1[ii] = refnew
         self.clear_output()
 
 
