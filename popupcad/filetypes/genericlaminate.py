@@ -107,21 +107,30 @@ class GenericLaminate(popupCADFile):
         gv.scene().renderprocess(filename,1.0,False,0,False,destination)
         return filename_out
 
-    def save_dxf(self,filename):
+    def save_dxf(self,basename,separate_files=False):
         import ezdxf
         ezdxf.options.template_dir = popupcad.supportfiledir        
         
-        dwg = ezdxf.new('AC1015')
-        msp = dwg.modelspace()
+        if not separate_files:
+            filename = os.path.normpath(os.path.join(popupcad.exportdir,basename+'.dxf'))
+            dwg = ezdxf.new('AC1015')
+            msp = dwg.modelspace()
 
         for ii,layer in enumerate(self.layerdef.layers):
             layername = '{:03.0f}_'.format(ii)+layer.name
+            if separate_files:
+                filename = os.path.normpath(os.path.join(popupcad.exportdir,basename+'_'+layername+'.dxf'))
+                dwg = ezdxf.new('AC1015')
+                msp = dwg.modelspace()
             dwg.layers.create(name=layername)
             for item in self.geoms[layer]:
                 if not item.is_construction():
                     item.output_dxf(msp,layername)
+            if separate_files:
+                dwg.saveas(filename)     
         
-        dwg.saveas(filename)     
+        if not separate_files:
+            dwg.saveas(filename)     
     
     def transform(self,T):     
         geoms = {}

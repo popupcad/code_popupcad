@@ -132,6 +132,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.fileactions.append({'text': 'Export to stl', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a stl file",'triggered': self.export_stl}})
         self.fileactions.append({'text': '&Export to SVG', 'kwargs': {'icon': icons['export'], 'triggered': self.exportLayerSVG}})
         self.fileactions.append({'text': 'Export to dxf', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dxf file",'triggered': self.export_dxf}})
+        self.fileactions.append({'text': 'Export layers to dxf', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dxf file",'triggered': self.export_dxf_layers}})
         self.fileactions.append({'text': 'Export to dae', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dae file",'triggered': self.export_dae}})
 
         self.fileactions.append({'text': "Save Joint Defs", 'kwargs': {'triggered': self.save_joint_def}})
@@ -533,12 +534,19 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.design.build_documentation()
 
     def export_dxf(self):
-        import os
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
         generic = output.generic_laminate()
-        generic.save_dxf(os.path.normpath(os.path.join(popupcad.exportdir,self.design.get_basename() + '_'+str(self.design.operations[ii])+'.dxf')))
+        basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
+        generic.save_dxf(basename)
     
+    def export_dxf_layers(self):
+        ii, jj = self.operationeditor.currentIndeces2()[0]
+        output = self.design.operations[ii].output[jj]
+        generic = output.generic_laminate()
+        basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
+        generic.save_dxf(basename,True)
+
     def export_dae(self):
         ii, jj = self.operationeditor.currentIndeces2()[0]
         output = self.design.operations[ii].output[jj]
