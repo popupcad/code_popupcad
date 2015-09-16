@@ -280,6 +280,19 @@ class TransformExternal(Operation2):
     def buildeditdialog(self, design):
         dialog = Dialog(design,design.prioroperations(self),self)
         return dialog
+
+    def to_internal_transform(self,sketch_mapping_dict,op_mapping_dict):
+        from popupcad.manufacturing.transform_internal import TransformInternal
+        sketch_links = self.sketch_links.copy()
+        sketch_links['sketch_from'] = [sketch_mapping_dict[self.sub_sketch_id]]
+        operation_link = self.subopref
+        operation_link = op_mapping_dict[operation_link[0]],operation_link[1]
+        operation_links = {'from':[operation_link]}
+        new = TransformInternal(sketch_links,operation_links,self.transformtype_x,self.transformtype_y,self.shift,self.flip,self.scalex,self.scaley)
+        new.customname = self.customname
+        return new
+
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     sys.exit(app.exec_())
+
