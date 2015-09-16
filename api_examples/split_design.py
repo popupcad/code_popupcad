@@ -31,7 +31,7 @@ input_ids = [item.id for item in inputs]
 
 children = set([item for op in ops for item in op.children()])
 outputs = children-set(ops)
-
+ 
 
 parents_ii = [design.operations.index(parent) for parent in parents]
 op_ii = sorted(set(op_ii+parents_ii))

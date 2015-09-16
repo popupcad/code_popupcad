@@ -62,3 +62,35 @@ def external_to_internal_transform_outer(design,subdesign,sketch_mapping,op_mapp
     for oldref,newref in op_mapping2:
         design.replace_op_refs2(oldref,newref)
         
+def merge_designs(design,subdesign,index):
+    debug = False
+    #reassign new ids to subdesign sketches and remap their use within the subdesign
+    sketch_mapping = remap_sketch_ids(subdesign)
+
+    if debug:
+        subdesign.save_yaml('C:/Users/danaukes/desktop/test.cad')
+    
+    #I don't think this is necessary if we remap
+    #design_sketches_new = subdesign.sketches
+    #design_sketches_new.update(design.sketches)
+    #design.sketches = design_sketches_new
+    design.sketches.update(subdesign.sketches)
+    
+    if debug:
+        design.save_yaml('C:/Users/danaukes/desktop/test2.cad')
+    
+    strip_locates(subdesign)
+    
+    op_mapping = remap_operation_ids(subdesign)
+    
+    switch_layer_defs(subdesign,design.return_layer_definition())
+    
+    if debug:
+        subdesign.save_yaml('C:/Users/danaukes/desktop/test3.cad')
+    
+    design.operations = design.operations[:index]+subdesign.operations+design.operations[index:]
+
+    if debug:
+        design.save_yaml('C:/Users/danaukes/desktop/test4.cad')
+
+    return sketch_mapping,op_mapping

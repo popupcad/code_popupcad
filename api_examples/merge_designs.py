@@ -34,36 +34,11 @@ subdesign = design.subdesigns[338535312]
 #ensure subdesign is a totally separate copy
 subdesign = subdesign.copy_yaml()
 
-#reassign new ids to subdesign sketches and remap their use within the subdesign
-sketch_mapping = design_advanced_functions.remap_sketch_ids(subdesign)
-
-test_file = 'C:/Users/danaukes/desktop/test.cad'
-subdesign.save_yaml(test_file)
-
-#design_sketches_new = subdesign.sketches
-#design_sketches_new.update(design.sketches)
-#design.sketches = design_sketches_new
-design.sketches.update(subdesign.sketches)
-
-test_file = 'C:/Users/danaukes/desktop/test2.cad'
-design.save_yaml(test_file)
-
-design_advanced_functions.strip_locates(subdesign)
-
-op_mapping = design_advanced_functions.remap_operation_ids(subdesign)
-
-design_advanced_functions.switch_layer_defs(subdesign,design.return_layer_definition())
-
-subdesign.save_yaml('C:/Users/danaukes/desktop/test3.cad')
-
-design.operations = subdesign.operations+design.operations
-
-design.save_yaml('C:/Users/danaukes/desktop/test4.cad')
+sketch_mapping,op_mapping = design_advanced_functions.merge_designs(design,subdesign,0)
 
 design_advanced_functions.external_to_internal_transform_outer(design,subdesign,sketch_mapping,op_mapping)
 
 if subdesign.id in design.subdesigns:
     del design.subdesigns[subdesign.id]
         
-test_file = 'C:/Users/danaukes/desktop/test5.cad'
-design.save_yaml(test_file)
+design.save_yaml('C:/Users/danaukes/desktop/test5.cad')
