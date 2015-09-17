@@ -15,13 +15,34 @@ from popupcad.manufacturing.freeze import Freeze
 #import PySide.QtGui as qg
 #app = qg.QApplication(sys.argv[0])
 
-def add_frozen_inputs(subdesign,design):
+def split_design(design,inner_operation_indices):
+    inner_operation_indices = sorted(inner_operation_indices )
+    subdesign,input_list,sketch_list= create_subdesign(design,inner_operation_indices)
+
+    remove_redundant_ops(design,subdesign)
+    required_outputs = find_required_links(design,subdesign)
+    output_list = [OutputData(link,0) for link in required_outputs]
+
+    return required_outputs, output_list
+
+    design.subdesigns[subdesign.id] = subdesign
+    
+    design_links =  {'source':[subdesign.id]}
+    subop = SubOperation2(design_links,sketch_list,input_list,output_list)
+    design.operations.insert(inner_operation_indices[0],subop)
+    for ii,link in enumerate(required_outputs):
+        design.replace_op_refs_force(link, (subop.id,ii))
+
+def find_necessary_links(operations):
     parent_links = []
-    for op in subdesign.operations:
+    for op in operations:
         for key in op.operation_links:
             parent_links.extend(op.operation_links[key])
     parent_links = list(set(parent_links))
-    inner_inputs = [link for link in parent_links if link[0] not in [op.id for op in subdesign.operations]]
+    return parent_links    
+    
+def add_frozen_inputs(subdesign,design):
+    inner_inputs = find_required_links(subdesign,design)
     
     frozen_operations = []    
     
@@ -36,20 +57,16 @@ def add_frozen_inputs(subdesign,design):
     return inner_inputs,frozen_operations
 
 def create_subdesign(design,indices):
-    inner_operation_indices = sorted(indices)
-    inner_operations = [design.operations[ii] for ii in inner_operation_indices]
-
     subdesign = design.copy_yaml(identical=False)
-    subdesign.operations = [subdesign.operations[ii] for ii in inner_operation_indices]
+    subdesign.operations = [subdesign.operations[ii] for ii in indices]
     
     inner_inputs,frozen_operations =add_frozen_inputs(subdesign,design)
-    #after creating new frozen operations, cleanup the subdesign
     subdesign.cleanup_sketches()
     subdesign.cleanup_subdesigns() 
     
     input_list = build_input_list(inner_inputs,frozen_operations)    
-    
-    return subdesign,input_list,inner_operations
+    sketch_list = build_sketch_list(subdesign)
+    return subdesign,input_list,sketch_list
 
 def remove_redundant_ops(design,subdesign):
     design_refs = [op.id for op in design.operations]
@@ -59,6 +76,7 @@ def remove_redundant_ops(design,subdesign):
     
     for ref in to_remove:
         design.operations.remove(design.operation_dict[ref])
+
 
 def build_sketch_list(subdesign):
     sketch_list = []
@@ -72,51 +90,19 @@ def build_input_list(inner_inputs,frozen_operations):
         input_list.append(InputData((frozen_op.id,0),input_link,0))
     return input_list    
     
-def build_output_list(inner_operations):
-    children = set([item for op in inner_operations for item in op.children()])
-    required_outputs = []
-    for op in children:
-        for key in op.operation_links:
-            required_outputs.extend(op.operation_links[key])
-    
-    required_outputs = list(set(required_outputs))
-    
-    output_list = []    
-
-    inner_operation_ids = [op.id for op in inner_operations]
-    required_outputs2 = []
-    for link in required_outputs:
-        if link[0] in inner_operation_ids:
-            required_outputs2.append(link)
-            output_list.append(OutputData(link,0))    
-    return required_outputs2,output_list
+def find_required_links(needed_by,found_in):
+    required_links = find_necessary_links(needed_by.operations)
+    inner_operation_ids = [op.id for op in found_in.operations]
+    required_links2 = [link for link in required_links if link[0] in inner_operation_ids]
+    return required_links2
     
 design = Design.load_yaml('C:/Users/danaukes/desktop/test5.cad')
 design = design.upgrade()
 design.reprocessoperations()
 t = design.build_tree()
 
-#ops = design.operations[2:4]
 inner_operation_indices = [3,4]
 
-subdesign,input_list,inner_operations= create_subdesign(design,inner_operation_indices)
-remove_redundant_ops(design,subdesign)
-
-#build information required to build subop
-sketch_list = build_sketch_list(subdesign)
-design_links =  {'source':[subdesign.id]}
-
-required_outputs,output_list = build_output_list(inner_operations)
-
-subop = SubOperation2(design_links,sketch_list,input_list,output_list)
-
-subdesign.save_yaml('C:/Users/danaukes/desktop/test6.cad')
-
-for ii,link in enumerate(required_outputs):
-    design.replace_op_refs_force(link, (subop.id,ii))
-
-
-design.operations.insert(3,subop)
-design.subdesigns[subdesign.id] = subdesign
+split_design(design,inner_operation_indices)
 
 design.save_yaml('C:/Users/danaukes/desktop/test7.cad')
