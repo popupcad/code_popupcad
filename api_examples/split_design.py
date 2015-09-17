@@ -23,7 +23,7 @@ def split_design(design,inner_operation_indices):
     required_outputs = find_required_links(design,subdesign)
     output_list = [OutputData(link,0) for link in required_outputs]
 
-    return required_outputs, output_list
+#    return required_outputs, output_list
 
     design.subdesigns[subdesign.id] = subdesign
     
@@ -42,7 +42,8 @@ def find_necessary_links(operations):
     return parent_links    
     
 def add_frozen_inputs(subdesign,design):
-    inner_inputs = find_required_links(subdesign,design)
+    parent_links = find_necessary_links(subdesign.operations)
+    inner_inputs = [link for link in parent_links if link[0] not in [op.id for op in subdesign.operations]]
     
     frozen_operations = []    
     
