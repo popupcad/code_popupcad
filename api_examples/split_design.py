@@ -97,13 +97,20 @@ def find_required_links(needed_by,found_in):
     required_links2 = [link for link in required_links if link[0] in inner_operation_ids]
     return required_links2
     
-design = Design.load_yaml('C:/Users/danaukes/desktop/test5.cad')
+import sys
+import PySide.QtGui as qg
+app = qg.QApplication(sys.argv[0])
+
+design = Design.open()
+
 design = design.upgrade()
 design.reprocessoperations()
 t = design.build_tree()
-
-inner_operation_indices = [3,4]
-
+#
+inner_operation_indices = [120,121,122,123,124,125]
+#
 split_design(design,inner_operation_indices)
-
-design.save_yaml('C:/Users/danaukes/desktop/test7.cad')
+#
+#design.save_yaml('C:/Users/danaukes/desktop/test7.cad')
+design.saveAs()
+sys.exit(app.exec_())

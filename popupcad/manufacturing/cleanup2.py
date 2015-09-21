@@ -8,7 +8,6 @@ Please see LICENSE for full license.
 import popupcad
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 
-
 class Cleanup2(MultiValueOperation3):
     name = 'Cleanup'
     show = []
