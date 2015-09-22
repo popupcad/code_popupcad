@@ -69,6 +69,13 @@ class Operation2(Node, UserData):
                     list1[ii] = refnew
         self.clear_output()
 
+    def replace_subdesign_refs(self, refold, refnew):
+        for key, list1 in self.design_links.items():
+            for ii,item in enumerate(list1):
+                if item==refold:
+                    list1[ii] = refnew
+        self.clear_output()
+
 
     def upgrade(self, *args, **kwargs):
         return self

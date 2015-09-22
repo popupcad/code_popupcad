@@ -109,6 +109,8 @@ class MainWidget(qg.QDialog):
             self.input_table.reset)
         self.designwidget.itemlist.itemSelectionChanged.connect(
             self.output_table.reset)
+        self.designwidget.itemlist.itemSelectionChanged.connect(
+            self.sketch_table.reset)
 
     def get_operations(self):
         return self.operations
@@ -269,3 +271,23 @@ class SubOperation2(Operation2):
             csg3 = popupcad.algorithms.manufacturing_functions.shift_flip_rotate(csg2,output_data.shift,False,False)
             output2 = popupcad.filetypes.operationoutput.OperationOutput(csg3,new_output.name)
             self.output.append(output2)
+
+            
+    def parentrefs(self):
+        a = []
+        for item in self.input_list:
+            a.append(item.ref2)
+        return a
+
+    def sketchrefs(self):
+        a = []
+        for item in self.sketch_list:
+            a.append(item.ref2)
+        return a
+
+    def replace_sketch_refs(self, refold, refnew):
+        for item in self.sketch_list:
+            if item.ref2 == refold:
+                item.ref2 = refnew
+        self.clear_output()
+        

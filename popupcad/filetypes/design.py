@@ -94,6 +94,15 @@ class Design(popupCADFile):
                 failed_ops.append(op)
         return failed_ops
 
+    def replace_subdesign_refs(self, oldref, newref):
+        failed_ops = []
+        for op in self.operations:
+            try:
+                op.replace_subdesign_refs(oldref, newref)
+            except AttributeError:
+                failed_ops.append(op)
+        return failed_ops
+
     def replace_op_refs(self, oldref, newref):
         self.build_tree()
 
