@@ -21,24 +21,26 @@ from popupcad.manufacturing.sub_operation2 import SubOperation2
 #subdesign = Design.open()
 
 #get design
-design = Design.load_yaml('C:/Users/danaukes/popupCAD_files/designs/hinges/supported_hinge.cad')
+design = Design.load_yaml('C:/Users/danaukes/Dropbox/zhis sentinal 11 files/modified/sentinal 11 manufacturing_R07.cad')
 #subdesign = Design.load_yaml('C:/Users/danaukes/popupCAD_files/designs/hinges/supported_hinge_half1.cad')
 design = design.upgrade()
 
 #get subdesign
-subdesign = design.subdesigns[338535312]
+subdesign = design.subdesigns[230308440]
 
 #upgrade is unnecessary if subdesign is a child of design
 #subdesign = subdesign.upgrade()
 
 #ensure subdesign is a totally separate copy
+
 subdesign = subdesign.copy_yaml()
 
-sketch_mapping,op_mapping = design_advanced_functions.merge_designs(design,subdesign,0)
+subdesign_mapping,sketch_mapping,op_mapping = design_advanced_functions.merge_designs(design,subdesign,0)
 
 design_advanced_functions.external_to_internal_transform_outer(design,subdesign,sketch_mapping,op_mapping)
 
 if subdesign.id in design.subdesigns:
     del design.subdesigns[subdesign.id]
-        
-design.save_yaml('C:/Users/danaukes/desktop/test5.cad')
+
+design_out = 'C:/Users/danaukes/Dropbox/zhis sentinal 11 files/modified/sentinal 11 manufacturing_R08.cad'
+design.save_yaml(design_out)

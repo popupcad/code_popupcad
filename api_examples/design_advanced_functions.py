@@ -4,6 +4,21 @@ Created on Wed Sep 16 15:54:21 2015
 
 @author: danaukes
 """
+def remap_subdesign_ids(design):
+    subdesigns_orig = design.subdesigns.copy()
+    subdesign_mapping = []
+    subdesigns_new = {} 
+    for key,subdesign in subdesigns_orig.items():
+        new_sketch = subdesign.copy(identical = False)
+        subdesigns_new[new_sketch.id] = new_sketch
+        subdesign_mapping.append((key,new_sketch.id))
+
+    for oldref, newref in subdesign_mapping:
+        design.replace_subdesign_refs(oldref,newref)
+    
+    design.subdesigns = subdesigns_new
+    return subdesign_mapping
+
 def remap_sketch_ids(design):
     sub_sketches_orig = design.sketches.copy()
     sketch_mapping = []
@@ -34,10 +49,10 @@ def remap_operation_ids(design):
         sub_ops_new.append(new_op)
         op_mapping.append((op,new_op))    
         
-    for oldref,newref in op_mapping:
-        design.replace_op_refs2(oldref,newref)    
-
     design.operations = sub_ops_new
+    
+    for oldref,newref in [(op1.id,op2.id) for op1,op2 in op_mapping]:
+        design.replace_op_refs2(oldref,newref)    
 
     return op_mapping
     
@@ -61,38 +76,35 @@ def external_to_internal_transform_outer(design,subdesign,sketch_mapping,op_mapp
     
     for oldref,newref in op_mapping2:
         design.replace_op_refs2(oldref,newref)
-        
-def merge_designs(design,subdesign,index):
-    debug = False
-    #reassign new ids to subdesign sketches and remap their use within the subdesign
-    sketch_mapping = remap_sketch_ids(subdesign)
 
+def remap_sub(subdesign):
+    debug = True
+    #reassign new ids to subdesign sketches and remap their use within the subdesign
+    subdesign_mapping = remap_subdesign_ids(subdesign)
+    sketch_mapping = remap_sketch_ids(subdesign)
+    strip_locates(subdesign)
+    op_mapping = remap_operation_ids(subdesign)
     if debug:
         subdesign.save_yaml('C:/Users/danaukes/desktop/test.cad')
-    
-    #I don't think this is necessary if we remap
-    #design_sketches_new = subdesign.sketches
-    #design_sketches_new.update(design.sketches)
-    #design.sketches = design_sketches_new
+    return subdesign_mapping,sketch_mapping,op_mapping
+
+def merge_designs(design,subdesign,index):
+    debug = True
+    subdesign_mapping,sketch_mapping,op_mapping = remap_sub(subdesign)
+
+    design.subdesigns.update(subdesign.subdesigns)
     design.sketches.update(subdesign.sketches)
-    
     if debug:
         design.save_yaml('C:/Users/danaukes/desktop/test2.cad')
     
-    strip_locates(subdesign)
-    
-    op_mapping = remap_operation_ids(subdesign)
-    
     switch_layer_defs(subdesign,design.return_layer_definition())
-    
     if debug:
         subdesign.save_yaml('C:/Users/danaukes/desktop/test3.cad')
     
     design.operations = design.operations[:index]+subdesign.operations+design.operations[index:]
-
     if debug:
         design.save_yaml('C:/Users/danaukes/desktop/test4.cad')
 
-    return sketch_mapping,op_mapping
+    return subdesign_mapping,sketch_mapping,op_mapping
     
     
