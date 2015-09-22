@@ -50,8 +50,8 @@ def process_operation(operation, ii, destination):
     output['outputs'] = outputs[1:]
     return output
     
-def process_design(design,subdir):
-    title = design.get_basename()
+def process_design(design,subdir,slugified_name):
+    title = slugified_name
     operations = [process_operation(operation, ii, subdir) for ii, operation in enumerate(design.operations)]
 
     ii = design.operation_index(design.main_operation[0])
@@ -64,7 +64,7 @@ def process_design(design,subdir):
     output['operations'] = operations
     output['svg_image_file'] = operations[ii]['svg_image_file']
     output['png_image_file'] = operations[ii]['png_image_file']
-    output['cad_file'] = design.get_basename()
+    output['cad_file'] = slugified_name
     return output
 
 def format_template(design_dict):

@@ -370,7 +370,7 @@ class Design(popupCADFile):
                 os.mkdir(subdir)
                 self.save_yaml(os.path.join(self.dirname,subdir,slugified_name),update_filename=False)
     #        self.raster(destination=subdir)
-            new = design_doc.process_design(self, subdir)
+            new = design_doc.process_design(self, subdir,slugified_name)
             file = os.path.normpath(os.path.join(subdir, base + '.md'))
             with open(file, 'w') as f:
                 f.writelines(design_doc.format_template(new))
