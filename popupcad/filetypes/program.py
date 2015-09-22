@@ -38,9 +38,9 @@ class Program(object):
 
     def create_exception_listener(self):
         logging.basicConfig(filename=popupcad.error_log_filename,filemode='w',level=logging.DEBUG)
-        import sys
         self.excepthook_internal = sys.excepthook
         sys.excepthook = self.excepthook
+        
     def excepthook(self,exctype,value,tb):
         if exctype is not SystemExit:
             message = '''{}: {}'''.format(str(exctype),str(value))
@@ -51,6 +51,7 @@ class Program(object):
     
             logging.error(message)
             logging.debug('\n'+tbmessage)
+            
             self.editor.error_log.appendText(message+'\n'+tbmessage)
             self.excepthook_internal(exctype,value,tb)
             mb = qg.QMessageBox()

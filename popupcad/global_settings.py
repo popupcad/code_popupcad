@@ -91,6 +91,7 @@ local_settings_filename = os.path.normpath(
     os.path.join(
         popupcad_home_path,
         'settings.popupcad'))
+
 user_materials_filename = os.path.normpath(os.path.join(popupcad_home_path,'materials.yaml'))
 internal_materials_filename = os.path.normpath(os.path.join(supportfiledir,'materials.yaml'))
 error_log_filename = os.path.normpath(os.path.join(popupcad_home_path,'log.txt'))
@@ -113,3 +114,9 @@ subdirectories = [
 for path in subdirectories:
     if not os.path.isdir(path):
         os.mkdir(path)
+
+toolbar_icon_size = 36
+nominal_width = 1280
+nominal_height = 720
+
+custom_settings_filename = os.path.normpath(os.path.join(popupcad_home_path,'settings.yaml'))

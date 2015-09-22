@@ -18,14 +18,14 @@ if sys.platform != 'darwin':
 
 
 from .global_settings import *
-
-from popupcad.filetypes.programsettings import ProgramSettings
-try:
-    local_settings = ProgramSettings.load_yaml(settings_filename)
-#except IOError:
+#
+#from popupcad.filetypes.programsettings import ProgramSettings
+#try:
+#    local_settings = ProgramSettings.load_yaml(settings_filename)
+##except IOError:
+##    local_settings = ProgramSettings()
+#except:
 #    local_settings = ProgramSettings()
-except:
-    local_settings = ProgramSettings()
 
 from . import algorithms
 from . import filetypes
@@ -43,6 +43,19 @@ try:
         user_materials = yaml.load(f)
 except:
     user_materials = []
+
+
+import yaml
+try:
+    with open(custom_settings_filename) as f:
+        custom_settings = yaml.load(f)
+        
+    popupcad_module=sys.modules[__name__]
+    for key in custom_settings:
+        if hasattr(popupcad_module,key):
+            setattr(popupcad_module,key,custom_settings[key])
+except:
+    pass
 
 #load external modules
 import PySide

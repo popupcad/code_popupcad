@@ -21,7 +21,7 @@ from . import operation
 from . import operation2
 from . import operationoutput
 from . import program
-from . import programsettings
+#from . import programsettings
 from . import sketch
 from . import solidworksimport
 from . import undoredo

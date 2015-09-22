@@ -138,7 +138,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.fileactions.append({'text': "Save Joint Defs", 'kwargs': {'triggered': self.save_joint_def}})
         self.fileactions.append({'text': "Export Laminate", 'kwargs': {'triggered': self.export_laminate}})
         self.fileactions.append({'text': "Regen ID", 'kwargs': {'triggered': self.regen_id, }})
-        self.fileactions.append({'text': "Preferences...", 'kwargs': {'triggered': self.preferences}})
+#        self.fileactions.append({'text': "Preferences...", 'kwargs': {'triggered': self.preferences}})
         self.fileactions.append({'text': "Render Icons", 'kwargs': {'triggered': self.gen_icons}})
         self.fileactions.append({'text': "Build Documentation", 'kwargs': {'triggered': self.build_documentation}})
         self.fileactions.append({'text': "License", 'kwargs': {'triggered': self.show_license}})
@@ -442,7 +442,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             event.accept()
         else:
             event.ignore()
-        popupcad.local_settings.save_yaml(popupcad.local_settings_filename)
+#        popupcad.local_settings.save_yaml(popupcad.local_settings_filename)
 
     def checkSafe(self):
         temp = qg.QMessageBox.warning(
@@ -457,10 +457,10 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             return False
         return True
     
-    def preferences(self):
-        import dev_tools.propertyeditor
-        pe = dev_tools.propertyeditor.PropertyEditor(popupcad.local_settings)
-        pe.show()
+#    def preferences(self):
+#        import dev_tools.propertyeditor
+#        pe = dev_tools.propertyeditor.PropertyEditor(popupcad.local_settings)
+#        pe.show()
 
     def replace(self):
         d = qg.QDialog()

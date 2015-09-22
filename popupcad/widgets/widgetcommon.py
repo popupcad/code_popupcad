@@ -24,22 +24,22 @@ class WidgetCommon(object):
     def set_nominal_size(self):
         #        buffer_x=14
         #        buffer_y=36
-        #        self.resize(popupcad.local_settings.nominal_width-buffer_x,popupcad.local_settings.nominal_height-buffer_y)
+        #        self.resize(popupcad.nominal_width-buffer_x,popupcad.nominal_height-buffer_y)
         pass
 
     def sizeHint(self):
         buffer_x = 14
         buffer_y = 36
         return qc.QSize(
-            popupcad.local_settings.nominal_width -
+            popupcad.nominal_width -
             buffer_x,
-            popupcad.local_settings.nominal_height -
+            popupcad.nominal_height -
             buffer_y)
 
     def move_center(self):
         #        window_rect = qg.QApplication.desktop().screen().rect()
-        #        x = (window_rect.width()-popupcad.local_settings.nominal_width)/2
-        #        y = (window_rect.height()-popupcad.local_settings.nominal_height)/2
+        #        x = (window_rect.width()-popupcad.nominal_width)/2
+        #        y = (window_rect.height()-popupcad.nominal_height)/2
         #        self.move(qc.QPoint(x,y))
         pass
 
@@ -56,8 +56,8 @@ class WidgetCommon(object):
         toolbar, menu = self.buildToolbarMenu(actions, name)
         toolbar.setIconSize(
             qc.QSize(
-                popupcad.local_settings.toolbar_icon_size,
-                popupcad.local_settings.toolbar_icon_size))
+                popupcad.toolbar_icon_size,
+                popupcad.toolbar_icon_size))
         toolbar.setToolButtonStyle(
             qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         toolbar.setParent(self)
@@ -69,8 +69,8 @@ class WidgetCommon(object):
         toolbar, menu = self.buildToolbarMenu(actions, name)
         toolbar.setIconSize(
             qc.QSize(
-                popupcad.local_settings.toolbar_icon_size,
-                popupcad.local_settings.toolbar_icon_size))
+                popupcad.toolbar_icon_size,
+                popupcad.toolbar_icon_size))
         toolbar.setToolButtonStyle(
             qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         toolbar.setParent(self)
