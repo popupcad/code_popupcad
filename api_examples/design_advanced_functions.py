@@ -78,8 +78,10 @@ def external_to_internal_transform_outer(design,subdesign,sketch_mapping,op_mapp
         design.replace_op_refs2(oldref,newref)
 
 def remap_sub(subdesign):
-    debug = True
     #reassign new ids to subdesign sketches and remap their use within the subdesign
+
+    debug = True
+
     subdesign_mapping = remap_subdesign_ids(subdesign)
     sketch_mapping = remap_sketch_ids(subdesign)
     strip_locates(subdesign)
@@ -87,6 +89,7 @@ def remap_sub(subdesign):
     if debug:
         subdesign.save_yaml('C:/Users/danaukes/desktop/test.cad')
     return subdesign_mapping,sketch_mapping,op_mapping
+
 
 def merge_designs(design,subdesign,index):
     debug = True

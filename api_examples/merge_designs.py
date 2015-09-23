@@ -39,8 +39,15 @@ subdesign_mapping,sketch_mapping,op_mapping = design_advanced_functions.merge_de
 
 design_advanced_functions.external_to_internal_transform_outer(design,subdesign,sketch_mapping,op_mapping)
 
+#if the subdesigns subdesigns can also be found in the design, switch back to them
+#   this could cause a problem if they are different versions of the same file, so use this feature cautiously.
+for oldref, newref in subdesign_mapping:
+    if oldref in design.subdesigns:
+        design.replace_subdesign_refs(newref,oldref)
+        design.subdesigns.pop(newref)
+
 if subdesign.id in design.subdesigns:
-    del design.subdesigns[subdesign.id]
+    design.subdesigns.pop(subdesign.id)
 
 design_out = 'C:/Users/danaukes/Dropbox/zhis sentinal 11 files/modified/sentinal 11 manufacturing_R08.cad'
 design.save_yaml(design_out)

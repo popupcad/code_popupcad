@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 import PySide.QtGui as qg
+import PySide.QtCore as qc
 
 from popupcad.widgets.dragndroplist import DraggableListWidget, UserData
 
@@ -13,7 +14,7 @@ class CompositeMakeup(DraggableListWidget):
 
     def __init__(self):
         super(CompositeMakeup, self).__init__()
-        self.setDragDropMode(self.DragDropMode.DragDrop)
+        self.setDragDropMode(self.DragDropMode.DropOnly)
 
 
 class AvailableMaterials(DraggableListWidget):
@@ -21,6 +22,11 @@ class AvailableMaterials(DraggableListWidget):
     def __init__(self):
         super(AvailableMaterials, self).__init__()
         self.setDragDropMode(self.DragDropMode.DragOnly)
+
+def get_item_names(widget):
+    for ii in range(widget.model().rowCount()):
+        print(widget.item(ii))
+
 
 if __name__ == '__main__':
     import sys
