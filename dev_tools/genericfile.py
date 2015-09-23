@@ -171,6 +171,7 @@ class GenericFile(object):
         if not filename:
             return False
         else:
+            self.regen_id()
             if savemethod is None:
                 return self.save_yaml(filename,identical=False)
             else:
