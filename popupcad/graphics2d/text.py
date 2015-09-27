@@ -11,6 +11,7 @@ import numpy
 from popupcad.graphics2d.graphicsitems import Common
 import popupcad
 import shapely.geometry as sg
+import popupcad.algorithms.painterpath as pp
 
 class GenericText(object):
     editable = ['*']
@@ -44,73 +45,62 @@ class GenericText(object):
     def is_construction(self):
         return False
 
-    def genpath(self,scaling):
+    def to_generic_polygons(self):
         text = self.text
-        p = qg.QPainterPath()
+        if text !='':
+            p = qg.QPainterPath()
+            font = qg.QFont(self.font,pointSize=self.fontsize)
+            p.addText(qc.QPointF(0,1*self.fontsize),font,text)
+            
+            generic_polygons = pp.painterpath_to_generics(p,popupcad.text_approximation)
+        else:
+            generic_polygons = []
+        T = numpy.eye(3)
+        T[1,1]=-1
+        generic_polygons = [item.transform(T) for item in generic_polygons]
+        return generic_polygons
+        
+    def generic_polys_to_shapely(self,generic_polygons):
+        shapelies = [item.to_shapely() for item in generic_polygons]
+        
+        if len(shapelies) > 1:
+            obj1 = shapelies.pop(0)
+            while shapelies:
+                obj1 = obj1.symmetric_difference(shapelies.pop(0))
+        elif len(shapelies) ==1 :
+            obj1 = shapelies[0]
+        else:
+            obj1 = sg.Polygon()
+        return obj1
 
-        font = qg.QFont(self.font,pointSize=self.fontsize * scaling)
-        p.addText(qc.QPointF(0,1*self.fontsize * scaling),font,text)
+    def to_shapely(self):
+        generic_polygons = self.to_generic_polygons()
+        shapely = self.generic_polys_to_shapely(generic_polygons)
+        return shapely
+        
+    def to_generics(self):
+        shapely = self.to_shapely()
+        shapelies = popupcad.algorithms.csg_shapely.condition_shapely_entities(shapely)
+        generics = [popupcad.algorithms.csg_shapely.to_generic(item) for item in shapelies]
+        return generics
 
+    def painterpath(self):
+        generics = self.to_generics()
         p2 = qg.QPainterPath()
-        exteriors = []
-        exterior = None
-
-        for ii in range(p.elementCount()):
-            element = p.elementAt(ii)
-            if popupcad.flip_y:
-                dummy = -element.y
-            else:
-                dummy = element.y
-
-            if element.isMoveTo():
-                if exterior is not None:
-                    p2.lineTo(exterior[0][0], exterior[0][1])
-                    exteriors.append(exterior)
-                exterior = [(element.x, dummy)]
-                p2.moveTo(element.x, dummy)
-            elif element.isLineTo():
-                p2.lineTo(element.x, dummy)
-                exterior.append((element.x, dummy))
-            elif element.isCurveTo():
-                p2.lineTo(element.x, dummy)
-                exterior.append((element.x, dummy))
-
-        if exterior is not None:
-            exteriors.append(exterior)
-
-        exteriors = [(numpy.array(item) + self.pos.getpos(scaling = scaling)).tolist()
-                     for item in exteriors]
-        return p2,exteriors
+        [p2.addPath(item.painterpath()) for item in generics]
+        return p2
 
     def outputinteractive(self):
         tp = TextParent(self)
         return tp
-
-    def to_shapely(self):
-        dummy, exteriors_p = self.genpath(popupcad.csg_processing_scaling)
-        objs = [
-            sg.Polygon(
-                exterior,
-                []) for exterior in exteriors_p]
-        if len(objs) > 1:
-            obj1 = objs.pop(0)
-            while objs:
-                obj1 = obj1.symmetric_difference(objs.pop(0))
-        else:
-            obj1 = objs[0]
-        return obj1
 
     def properties(self):
         from dev_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
         
     def output_dxf(self,model_space,layer = None):
-#        from popupcad.filetypes.genericshapebase import GenericShapeBase
-#        csg = self.to_shapely()
-#        new = popupcad.algorithms.csg_shapely.to_generic(csg)
-#        return new.output_dxf(model_space,layer)
-        pass
-
+        generics = self.to_generics()
+        [item.output_dxf(model_space,layer) for item in generics]
 
 class TextParent(qg.QGraphicsPathItem, Common):
     isDeletable = True
@@ -172,8 +162,10 @@ class TextParent(qg.QGraphicsPathItem, Common):
 #        self.scene().savesnapshot.emit()
 
     def refreshview(self):
-        path, dummy = self.generic.genpath(popupcad.view_scaling)
+        path = self.generic.painterpath()
         self.setPath(path)
+#        path, dummy = self.generic.genpath(popupcad.view_scaling)
+#        self.setPath(path)
 
     def mouseDoubleClickEvent(self, event):
         self.editmode()

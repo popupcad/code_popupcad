@@ -119,4 +119,6 @@ toolbar_icon_size = 36
 nominal_width = 1280
 nominal_height = 720
 
+text_approximation = 2
+
 custom_settings_filename = os.path.normpath(os.path.join(popupcad_home_path,'settings.yaml'))
