@@ -6,7 +6,7 @@ Please see LICENSE for full license.
 """
 
 import popupcad
-import sympy
+#import sympy
 
 sketch = popupcad.filetypes.sketch.Sketch.load_yaml('C:/Users/danaukes/Desktop/74837632.sketch')
 def supply_vertices():

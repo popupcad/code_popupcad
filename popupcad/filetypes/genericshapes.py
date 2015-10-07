@@ -10,7 +10,7 @@ import shapely.geometry
 import numpy
 import PySide.QtCore as qc
 import PySide.QtGui as qg
-import scipy.linalg
+import numpy.linalg
 
 try: #Hack to ensure Python 2 & 3 support
     import itertools.izip as zip
@@ -177,7 +177,7 @@ class GenericPoly(GenericShapeBase):
         z_center = (z_lower+z_upper)/2
         tris2 = numpy.ones(shape)
         tris2[:,:,:2] = tris
-        areas = abs(numpy.array([scipy.linalg.det(tri) for tri in tris2])/2)
+        areas = abs(numpy.array([numpy.linalg.det(tri) for tri in tris2])/2)
         area = areas.sum()
         tris2[:,:,2] = z_center
         centroids = tris2.sum(1)/3

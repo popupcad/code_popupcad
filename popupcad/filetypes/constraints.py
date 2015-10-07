@@ -10,7 +10,7 @@ import sympy.utilities
 import numpy
 import PySide.QtGui as qg
 import scipy.optimize
-import scipy.linalg
+import numpy.linalg
 import popupcad
 from dev_tools.enum import enum
 
@@ -219,7 +219,7 @@ class ConstraintSystem(object):
     
             x0 = numpy.array(self.inilist(variables, ini))
             Jnum = j(x0)
-            L, S, R = scipy.linalg.svd(Jnum)
+            L, S, R = numpy.linalg.svd(Jnum)
             aS = abs(S)
             m = (aS > (aS[0] / 100)).sum()
     

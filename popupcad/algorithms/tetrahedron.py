@@ -5,8 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 import numpy
-#import scipy
-import scipy.linalg
+import numpy.linalg
 
 def I_xx_unscaled(density,x_0,x_1,x_2,x_3,xc,y_0,y_1,y_2,y_3,yc,z_0,z_1,z_2,z_3,zc):
     return density*(y_0**2 + y_0*y_1 + y_0*y_2 + y_0*y_3 - 5*y_0*yc + y_1**2 + y_1*y_2 + y_1*y_3 - 5*y_1*yc + y_2**2 + y_2*y_3 - 5*y_2*yc + y_3**2 - 5*y_3*yc + 10*yc**2 + z_0**2 + z_0*z_1 + z_0*z_2 + z_0*z_3 - 5*z_0*zc + z_1**2 + z_1*z_2 + z_1*z_3 - 5*z_1*zc + z_2**2 + z_2*z_3 - 5*z_2*zc + z_3**2 - 5*z_3*zc + 10*zc**2)/60
@@ -36,7 +35,7 @@ class Tetrahedron(object):
         return J
 
     def volume(self):
-        return abs(scipy.linalg.det(self.J())/6)
+        return abs(numpy.linalg.det(self.J())/6)
 
     def mass(self):
         return self.volume()*self.density

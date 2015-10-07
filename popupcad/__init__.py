@@ -66,7 +66,8 @@ import lxml
 import numpy
 import pypoly2tri
 import pyqtgraph
-import scipy
+import scipy.optimize
+import scipy.spatial
 import shapely
 import stl
 import sympy

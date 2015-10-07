@@ -5,8 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 import numpy
-#import scipy
-import scipy.linalg
+import numpy.linalg
 
 class Triangle(object):
     def __init__(self,*points):
@@ -20,7 +19,7 @@ class Triangle(object):
         return J
 
     def area(self):
-        return abs(scipy.linalg.det(self.J())/2)
+        return abs(numpy.linalg.det(self.J())/2)
 
     def extrude(self,z_lower,z_upper):
         from popupcad.algorithms.tetrahedron import Tetrahedron
@@ -39,4 +38,4 @@ if __name__=='__main__':
     t=Triangle(p0,p1,p2)
     c=t.centroid()    
     J = t.J()
-    Jdet = scipy.linalg.det(J)
+    Jdet = numpy.linalg.det(J)
