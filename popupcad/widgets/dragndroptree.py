@@ -14,6 +14,8 @@ from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph, Node
 def debugprint(*args, **kwargs):
     pass
 
+class NotValid(Exception):
+    pass
 
 class TreeItem(qg.QTreeWidgetItem):
 
@@ -410,8 +412,8 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
             debugprint('myrowsinserted_p')
             tree = self.tree_generator()
             if not tree.sequence_complete_valid(self.allData()):
-                self.refresh()
-                raise Exception
+#                self.refresh()
+                raise NotValid()
             else:
                 self.refreshmaster()
 

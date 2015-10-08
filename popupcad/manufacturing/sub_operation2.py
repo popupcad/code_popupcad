@@ -276,7 +276,7 @@ class SubOperation2(Operation2):
     def parentrefs(self):
         a = []
         for item in self.input_list:
-            a.append(item.ref2)
+            a.append(item.ref2[0])
         return a
 
     def sketchrefs(self):
