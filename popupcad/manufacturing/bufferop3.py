@@ -10,7 +10,7 @@ from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 
 
 class BufferOperation3(MultiValueOperation3):
-    name = 'Dilate/Erode'
+    name = 'Dilate-Erode'
     show = []
 #    function = 'buffer'
     valuenames = ['Buffer', 'Resolution']

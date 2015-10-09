@@ -77,7 +77,7 @@ class Dialog(qg.QDialog):
 
 
 class ShiftFlip3(Operation2):
-    name = 'Shift/Flip'
+    name = 'Shift-Flip'
 
     def __init__(self, *args):
         super(ShiftFlip3, self).__init__()
