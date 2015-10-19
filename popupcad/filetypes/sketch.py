@@ -9,7 +9,10 @@ import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
 import PySide.QtGui as qg
 import PySide.QtCore as qc
-
+import os
+from popupcad.filetypes.genericshapes import GenericPolyline
+from popupcad.filetypes.genericshapes import GenericPoly
+from popupcad.filetypes.genericshapes import GenericLine
 
 class Sketch(popupCADFile):
     filetypes = {'sketch': 'Sketch File', 'dxf': 'DXF'}
@@ -124,7 +127,6 @@ class Sketch(popupCADFile):
             for entity in entities:
                 if entity.dxf.layer in selected_layers:
                     if isinstance(entity, ezdxf.modern.graphics.Line):
-                        from popupcad.filetypes.genericshapes import GenericLine
                         import numpy
                         points = numpy.array(
                             [entity.dxf.start[:2], entity.dxf.end[:2]])
@@ -133,29 +135,37 @@ class Sketch(popupCADFile):
                                 points.tolist(),
                                 []))
                     elif isinstance(entity, ezdxf.modern.graphics.LWPolyline):
-                        from popupcad.filetypes.genericshapes import GenericPolyline
-                        from popupcad.filetypes.genericshapes import GenericPoly
                         import numpy
                         points = numpy.array([item for item in entity.get_points()])
                         points = points[:,:2]
                         if entity.closed:
-                            generics.append(
-                                GenericPoly.gen_from_point_lists(
-                                    points.tolist(),
-                                    []))
+                            generics.append(GenericPoly.gen_from_point_lists(points.tolist(),[]))
                         else:
-                            generics.append(
-                                GenericPolyline.gen_from_point_lists(
-                                    points.tolist(),
-                                    []))
+                            generics.append(GenericPolyline.gen_from_point_lists(points.tolist(),[]))
                     elif isinstance(entity, ezdxf.modern.graphics.Point):
                         from popupcad.geometry.vertex import DrawnPoint
                         point = DrawnPoint(numpy.array(entity.get_dxf_attrib('location')[:2]))
                         generics.append(point)
+                    elif isinstance(entity, ezdxf.modern.graphics.Spline):
+                        knots = entity.get_knot_values()
+                        control_points = entity.get_control_points()
+                        weights = entity.get_weights()
+                        n = len(control_points)-1
+                        domain = popupcad.algorithms.spline_functions.make_domain(knots,n*5)
+                        points = popupcad.algorithms.spline_functions.interpolated_points(control_points,knots,weights,domain)
+                        points = points[:,:2]
+                        if entity.closed:
+                            generics.append(GenericPoly.gen_from_point_lists(points.tolist(),[]))
+                        else:
+                            generics.append(GenericPolyline.gen_from_point_lists(points.tolist(),[]))
+
+#                        print(points)
                     else:
                         print(entity)
             new = cls()
             new.addoperationgeometries(generics)
+            newfile = os.path.splitext(filename)[0]+'.sketch'
+            new.updatefilename(newfile)
             return filename, new
         else:
             return None, None
@@ -202,7 +212,7 @@ class Sketch(popupCADFile):
             elif 'dxf' in selectedfilter:
                 return self.save_dxf(filename)
 
-    def save_dxf(self,filename):
+    def save_dxf(self,filename,update_filename = True):
         import ezdxf
         ezdxf.options.template_dir = popupcad.supportfiledir        
         
@@ -214,3 +224,5 @@ class Sketch(popupCADFile):
                 item.output_dxf(msp)
         
         dwg.saveas(filename)        
+        newfile = os.path.splitext(filename)[0]+'.sketch'
+        self.updatefilename(newfile)
