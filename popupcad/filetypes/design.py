@@ -293,7 +293,9 @@ class Design(popupCADFile):
     def subdesigns_are_reprocessed(self,value):
         self._subdesigns_are_reprocessed = value
 
-    def reprocessoperations(self, operations=None):
+    def reprocessoperations(self, operations=None,debugprint = False):
+        self.build_tree()
+            
         if not self.subdesigns_are_reprocessed:
             for subdesign in self.subdesigns.values():
                 subdesign.reprocessoperations()
@@ -301,8 +303,15 @@ class Design(popupCADFile):
 
         if operations is None:
             operations = self.operations
+        else:
+            all_decendents = operations+[item for operation in operations for item in operation.decendents()]
+            all_decendents = list(set(all_decendents))
+            operations = [op for op in self.operations if op in all_decendents]
 
-        for op in self.operations:
+        if debugprint:
+            print(operations)
+            
+        for op in operations:
             op.generate(self)
             
     def build_tree(self):

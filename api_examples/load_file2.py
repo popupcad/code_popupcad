@@ -9,6 +9,9 @@ import os
 import sys
 import popupcad
 import popupcad_deprecated
+import time
+
+t0 = time.time()
 
 popupcad.deprecated = popupcad_deprecated
 sys.modules['popupcad.deprecated'] = popupcad_deprecated
@@ -17,15 +20,22 @@ sys.modules['popupcad.deprecated'] = popupcad_deprecated
 
 #app = qg.QApplication(sys.argv)
 directory = 'C:/Users/danaukes/Desktop'
-filename = 'inertia_test.cad'
+filename = 'slow_file.cad'
 #filename = 'SLL01.cad'
 full_filename = os.path.normpath(os.path.join(directory,filename))
 
 d = popupcad.filetypes.design.Design.load_yaml(full_filename)
-d.reprocessoperations()
-a=d.operations[0].output[0]
-b=a.generic_laminate()
-v,m,com,I = b.mass_properties()
+t1 = time.time()
+print('loaded file:',t1-t0)
+d.reprocessoperations(debugprint=True)
+t2 = time.time()
+print('processed file:',t2-t1)
+d.reprocessoperations([d.operations[0]],debugprint=True)
+t3 = time.time()
+print('processed operation:',t3-t2)
+#a=d.operations[0].output[0]
+#b=a.generic_laminate()
+#v,m,com,I = b.mass_properties()
 #all_sketches = [sketch for id,sketch in d.sketches.items()]
 #first_sketch = all_sketches[0]
 #first_shape = first_sketch.operationgeometry[0]
