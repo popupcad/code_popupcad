@@ -11,6 +11,8 @@ from popupcad.widgets.table_common import TableControl,Table
 import popupcad
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
+from popupcad.filetypes.validators import StrictDoubleValidator
+
 class UneditableItem(qg.QTableWidgetItem):
     def __init__(self,*args,**kwargs):
         super(UneditableItem,self).__init__(*args,**kwargs)
@@ -100,7 +102,7 @@ class FloatDialog(TextDialog):
     
     def __init__(self, *args,**kwargs):
         super(FloatDialog, self).__init__(*args, **kwargs)
-        validator = qg.QDoubleValidator(self.bottom, self.top, self.decimals, self.text_edit)
+        validator = StrictDoubleValidator(self.bottom, self.top, self.decimals, self.text_edit)
         self.text_edit.setValidator(validator)
 
     def set_data(self,val):   

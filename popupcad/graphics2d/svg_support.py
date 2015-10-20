@@ -13,6 +13,7 @@ import numpy
 import os
 import sys
 
+from popupcad.filetypes.validators import StrictDoubleValidator
 
 class OutputSelection(qg.QDialog):
 
@@ -25,8 +26,10 @@ class OutputSelection(qg.QDialog):
         self.rotation = qg.QLineEdit()
         self.rotation.setAlignment(qc.Qt.AlignRight)
         self.rotation.setText(str(0))
-        self.rotation.setValidator(
-            qg.QDoubleValidator(-999.0, 999.0, 1, self.rotation))
+        self.rotation.setValidator(StrictDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding, self.rotation))
+
+        self.rotation = qg.QSpinBox()
+        
 
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')

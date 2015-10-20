@@ -90,10 +90,7 @@ class Laminate(IterableLaminate):
         return self.valueoperation('buffer', value, **kwargs)
 
     def cleanup(self, value):
-        return popupcad.algorithms.morphology.cleanup(
-            self,
-            value,
-            resolution=1)
+        return popupcad.algorithms.morphology.cleanup(self,value,resolution=1)
 
     def simplify(self, tolerance, **kwargs):
         return self.valueoperation('simplify',tolerance,preserve_topology=True)

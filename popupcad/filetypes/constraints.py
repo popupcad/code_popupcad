@@ -584,12 +584,10 @@ class ValueConstraint(Constraint):
 
     @classmethod
     def getValue(cls):
-        return qg.QInputDialog.getDouble(
-            None, 'Edit Value', 'Value', 0, -10000, 10000, 5)
+        return qg.QInputDialog.getDouble(None, 'Edit Value', 'Value', 0, popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding)
 
     def edit(self):
-        value, ok = qg.QInputDialog.getDouble(
-            None, "Edit Value", "Value:", self.value, -10000, 10000, 5)
+        value, ok = qg.QInputDialog.getDouble(None, "Edit Value", "Value:", self.value, popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding)
         if ok:
             self.value = value
         del self.generated_equations

@@ -90,7 +90,7 @@ class Dialog(qg.QDialog):
         layout4 = qg.QHBoxLayout()
         layout4.addWidget(qg.QLabel('Shift Layers'))
         self.sb = qg.QSpinBox()
-        self.sb.setRange(-100, 100)
+        self.sb.setRange(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity)
         self.sb.setSingleStep(1)
         self.sb.setValue(shift)
         layout4.addWidget(self.sb)

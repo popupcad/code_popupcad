@@ -259,9 +259,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
         hingelines = sketch_result.to_generic_laminate().geoms[hingelayer]
         hingelines = [item for item in hingelines if item.is_valid_bool()]
 
-        buffered_split = sketch_result.buffer(
-            split_buffer,
-            resolution=self.resolution)
+        buffered_split = sketch_result.buffer(split_buffer,resolution=self.resolution)
 
         allgeoms4 = []
         for geom in hingelines:
@@ -269,10 +267,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
             laminate = Laminate(layerdef)
             for layer in sublaminate_layers:
                 laminate.replacelayergeoms(layer, [geom])
-            allgeoms4.append(
-                laminate.buffer(
-                    hinge_gap,
-                    resolution=self.resolution))
+            allgeoms4.append(laminate.buffer(hinge_gap,resolution=self.resolution))
 
         joint_props = [(stiffness, damping, preload_angle)
                        for item in hingelines]
@@ -318,9 +313,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
                     ii +
                     1:],
                 'union')
-            unsafe_buffer = unsafe.buffer(
-                safe_buffer1,
-                resolution=self.resolution)
+            unsafe_buffer = unsafe.buffer(safe_buffer1,resolution=self.resolution)
             safe_sections.append(allgeoms[ii].difference(unsafe_buffer))
 
         safe = Laminate.unaryoperation(safe_sections, 'union')

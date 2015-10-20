@@ -8,10 +8,12 @@ Please see LICENSE for full license.
 from popupcad.filetypes.operation import Operation
 from popupcad.filetypes.operationoutput import OperationOutput
 
+import popupcad
 import PySide.QtCore as qc
 import PySide.QtGui as qg
 import dev_tools.enum as enum
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
+from popupcad.filetypes.validators import StrictDoubleValidator
 
 
 class Dialog(qg.QDialog):
@@ -56,8 +58,7 @@ class Dialog(qg.QDialog):
             valueedit.setText(str(v))
 
     #        self.valueedit.setInputMask('#009.0')
-            valueedit.setValidator(
-                qg.QDoubleValidator(-999.0, 999.0, 4, valueedit))
+            valueedit.setValidator(StrictDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding, valueedit))
             templayout.addStretch()
             templayout.addWidget(qg.QLabel(valuename))
             templayout.addWidget(valueedit)

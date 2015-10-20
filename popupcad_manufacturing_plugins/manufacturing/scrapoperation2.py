@@ -12,8 +12,8 @@ import PySide.QtCore as qc
 import PySide.QtGui as qg
 import dev_tools.enum as enum
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
-
-
+import popupcad
+from popupcad.filetypes.validators import StrictDoubleValidator
 class Dialog(qg.QDialog):
 
     def __init__(
@@ -56,8 +56,7 @@ class Dialog(qg.QDialog):
             valueedit.setText(str(v))
 
     #        self.valueedit.setInputMask('#009.0')
-            valueedit.setValidator(
-                qg.QDoubleValidator(-999.0, 999.0, 4, valueedit))
+            valueedit.setValidator(StrictDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding, valueedit))
             templayout.addStretch()
             templayout.addWidget(qg.QLabel(valuename))
             templayout.addWidget(valueedit)

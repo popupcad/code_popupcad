@@ -700,8 +700,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         x_num.setMinimum(1)
 
         x_val = qg.QDoubleSpinBox()
-        x_val.setMinimum(-100000)
-        x_val.setMaximum(100000)
+        x_val.setMinimum(popupcad.gui_negative_infinity)
+        x_val.setMaximum(popupcad.gui_positive_infinity)
         x_val.setValue(1)
 
         y_num = qg.QSpinBox()
@@ -710,8 +710,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
         y_val = qg.QDoubleSpinBox()
         y_val.setValue(1)
-        y_val.setMinimum(-100000)
-        y_val.setMaximum(100000)
+        y_val.setMinimum(popupcad.gui_negative_infinity)
+        y_val.setMaximum(popupcad.gui_positive_infinity)
 
         button_ok = qg.QPushButton('Ok')
         button_cancel = qg.QPushButton('Cancel')

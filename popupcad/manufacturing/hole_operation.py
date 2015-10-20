@@ -213,9 +213,7 @@ class HoleOperation(Operation2, LayerBasedOperation):
         hingelines = sketch_result.to_generic_laminate().geoms[hingelayer]
         hingelines = [item for item in hingelines if item.is_valid_bool()]
 
-        buffered_split = sketch_result.buffer(
-            split_buffer,
-            resolution=self.resolution)
+        buffered_split = sketch_result.buffer(split_buffer,resolution=self.resolution)
 
         allgeoms4 = []
         for geom in hingelines:
@@ -224,9 +222,7 @@ class HoleOperation(Operation2, LayerBasedOperation):
             for layer in sublaminate_layers:
                 laminate.replacelayergeoms(layer, [geom])
             allgeoms4.append(
-                laminate.buffer(
-                    hinge_gap,
-                    resolution=self.resolution))
+                laminate.buffer(hinge_gap,resolution=self.resolution))
 
         return allgeoms4, buffered_split, hingelines
 

@@ -10,6 +10,8 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.widgets.table_common import TableControl,Table,Delegate
 import popupcad
 
+from popupcad.filetypes.validators import StrictDoubleValidator
+
 class ListWidgetItem(qg.QListWidgetItem):
 
     def __init__(self, data):
@@ -236,7 +238,7 @@ class FloatElement(Element):
 
     def build_editor(self, parent, delegate):
         editor = qg.QLineEdit(parent)
-        val = qg.QDoubleValidator(self.bottom, self.top, self.decimals, editor)
+        val = StrictDoubleValidator(self.bottom, self.top, self.decimals, editor)
         editor.setValidator(val)
         return editor
 
