@@ -8,6 +8,7 @@ import PySide.QtGui as qg
 import PySide.QtCore as qc
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.widgets.table_common import TableControl,Table,Delegate
+import popupcad
 
 class ListWidgetItem(qg.QListWidgetItem):
 
@@ -216,7 +217,7 @@ class DraggableTreeElement(Element):
 
 class FloatElement(Element):
 
-    def __init__(self, name, ini=0., bottom=-1e-6, top=1e-6, decimals=6):
+    def __init__(self, name, ini=0., bottom=popupcad.gui_negative_infinity, top=popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding):
         super(FloatElement, self).__init__()
         self.name = name
         self.ini = ini

@@ -40,6 +40,7 @@ SI_length_scaling = 1000
 
 inkscape_mm_conversion = 1. / 282.22293
 coreldraw_mm_conversion = 1. / 264.581
+solidworks_mm_conversion = 1000
 
 zoom_max = 1.
 zoom_min = 1e-6
@@ -52,6 +53,11 @@ version = basic_functions.return_formatted_time(
     big_separator='.')
 
 default_buffer_resolution = 4
+default_gui_rounding = 4
+
+gui_infinity = 10
+gui_negative_infinity = -1*10**(gui_infinity)
+gui_positive_infinity = 10**(gui_infinity)
 
 program_name = 'popupCAD'
 deprecated_program_name = 'popupCAD(Compatibility)'

@@ -24,8 +24,7 @@ def modify_device(
 
     holes_1 = support_pieces.buffer(holes_radius)
     holes_2 = holes_1.unarylayeroperation('union', layers, layers)
-    holes = holes_2.difference(
-        holes_1.buffer(1e-3 * popupcad.csg_processing_scaling))
+    holes = holes_2.difference(holes_1.buffer(1e-3 * popupcad.csg_processing_scaling))
     device_with_holes = device.difference(holes)
 
     cut_width = support_sketch.buffer(cut_width / 2)

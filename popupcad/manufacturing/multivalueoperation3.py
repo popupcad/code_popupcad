@@ -7,6 +7,7 @@ Please see LICENSE for full license.
 
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2
+import popupcad
 
 import PySide.QtCore as qc
 import PySide.QtGui as qg
@@ -50,8 +51,7 @@ class Dialog(qg.QDialog):
             valueedit.setText(str(v))
 
     #        self.valueedit.setInputMask('#009.0')
-            valueedit.setValidator(
-                qg.QDoubleValidator(-999.0, 999.0, 4, valueedit))
+            valueedit.setValidator(qg.QDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding, valueedit))
             templayout.addStretch()
             templayout.addWidget(qg.QLabel(valuename))
             templayout.addWidget(valueedit)

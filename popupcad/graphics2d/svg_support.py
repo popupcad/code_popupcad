@@ -20,12 +20,7 @@ class OutputSelection(qg.QDialog):
         super(OutputSelection, self).__init__()
         self.Inkscape = qg.QRadioButton('Inkscape')
         self.CorelDraw = qg.QRadioButton('CorelDraw')
-        self.RenderDXF = qg.QRadioButton('DXF')
         self.Center = qg.QCheckBox('Center')
-
-        self.Inkscape.clicked.connect(self.checkradio)
-        self.CorelDraw.clicked.connect(self.checkradio)
-        self.RenderDXF.clicked.connect(self.checkradio)
 
         self.rotation = qg.QLineEdit()
         self.rotation.setAlignment(qc.Qt.AlignRight)
@@ -45,7 +40,6 @@ class OutputSelection(qg.QDialog):
         layout1 = qg.QHBoxLayout()
         layout1.addWidget(self.Inkscape)
         layout1.addWidget(self.CorelDraw)
-#        layout1.addWidget(self.RenderDXF)
         layout2 = qg.QHBoxLayout()
         layout2.addWidget(button1)
         layout2.addWidget(button2)
@@ -64,25 +58,14 @@ class OutputSelection(qg.QDialog):
         button2.clicked.connect(self.reject)
         self.Inkscape.setChecked(True)
         self.setLayout(layout3)
-        self.RenderDXF.setEnabled(sys.platform == 'win32')
-
-    def checkradio(self):
-        if self.RenderDXF.isChecked():
-            self.rotation.setText(str(0))
-            self.rotation.setEnabled(False)
-        else:
-            self.rotation.setEnabled(True)
 
     def acceptdata(self):
         if self.Inkscape.isChecked():
             return popupcad.inkscape_mm_conversion, self.Center.isChecked(), float(
-                self.rotation.text()), False, self.dirbox.text()
+                self.rotation.text()), self.dirbox.text()
         elif self.CorelDraw.isChecked():
             return popupcad.coreldraw_mm_conversion, self.Center.isChecked(), float(
-                self.rotation.text()), False, self.dirbox.text()
-        elif self.RenderDXF.isChecked():
-            return popupcad.inkscape_mm_conversion, self.Center.isChecked(), float(
-                self.rotation.text()), True, self.dirbox.text()
+                self.rotation.text()), self.dirbox.text()
         else:
             raise Exception
 
@@ -115,7 +98,6 @@ class SVGOutputSupport(object):
             scaling,
             center,
             rotation,
-            render_dxf,
             exportdir):
         #        save prerender state
         tempmodes = []
@@ -160,7 +142,7 @@ class SVGOutputSupport(object):
         s = scaling
         t.scale(s, s)
         t.translate(0, -self.height())
-        if not render_dxf and center:
+        if center:
             v1 = numpy.array([-self.width() / 2, -self.height() / 2])
             theta = -rotation * pi / 180
             R = numpy.array(

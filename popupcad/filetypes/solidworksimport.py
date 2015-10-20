@@ -55,23 +55,23 @@ class Assembly(popupCADFile):
         ok5 = True
         if scalefactor is None:
             scalefactor, ok1 = qg.QInputDialog.getDouble(
-                parent, 'Scale Factor', 'Scale Factor', 1, 0, 1e10, decimals=10)
+                parent, 'Scale Factor', 'Scale Factor', 1, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
 
         if area_ratio is None:
             area_ratio, ok2 = qg.QInputDialog.getDouble(
-                parent, 'Area Ratio', 'Area Ratio', .001, 0, 1e10, decimals=10)
+                parent, 'Area Ratio', 'Area Ratio', .001, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
 
         if colinear_tol is None:
             colinear_tol, ok3 = qg.QInputDialog.getDouble(
-                parent, 'Colinear Tolerance', 'Colinear Tolerance', 1e-8, 0, 1e10, decimals=10)
+                parent, 'Colinear Tolerance', 'Colinear Tolerance', 1e-8, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
 
         if bufferval is None:
             bufferval, ok4 = qg.QInputDialog.getDouble(
-                parent, 'Buffer', 'Buffer', 0, -1e10, 1e10, decimals=10)
+                parent, 'Buffer', 'Buffer', 0, popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
 
         if cleanup is None:
             cleanup, ok5 = qg.QInputDialog.getDouble(
-                parent, 'Simplify', 'Simplify', 0.0, 0, 1e10, decimals=10)
+                parent, 'Simplify', 'Simplify', 0.0, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
 
         if ok1 and ok2 and ok3 and ok4 and ok5:
             self._convert(
@@ -143,7 +143,7 @@ class Assembly(popupCADFile):
 
         v2 = R1.T.dot(R2.T.dot(looparray) + b2)
         v2 = v2[0:2, :].T
-        v2 = v2 * scalefactor
+        v2 = v2 * scalefactor * popupcad.solidworks_mm_conversion
         return v2.tolist()
 
     def build_face_sketch(self):
