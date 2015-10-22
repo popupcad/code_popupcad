@@ -54,7 +54,7 @@ version = basic_functions.return_formatted_time(
 
 default_buffer_resolution = 4
 
-default_gui_rounding = 6
+gui_default_decimals = 6
 
 gui_infinity = 8
 gui_negative_infinity = -1*10**(gui_infinity)

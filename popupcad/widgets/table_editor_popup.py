@@ -98,7 +98,7 @@ class TextDialog(qg.QDialog):
 class FloatDialog(TextDialog):
     bottom = popupcad.gui_negative_infinity
     top = popupcad.gui_positive_infinity
-    decimals = popupcad.default_gui_rounding
+    decimals = popupcad.gui_default_decimals
     
     def __init__(self, *args,**kwargs):
         super(FloatDialog, self).__init__(*args, **kwargs)

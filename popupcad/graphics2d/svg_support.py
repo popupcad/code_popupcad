@@ -26,7 +26,7 @@ class OutputSelection(qg.QDialog):
         self.rotation = qg.QLineEdit()
         self.rotation.setAlignment(qc.Qt.AlignRight)
         self.rotation.setText(str(0))
-        self.rotation.setValidator(StrictDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding, self.rotation))
+        self.rotation.setValidator(StrictDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.gui_default_decimals, self.rotation))
 
         self.rotation = qg.QSpinBox()
         

@@ -55,23 +55,23 @@ class Assembly(popupCADFile):
         ok5 = True
         if scalefactor is None:
             scalefactor, ok1 = qg.QInputDialog.getDouble(
-                parent, 'Scale Factor', 'Scale Factor', 1, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
+                parent, 'Scale Factor', 'Scale Factor', 1, 0, popupcad.gui_positive_infinity, decimals=popupcad.gui_default_decimals)
 
         if area_ratio is None:
             area_ratio, ok2 = qg.QInputDialog.getDouble(
-                parent, 'Area Ratio', 'Area Ratio', .001, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
+                parent, 'Area Ratio', 'Area Ratio', .001, 0, popupcad.gui_positive_infinity, decimals=popupcad.gui_default_decimals)
 
         if colinear_tol is None:
             colinear_tol, ok3 = qg.QInputDialog.getDouble(
-                parent, 'Colinear Tolerance', 'Colinear Tolerance', 1e-8, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
+                parent, 'Colinear Tolerance', 'Colinear Tolerance', 1e-8, 0, popupcad.gui_positive_infinity, decimals=popupcad.gui_default_decimals)
 
         if bufferval is None:
             bufferval, ok4 = qg.QInputDialog.getDouble(
-                parent, 'Buffer', 'Buffer', 0, popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
+                parent, 'Buffer', 'Buffer', 0, popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, decimals=popupcad.gui_default_decimals)
 
         if cleanup is None:
             cleanup, ok5 = qg.QInputDialog.getDouble(
-                parent, 'Simplify', 'Simplify', 0.0, 0, popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding)
+                parent, 'Simplify', 'Simplify', 0.0, 0, popupcad.gui_positive_infinity, decimals=popupcad.gui_default_decimals)
 
         if ok1 and ok2 and ok3 and ok4 and ok5:
             self._convert(

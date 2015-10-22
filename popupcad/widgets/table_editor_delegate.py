@@ -219,7 +219,7 @@ class DraggableTreeElement(Element):
 
 class FloatElement(Element):
 
-    def __init__(self, name, ini=0., bottom=popupcad.gui_negative_infinity, top=popupcad.gui_positive_infinity, decimals=popupcad.default_gui_rounding):
+    def __init__(self, name, ini=0., bottom=popupcad.gui_negative_infinity, top=popupcad.gui_positive_infinity, decimals=popupcad.gui_default_decimals):
         super(FloatElement, self).__init__()
         self.name = name
         self.ini = ini

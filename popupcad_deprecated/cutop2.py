@@ -65,7 +65,7 @@ class Dialog(qg.QDialog):
             valueedit.setText(str(v))
 
     #        self.valueedit.setInputMask('#009.0')
-            valueedit.setValidator(StrictDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.default_gui_rounding, valueedit))
+            valueedit.setValidator(StrictDoubleValidator(popupcad.gui_negative_infinity, popupcad.gui_positive_infinity, popupcad.gui_default_decimals, valueedit))
             templayout.addStretch()
             templayout.addWidget(qg.QLabel(valuename))
             templayout.addWidget(valueedit)
