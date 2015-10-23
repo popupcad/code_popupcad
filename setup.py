@@ -21,7 +21,6 @@ packages.append('popupcad.widgets')
 
 packages.append('dev_tools')
 packages.append('popupcad_manufacturing_plugins')
-packages.append('popupcad_manufacturing_plugins.algorithms')
 packages.append('popupcad_manufacturing_plugins.manufacturing')
 packages.append('popupcad_deprecated')
 packages.append('pypoly2tri')

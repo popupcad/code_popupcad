@@ -6,7 +6,6 @@ Please see LICENSE for full license.
 """
 
 from . import manufacturing
-from . import algorithms
 
 #import external modules
 import PySide

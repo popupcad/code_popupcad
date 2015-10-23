@@ -159,7 +159,7 @@ class ScrapOperation2(Operation2):
 
     def generate(self, design):
         import popupcad
-        import popupcad_manufacturing_plugins.algorithms.removability as removability
+        import popupcad.algorithms.removability as removability
 
         sheet_id, sheet_output = self.operation_links['sheet'][0]
         device_id, device_output = self.operation_links['device'][0]

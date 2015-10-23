@@ -16,7 +16,7 @@ class ToolClearance2(MultiValueOperation2):
     upgradeclass = ToolClearance3
 
     def operate(self, design):
-        import popupcad_manufacturing_plugins.algorithms.toolclearance as toolclearance
+        import popupcad.algorithms.toolclearance as toolclearance
         ls1 = design.op_from_ref(
             self.operation_link1).output[
             self.getoutputref()].csg

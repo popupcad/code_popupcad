@@ -8,7 +8,6 @@ Please see LICENSE for full license.
 
 from popupcad.manufacturing.multivalueoperation2 import MultiValueOperation2
 from popupcad.filetypes.operationoutput import OperationOutput
-import popupcad_manufacturing_plugins.algorithms as algorithms
 from popupcad_manufacturing_plugins.manufacturing.supportcandidate4 import SupportCandidate4
 
 
@@ -33,7 +32,7 @@ class SupportCandidate3(MultiValueOperation2):
         else:
             raise Exception
 
-        support, k3 = algorithms.web.autosupport(ls1, keepout, design.return_layer_definition(), self.values[0] *popupcad.csg_processing_scaling, self.values[1] *popupcad.csg_processing_scaling, 1e-5 *popupcad.csg_processing_scaling)
+        support, k3 = popupcad.algorithms.web.autosupport(ls1, keepout, design.return_layer_definition(), self.values[0] *popupcad.csg_processing_scaling, self.values[1] *popupcad.csg_processing_scaling, 1e-5 *popupcad.csg_processing_scaling)
         a = OperationOutput(support, 'support', self)
         b = OperationOutput(keepout, 'cut line', self)
         c = OperationOutput(k3, 'cut area', self)

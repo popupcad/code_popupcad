@@ -7,8 +7,6 @@ Please see LICENSE for full license.
 
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operationoutput import OperationOutput
-import popupcad_manufacturing_plugins.algorithms as algorithms
-
 
 class AutoWeb4(MultiValueOperation3):
     name = 'Web'
@@ -28,7 +26,7 @@ class AutoWeb4(MultiValueOperation3):
         elif self.keepout_type == self.keepout_types.mill_flip_keepout:
             keepout = popupcad.algorithms.keepout.millflipkeepout(ls1)
 
-        sheet, outer_web, inner_elements, buffered_keepout = algorithms.web.generate_web(ls1, keepout, design.return_layer_definition(
+        sheet, outer_web, inner_elements, buffered_keepout = popupcad.algorithms.web.generate_web(ls1, keepout, design.return_layer_definition(
         ), (self.values[0] + self.values[1]) *popupcad.csg_processing_scaling, self.values[1] *popupcad.csg_processing_scaling)
 
         a = OperationOutput(outer_web, 'Web', self)

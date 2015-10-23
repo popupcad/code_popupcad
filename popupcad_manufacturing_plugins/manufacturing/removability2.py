@@ -7,8 +7,7 @@ Please see LICENSE for full license.
 
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 import dev_tools.enum as enum
-import popupcad_manufacturing_plugins.algorithms as algorithms
-
+import popupcad
 
 class Removability2(MultiValueOperation3):
     name = 'Removability'
@@ -25,11 +24,11 @@ class Removability2(MultiValueOperation3):
         ls1 = design.op_from_ref(operation_ref).output[output_index].csg
 
         if self.keepout_type == self.keepout_types.one_way_up:
-            keepout = algorithms.removability.one_way_up(ls1)
+            keepout = popupcad.algorithms.removability.one_way_up(ls1)
         elif self.keepout_type == self.keepout_types.one_way_down:
-            keepout = algorithms.removability.one_way_down(ls1)
+            keepout = popupcad.algorithms.removability.one_way_down(ls1)
         elif self.keepout_type == self.keepout_types.two_way:
-            keepout = algorithms.removability.two_way(ls1)
+            keepout = popupcad.algorithms.removability.two_way(ls1)
         else:
             raise Exception
         return keepout

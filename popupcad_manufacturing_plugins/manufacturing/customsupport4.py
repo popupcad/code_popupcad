@@ -18,9 +18,6 @@ from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.widgets.listmanager import SketchListManager
 from popupcad.filetypes.listwidgetitem import ListWidgetItem
 
-import popupcad_manufacturing_plugins.algorithms as algorithms
-
-
 class Dialog(qg.QDialog):
 
     def __init__(
@@ -209,7 +206,7 @@ class CustomSupport4(Operation2, LayerBasedOperation):
             support.replacelayergeoms(layer, operationgeom)
 
         device = design.op_from_ref(devicelink).output[outputindex].csg
-        modified_device, supports, cuts = algorithms.modify_device.modify_device(device, support, self.support_width *
+        modified_device, supports, cuts = popupcad.algorithms.modify_device.modify_device(device, support, self.support_width *
                                                                                  popupcad.csg_processing_scaling, self.support_out *
                                                                                  popupcad.csg_processing_scaling, self.hole_radius *
                                                                                  popupcad.csg_processing_scaling, self.cut_width *

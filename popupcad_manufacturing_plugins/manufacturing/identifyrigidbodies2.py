@@ -21,7 +21,7 @@ class IdentifyRigidBodies2(MultiValueOperation3):
         generic = design.op_from_ref(
             operation_ref).output[output_index].generic_laminate()
         layerdef = design.return_layer_definition()
-        new_csgs = popupcad_manufacturing_plugins.algorithms.manufacturing_functions.find_rigid(
+        new_csgs = popupcad.algorithms.manufacturing_functions.find_rigid(
             generic,
             layerdef)
         self.output = []

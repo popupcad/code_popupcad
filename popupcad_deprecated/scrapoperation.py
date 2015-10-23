@@ -156,7 +156,7 @@ class ScrapOperation(Operation):
 
     def generate(self, design):
         import popupcad
-        import popupcad_manufacturing_plugins.algorithms.removability as removability
+        import popupcad.algorithms.removability as removability
 
         sheet = design.op_from_ref(
             self.operation_links[0][0]).output[
