@@ -7,8 +7,7 @@ Please see LICENSE for full license.
 
 from popupcad.manufacturing.multivalueoperation3 import MultiValueOperation3
 from popupcad.filetypes.operationoutput import OperationOutput
-import popupcad_manufacturing_plugins
-
+import popupcad
 
 class IdentifyRigidBodies2(MultiValueOperation3):
     name = 'Identify Rigid Bodies'
