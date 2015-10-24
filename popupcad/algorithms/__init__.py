@@ -5,7 +5,6 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 from . import body_detection
-from . import checker
 from . import csg_shapely
 from . import design_documentation
 from . import getjoints
