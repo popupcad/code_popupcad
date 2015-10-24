@@ -30,7 +30,7 @@ print('loaded file:',t1-t0)
 d.reprocessoperations(debugprint=True)
 t2 = time.time()
 print('processed file:',t2-t1)
-d.reprocessoperations([d.operations[0]],debugprint=True)
+d.reprocessoperations([d.operations[-1]],debugprint=True)
 t3 = time.time()
 print('processed operation:',t3-t2)
 #a=d.operations[0].output[0]
@@ -47,4 +47,4 @@ print('processed operation:',t3-t2)
 #first_sketch = all_sketches[0]
 #first_shape = first_sketch.operationgeometry[0]
 
-#sys.exit(app.exec_())
+#sys.exit(app.exec_())n
