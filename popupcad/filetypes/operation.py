@@ -41,8 +41,8 @@ class Operation(Node, UserData, ClassTools):
         newop.copyattrs(self, self.attr_copy)
         return newop
 
-    def copy(self, *args, **kwargs):
-        return self
+#    def copy(self, *args, **kwargs):
+#        return self
 
     def upgrade(self, *args, **kwargs):
         return self
