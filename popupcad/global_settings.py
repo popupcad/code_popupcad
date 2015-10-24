@@ -61,7 +61,6 @@ gui_negative_infinity = -1*10**(gui_infinity)
 gui_positive_infinity = 10**(gui_infinity)
 
 program_name = 'popupCAD'
-deprecated_program_name = 'popupCAD(Compatibility)'
 upgrade_tool_name = 'popupCAD Upgrade Tool'
 description = 'popupCAD: A design tool for developing laminate devices'
 classifiers = [

@@ -46,13 +46,11 @@ class Widget(qg.QWidget):
         self.file_list_result.horizontalHeader().setStretchLastSection(True)     
 
         sublayout2 = qg.QHBoxLayout()
-        self.deprecated = qg.QCheckBox('deprecated')   
         self.upgrade = qg.QCheckBox('upgrade')   
         self.reprocess = qg.QCheckBox('test compile')    
         self.ignore_compile_fail = qg.QCheckBox('ignore compile fail')    
         
         self.check_button = qg.QPushButton('check files')
-        sublayout2.addWidget(self.deprecated)
         sublayout2.addWidget(self.upgrade)
         sublayout2.addWidget(self.reprocess)
         sublayout2.addWidget(self.ignore_compile_fail)
@@ -97,7 +95,6 @@ class Widget(qg.QWidget):
 
         self.clear_results1()
         self.recursive.setChecked(True)
-        self.deprecated.setChecked(True)
         self.upgrade.setChecked(True)
         self.reprocess.setChecked(True)
         self.ignore_compile_fail.setChecked(True)
@@ -161,11 +158,10 @@ class Widget(qg.QWidget):
         self.clear_results2()
         items = self.file_list.selectedItems()
         items = [item.data(qc.Qt.ItemDataRole.DisplayRole) for item in items]
-        try_deprecated = self.deprecated.isChecked()
         try_reprocess = self.reprocess.isChecked()
         try_upgrade = self.upgrade.isChecked()
         ignore_compile_fail = self.ignore_compile_fail.isChecked()
-        processes = [Checker(item,try_deprecated=try_deprecated,try_upgrade=try_upgrade) for item in items]
+        processes = [Checker(item,try_upgrade=try_upgrade) for item in items]
         process_manager = pm.ProcessManager(processes,max_processes=self.max_processes,debug = True)
         process_manager.run()
 

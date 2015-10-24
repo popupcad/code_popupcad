@@ -21,12 +21,9 @@ class UpgradeException(Exception):
     pass
 
 class Checker(ProcessData):
-    def __init__(self,filename,try_deprecated = True,try_upgrade = True):
+    def __init__(self,filename,try_upgrade = True):
         super(Checker,self).__init__()
         self.filename = filename
-        self.try_deprecated = try_deprecated
-#        self.try_test_yaml = try_test_yaml
-#        self.try_reprocess = try_reprocess
         self.try_upgrade = try_upgrade
         self.result = ''
     def run(self):
@@ -35,19 +32,8 @@ class Checker(ProcessData):
                 d = popupcad.filetypes.design.Design.load_yaml(self.filename)
                 self.result = 'loaded'
             except:
-                if self.try_deprecated:
-                    import popupcad_deprecated
-                    popupcad.deprecated = popupcad_deprecated
-                    sys.modules['popupcad.deprecated'] = popupcad_deprecated
-                    try:
-                        d = popupcad.filetypes.design.Design.load_yaml(self.filename)
-                        self.result = 'loaded w/ dependencies'
-                    except:
-                        self.result = 'load failed'
-                        raise LoadException()
-                else:
-                    self.result = 'load failed'
-                    raise LoadException()
+                self.result = 'load failed'
+                raise LoadException()
 
             if self.try_upgrade:
                 try:

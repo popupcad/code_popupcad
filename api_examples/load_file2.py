@@ -6,15 +6,10 @@ Please see LICENSE for full license.
 """
 
 import os
-import sys
 import popupcad
-import popupcad_deprecated
 import time
 
 t0 = time.time()
-
-popupcad.deprecated = popupcad_deprecated
-sys.modules['popupcad.deprecated'] = popupcad_deprecated
 
 #import PySide.QtGui as qg
 

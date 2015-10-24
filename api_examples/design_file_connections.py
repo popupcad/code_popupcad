@@ -14,9 +14,6 @@ import os
 import sys
 import yaml
 import popupcad
-import popupcad_deprecated
-popupcad.deprecated = popupcad_deprecated
-sys.modules['popupcad.deprecated'] = popupcad_deprecated
 import glob
 #import PySide.QtGui as qg
 

@@ -184,7 +184,6 @@ class Design(popupCADFile):
         return new
 
     def upgrade_operations2(self,old_layer_def,new_layer_def):
-        from popupcad_deprecated.sketchoperation2 import SketchOperation2
         from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
         from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
         from popupcad.manufacturing.freeze import Freeze
@@ -193,28 +192,7 @@ class Design(popupCADFile):
         ops_to_remove = []
         replacements = []
         for op0 in self.operations:
-            if isinstance(op0,SketchOperation2) and op0.operation_link1 is not None:
-                sketch_links = {'sketch': [op0.sketchid]}
-                op1 = SimpleSketchOp(sketch_links, op0.layer_links)
-                a = (op0.operation_link1, op0.outputref)
-                b = (op1.id, 0)
-                if op0.function in LaminateOperation2.unaryoperationtypes:
-                    unary_links = [a, b]
-                    binary_links = []
-                else:
-                    unary_links = [a]
-                    binary_links = [b]
-                operation_links = {
-                    'unary': unary_links,
-                    'binary': binary_links}
-                op2 = LaminateOperation2(operation_links, op0.function)
-                op2.id = op0.id
-#                newoperations.append(op0)
-                newoperations.append(op1)
-                newoperations.append(op2)
-#                replacements.append(((op0.id,0),(op2.id,0)))
-#                ops_to_remove.append(op0)
-            elif isinstance(op0,Freeze):
+            if isinstance(op0,Freeze):
                 if isinstance(op0.generic,dict):
                     dict1 = dict([(layer.id,layer) for layer in op0.generic.keys()])
                     new_geoms = dict([(layer,op0.generic[dict1[layer.id]]) for layer in new_layer_def.layers])                        
