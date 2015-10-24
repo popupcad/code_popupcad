@@ -10,10 +10,12 @@ import popupcad
 import time
 import glob
 import shutil
+import time
 #import PySide.QtGui as qg
 
+t_0 = time.time()
 #app = qg.QApplication(sys.argv)
-top_directory = 'C:/Users/danaukes/Desktop'
+top_directory = 'C:/Users/danaukes/Dropbox/zhis sentinal 11 files/source'
 failures_directory = 'C:/Users/danaukes/Desktop/failures'
 filenames = []
 for directory,subdirectory,files in os.walk(top_directory):
@@ -34,10 +36,12 @@ for filename in filenames:
     except:
         failed.append(full_filename)
 
-if not os.path.exists(failures_directory):
-    os.mkdir(failures_directory)
-
-for filename in failed:
-    basename = os.path.split(filename)[1]
-    newfilename = os.path.join(failures_directory,basename)
-    shutil.move(filename,newfilename)
+t_final = time.time()
+t_total = t_final - t_0
+#if not os.path.exists(failures_directory):
+#    os.mkdir(failures_directory)
+#
+#for filename in failed:
+#    basename = os.path.split(filename)[1]
+#    newfilename = os.path.join(failures_directory,basename)
+#    shutil.move(filename,newfilename)
