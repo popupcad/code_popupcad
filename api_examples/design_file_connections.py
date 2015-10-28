@@ -15,7 +15,6 @@ import sys
 import yaml
 import popupcad
 import glob
-#import PySide.QtGui as qg
 
 def fix(*args):
     return os.path.normpath(os.path.join(*args))

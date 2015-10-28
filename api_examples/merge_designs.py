@@ -5,7 +5,9 @@ Created on Fri Sep  4 17:13:42 2015
 @author: danaukes
 """
 #import sys
-#import PySide.QtGui as qg
+#import qt
+#qc = qt.QtCore
+#qg = qt.QtGui
 #app = qg.QApplication(sys.argv[0])
 
 import popupcad

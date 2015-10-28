@@ -58,7 +58,7 @@ except:
     pass
 
 #load external modules
-import PySide
+import qt
 import collada
 import dev_tools
 import ezdxf

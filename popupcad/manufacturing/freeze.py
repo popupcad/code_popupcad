@@ -8,7 +8,10 @@ Please see LICENSE for full license.
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2
 
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
+
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.filetypes.design import NoOperation
 

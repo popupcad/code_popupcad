@@ -4,11 +4,13 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import PySide.QtGui as qg    
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import matplotlib
 import matplotlib.pyplot as plt
 plt.ion()
-matplotlib.rcParams['backend.qt4']='PySide'
+matplotlib.rcParams['backend.qt4']=qt.loaded
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure

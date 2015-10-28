@@ -4,8 +4,9 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import PySide.QtGui as qg
-import PySide.QtCore as qc
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.widgets.table_common import TableControl,Table,Delegate
 import popupcad

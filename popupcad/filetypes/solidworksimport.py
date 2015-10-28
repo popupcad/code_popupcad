@@ -10,7 +10,9 @@ import numpy
 from popupcad.filetypes.genericshapes import GenericPoly
 from popupcad.filetypes.genericshapebase import NotSimple, ShapeInvalid, GenericShapeBase
 import popupcad
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad.filetypes.popupcad_file import popupCADFile
 #import shapely.geometry as sg
 class Loop(object):

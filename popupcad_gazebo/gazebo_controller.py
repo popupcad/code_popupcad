@@ -250,11 +250,12 @@ def export(program):
             operation = tmp_op
 
     if operation is None:            
-        import PySide.QtGui as qg
-        import PySide
+        import qt
+        qc = qt.QtCore
+        qg = qt.QtGui
         widget = qg.QMessageBox()
         widget.setText("Error: No Valid Joint Operation Detected")
-        widget.setWindowModality(PySide.QtCore.Qt.NonModal)
+        widget.setWindowModality(qc.Qt.NonModal)
         widget.exec_() 
     else:
         export_inner(operation)
@@ -375,11 +376,12 @@ def export_inner(operation, useDart=False):
     #follow_model(robot_name)
     pause_simulation(world_name, pause=False)
     code_process.start()    
-    import PySide.QtGui as qg
-    import PySide
+    import qt
+    qc = qt.QtCore
+    qg = qt.QtGui
     widget = qg.QMessageBox()
     widget.setText("Press Okay to Stop the Simulation and Close Gazebo")
-    widget.setWindowModality(PySide.QtCore.Qt.NonModal)
+    widget.setWindowModality(qc.Qt.NonModal)
     widget.exec_() 
     code_process.terminate()
     gazebo.terminate()

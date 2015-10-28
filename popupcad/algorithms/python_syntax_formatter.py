@@ -9,19 +9,20 @@ Please see LICENSE for full license.
 
 import sys
 
-from PySide.QtCore import QRegExp
-from PySide.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 
 def syntax_format(color, style=''):
     """Return a QTextCharFormat with the given attributes.
     """
-    _color = QColor()
+    _color = qg.QColor()
     _color.setNamedColor(color)
 
-    _format = QTextCharFormat()
+    _format = qg.QTextCharFormat()
     _format.setForeground(_color)
     if 'bold' in style:
-        _format.setFontWeight(QFont.Bold)
+        _format.setFontWeight(qg.QFont.Bold)
     if 'italic' in style:
         _format.setFontItalic(True)
 
@@ -42,7 +43,7 @@ STYLES = {
 }
 
 
-class PythonHighlighter (QSyntaxHighlighter):
+class PythonHighlighter (qg.QSyntaxHighlighter):
     """Syntax highlighter for the Python language.
     """
     # Python keywords
@@ -73,13 +74,13 @@ class PythonHighlighter (QSyntaxHighlighter):
         '\{', '\}', '\(', '\)', '\[', '\]',
     ]
     def __init__(self, document):
-        QSyntaxHighlighter.__init__(self, document)
+        qg.QSyntaxHighlighter.__init__(self, document)
 
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
-        self.tri_single = (QRegExp("'''"), 1, STYLES['string2'])
-        self.tri_double = (QRegExp('"""'), 2, STYLES['string2'])
+        self.tri_single = (qc.QRegExp("'''"), 1, STYLES['string2'])
+        self.tri_double = (qc.QRegExp('"""'), 2, STYLES['string2'])
 
         rules = []
 
@@ -116,7 +117,7 @@ class PythonHighlighter (QSyntaxHighlighter):
         ]
 
         # Build a QRegExp for each pattern
-        self.rules = [(QRegExp(pat), index, fmt)
+        self.rules = [(qc.QRegExp(pat), index, fmt)
             for (pat, index, fmt) in rules]
 
 
@@ -183,11 +184,13 @@ class PythonHighlighter (QSyntaxHighlighter):
             return False
             
 if __name__ == "__main__":
-    from PySide import QtGui
+    import qt
+    qc = qt.QtCore
+    qg = qt.QtGui
     import syntax
     
-    app = QtGui.QApplication([])
-    editor = QtGui.QPlainTextEdit()
+    app = qg.QApplication([])
+    editor = qg.QPlainTextEdit()
     syntax.PythonHighlighter(editor.document())
     editor.show()
     

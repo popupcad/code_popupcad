@@ -4,8 +4,10 @@ Created on Sun Sep 27 12:29:46 2015
 
 @author: danaukes
 """
-import PySide.QtGui as qg
-import PySide.QtCore as qc
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
+
 import numpy
 import popupcad
 from popupcad.filetypes.genericshapes import GenericPoly

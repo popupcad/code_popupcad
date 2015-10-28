@@ -6,8 +6,9 @@ Please see LICENSE for full license.
 """
 
 import popupcad
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import pyqtgraph as pg
 import pyqtgraph.opengl as gl
 import numpy

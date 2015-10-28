@@ -5,8 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad.graphics2d.graphicsitems import Common, CommonShape
 from popupcad.geometry.vertex import ShapeVertex
 from popupcad.filetypes.genericshapes import GenericPoly, GenericPolyline, GenericLine, GenericCircle, GenericTwoPointRect

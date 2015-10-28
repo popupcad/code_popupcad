@@ -9,8 +9,9 @@ Please see LICENSE for full license.
 from popupcad.geometry.vertex import ShapeVertex
 
 import numpy
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from dev_tools.enum import enum
 from popupcad.filetypes.popupcad_file import popupCADFile
 import popupcad

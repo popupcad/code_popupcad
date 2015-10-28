@@ -6,8 +6,13 @@ Please see LICENSE for full license.
 """
 
 import sys
-import PySide.QtGui as qg
-app = qg.QApplication(sys.argv[0])
+
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
+
+app = qg.QApplication([sys.argv[0]])
+#app = qg.QApplication(sys.argv[0])
 import popupcad
 plugins = []
 

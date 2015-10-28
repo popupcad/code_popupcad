@@ -11,7 +11,9 @@ import time
 import glob
 import shutil
 import time
-#import PySide.QtGui as qg
+#import qt
+#qc = qt.QtCore
+#qg = qt.QtGui
 
 if __name__=='__main__':
     t_0 = time.time()

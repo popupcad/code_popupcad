@@ -6,7 +6,9 @@ Please see LICENSE for full license.
 """
 
 import sys
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import numpy
 import popupcad
 import popupcad.filetypes

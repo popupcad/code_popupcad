@@ -7,8 +7,9 @@ Please see LICENSE for full license.
 
 import os
 import popupcad
-import PySide.QtGui as qg
-import PySide.QtCore as qc
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad.graphics2d.graphicsscene import SimpleGraphicsScene
 from popupcad.graphics2d.graphicsview import SimpleGraphicsView
 

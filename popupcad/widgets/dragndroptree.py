@@ -5,8 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad.filetypes.userdata import UserData
 from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph, Node
 

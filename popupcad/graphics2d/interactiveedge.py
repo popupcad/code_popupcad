@@ -5,8 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 import popupcad
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from . import modes
 from popupcad.graphics2d.graphicsitems import Common
 from math import atan2, pi

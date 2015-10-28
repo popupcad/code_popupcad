@@ -9,7 +9,9 @@ import popupcad
 from popupcad.filetypes.sketch import Sketch
 import numpy
 import sys
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad_manufacturing_plugins.manufacturing.outersheet3 import OuterSheet3
 
 def find_sketch_with_string(design,string):

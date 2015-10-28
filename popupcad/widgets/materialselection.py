@@ -6,8 +6,9 @@ Please see LICENSE for full license.
 """
 #import popupcad.materials.materials as materials
 from popupcad.filetypes.layerdef import LayerDef
-import PySide.QtGui as qg
-
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 
 class ClassItem(qg.QListWidgetItem):
 

@@ -5,7 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 import sys
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import popupcad
 import logging
 import traceback

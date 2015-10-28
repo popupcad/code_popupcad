@@ -4,9 +4,10 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import PySide.QtCore as qc
-import PySide.QtGui as qg
-import PySide.QtSvg as qs
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
+qs = qt.QtSvg
 import popupcad
 from math import pi, sin, cos
 import numpy

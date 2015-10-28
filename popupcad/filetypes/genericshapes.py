@@ -8,8 +8,9 @@ Please see LICENSE for full license.
 import popupcad
 import shapely.geometry
 import numpy
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import numpy.linalg
 
 try: #Hack to ensure Python 2 & 3 support

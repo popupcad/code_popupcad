@@ -7,7 +7,9 @@ Please see LICENSE for full license.
 
 import os
 import glob
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import popupcad
 
 filenames = glob.glob(os.path.join(popupcad.supportfiledir,'icons','*.png'))

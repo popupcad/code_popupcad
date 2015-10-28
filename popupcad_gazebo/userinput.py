@@ -12,8 +12,9 @@ Email: aaronGokaslan<at>gmail.com.
 Please see LICENSE.txt for full license.
 """
 
-import PySide.QtGui as qg
-import PySide.QtCore as qc
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad.algorithms.python_syntax_formatter import PythonHighlighter
 
 class UserInputIDE(qg.QDialog):

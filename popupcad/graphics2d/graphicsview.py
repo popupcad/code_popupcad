@@ -4,8 +4,9 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import popupcad
 
 
@@ -56,7 +57,8 @@ class ZoomHandling(object):
 
     def fit_scene_rect(self, buffer=.1):
         scene_rect = self.create_fitted_scene_rect(buffer)
-        self.scene().setSceneRect(scene_rect)
+        values = scene_rect.x(),scene_rect.y(), scene_rect.width(), scene_rect.height()
+        self.scene().setSceneRect(*values)
         return scene_rect
 
     def bound_zoom(self):
@@ -73,7 +75,7 @@ class ZoomHandling(object):
         scene_rect = self.scene().itemsBoundingRect()
         scene_rect = self.fit_scene_rect(buffer)
         self.fit_scene_rect(buffer)
-        self.fitInView(scene_rect, qc.Qt.KeepAspectRatio)
+        self.fitInView(scene_rect.x(),scene_rect.y(), scene_rect.width(), scene_rect.height(), qc.Qt.KeepAspectRatio)
         self.bound_zoom()
 
     def zoom(self):
@@ -132,8 +134,7 @@ class MouseModes(object):
 
     def __init__(self, scene):
         self.setScene(scene)
-        self.setRubberBandSelectionMode(
-            qc.Qt.ItemSelectionMode.ContainsItemShape)
+        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.ContainsItemShape)
 #        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.IntersectsItemShape)
         self.setRenderHints(
             qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)

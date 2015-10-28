@@ -85,7 +85,9 @@ class Operation(Node, UserData, ClassTools):
     description = property(description_get, description_set)
 
     def edit_description(self):
-        import PySide.QtGui as qg
+        import qt
+        qc = qt.QtCore
+        qg = qt.QtGui
         result, ok = qg.QInputDialog.getText(
             None, 'description', 'label', text=self.description)
         if ok:

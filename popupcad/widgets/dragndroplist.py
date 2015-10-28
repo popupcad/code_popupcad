@@ -4,8 +4,9 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import sys
 
 from popupcad.filetypes.userdata import UserData

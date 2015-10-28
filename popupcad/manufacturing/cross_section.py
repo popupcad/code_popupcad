@@ -5,7 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.listmanager import SketchListManager
 from popupcad.widgets.dragndroptree import DraggableTreeWidget

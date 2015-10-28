@@ -7,8 +7,9 @@ Please see LICENSE for full license.
 
 import sys
 import os
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import glob
 import imp
 

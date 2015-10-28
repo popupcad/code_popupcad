@@ -7,8 +7,9 @@ Please see LICENSE for full license.
 import popupcad
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
 
-import PySide.QtCore as qc
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.validators import StrictDoubleValidator

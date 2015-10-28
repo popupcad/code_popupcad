@@ -8,7 +8,9 @@ Please see LICENSE for full license.
 import sympy
 import sympy.utilities
 import numpy
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import scipy.optimize
 import numpy.linalg
 import popupcad

@@ -6,8 +6,9 @@ Please see LICENSE for full license.
 """
 
 import popupcad
-import PySide.QtGui as qg
-import PySide.QtCore as qc
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 
 if __name__ =='__main__':
     import sys

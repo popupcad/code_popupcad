@@ -4,8 +4,9 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import PySide.QtGui as qg
-import PySide.QtCore as qc
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
 import popupcad
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.table_editor_popup import Table, SingleItemListElement,IntegerElement,Row, TableControl, DraggableTreeElement,Delegate

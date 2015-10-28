@@ -12,7 +12,9 @@ if __name__=='__main__':
     
     t0 = time.time()
     
-    #import PySide.QtGui as qg
+#    import qt
+#    qc = qt.QtCore
+#    qg = qt.QtGui
     
     #app = qg.QApplication(sys.argv)
     directory = 'C:/Users/danaukes/Desktop'

@@ -8,7 +8,10 @@ Please see LICENSE for full license.
 import popupcad
 from popupcad.guis.sketcher import Sketcher
 import sys
-import PySide.QtGui as qg
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
+
 if __name__=='__main__':
     
     app = qg.QApplication(sys.argv)
