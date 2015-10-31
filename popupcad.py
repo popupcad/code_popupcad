@@ -12,7 +12,6 @@ qc = qt.QtCore
 qg = qt.QtGui
 
 app = qg.QApplication([sys.argv[0]])
-#app = qg.QApplication(sys.argv[0])
 import popupcad
 plugins = []
 

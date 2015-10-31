@@ -25,69 +25,24 @@ class InteractiveModes(Modes):
 class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     z_value = 15
     isDeletable = True
-    linewidth = 3.0
+    _line_width = 3.0
     style = qc.Qt.SolidLine
     capstyle = qc.Qt.RoundCap
     joinstyle = qc.Qt.RoundJoin
     brushstyle = qc.Qt.SolidPattern
-    nobrush = qc.Qt.NoBrush
     modes = InteractiveModes()
 
-    boundingrectbuffer = 2
+    pen_colors = {}
+    pen_colors[modes.mode_defined] = (0, 0, 1, 1)
+    pen_colors[modes.mode_edit] = (1, 0, 0, 1)
+    pen_colors[modes.mode_render] = (0, 0, 0, 1)
+    pen_colors[modes.mode_selectable_edges] = (0, 0, 1, 1)
 
-    pendefinedcolor = qg.QColor.fromRgbF(0, 0, 1, 1)
-    peneditcolor = qg.QColor.fromRgbF(1, 0, 0, 1)
-    penrendercolor = qg.QColor.fromRgbF(0, 0, 0, 1)
-    penselectioncolor = qg.QColor.fromRgbF(0, 0, 1, 1)
-
-    brushdefinedcolor = qg.QColor.fromRgbF(1, 1, 0, .25)
-    brusheditcolor = qg.QColor.fromRgbF(1, 1, 0, .25)
-    brushselectioncolor = qg.QColor.fromRgbF(1, 1, 0, .25)
-
-    pens = {}
-    pens[
-        modes.mode_defined] = qg.QPen(
-        pendefinedcolor,
-        linewidth,
-        style,
-        capstyle,
-        joinstyle)
-    pens[
-        modes.mode_edit] = qg.QPen(
-        peneditcolor,
-        linewidth,
-        style,
-        capstyle,
-        joinstyle)
-    pens[
-        modes.mode_render] = qg.QPen(
-        penrendercolor,
-        1.,
-        style,
-        capstyle,
-        joinstyle)
-    pens[
-        modes.mode_selectable_edges] = qg.QPen(
-        penselectioncolor,
-        linewidth,
-        style,
-        capstyle,
-        joinstyle)
-
-    brushes = {}
-    brushes[modes.mode_defined] = qg.QBrush(brushdefinedcolor, brushstyle)
-    brushes[modes.mode_edit] = qg.QBrush(brusheditcolor, brushstyle)
-    brushes[modes.mode_render] = nobrush
-    brushes[
-        modes.mode_selectable_edges] = qg.QBrush(
-        brushselectioncolor,
-        brushstyle)
-
-    nobrushes = {}
-    nobrushes[modes.mode_defined] = nobrush
-    nobrushes[modes.mode_edit] = nobrush
-    nobrushes[modes.mode_render] = nobrush
-    nobrushes[modes.mode_selectable_edges] = nobrush
+    brush_colors = {}
+    brush_colors[modes.mode_defined] = (1, 1, 0, .25)
+    brush_colors[modes.mode_edit] = (1, 1, 0, .25)
+    brush_colors[modes.mode_render] = (1,1,1,1)
+    brush_colors[modes.mode_selectable_edges] = (1, 1, 0, .25)
 
     def __init__(self, generic, *args, **kwargs):
         self.generic = generic
@@ -120,6 +75,7 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     def set_view_scale(self, view_scale):
         self._view_scale = view_scale
         self.setPen(self.querypen())
+        self.prepareGeometryChange()
         self.update_bounding_rect()
 
     def get_view_scale(self):
@@ -170,11 +126,16 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
         self.updateshape()
 
     def querybrush(self):
-        return self.brushes[self.mode]
+        brush =  qg.QBrush(qg.QColor.fromRgbF(*self.brush_colors[self.mode]), self.brushstyle)
+        return brush
+        
+    def get_line_width(self):
+        return self._line_width*self.view_scale
+        
+    line_width = property(get_line_width)
 
     def querypen(self):
-        pen = self.pens[self.mode]
-        pen.setCosmetic(True)
+        pen = qg.QPen(qg.QColor.fromRgbF(*self.pen_colors[self.mode]),self.line_width, self.style,self.capstyle,self.joinstyle)
         return pen
 
     def copy(self):
@@ -266,18 +227,21 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     def updateshape(self):
         super(Interactive, self).updateshape()
         self.updatechildhandles(self.handles() + self.selectableedges)
+        self.update_bounding_rect()
 
     def children(self):
         return self.handles() + self.selectableedges
 
-    def update_bounding_rect(self):
-        pass
-#
-#    def customshape(self):
-#        path = self.path()
-#        s = qg.QPainterPathStroker()
-#        s.setWidth(10 * self.view_scale)
-#        return s.createStroke(path)
+    def update_bounding_rect(self,path=None):
+#        update bounding_rect        
+        s = qg.QPainterPathStroker()
+        s.setWidth(self.line_width*2)
+        if path is None:
+            path = self.path()
+        self._bounding_rect = s.createStroke(path).boundingRect()
+
+    def boundingRect(self):
+        return self._bounding_rect
 
 
 class InteractivePoly(Interactive):
@@ -293,41 +257,18 @@ class InteractiveRect2Point(Interactive):
 
 
 class InteractivePath(Interactive):
-    brushes = Interactive.nobrushes.copy()
+    def querybrush(self):
+        return qc.Qt.NoBrush
 
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
-
-#    def shape(self):
-#        return self.customshape()
-
-#    def boundingRect(self):
-#        return self.shape().boundingRect()
-
-    def updateshape(self):
-        super(InteractivePath, self).updateshape()
-        self.update_bounding_rect()
         
-    def update_bounding_rect(self):
-        s = qg.QPainterPathStroker()
-        s.setWidth(10 * self.view_scale)
-#        self.prepareGeometryChange()
-        self._bounding_rect = s.createStroke(self.path()).boundingRect()
-        
-    def boundingRect(self):
-        return self._bounding_rect
-
 class InteractiveLine(Interactive):
-    brushes = Interactive.nobrushes.copy()
+    def querybrush(self):
+        return qc.Qt.NoBrush
 
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
-
-#    def shape(self):
-#        return self.customshape()
-#
-#    def boundingRect(self):
-#        return self.shape().boundingRect()
 
     def updateshape(self):
         from math import atan2, pi
@@ -342,20 +283,12 @@ class InteractiveLine(Interactive):
         path = qg.QPainterPath()
         poly = qg.QPolygonF([qc.QPointF(0, 0), qc.QPointF(l, 0)])
         path.addPolygon(poly)
+        self.update_bounding_rect(path)
         self.setPath(path)
         self.rotate(d)
         xy = self.mapFromScene(x1, y1)
         self.translate(xy.x(), xy.y())
         self.update()
         self.updatechildhandles(self.handles() + self.selectableedges)
-        self.update_bounding_rect()
 
-    def update_bounding_rect(self):
-        #update bounding_rect        
-        s = qg.QPainterPathStroker()
-        s.setWidth(10 * self.view_scale)
-#        self.prepareGeometryChange()
-        self._bounding_rect = s.createStroke(self.path()).boundingRect()
 
-    def boundingRect(self):
-        return self._bounding_rect
