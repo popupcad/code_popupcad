@@ -7,18 +7,14 @@ Please see LICENSE for full license.
 """
 import popupcad
 import numpy
-from popupcad.filetypes.popupcad_file import popupCADFile
 
-try:
-    import itertools.izip as zip
-except ImportError:
-    pass
+#try:
+#    import itertools.izip as zip
+#except ImportError:
+#    pass
 import os
 
-class GenericLaminate(popupCADFile):
-    filetypes = {'laminate': 'Laminate File'}
-    defaultfiletype = 'laminate'
-
+class GenericLaminate(object):
     def __init__(self, layerdef, geoms):
         super(GenericLaminate, self).__init__()
         self.layerdef = layerdef

@@ -22,10 +22,8 @@ if '--PyQt4' in sys.argv:
     QtGui.QGraphicsView.DragMode.RubberBandDrag = 2
     
     loaded = 'PyQt4'
-    print('loaded PyQt4')
 else:
     import PySide.QtGui as QtGui
     import PySide.QtCore as QtCore
     import PySide.QtSvg as QtSvg
     loaded = 'PySide'
-    print('loaded PySide')

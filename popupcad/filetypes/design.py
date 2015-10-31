@@ -20,7 +20,6 @@ class NoOperation(Exception):
 class RegenFailure(Exception):
     def __init__(self,other_exceptions):
         Exception.__init__(self, 'Regen Failure',[str(item) for item in other_exceptions])
-#        self.other_exceptions = other_exceptions
 
 class Design(popupCADFile):
     filetypes = {'cad': 'CAD Design'}
@@ -184,13 +183,9 @@ class Design(popupCADFile):
         return new
 
     def upgrade_operations2(self,old_layer_def,new_layer_def):
-        from popupcad.manufacturing.simplesketchoperation import SimpleSketchOp
-        from popupcad.manufacturing.laminateoperation2 import LaminateOperation2
         from popupcad.manufacturing.freeze import Freeze
         from popupcad.manufacturing.placeop8 import PlaceOperation8
         newoperations = []
-        ops_to_remove = []
-        replacements = []
         for op0 in self.operations:
             if isinstance(op0,Freeze):
                 if isinstance(op0.generic,dict):
@@ -216,17 +211,6 @@ class Design(popupCADFile):
         while not not self.operations:
             self.operations.pop()
         self.operations.extend(newoperations)
-
-#        for old,new in replacements:
-#            self.replace_op_refs(old,new)
-#            failed = self.replace_op_refs_force(old,new)
-#            check_failures = set(failed)-set(ops_to_remove)
-#            if not not check_failures:
-#                raise(UpgradeError('Some operations could not be upgraded.  loss of data may have occurred',list(check_failures)))
-
-
-#        for op in ops_to_remove:
-#            self.operations.pop(self.operations.index(op))
 
     def addoperation(self, operation):
         if not not self.operations:
@@ -327,14 +311,7 @@ class Design(popupCADFile):
             except AttributeError:
                 pass
 
-    def raster(
-        self,
-        filetype='PNG',
-        destination=None,
-        gv=None,
-        size=(
-            400,
-            300)):
+    def raster(self,filetype='PNG',destination=None,gv=None,size=(400,300)):
         if gv is None:
             from popupcad.widgets.render_widget import RenderWidget
             widget = RenderWidget(size)
@@ -347,11 +324,7 @@ class Design(popupCADFile):
         for ii, op in enumerate(self.operations):
             for jj, out in enumerate(op.output):
                 filename = '{0:02.0f}_{1:02.0f}'.format(ii, jj)
-                out.generic_laminate().raster(
-                    filename,
-                    filetype,
-                    destination,
-                    gv)
+                out.generic_laminate().raster(filename,filetype,destination,gv)
 
     def build_documentation(self,parent_dir = None):
         import popupcad.algorithms.design_documentation as design_doc
@@ -365,13 +338,10 @@ class Design(popupCADFile):
             if not os.path.exists(subdir):
                 os.mkdir(subdir)
                 self.save_yaml(os.path.join(self.dirname,subdir,slugified_name),update_filename=False)
-    #        self.raster(destination=subdir)
             new = design_doc.process_design(self, subdir,slugified_name)
             file = os.path.normpath(os.path.join(subdir, base + '.md'))
             with open(file, 'w') as f:
                 f.writelines(design_doc.format_template(new))
-            #            yaml.dump(new.dictify2(),f)
-#        new.save_yaml(file)
 
     @property
     def main_operation(self):

@@ -13,7 +13,6 @@ import qt
 qc = qt.QtCore
 qg = qt.QtGui
 from dev_tools.enum import enum
-from popupcad.filetypes.popupcad_file import popupCADFile
 import popupcad
 
 
@@ -24,10 +23,7 @@ class ShapeInvalid(Exception):
 class NotSimple(Exception):
     pass
 
-class GenericShapeBase(popupCADFile):
-    filetypes = {'shape': 'Shape File'}
-    defaultfiletype = 'shape'
-
+class GenericShapeBase(object):
     display = ['construction', 'exterior', 'interiors']
     editable = ['construction']
     shapetypes = enum(
