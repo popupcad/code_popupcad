@@ -34,13 +34,8 @@ class GenericShapeBase(object):
         rect2point='rect2point')
     deletable = []
 
-    def __init__(
-            self,
-            exterior,
-            interiors,
-            construction=False,
-            test_shapely=False):
-        super(GenericShapeBase, self).__init__()
+    def __init__(self,exterior,interiors,construction=False,test_shapely=False):
+        self.id = id(self)
         self.exterior = exterior
         self.interiors = interiors
         self.construction = construction
@@ -85,7 +80,6 @@ class GenericShapeBase(object):
         new = new_type(exterior, interiors, self.is_construction())
         if identical:
             new.id = self.id
-        self.copy_file_params(new, identical)
         return new
 
     def copy(self, identical=True):
@@ -99,7 +93,6 @@ class GenericShapeBase(object):
         new = type(self)(exterior, interiors, self.is_construction())
         if identical:
             new.id = self.id
-        self.copy_file_params(new, identical)
         return new
 
     def get_exterior(self):

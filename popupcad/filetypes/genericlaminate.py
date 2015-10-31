@@ -16,7 +16,7 @@ import os
 
 class GenericLaminate(object):
     def __init__(self, layerdef, geoms):
-        super(GenericLaminate, self).__init__()
+        self.id = id(self)
         self.layerdef = layerdef
         self.geoms = geoms
 
@@ -291,9 +291,9 @@ class GenericLaminate(object):
         
         #This scales the verticies properly. So that they are in millimeters.
         vert_floats = [float(x)/(popupcad.SI_length_scaling) for x in vertices] 
-        vert_src_name = str(self.get_basename()) + '|' + str(s.id) + "-array"
+        vert_src_name = str(self.id) + '|' + str(s.id) + "-array"
         vert_src = collada.source.FloatSource(vert_src_name, numpy.array(vert_floats), ('X', 'Y', 'Z'))
-        geom = collada.geometry.Geometry(mesh, "geometry-" + str(s.id), str(self.get_basename()), [vert_src])
+        geom = collada.geometry.Geometry(mesh, "geometry-" + str(s.id), str(self.id), [vert_src])
         input_list = collada.source.InputList()
         input_list.addInput(0, 'VERTEX', "#" + vert_src_name)
         indices = numpy.array(range(0,(len(vertices) // 3)));    
