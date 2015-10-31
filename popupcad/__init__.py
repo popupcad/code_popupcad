@@ -10,22 +10,12 @@ import sys
 
 from shapely import speedups
 
-# necessary for homebrewed libgeos which does not work with speedups for
-# some reason.
+# necessary for homebrewed libgeos which does not work with speedups for some reason.
 if sys.platform != 'darwin':
     if speedups.available:
         speedups.enable()
 
-
 from .global_settings import *
-#
-#from popupcad.filetypes.programsettings import ProgramSettings
-#try:
-#    local_settings = ProgramSettings.load_yaml(settings_filename)
-##except IOError:
-##    local_settings = ProgramSettings()
-#except:
-#    local_settings = ProgramSettings()
 
 from . import algorithms
 from . import filetypes

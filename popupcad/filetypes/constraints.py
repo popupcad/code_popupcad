@@ -243,69 +243,6 @@ class ConstraintSystem(object):
                 self.constraints.pop(ii)
 
 
-class ExactlyTwoPoints(object):
-
-    def valid(self):
-        return len(set(self.vertex_ids + self.vertices_in_lines())) == 2
-
-    def throwvalidityerror(self):
-        raise WrongArguments('Need exactly two points')
-
-
-class AtLeastTwoPoints(object):
-
-    def valid(self):
-        return len(set(self.vertex_ids + self.vertices_in_lines())) >= 2
-
-    def throwvalidityerror(self):
-        raise WrongArguments('Need at least two points')
-
-
-class ExactlyTwoLines(object):
-
-    def valid(self):
-        return len(self.segment_ids) == 2
-
-    def throwvalidityerror(self):
-        raise WrongArguments('Need exactly two lines')
-
-
-class AtLeastTwoLines(object):
-
-    def valid(self):
-        return len(self.segment_ids) >= 2
-
-    def throwvalidityerror(self):
-        raise WrongArguments('Need at least two lines')
-
-
-class AtLeastOneLine(object):
-
-    def valid(self):
-        return len(self.segment_ids) >= 1
-
-    def throwvalidityerror(self):
-        raise WrongArguments('Need at least one line')
-
-
-class ExactlyOnePointOneLine(object):
-
-    def valid(self):
-        return len(self.segment_ids) == 1 and len(self.vertex_ids) == 1
-
-    def throwvalidityerror(self):
-        raise WrongArguments('Need exactly one point and one line')
-
-
-class AtLeastOnePoint(object):
-
-    def valid(self):
-        return len(set(self.vertex_ids + self.vertices_in_lines())) >= 1
-
-    def throwvalidityerror(self):
-        raise WrongArguments('Need at least one point')
-
-
 class SymbolicVertex(object):
 
     def __init__(self, id):
@@ -350,7 +287,6 @@ class SymbolicLine(object):
         v = self.v()
         return (v.dot(v))**.5
 
-
 class Constraint(object):
     name = 'Constraint'
     deletable = []
@@ -375,8 +311,7 @@ class Constraint(object):
     @classmethod
     def new(cls, *objects):
         obj = cls(*cls._define_internals(*objects))
-        if not obj.valid():
-            obj.throwvalidityerror()
+        obj.check_valid()
         return obj
     
     @property
@@ -559,6 +494,52 @@ class Constraint(object):
                 segment_ids.append((id1, id2))
         self.segment_ids = segment_ids
 
+    def exactly_two_points(self):
+        return len(set(self.vertex_ids + self.vertices_in_lines())) == 2
+
+    def at_least_two_points(self):
+        return len(set(self.vertex_ids + self.vertices_in_lines())) >= 2
+
+    def exactly_two_lines(self):
+        return len(self.segment_ids) == 2
+
+    def at_least_two_lines(self):
+        return len(self.segment_ids) >= 2
+
+    def at_least_one_line(self):
+        return len(self.segment_ids) >= 1
+
+    def exactly_one_point_and_one_line(self):
+        return len(self.segment_ids) == 1 and len(self.vertex_ids) == 1
+
+    def throwvalidityerror(self):
+        raise WrongArguments('Need exactly one point and one line')
+
+    def at_least_one_point(self):
+        return len(set(self.vertex_ids + self.vertices_in_lines())) >= 1
+
+    all_validity_tests = []
+    all_validity_tests.append((exactly_two_points,'Need exactly two points'))
+    all_validity_tests.append((at_least_two_points,'Need at least two points'))
+    all_validity_tests.append((exactly_two_lines,'Need exactly two lines')) 
+    all_validity_tests.append((at_least_two_lines,'Need at least two lines'))
+    all_validity_tests.append((at_least_one_line,'Need at least one line'))
+    all_validity_tests.append((exactly_one_point_and_one_line,'Need exactly one point and one line'))
+    all_validity_tests.append((at_least_one_point,'Need at least one point'))
+
+    validity_tests = [exactly_two_points,at_least_two_points,exactly_two_lines,at_least_two_lines,at_least_one_line,exactly_one_point_and_one_line,at_least_one_point]
+    
+    def check_valid(self):
+        for check in self.validity_tests:
+            if not check(self):
+                raise WrongArguments(dict(self.all_validity_tests)[check])
+                
+    def valid(self):
+        for check in self.validity_tests:
+            if not check(self):
+                return False
+        return True
+        
 class ValueConstraint(Constraint):
     name = 'ValueConstraint'
 
@@ -574,8 +555,7 @@ class ValueConstraint(Constraint):
         value, ok = cls.getValue()
         if ok:
             obj = cls(value, *cls._define_internals(*objects))
-            if not obj.valid():
-                obj.throwvalidityerror()
+            obj.check_valid()
             return obj
 
     def copy(self, identical=True):
@@ -595,9 +575,10 @@ class ValueConstraint(Constraint):
         del self.generated_equations
 
 
-class fixed(Constraint, AtLeastOnePoint):
+class fixed(Constraint):
     name = 'fixed'
-
+    validity_tests = [Constraint.at_least_one_point]
+    
     def __init__(self, vertex_ids, values):
         self.vertex_ids = vertex_ids
         self.segment_ids = []
@@ -609,25 +590,16 @@ class fixed(Constraint, AtLeastOnePoint):
         from popupcad.geometry.line import Line
         from popupcad.geometry.vertex import BaseVertex
 
-        segment_ids = [
-            tuple(
-                sorted(
-                    (line.vertex1.id, line.vertex2.id))) for line in objects if isinstance(
-                line, Line)]
+        segment_ids = [tuple(sorted((line.vertex1.id, line.vertex2.id))) for line in objects if isinstance(line, Line)]
         segment_ids = list(set(segment_ids))
 
         vertex_ids = []
-        vertex_ids.extend([(vertex.id, vertex.getpos())
-                           for vertex in objects if isinstance(vertex, BaseVertex)])
-        vertex_ids.extend([(vertex.id,
-                            vertex.getpos()) for line in objects if isinstance(line,
-                                                                               Line) for vertex in (line.vertex1,
-                                                                                                    line.vertex2)])
+        vertex_ids.extend([(vertex.id, vertex.getpos()) for vertex in objects if isinstance(vertex, BaseVertex)])
+        vertex_ids.extend([(vertex.id, vertex.getpos()) for line in objects if isinstance(line,Line) for vertex in (line.vertex1,line.vertex2)])
         vertex_ids = dict(vertex_ids)
 
         obj = cls(list(vertex_ids.keys()), list(vertex_ids.values()))
-        if not obj.valid():
-            obj.throwvalidityerror()
+        obj.check_valid()
         return obj
 
     def copy(self, identical=True):
@@ -644,8 +616,9 @@ class fixed(Constraint, AtLeastOnePoint):
         return eqs
 
 
-class horizontal(Constraint, AtLeastTwoPoints):
+class horizontal(Constraint):
     name = 'horizontal'
+    validity_tests = [Constraint.at_least_two_points]
 
     def symbolic_equations(self):
         vertices = self.getallvertices()
@@ -657,8 +630,9 @@ class horizontal(Constraint, AtLeastTwoPoints):
         return eqs
 
 
-class vertical(Constraint, AtLeastTwoPoints):
+class vertical(Constraint):
     name = 'vertical'
+    validity_tests = [Constraint.at_least_two_points]
 
     def symbolic_equations(self):
         vertices = self.getallvertices()
@@ -670,8 +644,9 @@ class vertical(Constraint, AtLeastTwoPoints):
         return eqs
 
 
-class distance(ValueConstraint, ExactlyTwoPoints):
+class distance(ValueConstraint):
     name = 'distance'
+    validity_tests = [Constraint.exactly_two_points]
 
     def symbolic_equations(self):
         vertices = self.getallvertices()
@@ -689,8 +664,9 @@ class distance(ValueConstraint, ExactlyTwoPoints):
             return [eq]
 
 
-class coincident(Constraint, AtLeastTwoPoints):
+class coincident(Constraint):
     name = 'coincident'
+    validity_tests = [Constraint.at_least_two_points]
 
     def symbolic_equations(self):
         vertices = self.getallvertices()
@@ -703,8 +679,9 @@ class coincident(Constraint, AtLeastTwoPoints):
         return eq
 
 
-class distancex(ValueConstraint, AtLeastOnePoint):
+class distancex(ValueConstraint):
     name = 'distancex'
+    validity_tests = [Constraint.at_least_one_point]
 
     def symbolic_equations(self):
         vertices = self.getallvertices()
@@ -716,8 +693,9 @@ class distancex(ValueConstraint, AtLeastOnePoint):
         return [eq]
 
 
-class distancey(ValueConstraint, AtLeastOnePoint):
+class distancey(ValueConstraint):
     name = 'distancey'
+    validity_tests = [Constraint.at_least_one_point]
 
     def symbolic_equations(self):
         vertices = self.getallvertices()
@@ -733,9 +711,10 @@ class distancey(ValueConstraint, AtLeastOnePoint):
         return [eq]
 
 
-class angle(ValueConstraint, AtLeastOneLine):
+class angle(ValueConstraint):
     name = 'angle'
     value_text = 'enter angle(in degrees)'
+    validity_tests = [Constraint.at_least_one_line]
 
     def symbolic_equations(self):
         lines = self.getlines()[0:2]
@@ -761,8 +740,9 @@ class angle(ValueConstraint, AtLeastOneLine):
         return [eq]
 
 
-class parallel(Constraint, AtLeastTwoLines):
+class parallel(Constraint):
     name = 'parallel'
+    validity_tests = [Constraint.at_least_two_lines]
 
     def symbolic_equations(self):
         lines = self.getlines()
@@ -774,8 +754,9 @@ class parallel(Constraint, AtLeastTwoLines):
         return eq
 
 
-class equal(Constraint, AtLeastTwoLines):
+class equal(Constraint):
     name = 'equal'
+    validity_tests = [Constraint.at_least_two_lines]
 
     def symbolic_equations(self):
         lines = self.getlines()
@@ -788,8 +769,9 @@ class equal(Constraint, AtLeastTwoLines):
         return eqs
 
 
-class perpendicular(Constraint, ExactlyTwoLines):
+class perpendicular(Constraint):
     name = 'perpendicular'
+    validity_tests = [Constraint.exactly_two_lines]
 
     def symbolic_equations(self):
         lines = self.getlines()[0:2]
@@ -798,8 +780,9 @@ class perpendicular(Constraint, ExactlyTwoLines):
         return [v2[1] * v1[1] + v2[0] * v1[0]]
 
 
-class PointLine(ValueConstraint, ExactlyOnePointOneLine):
+class PointLine(ValueConstraint):
     name = 'PointLineDistance'
+    validity_tests = [Constraint.exactly_one_point_and_one_line]
 
     def symbolic_equations(self):
         line = self.getlines()[0]
@@ -822,8 +805,9 @@ class PointLine(ValueConstraint, ExactlyOnePointOneLine):
             return [eq]
 
 
-class LineMidpoint(Constraint, ExactlyOnePointOneLine):
+class LineMidpoint(Constraint):
     name = 'Line Midpoint'
+    validity_tests = [Constraint.exactly_one_point_and_one_line]
 
     def symbolic_equations(self):
         line = self.getlines()[0]
