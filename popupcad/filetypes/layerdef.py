@@ -77,7 +77,8 @@ class LayerDef(object):
             self._z_values = self.calc_z_values()
             return self._z_values
 
-    @z_values.deleter(self):
+    @z_values.deleter
+    def z_values(self):
         del self._z_values
 
             
