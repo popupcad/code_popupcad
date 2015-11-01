@@ -25,6 +25,83 @@ class UnknownType(Exception):
 class WrongArguments(Exception):
     pass        
 
+class Generator(object):
+    def __init__(self,constraints,vertex_dict,objects):
+        self.constraints = constraints
+        self.vertex_dict = vertex_dict
+        self.equations = self.get_equations()
+        self.variables = self.get_variables()
+#        self.build_constraint_mappings(self.constraints,self.variables,self.n_eq())
+        self.regenerate_inner(objects,self.constraints,self.variables,self.n_eq())
+        
+    def get_equations(self):
+        equations = [eq for con in self.constraints for eq in con.generated_equations]
+        return equations
+        
+    def get_variables(self):
+        variables = [item for equation in self.equations for item in list(equation.atoms(Variable))]
+        variables = sorted(set(variables),key=lambda item:str(item))
+        return variables
+
+    def n_constraints(self):
+        return len(self.constraints)
+        
+    def n_eq(self):
+        return len(self.equations)
+        
+    def n_vars(self):
+        return len(self.variables)    
+
+    @staticmethod
+    def build_constraint_mappings(constraints,variables,n_eq):
+        ii = 0
+        for constraint in constraints:
+            l=len(constraint.generated_equations)
+            constraint.build_system_mapping(variables,n_eq,range(ii,ii+l))
+            ii+=l
+
+    def regenerate_inner(self,objects,constraints,variables,n_eq):
+        n_constraints = self.n_constraints()
+        n_eq = self.n_eq()
+        n_vars = self.n_vars()
+        
+        if n_constraints > 0:
+            if len(objects) > 0:
+                
+                self.build_constraint_mappings(constraints,variables,n_eq)
+                 
+                def dq(q):
+                    qlist = q.flatten().tolist()
+
+                    zero = numpy.zeros(n_eq,dtype=float)
+                    for constraint in self.constraints:
+                        result = constraint.mapped_f_constraints(*qlist[:])
+                        zero+=result
+
+                    if n_vars > n_eq:
+                        zero = numpy.r_[zero.flatten(), [0] * (n_vars - n_eq)]
+                    return zero
+
+                def j(q):
+                    qlist = q.flatten().tolist()
+
+                    jnum = numpy.zeros((n_eq,n_vars))
+                    for constraint in self.constraints:
+                        jnum+=constraint.mapped_f_jacobian(*qlist[:])
+                    
+                    if n_vars > n_eq:
+                        jnum = numpy.r_[jnum, numpy.zeros((n_vars - n_eq, n_vars))]
+                    return jnum
+                
+                self.dq = dq
+                self.j = j
+                self.empty = False
+                return
+
+        self.empty = True
+
+#        return None,None
+        
 class ConstraintSystem(object):
     atol = 1e-10
     rtol = 1e-10
@@ -81,121 +158,45 @@ class ConstraintSystem(object):
                 ini[key] = value
         return ini
 
-    def regenerate(self):
-        del self.generated_variables
-        self.generated_variables
-        
     @property
-    def generated_variables(self):
+    def generator(self):
         try:
-            return self._generated_variables
+            return self._generator
         except AttributeError:
-            self._generated_variables = self.regenerate_inner()
-            return self._generated_variables
-            
-    @generated_variables.deleter
-    def generated_variables(self):
+            self._generator = Generator(self.constraints,self.vertex_dict(),self.get_vertices)
+            return self._generator
+
+    @generator.deleter
+    def generator(self):
         try:
-            del self._generated_variables
+            del self._generator
         except AttributeError:
             pass
-
-    @property
-    def n_constraints(self):
-        return len(self.constraints)
-        
-    @property    
-    def equations(self):
-        equations = [eq for con in self.constraints for eq in con.generated_equations]
-        return equations
-        
-    @property
-    def n_eq(self):
-        return len(self.equations)
-        
-    @property
-    def variables(self):
-        variables = [item for equation in self.equations for item in list(equation.atoms(Variable))]
-        variables = sorted(set(variables),key=lambda item:str(item))
-        return variables
-
-    @property
-    def n_vars(self):
-        return len(self.variables)
-
-    def build_constraint_mappings(self):
-        ii = 0
-        variables = self.variables
-        for constraint in self.constraints:
-            l=len(constraint.generated_equations)
-            constraint.build_system_mapping(variables,self.n_eq,range(ii,ii+l))
-            ii+=l
-
-    def constants(self):
-        constants = [item for equation in self.equations for item in list(equation.atoms(Variable))]
-        constants = sorted(set(constants),key=lambda item:str(item))
-        return constants
-        
-    def regenerate_inner(self):
-        vertexdict = self.vertex_dict()
-        
-        if self.n_constraints > 0:
-            objects = self.get_vertices
-            if len(objects) > 0:
-                
-                self.build_constraint_mappings()
-                
-                def dq(q):
-                    qlist = q.flatten().tolist()
-
-                    zero = numpy.zeros(self.n_eq,dtype=float)
-                    for constraint in self.constraints:
-                        result = constraint.mapped_f_constraints(*qlist[:])
-                        zero+=result
-
-                    if self.n_vars > self.n_eq:
-                        zero = numpy.r_[zero.flatten(), [0] * (self.n_vars - self.n_eq)]
-                    return zero
-
-                def j(q):
-                    qlist = q.flatten().tolist()
-
-                    jnum = numpy.zeros((self.n_eq,self.n_vars))
-                    for constraint in self.constraints:
-                        jnum+=constraint.mapped_f_jacobian(*qlist[:])
-                    
-                    if self.n_vars > self.n_eq:
-                        jnum = numpy.r_[jnum, numpy.zeros((self.n_vars - self.n_eq, self.n_vars))]
-                    return jnum
-                
-                return dq, self.variables, j, vertexdict
-
-        return None
         
     def update(self):
-        if self.generated_variables is None:
-            pass
-        else:
-            dq, variables, j, vertexdict = self.generated_variables
+        if not self.generator.empty:
+            dq = self.generator.dq
+            variables = self.generator.variables
+            j = self.generator.j
+            vertexdict = self.generator.vertex_dict
+    
             vertexdict = self.vertex_dict()
             ini = self.ini(vertexdict)
             q0 = self.inilist(variables,ini)
             qout = scipy.optimize.root(dq,q0,jac=j,tol=self.atol,method='lm')
             qout = qout.x.tolist()
-
-#            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-#            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
-#            qout = qout.tolist()
-#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
-#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
-#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
-#            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
-#            qout = qout.x.tolist()
-
+    
+    #            qout = opt.newton_krylov(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+    #            qout = opt.anderson(dq2,numpy.array(self.inilist(variables,ini)),f_tol = self.atol,f_rtol = self.rtol)
+    #            qout = qout.tolist()
+    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'hybr')
+    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'linearmixing')
+    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'excitingmixing')
+    #            qout = opt.root(dq2,numpy.array(self.inilist(variables,ini)),tol = self.atol,method = 'lm')
+    #            qout = qout.x.tolist()
+    
             for ii, variable in enumerate(variables):
                 vertexdict[variable].setsymbol(variable, qout[ii])
-#        except (AttributeError, TypeError):
-#            pass
 
     def update_selective(self,vertices):
         self.update()
@@ -203,11 +204,13 @@ class ConstraintSystem(object):
     def constrained_shift(self, items):
         vertexdict = self.vertex_dict()
         ini = self.ini(vertexdict)
-        if self.generated_variables is None:
+        if self.generator.empty:
             for vertex, dxdy in items:
                 vertex.shift(dxdy)
         else:
-            dq, variables, j, vertexdict = self.generated_variables
+            variables = self.generator.variables
+            j = self.generator.j
+            vertexdict = self.generator.vertex_dict
     
             dx_dict = {}
             for vertex, dxdy in items:
@@ -365,13 +368,9 @@ class Constraint(object):
         for equation in self.generated_equations:
             variables.extend(equation.atoms(Variable))
         variables = set(variables)
-        variables -= set(self.constants())
         variables = sorted(variables,key=lambda var:str(var))
         return variables
         
-    def constants(self):
-        return []
-
     def jacobian(self):
         eq = sympy.Matrix(self.generated_equations)        
         J = eq.jacobian(self.variables)

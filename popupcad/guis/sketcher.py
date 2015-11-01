@@ -443,7 +443,8 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.refreshconstraints()
 
     def refreshconstraints(self):
-        self.sketch.constraintsystem.regenerate()
+#        self.sketch.constraintsystem.regenerate()
+        del self.sketch.constraintsystem.generator
         self.sketch.constraintsystem.update()
         self.scene.updateshape()
         self.constraint_editor.refresh()
