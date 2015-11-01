@@ -207,8 +207,8 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         transform = []
         transform.append({'text': 'Internal Transform','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.transform_internal.TransformInternal)}})
         transform.append({'text': 'External Transform','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.transform_external.TransformExternal)}})
-        transform.append({'text': '&PlaceOp','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
-        transform.append({'text': 'L&ocateOp','kwargs': {'icon': icons['locate'],'shortcut': 'Ctrl+Shift+O','triggered': lambda: self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
+#        transform.append({'text': '&PlaceOp','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
+#        transform.append({'text': 'L&ocateOp','kwargs': {'icon': icons['locate'],'shortcut': 'Ctrl+Shift+O','triggered': lambda: self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
         transform.append({'text': 'Shift/Flip','kwargs': {'icon': icons['shiftflip'],'triggered': lambda: self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)}})
 #        transform.append({'text': 'Transform','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.transform.TransformOperation)}})
 

@@ -31,8 +31,8 @@ class Dialog(qg.QDialog):
         self.operation_list = DraggableTreeWidget()
         self.operation_list.linklist(prioroperations)
 
-        self.sketchwidget_from = SketchListManager(design)
-        self.sketchwidget_to = SketchListManager(design)
+        self.sketchwidget_from = SketchListViewer(design,name = 'From Line')
+        self.sketchwidget_to = SketchListManager(design,name = 'To Lines')
 
         self.radiobox_scale_x = qg.QRadioButton('Scale X')
         self.radiobox_custom_x = qg.QRadioButton('Custom X')
@@ -85,12 +85,15 @@ class Dialog(qg.QDialog):
         layout2.addWidget(button1)
         layout2.addWidget(button2)
 
+        layout3 = qg.QHBoxLayout()
+        layout3.addWidget(self.sketchwidget_from)
+        layout3.addWidget(self.sketchwidget_to)
+
         layout = qg.QVBoxLayout()
         layout.addWidget(qg.QLabel('Operations'))
         layout.addWidget(self.operation_list)
 #        layout.addWidget(qg.QLabel('Sketch'))
-        layout.addWidget(self.sketchwidget_from)
-        layout.addWidget(self.sketchwidget_to)
+        layout.addLayout(layout3)
         layout.addLayout(templayout1)
         layout.addLayout(templayout2)
         layout.addLayout(layout5)

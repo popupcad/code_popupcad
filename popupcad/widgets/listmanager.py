@@ -138,6 +138,17 @@ class Dummy(object):
     pass
 
 
+class SketchListViewer(ListManager):
+    def __init__(self, design, name='Sketch', **kwargs):
+        self.design = design
+        super(SketchListViewer, self).__init__(design.sketches, name=name)
+
+    def widgets(self):
+        actions = []
+        actions.append(('Save As...', self.save_item))
+        widgets = [self.buildButtonItem(*action) for action in actions]
+        return widgets
+
 class SketchListManager(ListManager):
 
     def __init__(self, design, name='Sketch', **kwargs):

@@ -23,8 +23,5 @@ class Cleanup3(MultiValueOperation3):
         value = self.values[0] *popupcad.csg_processing_scaling
         res = int(self.values[1])
 
-        ls11 = popupcad.algorithms.manufacturing_functions.cleanup3(
-            ls1,
-            value,
-            res)
+        ls11 = popupcad.algorithms.manufacturing_functions.cleanup3(ls1,value,res)
         return ls11

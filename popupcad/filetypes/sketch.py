@@ -53,11 +53,8 @@ class Sketch(popupCADFile):
         return new
 
     def upgrade(self, identical=True):
-        operationgeometry = [
-            geom.upgrade(
-                identical=True) for geom in self.operationgeometry if geom.isValid()]
+        operationgeometry = [geom.upgrade(identical=True) for geom in self.operationgeometry if geom.isValid()]
         constraintsystem = self.constraintsystem.upgrade()
-
         new = type(self)(operationgeometry,constraintsystem)
 
         if identical:

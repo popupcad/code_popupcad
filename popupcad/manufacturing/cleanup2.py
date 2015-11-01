@@ -18,5 +18,4 @@ class Cleanup2(MultiValueOperation3):
     def operate(self, design):
         operation_ref, output_index = self.operation_links['parent'][0]
         ls1 = design.op_from_ref(operation_ref).output[output_index].csg
-        return popupcad.algorithms.morphology.cleanup(
-            ls1, self.values[0] * popupcad.csg_processing_scaling, int(self.values[1]))
+        return popupcad.algorithms.morphology.cleanup(ls1, self.values[0] * popupcad.csg_processing_scaling, int(self.values[1]))
