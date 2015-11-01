@@ -16,7 +16,7 @@ if __name__=='__main__':
     sys = sketch.constraintsystem
     sys.link_vertex_builder(supply_vertices)
     sys.cleanup()
-    sys.regenerate()
+    del sys.generator
     sys.update()
     
     constraint = sys.constraints[-1]

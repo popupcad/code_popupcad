@@ -443,7 +443,6 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.refreshconstraints()
 
     def refreshconstraints(self):
-#        self.sketch.constraintsystem.regenerate()
         del self.sketch.constraintsystem.generator
         self.sketch.constraintsystem.update()
         self.scene.updateshape()
@@ -467,7 +466,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def cleanupconstraints(self):
         self.sketch.constraintsystem.cleanup()
         self.constraint_editor.refresh()
-        self.sketch.constraintsystem.regenerate()
+        del self.sketch.constraintsystem.generator
 
     def showconstraint_item(self, obj1):
         self.showprop.emit(obj1.customdata)
