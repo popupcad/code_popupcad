@@ -602,7 +602,7 @@ def approximateCollisions(joint_laminate, centroid):
     layerdef = joint_laminate.layerdef
     for layer in layerdef.layers:
         shapes = joint_laminate.geoms[layer]#TODO Add it in for other shapes         
-        zvalue = layerdef.zvalue[layer]      
+        zvalue = layerdef.z_values[layer]      
         thickness = layer.thickness
         if (len(shapes) == 0) : #In case there are no shapes.
             print("No shapes skipping")            
@@ -648,7 +648,7 @@ def approximateCollisions3(joint_laminate, centroid):
     layers = layerdef.layers
     for layer in layers[::len(layers) - 1]:
         shapes = joint_laminate.geoms[layer]#TODO Add it in for other shapes         
-        zvalue = layerdef.zvalue[layer]
+        zvalue = layerdef.z_values[layer]
         thickness = layer.thickness
         if (len(shapes) == 0) : #In case there are no shapes.
             print("No shapes skipping")            
@@ -678,7 +678,7 @@ def approximateCollisions4(joint_laminate, centroid):
     layers = layerdef.layers
     for layer in layers[::len(layers) - 1]:
         shapes = joint_laminate.geoms[layer]#TODO Add it in for other shapes         
-        zvalue = layerdef.zvalue[layer]/popupcad.SI_length_scaling
+        zvalue = layerdef.z_values[layer]/popupcad.SI_length_scaling
         thickness = layer.thickness/popupcad.SI_length_scaling
         if (len(shapes) == 0) : #In case there are no shapes.
             print("No shapes skipping")            

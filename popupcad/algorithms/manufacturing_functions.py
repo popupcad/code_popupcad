@@ -51,7 +51,7 @@ def cross_section(layerdef, sketch, parent, scale_value):
             result = parent.intersection(laminate)
             laminate2 = Laminate(layerdef)
             for ii, layerid in enumerate(layerdef.layers):
-                yshift = layerdef.zvalue[layerid] * popupcad.csg_processing_scaling * scale_value
+                yshift = layerdef.z_values[layerid] * popupcad.csg_processing_scaling * scale_value
                 layer = result.layer_sequence[layerid]
                 thickness = layerid.thickness * popupcad.csg_processing_scaling * scale_value
                 newgeoms = [item for item in layer.geoms]

@@ -160,7 +160,7 @@ class Design(popupCADFile):
         for key, value in self.subdesigns.items():
             subdesigns[key] = value.copy(identical=True)
 
-        new = type(self)(operations,self.return_layer_definition(),sketches,subdesigns)
+        new = type(self)(operations,self.return_layer_definition().copy(),sketches,subdesigns)
         if identical:
             new.id = self.id
         self.copy_file_params(new, identical)
@@ -176,7 +176,6 @@ class Design(popupCADFile):
             operations_old = operations_new
         old_layer_def = self.return_layer_definition()
         new_layer_def = old_layer_def.upgrade()
-
         sketches = {}
         for key, value in self.sketches.items():
             sketches[key] = value.upgrade(identical=True)

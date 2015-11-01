@@ -138,7 +138,7 @@ class GenericLaminate(object):
         
     #Returns the thickness of the laminate
     def getLaminateThickness(self):
-        return self.layerdef.zvalue[self.layerdef.layers[-1]]
+        return self.layerdef.z_values[self.layerdef.layers[-1]]
 
     def calculateTrueVolume(self):
         layerdef = self.layerdef
@@ -191,7 +191,7 @@ class GenericLaminate(object):
             layer_node = etree.Element(tag, name=name_value + "-" + str(counter))
             layer_thickness = layer.thickness / scaling_factor
             shapes = self.geoms[layer]
-            zvalue = layerdef.zvalue[layer] / scaling_factor
+            zvalue = layerdef.z_values[layer] / scaling_factor
             if (len(shapes) == 0) : 
                 continue
             for s in shapes:
@@ -218,7 +218,7 @@ class GenericLaminate(object):
         laminate_verts = []
         for layer in layerdef.layers:
             shapes = self.geoms[layer]#TODO Add it in for other shapes         
-            zvalue = layerdef.zvalue[layer]      
+            zvalue = layerdef.z_values[layer]      
             thickness = layer.thickness
             if (len(shapes) == 0) : #In case there are no shapes.
                 print("No shapes skipping")            
@@ -264,7 +264,7 @@ class GenericLaminate(object):
         for layer in layerdef.layers:
             layer_thickness = layer.thickness    
             shapes = self.geoms[layer]
-            zvalue = layerdef.zvalue[layer]        
+            zvalue = layerdef.z_values[layer]        
             height = float(zvalue) #* 100 #* 
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
@@ -308,7 +308,7 @@ class GenericLaminate(object):
         for layer in layerdef.layers:
             layer_thickness = layer.thickness    
             shapes = self.geoms[layer]
-            zvalue = layerdef.zvalue[layer]        
+            zvalue = layerdef.z_values[layer]        
             height = float(zvalue) #* 100 #* 1/popupcad.internal_argument_scaling
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
@@ -322,7 +322,7 @@ class GenericLaminate(object):
         return bounds
 
     def mass_properties(self,length_scaling = 1):
-        zvalues = self.layerdef.z_values()
+        zvalues = self.layerdef.z_values2()
         volume_total = 0
         center_of_mass_accumulator = 0
         next_args = []

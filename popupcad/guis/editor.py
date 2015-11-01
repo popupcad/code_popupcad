@@ -347,7 +347,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             PropertyEditor(
                 self.design.return_layer_definition().layers))
         dialog.exec_()
-        self.design.return_layer_definition().refreshzvalues()
+        del self.design.return_layer_definition().z_values
     
     def sketchlist(self):
         from popupcad.widgets.listmanager import AdvancedSketchListManager
@@ -401,7 +401,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     
     def show3dgeometry3(self, operationoutput, selectedlayers):
         if self.act_view_3d.isChecked():
-            self.view_3d.view.update_object(self.design.return_layer_definition().zvalue,operationoutput.triangles_by_layer,selectedlayers)
+            self.view_3d.view.update_object(self.design.return_layer_definition().z_values,operationoutput.triangles_by_layer,selectedlayers)
         else:
             self.clear3dgeometry()
 
@@ -409,7 +409,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         tris = dict([(layer, [])
                      for layer in self.design.return_layer_definition().layers])
         self.view_3d.view.update_object(
-            self.design.return_layer_definition().zvalue,
+            self.design.return_layer_definition().z_values,
             tris,
             [])
     
