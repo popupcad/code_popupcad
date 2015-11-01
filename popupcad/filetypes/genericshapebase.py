@@ -363,8 +363,7 @@ class GenericShapeBase(object):
 
     def constrained_shift(self, dxdy, constraintsystem):
         a = [(item, dxdy) for item in self.get_exterior()]
-        a.extend([(item, dxdy) for interior in self.get_interiors()
-                  for item in interior])
+        a.extend([(item, dxdy) for interior in self.get_interiors() for item in interior])
         constraintsystem.constrained_shift(a)
 
     def flip(self):

@@ -500,8 +500,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             self.scene.addItem(newitem)
             newitem.refreshview()
 
-        self.constraint_editor.linklist(
-            self.sketch.constraintsystem.constraints)
+        self.constraint_editor.linklist(self.sketch.constraintsystem.constraints)
         self.sketch.constraintsystem.get_vertices = self.get_sketch_vertices
         self.load_references()
         self.update_window_title()
