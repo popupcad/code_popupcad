@@ -529,7 +529,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         return self.sketch
 
     def newfile(self):
-        sketch = popupcad.filetypes.sketch.Sketch()
+        sketch = popupcad.filetypes.sketch.Sketch.new()
         self.loadsketch(sketch)
         self.undoredo.restartundoqueue()
 
@@ -766,6 +766,6 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
-    mw = Sketcher(None, Sketch())
+    mw = Sketcher(None, Sketch.new())
     mw.show()
     sys.exit(app.exec_())

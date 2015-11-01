@@ -33,13 +33,21 @@ class Design(popupCADFile):
     def setlastdir(cls, directory):
         popupcad.lastdesigndir = directory
 
-    def __init__(self):
+    def __init__(self,operations,layerdef,sketches,subdesigns):
         super(Design, self).__init__()
-        self.operations = []
-        self._layerdef = popupcad.filetypes.layerdef.LayerDef()
-        self.id = id(self)
-        self.sketches = {}
-        self.subdesigns = {}
+        self.operations = operations
+        self.define_layers(layerdef)
+        self.sketches = sketches
+        self.subdesigns = subdesigns
+
+    @classmethod
+    def new(cls):
+        operations = []
+        layerdef = popupcad.filetypes.layerdef.LayerDef()
+        sketches = {}
+        subdesigns = {}
+        self = cls(operations,layerdef,sketches,subdesigns)
+        return self
 
     def define_layers(self, layerdef):
         self._layerdef = layerdef
@@ -142,23 +150,23 @@ class Design(popupCADFile):
         return prioroperations
 
     def copy(self, identical=True):
-        new = Design()
-        new.operations = [operation.copy_wrapper()
+        operations = [operation.copy_wrapper()
                           for operation in self.operations]
-        new.define_layers(self.return_layer_definition())
+        sketches = {}
+        for key, value in self.sketches.items():
+            sketches[key] = value.copy(identical=True)
+            
+        subdesigns = {}
+        for key, value in self.subdesigns.items():
+            subdesigns[key] = value.copy(identical=True)
+
+        new = type(self)(operations,self.return_layer_definition(),sketches,subdesigns)
         if identical:
             new.id = self.id
-        new.sketches = {}
-        for key, value in self.sketches.items():
-            new.sketches[key] = value.copy(identical=True)
-        new.subdesigns = {}
-        for key, value in self.subdesigns.items():
-            new.subdesigns[key] = value.copy(identical=True)
         self.copy_file_params(new, identical)
         return new
 
     def upgrade(self, identical=True):
-        new = Design()
         samesame = False
         operations_old = self.operations
         while not samesame:
@@ -166,19 +174,21 @@ class Design(popupCADFile):
                               for item in operations_old]
             samesame = operations_old == operations_new
             operations_old = operations_new
-        new.operations = operations_new
         old_layer_def = self.return_layer_definition()
         new_layer_def = old_layer_def.upgrade()
-        new.define_layers(new_layer_def)
+
+        sketches = {}
+        for key, value in self.sketches.items():
+            sketches[key] = value.upgrade(identical=True)
+
+        subdesigns = {}
+        for key, value in self.subdesigns.items():
+            subdesigns[key] = value.upgrade(identical=True)
+        
+        new = type(self)(operations_new,new_layer_def,sketches,subdesigns)
+        self.copy_file_params(new, identical)
         if identical:
             new.id = self.id
-        new.sketches = {}
-        for key, value in self.sketches.items():
-            new.sketches[key] = value.upgrade(identical=True)
-        new.subdesigns = {}
-        for key, value in self.subdesigns.items():
-            new.subdesigns[key] = value.upgrade(identical=True)
-        self.copy_file_params(new, identical)
         new.upgrade_operations2(old_layer_def,new_layer_def)
         return new
 

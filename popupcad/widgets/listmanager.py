@@ -160,7 +160,7 @@ class SketchListManager(ListManager):
 
         sketcher = Sketcher(
             None,
-            Sketch(),
+            Sketch.new(),
             self.design,
             accept_method=accept_method,
             selectops=True)

@@ -25,7 +25,7 @@ if __name__=='__main__':
     
     app = qg.QApplication(sys.argv)
     
-    top_design = popupcad.filetypes.design.Design()
+    top_design = popupcad.filetypes.design.Design.new()
     top_design.define_layers(popupcad.filetypes.layerdef.LayerDef(*popupcad.filetypes.material2.default_sublaminate))
     
     single_layer_joint_manufacturing = popupcad.filetypes.design.Design.load_yaml('jointed_robot_subdesign.cad')
@@ -49,9 +49,9 @@ if __name__=='__main__':
         body_triangles= popupcad.algorithms.triangulate.triangulate(points)
         generic_lines = popupcad.algorithms.getjoints.getjoints(body_triangles,5)
         
-        body_sketch = Sketch()
+        body_sketch = Sketch.new()
         body_sketch.addoperationgeometries([body_polygon])
-        joints_sketch = Sketch()
+        joints_sketch = Sketch.new()
         joints_sketch.addoperationgeometries(generic_lines)
         
         

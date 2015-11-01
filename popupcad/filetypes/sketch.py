@@ -27,28 +27,39 @@ class Sketch(popupCADFile):
     def setlastdir(cls, directory):
         popupcad.lastsketchdir = directory
 
-    def __init__(self):
+    def __init__(self,operationgeometry,constraintsystem):
+        self.operationgeometry = operationgeometry
+        self.constraintsystem = constraintsystem
         super(Sketch, self).__init__()
-        self.operationgeometry = []
-        self.constraintsystem = ConstraintSystem()
+
+    @classmethod    
+    def new(cls):
+        operationgeometry = []
+        constraintsystem = ConstraintSystem()
+        self = cls(operationgeometry,constraintsystem)
+        return self
 
     def copy(self, identical=True):
-        new = type(self)()
-        new.operationgeometry = [
+        operationgeometry = [
             geom.copy(
                 identical=True) for geom in self.operationgeometry if geom.isValid()]
-        new.constraintsystem = self.constraintsystem.copy()
+        constraintsystem = self.constraintsystem.copy()
+
+        new = type(self)(operationgeometry,constraintsystem)
+
         if identical:
             new.id = self.id
         self.copy_file_params(new, identical)
         return new
 
     def upgrade(self, identical=True):
-        new = type(self)()
-        new.operationgeometry = [
+        operationgeometry = [
             geom.upgrade(
                 identical=True) for geom in self.operationgeometry if geom.isValid()]
-        new.constraintsystem = self.constraintsystem.upgrade()
+        constraintsystem = self.constraintsystem.upgrade()
+
+        new = type(self)(operationgeometry,constraintsystem)
+
         if identical:
             new.id = self.id
         self.copy_file_params(new, identical)

@@ -27,7 +27,7 @@ if __name__=='__main__':
     constraint_sys = popupcad.filetypes.constraints.ConstraintSystem()
     constraint_sys.add_constraint(constraint1)
     
-    sketch = popupcad.filetypes.sketch.Sketch()
+    sketch = popupcad.filetypes.sketch.Sketch.new()
     sketch.constraintsystem = constraint_sys
     sketcher = popupcad.guis.sketcher.Sketcher(None,sketch)
     sketch = sketcher.sketch

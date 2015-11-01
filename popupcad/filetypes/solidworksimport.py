@@ -150,7 +150,7 @@ class Assembly(popupCADFile):
 
     def build_face_sketch(self):
         self.convert(scalefactor=None, bufferval=None, cleanup=None)
-        sketch = popupcad.filetypes.sketch.Sketch()
+        sketch = popupcad.filetypes.sketch.Sketch.new()
         sketch.addoperationgeometries(self.geoms)
         return sketch
 

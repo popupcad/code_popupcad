@@ -285,7 +285,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         from popupcad.filetypes.layerdef import LayerDef
         import popupcad.filetypes.material2 as materials
 #        from popupcad.materials.materials import Carbon_0_90_0, Pyralux, Kapton
-        design = Design()
+        design = Design.new()
         design.define_layers(
             LayerDef(*materials.default_sublaminate))
         self.load_design(design)
