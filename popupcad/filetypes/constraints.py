@@ -28,14 +28,9 @@ class WrongArguments(Exception):
 class ConstraintSystem(object):
     atol = 1e-10
     rtol = 1e-10
-    tfinal = 10
-    tsegments = 10
 
     def __init__(self):
         self.constraints = []
-
-    def get_vertices_callback(self, callback):
-        self._get_vertices = callback
 
     @property
     def get_vertices(self):
@@ -104,68 +99,76 @@ class ConstraintSystem(object):
             del self._generated_variables
         except AttributeError:
             pass
+
+    @property
+    def n_constraints(self):
+        return len(self.constraints)
         
+    @property    
     def equations(self):
         equations = [eq for con in self.constraints for eq in con.generated_equations]
         return equations
         
+    @property
+    def n_eq(self):
+        return len(self.equations)
+        
+    @property
     def variables(self):
-        variables = [item for equation in self.equations() for item in list(equation.atoms(Variable))]
+        variables = [item for equation in self.equations for item in list(equation.atoms(Variable))]
         variables = sorted(set(variables),key=lambda item:str(item))
         return variables
 
+    @property
+    def n_vars(self):
+        return len(self.variables)
+
     def build_constraint_mappings(self):
         ii = 0
-        m = len(self.equations())
-        variables = self.variables()
+        variables = self.variables
         for constraint in self.constraints:
             l=len(constraint.generated_equations)
-            constraint.build_system_mapping(variables,m,range(ii,ii+l))
+            constraint.build_system_mapping(variables,self.n_eq,range(ii,ii+l))
             ii+=l
 
     def constants(self):
-        constants = [item for equation in self.equations() for item in list(equation.atoms(Variable))]
+        constants = [item for equation in self.equations for item in list(equation.atoms(Variable))]
         constants = sorted(set(constants),key=lambda item:str(item))
         return constants
         
     def regenerate_inner(self):
         vertexdict = self.vertex_dict()
         
-        if len(self.constraints) > 0:
+        if self.n_constraints > 0:
             objects = self.get_vertices
             if len(objects) > 0:
-                equations = self.equations()
-                num_equations = len(equations)
                 
-                variables = self.variables()
-                num_variables = len(variables)
-
                 self.build_constraint_mappings()
                 
                 def dq(q):
                     qlist = q.flatten().tolist()
 
-                    zero = numpy.zeros(num_equations,dtype=float)
+                    zero = numpy.zeros(self.n_eq,dtype=float)
                     for constraint in self.constraints:
                         result = constraint.mapped_f_constraints(*qlist[:])
                         zero+=result
 
-                    if num_variables > num_equations:
-                        zero = numpy.r_[zero.flatten(), [0] * (num_variables - num_equations)]
+                    if self.n_vars > self.n_eq:
+                        zero = numpy.r_[zero.flatten(), [0] * (self.n_vars - self.n_eq)]
                     return zero
 
                 def j(q):
                     qlist = q.flatten().tolist()
 
-                    jnum = numpy.zeros((num_equations,num_variables))
+                    jnum = numpy.zeros((self.n_eq,self.n_vars))
                     for constraint in self.constraints:
                         jnum+=constraint.mapped_f_jacobian(*qlist[:])
                     
-                    if num_variables > num_equations:
-                        jnum = numpy.r_[jnum, numpy.zeros((num_variables - num_equations, num_variables))]
+                    if self.n_vars > self.n_eq:
+                        jnum = numpy.r_[jnum, numpy.zeros((self.n_vars - self.n_eq, self.n_vars))]
                     return jnum
                 
-                return dq, variables, j, vertexdict
+                return dq, self.variables, j, vertexdict
 
         return None
         
@@ -238,8 +241,7 @@ class ConstraintSystem(object):
     def cleanup(self):
         sketch_objects = self.get_vertices
         for ii in range(len(self.constraints))[::-1]:
-            if self.constraints[ii].cleanup(
-                    sketch_objects) == Constraint.CleanupFlags.Deletable:
+            if self.constraints[ii].cleanup(sketch_objects) == Constraint.CleanupFlags.Deletable:
                 self.constraints.pop(ii)
 
 
@@ -300,13 +302,8 @@ class Constraint(object):
 
     def init_symbolics(self):
         self._vertices = [SymbolicVertex(id) for id in self.vertex_ids]
-        self._segments = [
-            SymbolicLine(
-                SymbolicVertex(id1),
-                SymbolicVertex(id2)) for id1,
-            id2 in self.segment_ids]
-        self._segment_vertices = [
-            SymbolicVertex(id) for id in self.vertices_in_lines()]
+        self._segments = [SymbolicLine(SymbolicVertex(id1),SymbolicVertex(id2)) for id1,id2 in self.segment_ids]
+        self._segment_vertices = [SymbolicVertex(id) for id in self.vertices_in_lines()]
 
     @classmethod
     def new(cls, *objects):
@@ -341,7 +338,7 @@ class Constraint(object):
         try:
             return self._f_jacobian
         except AttributeError:
-            self._f_jacobian = sympy.utilities.lambdify(self.variables(),self.jacobian().tolist())
+            self._f_jacobian = sympy.utilities.lambdify(self.variables,self.jacobian().tolist())
             return self._f_jacobian
             
     @property
@@ -349,7 +346,7 @@ class Constraint(object):
         try:
             return self._f_constraints
         except AttributeError:
-            self._f_constraints = sympy.utilities.lambdify(self.variables(),self.generated_equations)
+            self._f_constraints = sympy.utilities.lambdify(self.variables,self.generated_equations)
             return self._f_constraints
             
     def mapped_f_constraints(self,*args):
@@ -362,6 +359,7 @@ class Constraint(object):
         y = self._A.dot(self.f_jacobian(*args)).dot(self._B)
         return y
 
+    @property
     def variables(self):
         variables = []
         for equation in self.generated_equations:
@@ -376,13 +374,13 @@ class Constraint(object):
 
     def jacobian(self):
         eq = sympy.Matrix(self.generated_equations)        
-        J = eq.jacobian(self.variables())
+        J = eq.jacobian(self.variables)
         return J
 
     def build_system_mapping(self,sys_vars,num_eq,eq_indeces):
         m = num_eq
         n = len(self.generated_equations)
-        o = len(self.variables())
+        o = len(self.variables)
         p = len(sys_vars)
 
         A = numpy.zeros((m,n))
@@ -390,7 +388,7 @@ class Constraint(object):
             A[ii,jj] = 1
 
         B = numpy.zeros((o,p))
-        for ii,item in enumerate(self.variables()):
+        for ii,item in enumerate(self.variables):
             jj = sys_vars.index(item)
             B[ii,jj] = 1
 

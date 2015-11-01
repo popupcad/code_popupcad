@@ -20,6 +20,10 @@ class BaseVertex(object):
     def __init__(self, position,scaling = 1):
         self.id = id(self)
         self.setpos(position,scaling)
+        
+    def variables(self):
+        my_id = str(self.id)
+        return my_id+'.x',my_id+'.y'
 
     def constraints_ref(self):
         try:
