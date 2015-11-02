@@ -10,9 +10,9 @@ Please see LICENSE for full license.
 from __future__ import division
 from __future__ import with_statement
 
-from perlin_noise import SmoothNoise, perlin_noise_from_smoothnoise
-from gradient import SimpleGradient, map_gradient
-from image import grid_to_greyscale_image
+from .perlin_noise import SmoothNoise, perlin_noise_from_smoothnoise
+from .gradient import SimpleGradient, map_gradient
+from .image import grid_to_greyscale_image
 from lxml import etree
 
 def generate_heightmap(filename, size = 129, octaves = 9, persistence = 0.5):

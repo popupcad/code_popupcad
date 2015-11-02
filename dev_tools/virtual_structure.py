@@ -10,12 +10,11 @@ import os
 import types
 import importlib
 import inspect
-import shutil
+#import shutil
+import glob
 
 #dummy = types.ModuleType('dummy')
 #dummy_vars = set(dir(dummy))
-
-
 
 
 with open('dummy.py','w') as f:
@@ -47,32 +46,76 @@ def remap_class(source_location, dest_location):
 def parent_name(module_name):
     return '.'.join(module_name.split('.')[:-1])
 
-def child_modules(module):
-    items = [getattr(module,item) for item in dir(module)]
-    children = [item for item in items if isinstance(item,types.ModuleType)]
-    return children
-
-def get_non_modules(module):
-    a = sorted(set(dir(child_modules[2])) - set(dummy_vars))
-#    return list0
-#    list1 = filter_dummy_vars(list0)
+def children(module):
+    a = sorted(set(dir(module)) - set(dummy_vars))
     items = [(item,getattr(module,item)) for item in a]
-    children = dict([(key,value) for key,value in items if not isinstance(value,types.ModuleType)])
-    return children
+    modules = dict([(value.__name__,value) for key,value in items if isinstance(value,types.ModuleType)])
+    modules.update(find_modules_in_directory(module))
+    local_modules = dict([(key,value) for key,value in modules.items() if parent_name(key)==module.__name__])
+    non_modules = dict([(key,value) for key,value in items if not isinstance(value,types.ModuleType)])
 
+    classes = dict([(key,value) for key,value in non_modules.items() if inspect.isclass(value)])
+    local_classes = dict([(key,value) for key, value in classes.items() if value.__module__==module.__name__])
+
+    return modules,non_modules,local_classes,local_modules
+
+def search_module_r(list_in,list_out,class_dict):
+    item = list_in.pop(0)
+    list_out.append(item)
+    modules,non_modules,local_classes,local_modules = children(item)
+    class_dict[item.__name__]=local_classes
+    list_in.extend(local_modules.values())
+    if not not list_in:
+        search_module_r(list_in,list_out,class_dict)
+    else:
+        return
+        
+def find_modules_in_directory(module):
+    directory,module_filename = os.path.split(module.__file__)
+    dict1 = {}
+    if module_filename=='__init__.py':
+        files = glob.glob(directory+'/*.py')
+        for filename in files:
+            basename = os.path.split(filename)[1]
+            basename = os.path.splitext(basename)[0]
+            if basename !='__init__':
+                modulename = module.__name__+'.'+basename
+                mod= importlib.import_module(modulename)
+                dict1[mod.__name__]=mod
+    return dict1        
+        
+    
 if __name__=='__main__':
-    module_to_add = 'popupcad.filetypes.constraints'
+    module_to_add = 'popupcad.filetypes'
     parent_package_name = parent_name(module_to_add)
     parent_package = importlib.import_module(parent_package_name)
-    child_modules = child_modules(parent_package)
-    child_names = [item.__name__ for item in child_modules]
+    child_modules,child_non_modules,local_classes,local_modules = children(parent_package)
+    child_names = [item.__name__ for item in child_modules.values()]
     
-    mod_name = child_names[2]
-    mod = child_modules[2]
-    nonmods = get_non_modules(mod)
-    classes = dict([(key,value) for key,value in nonmods.items() if inspect.isclass(value)])
-    local_classes = dict([(key,value) for key, value in classes.items() if value.__module__==mod_name])
+    top = importlib.import_module('popupcad')
+    dummy,nonmods,lc,lm= children(top)
+
+    top_level_packages = ['popupcad','dev_tools','popupcad_gazebo','popupcad_manufacturing_plugins','qt']
     
+    list_in = [importlib.import_module(item) for item in top_level_packages]
+    list_out = []
+    class_dict = {}
+    search_module_r(list_in,list_out,class_dict)
+    
+    class_dict2 = {}
+    for key in class_dict:
+        class_dict2[key] = sorted(class_dict[key].keys())
+    
+#    data = {}
+#    data['modules'] = sorted([item.__name__ for item in list_out])
+#    data['classes'] = class_dict2
+    
+    import yaml
+    with open('project_structure.yaml','w') as f:
+        yaml.dump(class_dict2,f)
+        
+    
+#    file_modules = find_modules_in_directory(top)
     
 
 #    importlib.__import__(parent(module_to_add))
