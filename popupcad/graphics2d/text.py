@@ -44,10 +44,12 @@ class GenericText(object):
 
     def to_generic_polygons(self,add_shift = True):
         text = self.text
+#        small font scalings actually produce different paths.  use 10pt font as invariant size
+        internal_font = 10
         if text !='':
             p = qg.QPainterPath()
-            font = qg.QFont(self.font,pointSize=self.fontsize)
-            p.addText(qc.QPointF(0,1*self.fontsize),font,text)
+            font = qg.QFont(self.font,pointSize=internal_font)
+            p.addText(qc.QPointF(0,internal_font),font,text)
             
             generic_polygons = pp.painterpath_to_generics(p,popupcad.text_approximation)
         else:
@@ -55,6 +57,7 @@ class GenericText(object):
         T = numpy.eye(3)
         T[1,1]=-1
         generic_polygons = [item.transform(T) for item in generic_polygons]
+        [item.scale(self.fontsize/internal_font) for item in generic_polygons]
         if add_shift:
             for item in generic_polygons:
                 item.shift(self.pos.getpos())

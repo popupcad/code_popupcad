@@ -141,6 +141,10 @@ class BaseVertex(object):
             return points.identical(self.getpos(),other.getpos())
         return False
 
+    def scale(self, m):
+        pos = numpy.array(self.getpos())
+        self.setpos(m*pos)
+
     def shift(self, dxdy):
         pos = numpy.array(self.getpos())
         dxdy = numpy.array(dxdy)

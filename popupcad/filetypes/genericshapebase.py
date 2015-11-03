@@ -351,6 +351,10 @@ class GenericShapeBase(object):
                 return True
         return False
 
+    def scale(self, m):
+        [item.scale(m) for item in self.get_exterior()]
+        [item.scale(m) for interior in self.get_interiors() for item in interior]
+
     def shift(self, dxdy):
         [item.shift(dxdy) for item in self.get_exterior()]
         [item.shift(dxdy) for interior in self.get_interiors()
