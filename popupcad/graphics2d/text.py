@@ -59,6 +59,8 @@ class GenericText(object):
         T = numpy.eye(3)
         T[1,1]=-1
         generic_polygons = [item.transform(T) for item in generic_polygons]
+        for item in generic_polygons:
+            item.shift(self.pos.getpos())
         return generic_polygons
         
     def generic_polys_to_shapely(self,generic_polygons):

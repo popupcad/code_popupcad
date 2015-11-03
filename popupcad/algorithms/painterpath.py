@@ -9,7 +9,6 @@ qc = qt.QtCore
 qg = qt.QtGui
 
 import numpy
-import popupcad
 from popupcad.filetypes.genericshapes import GenericPoly
 
 def quadratic(t,p0,p1,p2):
