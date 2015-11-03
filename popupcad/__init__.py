@@ -62,3 +62,7 @@ import shapely
 import stl
 import sympy
 import yaml
+
+import dev_tools.virtual_structure
+commands = dev_tools.virtual_structure.load_commands(os.path.normpath(os.path.join(supportfiledir,'virtual_structure.yaml')))
+dev_tools.virtual_structure.run_commands(commands)

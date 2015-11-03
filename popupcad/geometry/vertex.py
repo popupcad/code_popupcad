@@ -6,7 +6,7 @@ Please see LICENSE for full license.
 """
 
 import numpy
-from popupcad.filetypes.constraints import SymbolicVertex
+from popupcad.constraints.constraint_support import SymbolicVertex
 import popupcad
 import shapely.geometry as sg
 

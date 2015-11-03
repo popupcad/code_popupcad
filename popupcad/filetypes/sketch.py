@@ -4,7 +4,7 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-from popupcad.filetypes.constraints import ConstraintSystem
+from popupcad.constraints.constraint_system import ConstraintSystem
 import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
 import qt

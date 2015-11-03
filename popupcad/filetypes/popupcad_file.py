@@ -17,3 +17,26 @@ class popupCADFile(GenericFile):
     def get_parent_program_version(self):
         return popupcad.version
 
+    def backup(self,folder = None,backupstring = '_backup_'):
+        import os
+        import glob
+        import popupcad
+        
+        if folder is None:
+            folder = self.dirname
+        basename = self.get_basename()
+        filename = os.path.normpath(os.path.join(folder,basename))
+        filename = os.path.splitext(filename)[0]
+
+        searchstring = (filename+backupstring+'*.'+self.defaultfiletype)
+        existingfiles = glob.glob(searchstring)
+        existingfiles.sort(reverse=True)
+
+        for item in existingfiles[popupcad.backup_limit-1:]:
+            os.remove(item)
+        
+        time = popupcad.basic_functions.return_formatted_time(specificity = 'minute')
+        
+        backupfilename = filename+backupstring+time+'.'+self.defaultfiletype
+            
+        self.save_yaml(backupfilename, update_filename=False)

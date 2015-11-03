@@ -11,7 +11,7 @@ qg = qt.QtGui
 import popupcad
 import numpy
 
-import popupcad.filetypes.constraints as constraints
+import popupcad.constraints.constraints as constraints
 
 from popupcad.geometry.vertex import ShapeVertex, DrawnPoint
 from popupcad.graphics2d.interactivevertex import InteractiveVertex, ReferenceInteractiveVertex, DrawingPoint, InteractiveVertexBase
@@ -268,31 +268,31 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 'text': 'Coincident',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.coincident),
+                        constraints.CoincidentConstraint),
                     'icon': icons['coincident']}})
         distanceactions.append(
             {
                 'text': 'Distance',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.distance),
+                        constraints.DistanceConstraint),
                     'icon': icons['distance']}})
         distanceactions.append(
             {
                 'text': 'DistanceX',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.distancex),
+                        constraints.XDistanceConstraint),
                     'icon': icons['distancex']}})
         distanceactions.append(
             {
                 'text': 'DistanceY',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.distancey),
+                        constraints.YDistanceConstraint),
                     'icon': icons['distancey']}})
         distanceactions.append({'text': 'Fixed', 'kwargs': {
-                               'triggered': lambda: self.add_constraint(constraints.fixed)}})
+                               'triggered': lambda: self.add_constraint(constraints.FixedConstraint)}})
 
         twolineactions = []
         twolineactions.append(
@@ -300,42 +300,42 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 'text': 'Angle',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.angle),
+                        constraints.AngleConstraint),
                     'icon': icons['angle']}})
         twolineactions.append(
             {
                 'text': 'Parallel',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.parallel),
+                        constraints.ParallelLinesConstraint),
                     'icon': icons['parallel']}})
         twolineactions.append(
             {
                 'text': 'Perpendicular',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.perpendicular),
+                        constraints.PerpendicularLinesConstraint),
                     'icon': icons['perpendicular']}})
         twolineactions.append(
             {
                 'text': 'Equal',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.equal),
+                        constraints.EqualLengthLinesConstraint),
                     'icon': icons['equal']}})
         twolineactions.append(
             {
                 'text': 'Horizontal',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.horizontal),
+                        constraints.HorizontalConstraint),
                     'icon': icons['horizontal']}})
         twolineactions.append(
             {
                 'text': 'Vertical',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.vertical),
+                        constraints.VerticalConstraint),
                     'icon': icons['vertical']}})
 
         self.constraintactions = []
@@ -362,10 +362,10 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 'text': 'PointLine',
                 'kwargs': {
                     'triggered': lambda: self.add_constraint(
-                        constraints.PointLine),
+                        constraints.PointLineDistanceConstraint),
                     'icon': icons['pointline']}})
         self.constraintactions.append({'text': 'Midpoint', 'kwargs': {
-                                      'triggered': lambda: self.add_constraint(constraints.LineMidpoint)}})
+                                      'triggered': lambda: self.add_constraint(constraints.LineMidpointConstraint)}})
         self.constraintactions.append({'text': 'Update', 'kwargs': {
                                       'triggered': self.refreshconstraints, 'icon': icons['refresh']}})
         self.constraintactions.append({'text': 'Cleanup', 'kwargs': {
@@ -408,13 +408,13 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
                 items.append(newgeneric)
                 item.setSelected(False)
                 newitem.setSelected(True)
-                new_constraints.append(constraints.fixed.new(newgeneric))
+                new_constraints.append(constraints.FixedConstraint.new(newgeneric))
 
             elif isinstance(item, ReferenceInteractiveEdge):
                 generic = item.get_generic()
                 v1 = ShapeVertex(generic.vertex1.getpos())
                 v2 = ShapeVertex(generic.vertex2.getpos())
-                new_constraints.append(constraints.fixed.new(v1, v2))
+                new_constraints.append(constraints.FixedConstraint.new(v1, v2))
 
                 l = GenericLine([v1, v2], [], construction=True)
 

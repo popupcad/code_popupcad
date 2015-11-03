@@ -16,8 +16,8 @@ from popupcad.constraints.constraint_system import ConstraintSystem
 from popupcad.constraints.constraint import Constraint,ValueConstraint
 from popupcad.constraints.constraint_support import *     
 
-class fixed(Constraint):
-    name = 'fixed'
+class FixedConstraint(Constraint):
+    name = 'Fixed'
     validity_tests = [Constraint.at_least_one_point]
     
     def __init__(self, vertex_ids, values):
@@ -57,8 +57,8 @@ class fixed(Constraint):
         return eqs
 
 
-class horizontal(Constraint):
-    name = 'horizontal'
+class HorizontalConstraint(Constraint):
+    name = 'Horizontal'
     validity_tests = [Constraint.at_least_two_points]
 
     def symbolic_equations(self):
@@ -71,8 +71,8 @@ class horizontal(Constraint):
         return eqs
 
 
-class vertical(Constraint):
-    name = 'vertical'
+class VerticalConstraint(Constraint):
+    name = 'Vertical'
     validity_tests = [Constraint.at_least_two_points]
 
     def symbolic_equations(self):
@@ -85,7 +85,7 @@ class vertical(Constraint):
         return eqs
 
 
-class distance(ValueConstraint):
+class DistanceConstraint(ValueConstraint):
     name = 'distance'
     validity_tests = [Constraint.exactly_two_points]
 
@@ -105,8 +105,8 @@ class distance(ValueConstraint):
             return [eq]
 
 
-class coincident(Constraint):
-    name = 'coincident'
+class CoincidentConstraint(Constraint):
+    name = 'Coincident Points'
     validity_tests = [Constraint.at_least_two_points]
 
     def symbolic_equations(self):
@@ -120,8 +120,8 @@ class coincident(Constraint):
         return eq
 
 
-class distancex(ValueConstraint):
-    name = 'distancex'
+class XDistanceConstraint(ValueConstraint):
+    name = 'X Distance'
     validity_tests = [Constraint.at_least_one_point]
 
     def symbolic_equations(self):
@@ -134,8 +134,8 @@ class distancex(ValueConstraint):
         return [eq]
 
 
-class distancey(ValueConstraint):
-    name = 'distancey'
+class YDistanceConstraint(ValueConstraint):
+    name = 'Y Distance'
     validity_tests = [Constraint.at_least_one_point]
 
     def symbolic_equations(self):
@@ -152,8 +152,8 @@ class distancey(ValueConstraint):
         return [eq]
 
 
-class angle(ValueConstraint):
-    name = 'angle'
+class AngleConstraint(ValueConstraint):
+    name = 'Angle'
     value_text = 'enter angle(in degrees)'
     validity_tests = [Constraint.at_least_one_line]
 
@@ -181,8 +181,8 @@ class angle(ValueConstraint):
         return [eq]
 
 
-class parallel(Constraint):
-    name = 'parallel'
+class ParallelLinesConstraint(Constraint):
+    name = 'Parallel Lines'
     validity_tests = [Constraint.at_least_two_lines]
 
     def symbolic_equations(self):
@@ -195,8 +195,8 @@ class parallel(Constraint):
         return eq
 
 
-class equal(Constraint):
-    name = 'equal'
+class EqualLengthLinesConstraint(Constraint):
+    name = 'Equal Length Lines'
     validity_tests = [Constraint.at_least_two_lines]
 
     def symbolic_equations(self):
@@ -210,8 +210,8 @@ class equal(Constraint):
         return eqs
 
 
-class perpendicular(Constraint):
-    name = 'perpendicular'
+class PerpendicularLinesConstraint(Constraint):
+    name = 'Perpendicular Lines'
     validity_tests = [Constraint.exactly_two_lines]
 
     def symbolic_equations(self):
@@ -221,8 +221,8 @@ class perpendicular(Constraint):
         return [v2[1] * v1[1] + v2[0] * v1[0]]
 
 
-class PointLine(ValueConstraint):
-    name = 'PointLineDistance'
+class PointLineDistanceConstraint(ValueConstraint):
+    name = 'Point-Line Distance'
     validity_tests = [Constraint.exactly_one_point_and_one_line]
 
     def symbolic_equations(self):
@@ -246,8 +246,8 @@ class PointLine(ValueConstraint):
             return [eq]
 
 
-class LineMidpoint(Constraint):
-    name = 'Line Midpoint'
+class LineMidpointConstraint(Constraint):
+    name = 'Point on Line Midpoint'
     validity_tests = [Constraint.exactly_one_point_and_one_line]
 
     def symbolic_equations(self):
