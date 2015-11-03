@@ -28,11 +28,7 @@ class GenericText(object):
         self.id = id(self)
 
     def copy(self, identical=True):
-        new = type(self)(
-            self.text,
-            self.pos.copy(identical),
-            self.font,
-            self.fontsize)
+        new = type(self)(self.text,self.pos.copy(identical),self.font,self.fontsize)
         if identical:
             new.id = self.id
         return new
@@ -46,7 +42,7 @@ class GenericText(object):
     def is_construction(self):
         return False
 
-    def to_generic_polygons(self):
+    def to_generic_polygons(self,add_shift = True):
         text = self.text
         if text !='':
             p = qg.QPainterPath()
@@ -59,8 +55,9 @@ class GenericText(object):
         T = numpy.eye(3)
         T[1,1]=-1
         generic_polygons = [item.transform(T) for item in generic_polygons]
-        for item in generic_polygons:
-            item.shift(self.pos.getpos())
+        if add_shift:
+            for item in generic_polygons:
+                item.shift(self.pos.getpos())
         return generic_polygons
         
     def generic_polys_to_shapely(self,generic_polygons):
@@ -76,19 +73,19 @@ class GenericText(object):
             obj1 = sg.Polygon()
         return obj1
 
-    def to_shapely(self):
-        generic_polygons = self.to_generic_polygons()
+    def to_shapely(self,add_shift = True):
+        generic_polygons = self.to_generic_polygons(add_shift)
         shapely = self.generic_polys_to_shapely(generic_polygons)
         return shapely
         
-    def to_generics(self):
-        shapely = self.to_shapely()
+    def to_generics(self,add_shift = True):
+        shapely = self.to_shapely(add_shift)
         shapelies = popupcad.algorithms.csg_shapely.condition_shapely_entities(shapely)
         generics = [popupcad.algorithms.csg_shapely.to_generic(item) for item in shapelies]
         return generics
 
-    def painterpath(self):
-        generics = self.to_generics()
+    def painterpath(self,add_shift = True):
+        generics = self.to_generics(add_shift)
         p2 = qg.QPainterPath()
         [p2.addPath(item.painterpath()) for item in generics]
         return p2
@@ -115,20 +112,9 @@ class TextParent(qg.QGraphicsPathItem, Common):
         self.setFlag(qg.QGraphicsItem.ItemIsMovable, True)
         self.setFlag(qg.QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(qg.QGraphicsItem.ItemIsFocusable, True)
-        self.pen = qg.QPen(
-            qg.QColor.fromRgbF(
-                0,
-                0,
-                0,
-                1),
-            1,
-            qc.Qt.SolidLine,
-            qc.Qt.RoundCap,
-            qc.Qt.RoundJoin)
+        self.pen = qg.QPen(qg.QColor.fromRgbF(0,0,0,1),1,qc.Qt.SolidLine,qc.Qt.RoundCap,qc.Qt.RoundJoin)
         self.pen.setCosmetic(True)
-        self.brush = qg.QBrush(
-            qg.QColor.fromRgbF(
-                0, 0, 0, .25), qc.Qt.SolidPattern)
+        self.brush = qg.QBrush(qg.QColor.fromRgbF(0, 0, 0, .25), qc.Qt.SolidPattern)
         self.setPen(self.pen)
         self.setBrush(self.brush)
         self.setPos(*self.generic.pos.getpos(scaling = popupcad.view_scaling))
@@ -165,7 +151,7 @@ class TextParent(qg.QGraphicsPathItem, Common):
 #        self.scene().savesnapshot.emit()
 
     def refreshview(self):
-        path = self.generic.painterpath()
+        path = self.generic.painterpath(add_shift = False)
         self.setPath(path)
 #        path, dummy = self.generic.genpath(popupcad.view_scaling)
 #        self.setPath(path)
