@@ -38,7 +38,7 @@ def strip_locates(design):
     for ii in range(len(design.operations))[::-1]:
         op = design.operations[ii]
         if hasattr(op,'locationgeometry'):
-            design.operations.pop(ii)
+            design.pop_operation(ii)
             
 def remap_operation_ids(design):
     op_mapping = []

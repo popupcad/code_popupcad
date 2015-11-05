@@ -636,20 +636,14 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             if self.design is not None:
                 print(ii, jj)
                 try:
-                    operationgeometries = self.design.operations[
-                        ii].output[jj].controlpolygons()
-                    staticgeometries = [item.outputstatic()
-                                        for item in operationgeometries]
+                    operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
+                    staticgeometries = [item.outputstatic() for item in operationgeometries]
 
-                    controlpoints = self.design.operations[
-                        ii].output[jj].controlpoints()
-                    controlpoints = [point.gen_interactive()
-                                     for point in controlpoints]
+                    controlpoints = self.design.operations[ii].output[jj].controlpoints()
+                    controlpoints = [point.gen_interactive() for point in controlpoints]
 
-                    controllines = self.design.operations[
-                        ii].output[jj].controllines()
-                    controllines = [line.gen_interactive()
-                                    for line in controllines]
+                    controllines = self.design.operations[ii].output[jj].controllines()
+                    controllines = [line.gen_interactive() for line in controllines]
                 except (IndexError, AttributeError):
                     pass
         return staticgeometries, controlpoints, controllines

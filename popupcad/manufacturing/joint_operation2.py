@@ -281,8 +281,7 @@ class JointOperation2(Operation2, LayerBasedOperation):
 
         parent_id, parent_output_index = self.operation_links['parent'][0]
         parent_index = design.operation_index(parent_id)
-        parent = design.operations[parent_index].output[
-            parent_output_index].csg
+        parent = design.operations[parent_index].output[parent_output_index].csg
 
         fixed_id, fixed_output_index = self.operation_links['fixed'][0]
         fixed_index = design.operation_index(fixed_id)

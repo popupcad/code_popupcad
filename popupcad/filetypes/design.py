@@ -287,15 +287,18 @@ class Design(popupCADFile):
             op.generate_outer1()
 
     def append_operation(self,item):
-        self.operations.append(item)
         item.set_design(self)
+        return self.operations.append(item)
 
     def insert_operation(self,index,item):
-        self.operations.insert(index,item)
         item.set_design(self)
+        return self.operations.insert(index,item)
 
     def remove_operation(self,item):
-        self.operations.remove(item)
+        return self.operations.remove(item)
+
+    def pop_operation(self,ii):
+        return self.operations.pop(ii)
                 
     def build_tree(self):
         connections = []
