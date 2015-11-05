@@ -28,10 +28,8 @@ class Material2(object):
     def __repr__(self):
         return str(self)
     
-    def copy(self,identical = True):
+    def copy(self):
         new = type(self)(self.name,self.color,self.thickness,self.E1,self.E2,self.density,self.poisson,self.is_adhesive,self.is_rigid,self.is_conductive)
-        if identical:
-            new.id = self.id
         return new
 
     def upgrade(self):
