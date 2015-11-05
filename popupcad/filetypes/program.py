@@ -33,6 +33,7 @@ class Program(object):
         if len(args) > 1 and not '--' in args[-1]:
             self.editor.open(filename=args[-1])
         self.editor.show()
+        self.editor.move_center()
         self.create_exception_listener()
 
         for plugin in plugins:

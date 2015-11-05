@@ -38,11 +38,13 @@ class WidgetCommon(object):
             buffer_y)
 
     def move_center(self):
-        #        window_rect = qg.QApplication.desktop().screen().rect()
-        #        x = (window_rect.width()-popupcad.nominal_width)/2
-        #        y = (window_rect.height()-popupcad.nominal_height)/2
-        #        self.move(qc.QPoint(x,y))
-        pass
+        screen_width = qg.QApplication.desktop().screen().width()
+        screen_height = qg.QApplication.desktop().screen().height()
+      
+        new_pos_x = (screen_width - self.width())/2
+        new_pos_y = (screen_height - self.height())/2
+
+        self.move(new_pos_x,new_pos_y)
 
     def buildToolbarMenu(self, actions, name):
         toolbar = qg.QToolBar(name)

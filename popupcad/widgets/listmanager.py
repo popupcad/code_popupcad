@@ -176,6 +176,8 @@ class SketchListManager(ListManager):
             accept_method=accept_method,
             selectops=True)
         sketcher.show()
+        sketcher.move_center()
+        
         sketcher.graphicsview.zoomToFit()
 
     def load_item(self):

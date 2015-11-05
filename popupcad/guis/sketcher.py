@@ -124,8 +124,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.setCentralWidget(centralwidget)
         self.setWindowTitle('Sketcher')
 
-        self.set_nominal_size()
-        self.move_center()
+#        self.set_nominal_size()
 
         if self.selectops:
             self.optreedock.closeEvent = lambda event: self.action_uncheck(
@@ -135,6 +134,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.propdock.closeEvent = lambda event: self.action_uncheck(
             self.act_view_properties)
 
+#        self.move_center()
     def regen_id(self):
         self.sketch.regen_id()
 
