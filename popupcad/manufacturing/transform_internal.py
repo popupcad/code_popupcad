@@ -13,7 +13,7 @@ import popupcad
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from dev_tools.enum import enum
-from popupcad.widgets.listmanager import SketchListManager
+from popupcad.widgets.listmanager import SketchListManager,SketchListViewer
 
 class Dialog(qg.QDialog):
 

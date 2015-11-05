@@ -32,7 +32,7 @@ if __name__=='__main__':
         
         design_links =  {'source':[subdesign.id]}
         subop = SubOperation2(design_links,sketch_list,input_list,output_list)
-        design.operations.insert(inner_operation_indices[0],subop)
+        design.insert_operation(inner_operation_indices[0],subop)
         for ii,link in enumerate(required_outputs):
             design.replace_op_refs_force(link, (subop.id,ii))
     
@@ -56,7 +56,7 @@ if __name__=='__main__':
                 frozen_operations.append(frozen)
                 
                 subdesign.replace_op_refs_force((parent_id,parent_output_ii),(frozen.id,0))
-                subdesign.operations.insert(0,frozen)
+                subdesign.insert_operation(0,frozen)
         
         return inner_inputs,frozen_operations
     
@@ -79,7 +79,7 @@ if __name__=='__main__':
         to_remove = list(set(design_refs).intersection(set(subdesign_refs)))    
         
         for ref in to_remove:
-            design.operations.remove(design.operation_dict[ref])
+            design.remove_operation(design.operation_dict[ref])
     
     
     def build_sketch_list(subdesign):

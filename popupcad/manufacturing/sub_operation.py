@@ -254,7 +254,7 @@ class SubOperation(Operation2):
             op_to_insert = design.op_from_ref(to_ref[0])
             to2 = Freeze(0,0,op_to_insert.output[to_ref[1]].generic_laminate())
             to_ref2 = (to2.id,to_ref[1])
-            subdesign.operations.insert(0, to2)
+            subdesign.insert_operation(0, to2)
             subdesign.replace_op_refs_force(from_ref, to_ref2)
         for sketch_data in self.sketch_list:
             from_ref = sketch_data.ref1

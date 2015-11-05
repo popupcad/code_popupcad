@@ -23,6 +23,14 @@ class Operation2(Node, UserData):
         self.design_links = design_links
         self.clear_output()
 
+    def get_design(self):
+        return self._design
+    def set_design(self,design):
+        self._design = design
+    def del_design(self):
+        del self._design
+    design = property(get_design,set_design,del_design)
+    
     def clear_output(self):
         try:
             del self.output
@@ -86,6 +94,10 @@ class Operation2(Node, UserData):
         except AttributeError:
             self._outputref = 0
             return self._outputref
+
+    def generate_outer1(self):
+        design = self.design
+        self.generate(design)
 
     def generate(self, design):
         result = self.operate(design)

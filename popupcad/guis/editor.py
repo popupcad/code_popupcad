@@ -272,7 +272,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.design.regen_id()
     
     def newoperationslot(self, operation):
-        self.design.operations.append(operation)
+        self.design.append_operation(operation)
         if self.act_autoreprocesstoggle.isChecked():
             self.reprocessoperations([operation])
     
@@ -501,7 +501,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         operation_ref, output_index = self.operationeditor.currentRefs()[0]
         operation_index = self.design.operation_index(operation_ref)
         newop = LaminateOperation2({'unary': [], 'binary': []}, 'union')
-        self.design.operations.insert(operation_index + 1, newop)
+        self.design.insert_operation(operation_index + 1, newop)
         self.design.replace_op_refs(
             (operation_ref, output_index), (newop.id, 0))
         newop.operation_links['unary'].append((operation_ref, output_index))

@@ -27,6 +27,14 @@ class Operation(Node, UserData, ClassTools):
         except AttributeError:
             pass
 
+    def get_design(self):
+        return self._design
+    def set_design(self,design):
+        self._design = design
+    def del_design(self):
+        del self._design
+    design = property(get_design,set_design,del_design)
+
     def parentrefs(self):
         return []
 
@@ -53,6 +61,10 @@ class Operation(Node, UserData, ClassTools):
         except AttributeError:
             self._outputref = 0
             return self._outputref
+
+    def generate_outer1(self):
+        design = self.design
+        self.generate(design)
 
     def generate(self, design):
         result = self.operate(design)

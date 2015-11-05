@@ -266,6 +266,7 @@ class Design(popupCADFile):
 
     def reprocessoperations(self, operations=None,debugprint = False):
         self.build_tree()
+        self.update_operation_design()
             
         if not self.subdesigns_are_reprocessed:
             for subdesign in self.subdesigns.values():
@@ -283,8 +284,19 @@ class Design(popupCADFile):
             print(operations)
             
         for op in operations:
-            op.generate(self)
-            
+            op.generate_outer1()
+
+    def append_operation(self,item):
+        self.operations.append(item)
+        item.set_design(self)
+
+    def insert_operation(self,index,item):
+        self.operations.insert(index,item)
+        item.set_design(self)
+
+    def remove_operation(self,item):
+        self.operations.remove(item)
+                
     def build_tree(self):
         connections = []
         for child in self.operations:
@@ -355,13 +367,16 @@ class Design(popupCADFile):
     @property
     def main_operation(self):
         return self.operations[0].id, 0
+        
+    def update_operation_design(self):
+        for op in self.operations:
+            op.set_design(self)
 
     @classmethod
     def load_yaml(cls, filename,upgrade = True):
-        obj1 = popupCADFile.load_yaml(filename)
+        self = popupCADFile.load_yaml(filename)
         if upgrade:
-            obj1.backup(popupcad.backupdir,'_pre-upgrade_')
-            obj2 = obj1.upgrade()
-            return obj2
-        else:
-            return obj1
+            self.backup(popupcad.backupdir,'_pre-upgrade_')
+            self = self.upgrade()
+        self.update_operation_design()
+        return self

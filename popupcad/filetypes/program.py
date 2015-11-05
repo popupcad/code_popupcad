@@ -18,13 +18,6 @@ class Program(object):
 
         args = list(args)
 
-#        for item in args:
-#            if '--deprecated' in item:
-#                import popupcad_deprecated
-#                popupcad.deprecated = popupcad_deprecated
-#                sys.modules['popupcad.deprecated'] = popupcad_deprecated
-#                args.pop(args.index(item))
-
         self.app = app
         icons = popupcad.guis.icons.build()
         self.app.setWindowIcon(icons['printapede'])

@@ -258,7 +258,7 @@ class SubOperation2(Operation2):
             csg3 = csg2.switch_layer_defs(layerdef_subdesign)
             dummy_op = DummyOp1(csg3)
             to_ref2 = (dummy_op.id,0)
-            subdesign.operations.insert(0, dummy_op)
+            subdesign.insert_operation(0, dummy_op)
             subdesign.replace_op_refs_force(from_ref, to_ref2)
 
         subdesign.reprocessoperations()
