@@ -247,6 +247,18 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
 #        widget.show()
 
+    @property
+    def design(self):
+        return self._design
+
+    @design.setter
+    def design(self,design):
+        self._design = design
+    
+    @design.deleter
+    def design(self):
+        del self._design
+    
     def get_design(self):
         return self.design
     
@@ -387,8 +399,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             raise
         except AttributeError:
             raise NoOutput()
-        selectedlayers = [item for item in self.design.return_layer_definition(
-        ).layers if item in self.layerlistwidget.selectedData()]
+        selectedlayers = [item for item in self.design.return_layer_definition().layers if item in self.layerlistwidget.selectedData()]
         self.show2dgeometry3(operationoutput, selectedlayers)
         self.show3dgeometry3(operationoutput, selectedlayers)
     
@@ -402,17 +413,16 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     
     def show3dgeometry3(self, operationoutput, selectedlayers):
         if self.act_view_3d.isChecked():
-            self.view_3d.view.update_object(self.design.return_layer_definition().z_values,operationoutput.triangles_by_layer,selectedlayers)
+            layerdef = self.design.return_layer_definition()
+            triangles = operationoutput.triangles_by_layer
+            self.view_3d.view.update_object(layerdef,triangles,selectedlayers)
         else:
             self.clear3dgeometry()
 
     def clear3dgeometry(self):
-        tris = dict([(layer, [])
-                     for layer in self.design.return_layer_definition().layers])
-        self.view_3d.view.update_object(
-            self.design.return_layer_definition().z_values,
-            tris,
-            [])
+        tris = dict([(layer, []) for layer in self.design.return_layer_definition().layers])
+        layerdef = self.design.return_layer_definition()
+        self.view_3d.view.update_object(layerdef,tris,[])
     
     def exportLayerSVG(self):
         from popupcad.graphics2d.svg_support import OutputSelection

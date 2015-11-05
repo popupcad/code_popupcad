@@ -80,43 +80,46 @@ class GLViewWidget(gl.GLViewWidget):
 #        import popupcad
 #        import os
 
-    def update_object(self, zvalue, triangles_by_layer, layers):
+    def update_object(self, layerdef, triangles_by_layer, layers):
+        self.layerdef = layerdef
         self.triangles_by_layer = triangles_by_layer
         self.layers = layers
-        self.zvalue = zvalue
         self.build_object()
 
-        for item in self.meshitems:
-            self.addItem(item)
+        for layer in layers:
+            self.addItem(self.meshitems[layer])
         self.update_layer_z()
         self.update_transparency_inner()
 
     def update_zoom(self, value):
         self.z_zoom = value
         self.update_layer_z()
+        
     def update_layer_z(self):
         zoom_act = (self.z_zoom/1000)**2*500
-        for layer, item in zip(self.layers, self.meshitems):
+        for layer in self.layerdef.layers:
+            item = self.meshitems[layer]
             item.resetTransform()
-            z = self.zvalue[layer] * (1+zoom_act)
+            z = self.layerdef.z_values[layer] * (1+zoom_act)
             item.translate(0, 0, z)
 
     def update_transparency(self,value):
         self.transparency = value
         self.update_transparency_inner()
+        
     def update_transparency_inner(self):
-        for layer, item in zip(self.layers, self.meshitems):
+        for layer,meshitem in self.meshitems.items():
             color = list(layer.color)
             transparency = self.transparency
             if transparency>=0:
                 color[3] = transparency/1000
-            item.setColor(color)
+            meshitem.setColor(color)
 
     def build_object(self):
         self.clear()
 #        self.add_grid()
-        self.meshitems = []
-        for layer in self.layers:
+        self.meshitems = {}
+        for layer in self.layerdef.layers:
             tri = numpy.array(self.triangles_by_layer[layer])
             if len(tri) > 0:
                 z = numpy.zeros((tri.shape[0], tri.shape[1], 1))
@@ -130,37 +133,26 @@ class GLViewWidget(gl.GLViewWidget):
 #                m = gl.GLMeshItem(vertexes=tri,vertexColors=colors,edgeColor=(1,1,1,1),computeNormals=True)
                 m = gl.GLMeshItem(vertexes=tri,computeNormals=False)
                 m.setGLOptions('translucent')
-                self.meshitems.append(m)
+                self.meshitems[layer]=m
 #                self.addItem(m)
-
+            else:
+                self.meshitems[layer]= gl.GLMeshItem(computeNormals = False)
+                
     def add_default_item(self):
         verts = numpy.empty((36, 3, 3), dtype=numpy.float32)
         theta = numpy.linspace(0, 2 * numpy.pi, 37)[:-1]
-        verts[:, 0] = numpy.vstack(
-            [2 * numpy.cos(theta), 2 * numpy.sin(theta), [0] * 36]).T
-        verts[:, 1] = numpy.vstack(
-            [4 * numpy.cos(theta + 0.2), 4 * numpy.sin(theta + 0.2), [-1] * 36]).T
-        verts[:, 2] = numpy.vstack(
-            [4 * numpy.cos(theta - 0.2), 4 * numpy.sin(theta - 0.2), [1] * 36]).T
+        verts[:, 0] = numpy.vstack([2 * numpy.cos(theta), 2 * numpy.sin(theta), [0] * 36]).T
+        verts[:, 1] = numpy.vstack([4 * numpy.cos(theta + 0.2), 4 * numpy.sin(theta + 0.2), [-1] * 36]).T
+        verts[:, 2] = numpy.vstack([4 * numpy.cos(theta - 0.2), 4 * numpy.sin(theta - 0.2), [1] * 36]).T
 
         colors = numpy.random.random(size=(verts.shape[0], 3, 4))
-        m2 = gl.GLMeshItem(
-            vertexes=verts,
-            vertexColors=colors,
-            smooth=False,
-            shader='balloon',
-            drawEdges=True,
-            edgeColor=(
-                1,
-                1,
-                0,
-                1))
+        edge_color = (1,1,0,1)
+        m2 = gl.GLMeshItem(vertexes=verts,vertexColors=colors,smooth=False,shader='balloon',drawEdges=True,edgeColor = edge_color)
         m2.translate(-5, 5, 0)
         self.addItem(m2)
 
     def sizeHint(self):
         return qc.QSize(300, 300)
-
 
 if __name__ == '__main__':
     import sys
