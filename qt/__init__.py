@@ -5,7 +5,8 @@ Created on Wed Oct 28 11:06:44 2015
 @author: danaukes
 """
 import sys
-if '--PyQt4' in sys.argv:
+argv = [item.lower() for item in sys.argv]
+if '--pyqt4' in argv:
     import PyQt4.QtGui as QtGui
     import PyQt4.QtCore as QtCore
     import PyQt4.QtSvg as QtSvg

@@ -170,8 +170,7 @@ class Design(popupCADFile):
         samesame = False
         operations_old = self.operations
         while not samesame:
-            operations_new = [item.upgrade_wrapper()
-                              for item in operations_old]
+            operations_new = [item.upgrade_wrapper() for item in operations_old]
             samesame = operations_old == operations_new
             operations_old = operations_new
         old_layer_def = self.return_layer_definition()
