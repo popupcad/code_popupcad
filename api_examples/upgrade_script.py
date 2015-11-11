@@ -11,7 +11,7 @@ import time
 import glob
 import shutil
 import time
-#import qt
+#
 #import qt.QtCore as qc
 #import qt.QtGui as qg
 

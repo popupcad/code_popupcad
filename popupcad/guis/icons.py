@@ -7,7 +7,7 @@ Please see LICENSE for full license.
 
 import os
 import glob
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 import popupcad

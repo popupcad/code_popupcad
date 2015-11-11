@@ -7,7 +7,7 @@ Please see LICENSE for full license.
 from popupcad.constraints.constraint_system import ConstraintSystem
 import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 import os

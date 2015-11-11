@@ -4,7 +4,7 @@ Created on Sun Nov  1 17:25:38 2015
 
 @author: danaukes
 """
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 

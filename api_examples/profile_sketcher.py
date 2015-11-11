@@ -10,7 +10,7 @@ if __name__=='__main__':
 
     import sys
     
-    import qt
+    
     import qt.QtCore as qc
     import qt.QtGui as qg
     

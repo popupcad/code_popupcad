@@ -9,7 +9,7 @@ Please see LICENSE for full license.
 from popupcad.geometry.vertex import ShapeVertex
 
 import numpy
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 from dev_tools.enum import enum

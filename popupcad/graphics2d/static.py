@@ -5,7 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 from popupcad.graphics2d.graphicsitems import Common

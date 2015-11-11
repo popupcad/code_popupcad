@@ -7,7 +7,7 @@ Please see LICENSE for full license.
 
 import os
 import popupcad
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 from popupcad.graphics2d.graphicsscene import SimpleGraphicsScene

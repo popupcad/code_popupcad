@@ -13,7 +13,7 @@ if __name__=='__main__':
     #import design_advanced_functions
     
     #import sys
-#    import qt
+#    
 #    import qt.QtCore as qc
 #    import qt.QtGui as qg
     #app = qg.QApplication(sys.argv[0])
@@ -101,7 +101,7 @@ if __name__=='__main__':
         return required_links2
         
     import sys
-    import qt
+    
     import qt.QtCore as qc
     import qt.QtGui as qg
     app = qg.QApplication(sys.argv[0])

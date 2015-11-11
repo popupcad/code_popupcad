@@ -8,7 +8,7 @@ Please see LICENSE for full license.
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.filetypes.operationoutput import OperationOutput
 
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 import dev_tools.enum as enum

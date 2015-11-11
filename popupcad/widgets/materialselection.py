@@ -6,7 +6,7 @@ Please see LICENSE for full license.
 """
 #import popupcad.materials.materials as materials
 from popupcad.filetypes.layerdef import LayerDef
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 

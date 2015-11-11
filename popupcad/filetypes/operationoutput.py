@@ -115,7 +115,7 @@ class OperationOutput(UserData):
     description = property(description_get, description_set)
 
     def edit_description(self):
-        import qt
+        
         import qt.QtCore as qc
         import qt.QtGui as qg
         result, ok = qg.QInputDialog.getText(

@@ -10,7 +10,7 @@ import numpy
 from popupcad.filetypes.genericshapes import GenericPoly
 from popupcad.filetypes.genericshapebase import NotSimple, ShapeInvalid, GenericShapeBase
 import popupcad
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 from popupcad.filetypes.popupcad_file import popupCADFile

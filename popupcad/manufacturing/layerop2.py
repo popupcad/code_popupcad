@@ -6,7 +6,7 @@ Please see LICENSE for full license.
 """
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 from popupcad.filetypes.listwidgetitem import ListWidgetItem

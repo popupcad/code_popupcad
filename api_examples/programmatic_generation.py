@@ -9,7 +9,7 @@ import popupcad
 from popupcad.filetypes.sketch import Sketch
 import numpy
 import sys
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 from popupcad_manufacturing_plugins.manufacturing.outersheet3 import OuterSheet3

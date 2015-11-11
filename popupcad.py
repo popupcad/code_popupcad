@@ -7,7 +7,7 @@ Please see LICENSE for full license.
 
 import sys
 
-import qt
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 

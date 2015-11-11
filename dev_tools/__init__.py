@@ -6,7 +6,7 @@ Please see LICENSE for full license.
 """
 
 #load external modules
-import qt
+
 import multiprocessing
 import numpy
 import popupcad
