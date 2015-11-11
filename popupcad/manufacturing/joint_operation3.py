@@ -7,9 +7,9 @@ Please see LICENSE for full license.
 """
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 import popupcad
 from popupcad.filetypes.operationoutput import OperationOutput

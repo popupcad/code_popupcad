@@ -13,9 +13,9 @@ if __name__=='__main__':
     #import design_advanced_functions
     
     #import sys
-#    import qt
-#    qc = qt.QtCore
-#    qg = qt.QtGui
+#    
+#    import qt.QtCore as qc
+#    import qt.QtGui as qg
     #app = qg.QApplication(sys.argv[0])
     
     def split_design(design,inner_operation_indices):
@@ -101,9 +101,9 @@ if __name__=='__main__':
         return required_links2
         
     import sys
-    import qt
-    qc = qt.QtCore
-    qg = qt.QtGui
+    
+    import qt.QtCore as qc
+    import qt.QtGui as qg
     app = qg.QApplication(sys.argv[0])
     
     design = Design.open()

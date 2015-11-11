@@ -250,9 +250,9 @@ def export(program):
             operation = tmp_op
 
     if operation is None:            
-        import qt
-        qc = qt.QtCore
-        qg = qt.QtGui
+        
+        import qt.QtCore as qc
+        import qt.QtGui as qg
         widget = qg.QMessageBox()
         widget.setText("Error: No Valid Joint Operation Detected")
         widget.setWindowModality(qc.Qt.NonModal)
@@ -376,9 +376,9 @@ def export_inner(operation, useDart=False):
     #follow_model(robot_name)
     pause_simulation(world_name, pause=False)
     code_process.start()    
-    import qt
-    qc = qt.QtCore
-    qg = qt.QtGui
+    
+    import qt.QtCore as qc
+    import qt.QtGui as qg
     widget = qg.QMessageBox()
     widget.setText("Press Okay to Stop the Simulation and Close Gazebo")
     widget.setWindowModality(qc.Qt.NonModal)

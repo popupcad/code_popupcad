@@ -6,9 +6,9 @@ Please see LICENSE for full license.
 """
 
 import popupcad
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 from popupcad.graphics2d.graphicsitems import Common
 from popupcad.graphics2d.graphicsitems import CommonShape
 from popupcad.graphics2d.modes import Modes

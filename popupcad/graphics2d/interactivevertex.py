@@ -5,9 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 #import popupcad.graphics2d.modes as modes
 #from popupcad.graphics2d.graphicsitems import Common
 from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
