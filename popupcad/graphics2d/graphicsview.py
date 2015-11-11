@@ -181,9 +181,7 @@ class GraphicsView(ZoomHandling, ImagingSupport, MouseModes, qg.QGraphicsView):
         ZoomHandling.__init__(self, scene)
         ImagingSupport.__init__(self, scene)
         MouseModes.__init__(self, scene)
-        self.setSizePolicy(
-            qg.QSizePolicy.Policy.MinimumExpanding,
-            qg.QSizePolicy.Policy.MinimumExpanding)
+        self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
 
     def sizeHint(self):
         return qc.QSize(400, 300)

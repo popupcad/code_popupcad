@@ -104,8 +104,7 @@ class WidgetCommon(object):
 
             tb.setMenu(submenu)
             tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
-            tb.setToolButtonStyle(
-                qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             toolbar.addWidget(tb)
 
             menu.addMenu(submenu)

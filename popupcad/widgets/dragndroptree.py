@@ -272,7 +272,9 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setDragEnabled(False)
         self.setDropIndicatorShown(True)
         self.setDragDropMode(self.DragDropMode.NoDragDrop)
-        self.setEditTriggers(self.EditTrigger.NoEditTriggers)
+        
+        edit_trigger = self.EditTrigger()
+        self.setEditTriggers(edit_trigger)
 
     def enable(self):
         debugprint('enable')
@@ -280,7 +282,9 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setDragEnabled(True)
         self.setDropIndicatorShown(True)
         self.setDragDropMode(self.DragDropMode.InternalMove)
-        self.setEditTriggers(self.EditTrigger.EditKeyPressed)
+
+        edit_trigger = self.EditTrigger(self.EditTrigger.EditKeyPressed)
+        self.setEditTriggers(edit_trigger)
 
 #    def set_tree_generator(self,generator):
 #        debugprint('set_tree_generator')
