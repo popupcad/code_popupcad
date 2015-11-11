@@ -36,7 +36,9 @@ if '--pyqt4' in argv:
     QListWidget.SelectionBehavior.SelectRows = QListWidget.SelectRows 
     QListWidget.SelectionMode.SingleSelection = QListWidget.SingleSelection
     QListWidget.SelectionMode.MultiSelection = QListWidget.MultiSelection    
+    QListWidget.SelectionMode.ExtendedSelection = QListWidget.ExtendedSelection    
 
     QToolButton.ToolButtonPopupMode.InstantPopup = QToolButton.InstantPopup
+
 else:
     from PySide.QtGui import *

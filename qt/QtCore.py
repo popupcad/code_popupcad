@@ -40,6 +40,8 @@ if '--pyqt4' in argv:
     
     Qt.WindowModality.ApplicationModal = Qt.ApplicationModal
     
+    Qt.PenStyle.NoPen = Qt.NoPen    
+    
 #    class PointF(QPointF):
 #        def toTuple(self):
 #            return (self.x(),self.y())
