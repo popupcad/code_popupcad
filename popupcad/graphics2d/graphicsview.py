@@ -140,9 +140,9 @@ class MouseModes(object):
             qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)
         self.setDragMode(self.ScrollHandDrag)
         self.rubberband()
-        self.scene().newpolygon.connect(self.restoredrag)
-        self.scene().leavingeditmode.connect(self.restoredrag)
-        self.scene().enteringeditmode.connect(self.turn_off_drag)
+#        self.scene().newpolygon.connect(self.restoredrag)
+#        self.scene().leavingeditmode.connect(self.restoredrag)
+#        self.scene().enteringeditmode.connect(self.turn_off_drag)
 
     def keyPressEvent(self, event):
         qg.QGraphicsView.keyPressEvent(self, event)

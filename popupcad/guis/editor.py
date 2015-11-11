@@ -81,7 +81,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.view_3d_dock.setWindowTitle('3D Visualization')
         self.addDockWidget(qc.Qt.RightDockWidgetArea, self.view_3d_dock)
 
-        self.importscripts()
+#        self.importscripts()
 
         self.operationeditor.currentRowChanged.connect(
             self.showcurrentoutput_inner)
