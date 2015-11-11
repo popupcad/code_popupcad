@@ -5,24 +5,25 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import os
+import sys
 import popupcad
 import time
+import qt
+qc = qt.QtCore
+qg = qt.QtGui
+
 if __name__=='__main__':
     
     t0 = time.time()
     
-#    import qt
-#    qc = qt.QtCore
-#    qg = qt.QtGui
     
-    #app = qg.QApplication(sys.argv)
-    directory = 'C:/Users/danaukes/Desktop'
-    filename = 'slow_file.cad'
+    app = qg.QApplication(sys.argv)
+#    directory = 'C:/Users/danaukes/Desktop'
+#    filename = 'slow_file.cad'
     #filename = 'SLL01.cad'
-    full_filename = os.path.normpath(os.path.join(directory,filename))
-    
-    d = popupcad.filetypes.design.Design.load_yaml(full_filename)
+#    full_filename = os.path.normpath(os.path.join(directory,filename))
+#    d = popupcad.filetypes.design.Design.load_yaml(full_filename)
+    d = popupcad.filetypes.design.Design.open()
     t1 = time.time()
     print('loaded file:',t1-t0)
     d.reprocessoperations(debugprint=True)
@@ -45,4 +46,4 @@ if __name__=='__main__':
     #first_sketch = all_sketches[0]
     #first_shape = first_sketch.operationgeometry[0]
     
-    #sys.exit(app.exec_())n
+#    sys.exit(app.exec_())
