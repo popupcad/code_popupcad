@@ -13,6 +13,7 @@ from popupcad.graphics2d.graphicsitems import Common
 from popupcad.graphics2d.graphicsitems import CommonShape
 from popupcad.graphics2d.modes import Modes
 
+import qt.qt_hacks as qh
 
 class InteractiveModes(Modes):
     modelist = []
@@ -186,7 +187,7 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
             self.moved_trigger = True
             self.scene().savesnapshot.emit()
         dp = event.scenePos() - event.lastScenePos()
-        dp = tuple(numpy.array(dp.toTuple()) / popupcad.view_scaling)
+        dp = tuple(numpy.array(qh.to_tuple(dp)) / popupcad.view_scaling)
         self.generic.constrained_shift(dp, self.constraintsystem())
         self.scene().updateshape()
         super(Interactive, self).mouseMoveEvent(event)
@@ -214,7 +215,7 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
     def addvertex(self, qpoint):
         from popupcad.geometry.vertex import ShapeVertex
         import numpy
-        v = ShapeVertex(numpy.array(qpoint.toTuple())/popupcad.view_scaling)
+        v = ShapeVertex(numpy.array(qh.to_tuple(qpoint)/popupcad.view_scaling)
         self.generic.addvertex_exterior(v, special=True)
         self.updatehandles()
         self.refreshview()

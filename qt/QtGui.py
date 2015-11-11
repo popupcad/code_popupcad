@@ -34,8 +34,9 @@ if '--pyqt4' in argv:
     QTreeWidget.EditTrigger.EditKeyPressed = QTreeWidget.EditKeyPressed
     
     QListWidget.SelectionBehavior.SelectRows = QListWidget.SelectRows 
+    QListWidget.SelectionMode.SingleSelection = QListWidget.SingleSelection
+    QListWidget.SelectionMode.MultiSelection = QListWidget.MultiSelection    
 
     QToolButton.ToolButtonPopupMode.InstantPopup = QToolButton.InstantPopup
-
 else:
     from PySide.QtGui import *

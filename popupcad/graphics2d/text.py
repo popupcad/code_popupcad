@@ -13,6 +13,7 @@ from popupcad.graphics2d.graphicsitems import Common
 import popupcad
 import shapely.geometry as sg
 import popupcad.algorithms.painterpath as pp
+import qt.qt_hacks as qh
 
 class GenericText(object):
     editable = ['*']
@@ -131,7 +132,7 @@ class TextParent(qg.QGraphicsPathItem, Common):
             if self.changed_trigger:
                 self.changed_trigger = False
                 self.scene().savesnapshot.emit()
-            self.generic.pos.setpos(self.pos().toTuple())
+            self.generic.pos.setpos(qh.to_tuple(self.pos()))
         return super(TextParent, self).itemChange(change, value)
 
     def editmode(self):

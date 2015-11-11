@@ -31,6 +31,24 @@ if '--pyqt4' in argv:
 
     Qt.ToolButtonStyle.ToolButtonTextUnderIcon = Qt.ToolButtonTextUnderIcon
     Qt.ToolBarArea.TopToolBarArea = Qt.TopToolBarArea
+    
+    Qt.ItemFlag.NoItemFlags = Qt.NoItemFlags 
+    Qt.ItemFlag.ItemIsEnabled = Qt.ItemIsEnabled
+    Qt.ItemFlag.ItemIsDragEnabled = Qt.ItemIsDragEnabled
+    Qt.ItemFlag.ItemIsSelectable = Qt.ItemIsSelectable
+    Qt.ItemFlag.ItemIsEditable = Qt.ItemIsEditable    
+    
+    Qt.WindowModality.ApplicationModal = Qt.ApplicationModal
+    
+#    class PointF(QPointF):
+#        def toTuple(self):
+#            return (self.x(),self.y())
+#    class Point(QPoint):
+#        def toTuple(self):
+#            return (self.x,self.y)
+#    QPointF = PointF
+#    QPoint = Point
+    
 else:
     import PySide.QtCore
 #    __version__ = PySide.QtCore.__version__ 

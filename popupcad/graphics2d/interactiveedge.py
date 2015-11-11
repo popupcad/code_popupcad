@@ -11,6 +11,7 @@ import qt.QtGui as qg
 from . import modes
 from popupcad.graphics2d.graphicsitems import Common
 from math import atan2, pi
+import qt.qt_hacks as qh
 
 
 class EdgeBase(Common):
@@ -276,7 +277,7 @@ class InteractiveEdge(qg.QGraphicsLineItem, EdgeBase):
                     self.moved_trigger = True
                     self.scene().savesnapshot.emit()
                 dp = event.scenePos() - event.lastScenePos()
-                dp = tuple(numpy.array(dp.toTuple()) / popupcad.view_scaling)
+                dp = tuple(numpy.array(qh.to_tuple(dp)) / popupcad.view_scaling)
                 self.generic.constrained_shift(dp, self.constraintsystem())
 #                self.updateshape()
 #                try:

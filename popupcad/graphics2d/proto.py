@@ -13,6 +13,7 @@ from popupcad.geometry.vertex import ShapeVertex
 from popupcad.filetypes.genericshapes import GenericPoly, GenericPolyline, GenericLine, GenericCircle, GenericTwoPointRect
 import popupcad
 
+import qt.qt_hacks as qh
 
 class Proto(Common):
     z_value = 20
@@ -90,7 +91,7 @@ class Proto(Common):
 
     def mousemove(self, point):
         import numpy
-        point = tuple(numpy.array(point.toTuple()) / popupcad.view_scaling)
+        point = tuple(numpy.array(qh.to_tuple(point)) / popupcad.view_scaling)
 
         if not not self.temphandle:
             self.temphandle.generic.setpos(point)
