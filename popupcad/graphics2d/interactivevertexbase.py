@@ -11,6 +11,7 @@ import qt.QtGui as qg
 from . import modes
 from popupcad.graphics2d.graphicsitems import Common
 import popupcad
+import qt.qt_hacks as qh
 
 
 class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
@@ -155,7 +156,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
 #            if self.changed_trigger:
 #                self.changed_trigger = False
 #                self.scene().savesnapshot.emit()
-#            self.get_generic().setpos(self.pos().toTuple())
+#            self.get_generic().setpos(qh.to_tuple(self.pos()))
 #
 #        return super(InteractiveVertexBase,self).itemChange(change,value)
 
@@ -173,7 +174,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
             self.moved_trigger = True
             self.scene().savesnapshot.emit()
         dp = event.scenePos() - event.lastScenePos()
-        dp = tuple(numpy.array(dp.toTuple()) / popupcad.view_scaling)
+        dp = tuple(numpy.array(qh.to_tuple(dp)) / popupcad.view_scaling)
         self.generic.constrained_shift(dp, self.constraintsystem())
         self.scene().updateshape()
 
@@ -187,7 +188,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
 
     def setPos(self, pos):
         import numpy
-        pos = tuple(numpy.array(pos.toTuple()) / popupcad.view_scaling)
+        pos = tuple(numpy.array(qh.to_tuple(pos)) / popupcad.view_scaling)
         self.generic.setpos(pos)
         self.updateshape()
 

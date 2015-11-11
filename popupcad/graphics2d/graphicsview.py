@@ -9,6 +9,8 @@ import qt.QtCore as qc
 import qt.QtGui as qg
 import popupcad
 
+import qt.qt_hacks as qh
+
 
 class ZoomHandling(object):
 
@@ -100,7 +102,7 @@ class ZoomHandling(object):
         self.scale(zoom, zoom)
         p3 = self.mapToScene(p1)
 
-        dx = (p3 - p2).toTuple()
+        dx = qh.to_tuple(p3 - p2)
         self.translate(*dx)
         event.accept()
 

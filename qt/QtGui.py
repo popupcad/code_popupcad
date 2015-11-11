@@ -39,6 +39,5 @@ if '--pyqt4' in argv:
     QListWidget.SelectionMode.ExtendedSelection = QListWidget.ExtendedSelection    
 
     QToolButton.ToolButtonPopupMode.InstantPopup = QToolButton.InstantPopup
-
 else:
     from PySide.QtGui import *
