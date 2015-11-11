@@ -37,8 +37,7 @@ class Dialog(qg.QDialog):
 
         self.unarylistwidget = DraggableTreeWidget()
         self.unarylistwidget.linklist(self.operationlist)
-        self.unarylistwidget.setSelectionMode(
-            qg.QListWidget.SelectionMode.ExtendedSelection)
+        self.unarylistwidget.setSelectionMode(qg.QListWidget.SelectionMode.ExtendedSelection)
         self.unarylistwidget.selectIndeces(operationindeces1)
 
         self.pairlistwidget = DraggableTreeWidget()
