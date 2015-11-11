@@ -7,8 +7,8 @@ Please see LICENSE for full license.
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 from popupcad.filetypes.listwidgetitem import ListWidgetItem
 from popupcad.widgets.dragndroptree import DraggableTreeWidget, ParentItem, ChildItem
 

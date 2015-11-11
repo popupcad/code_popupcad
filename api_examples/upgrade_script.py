@@ -12,8 +12,8 @@ import glob
 import shutil
 import time
 #import qt
-#qc = qt.QtCore
-#qg = qt.QtGui
+#import qt.QtCore as qc
+#import qt.QtGui as qg
 
 if __name__=='__main__':
     t_0 = time.time()

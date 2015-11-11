@@ -5,8 +5,8 @@ Created on Sun Sep 27 12:29:46 2015
 @author: danaukes
 """
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 import numpy
 from popupcad.filetypes.genericshapes import GenericPoly

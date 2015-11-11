@@ -8,8 +8,8 @@ Please see LICENSE for full license.
 import os
 import glob
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 import popupcad
 
 filenames = glob.glob(os.path.join(popupcad.supportfiledir,'icons','*.png'))

@@ -10,8 +10,8 @@ from popupcad.geometry.vertex import ShapeVertex
 
 import numpy
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 from dev_tools.enum import enum
 import popupcad
 

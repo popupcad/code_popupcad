@@ -6,8 +6,8 @@ Please see LICENSE for full license.
 """
 
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 from popupcad.widgets.table_common import TableControl,Table
 import popupcad
 from popupcad.widgets.dragndroptree import DraggableTreeWidget

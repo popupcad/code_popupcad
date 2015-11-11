@@ -6,8 +6,8 @@ Created on Fri Sep  4 17:13:42 2015
 """
 #import sys
 #import qt
-#qc = qt.QtCore
-#qg = qt.QtGui
+#import qt.QtCore as qc
+#import qt.QtGui as qg
 #app = qg.QApplication(sys.argv[0])
 
 import popupcad

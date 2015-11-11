@@ -116,8 +116,8 @@ class OperationOutput(UserData):
 
     def edit_description(self):
         import qt
-        qc = qt.QtCore
-        qg = qt.QtGui
+        import qt.QtCore as qc
+        import qt.QtGui as qg
         result, ok = qg.QInputDialog.getText(
             None, 'description', 'label', text=self.description)
         if ok:

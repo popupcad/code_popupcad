@@ -10,8 +10,8 @@ Please see LICENSE for full license.
 import sys
 
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 def syntax_format(color, style=''):
     """Return a QTextCharFormat with the given attributes.
@@ -185,8 +185,8 @@ class PythonHighlighter (qg.QSyntaxHighlighter):
             
 if __name__ == "__main__":
     import qt
-    qc = qt.QtCore
-    qg = qt.QtGui
+    import qt.QtCore as qc
+    import qt.QtGui as qg
     import syntax
     
     app = qg.QApplication([])

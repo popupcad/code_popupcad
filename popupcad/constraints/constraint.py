@@ -6,8 +6,8 @@ Created on Sun Nov  1 17:25:08 2015
 """
 
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 import sympy
 import sympy.utilities

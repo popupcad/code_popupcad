@@ -9,8 +9,8 @@ import sys
 import popupcad
 import time
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 if __name__=='__main__':
     

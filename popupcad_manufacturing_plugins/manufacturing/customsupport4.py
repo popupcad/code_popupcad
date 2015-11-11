@@ -8,8 +8,8 @@ import popupcad
 from popupcad.filetypes.operation2 import Operation2, LayerBasedOperation
 
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.validators import StrictDoubleValidator

@@ -9,8 +9,8 @@ import popupcad
 from popupcad.guis.sketcher import Sketcher
 import sys
 import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 if __name__=='__main__':
     
