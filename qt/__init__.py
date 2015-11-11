@@ -4,9 +4,9 @@ Created on Wed Oct 28 11:06:44 2015
 
 @author: danaukes
 """
-from . import QtCore
-from . import QtGui
-from . import QtSvg
+#from . import QtCore
+#from . import QtGui
+#from . import QtSvg
 
 import sys
 argv = [item.lower() for item in sys.argv]
