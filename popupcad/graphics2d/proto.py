@@ -115,7 +115,7 @@ class ProtoMultiPoint(Proto):
 
     def mousepress(self, point):
         import numpy
-        point = tuple(numpy.array(point.toTuple()) / popupcad.view_scaling)
+        point = tuple(numpy.array(qh.to_tuple(point)) / popupcad.view_scaling)
 
         if not self.temphandle:
             a = ShapeVertex(point)
@@ -148,8 +148,7 @@ class ProtoTwoPoint(Proto):
             self.temphandle = None
             return True
         elif self.generic.len_exterior() == 1:
-            if handle.pos().toTuple(
-            ) != self.generic.get_exterior()[-1].getpos():
+            if qh.to_tuple(handle.pos()) != self.generic.get_exterior()[-1].getpos():
                 if self.checkdist(handle.generic.getpos(scaling=popupcad.view_scaling),
                                   self.generic.get_exterior()[-1].getpos(scaling=popupcad.view_scaling)):
                     self.generic.addvertex_exterior(handle.get_generic())
@@ -162,7 +161,7 @@ class ProtoTwoPoint(Proto):
 
     def mousepress(self, point):
         import numpy
-        point = tuple(numpy.array(point.toTuple()) / popupcad.view_scaling)
+        point = tuple(numpy.array(qh.to_tuple(point)) / popupcad.view_scaling)
 
         if not self.temphandle:
             a = ShapeVertex(point)

@@ -131,7 +131,7 @@ class SketcherSupport(object):
                         temp.editmode()
 
                     elif self.nextgeometry == DrawingPoint:
-                        temp = self.nextgeometry(DrawnPoint(pos.toTuple(),scaling = 1/popupcad.view_scaling))
+                        temp = self.nextgeometry(DrawnPoint(qh.to_tuple(pos),scaling = 1/popupcad.view_scaling))
                         self.addItem(temp)
                         self.setFocusItem(temp)
                         temp.updatescale()
