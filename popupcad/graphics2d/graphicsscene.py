@@ -231,12 +231,17 @@ class SketcherSupport(object):
                 self.removeItem(item)
 
 
-class GraphicsScene(
-        popupCADObjectSupport,
-        SVGOutputSupport,
-        SketcherSupport,
-        qg.QGraphicsScene):
-
+class GraphicsScene(popupCADObjectSupport,SVGOutputSupport,SketcherSupport,qg.QGraphicsScene):
+#    This is unnecessary in pyside:
+    newpolygon = qc.Signal()
+    itemclicked = qc.Signal(object)
+    enteringeditmode = qc.Signal()
+    leavingeditmode = qc.Signal()
+    savesnapshot = qc.Signal()
+    itemdeleted = qc.Signal()
+    refresh_request = qc.Signal()
+    constraint_update_request = qc.Signal(list)
+#    end of unnecessary code
     def __init__(self):
         qg.QGraphicsScene.__init__(self)
         popupCADObjectSupport.__init__(self)
