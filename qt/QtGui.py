@@ -9,7 +9,6 @@ import sys
 argv = [item.lower() for item in sys.argv]
 
 if '--pyqt4' in argv:
-#    from PyQt4.Qt import QKeySequence, QTextCursor
     from PyQt4.QtGui import *
 
     QGraphicsView.DragMode.NoDrag = 0

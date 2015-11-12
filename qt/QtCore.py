@@ -10,12 +10,8 @@ argv = [item.lower() for item in sys.argv]
 
 if '--pyqt4' in argv:
     from PyQt4.QtCore import *
-#    from PyQt4.QtCore import QCoreApplication 
     from PyQt4.QtCore import Qt 
     from PyQt4.QtCore import pyqtSignal as Signal 
-#    from PyQt4.QtCore import pyqtSlot as Slot 
-#    from PyQt4.QtCore import pyqtProperty as Property 
-#    from PyQt4.QtCore import QT_VERSION_STR as __version__
     
     Qt.ItemSelectionMode.ContainsItemShape = Qt.ContainsItemShape 
     Qt.ItemSelectionMode.IntersectsItemShape = Qt.IntersectsItemShape
@@ -42,16 +38,6 @@ if '--pyqt4' in argv:
     
     Qt.PenStyle.NoPen = Qt.NoPen    
     
-#    class PointF(QPointF):
-#        def toTuple(self):
-#            return (self.x(),self.y())
-#    class Point(QPoint):
-#        def toTuple(self):
-#            return (self.x,self.y)
-#    QPointF = PointF
-#    QPoint = Point
-    
 else:
     import PySide.QtCore
-#    __version__ = PySide.QtCore.__version__ 
     from PySide.QtCore import * 
