@@ -27,14 +27,8 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         super(InteractiveVertexBase, self).__init__(*args, **kwargs)
         self.states = modes.EdgeVertexStates()
         self.modes = modes.EdgeVertexModes()
-        self.defaultpen = qg.QPen(
-            qg.QColor.fromRgbF(
-                0,
-                0,
-                0,
-                0),
-            0.0,
-            qc.Qt.PenStyle.NoPen)
+        color = qg.QColor.fromRgbF(0,0,0,0)
+        self.defaultpen = qg.QPen(color,0.0,qc.Qt.PenStyle.NoPen)
 
         self.setAcceptHoverEvents(True)
         self.setRect(-

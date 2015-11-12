@@ -89,21 +89,9 @@ class SVGOutputSupport(object):
         accepted = win.exec_()
         if accepted:
             time = popupcad.basic_functions.return_formatted_time()
-            self.renderprocess(
-                '2D_screenshot_' +
-                time +
-                '.svg',
-                *
-                win.acceptdata())
+            self.renderprocess('2D_screenshot_' + time +'.svg',*win.acceptdata())
 
-    def renderprocess(
-            self,
-            basename,
-            scaling,
-            center,
-            rotation,
-            exportdir):
-        #        save prerender state
+    def renderprocess(self,basename,scaling,center,rotation,exportdir):
         tempmodes = []
         for item in self.items():
             try:
