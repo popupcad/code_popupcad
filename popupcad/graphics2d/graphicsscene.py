@@ -4,9 +4,9 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 import popupcad
 from popupcad.graphics2d.static import Static
@@ -18,6 +18,7 @@ from popupcad.graphics2d.text import TextParent, GenericText
 from popupcad.graphics2d.interactivevertex import ReferenceInteractiveVertex
 from popupcad.graphics2d.interactiveedge import ReferenceInteractiveEdge
 
+import qt.qt_hacks as qh
 
 class popupCADObjectSupport(object):
 
@@ -123,14 +124,14 @@ class SketcherSupport(object):
             if event.button() == qc.Qt.LeftButton:
                 if self.temp is None:
                     if self.nextgeometry == TextParent:
-                        textpos = ShapeVertex(pos.toTuple(),scaling = 1/popupcad.view_scaling)
+                        textpos = ShapeVertex(qh.to_tuple(pos),scaling = 1/popupcad.view_scaling)
                         text = GenericText('',textpos,font='Courier',fontsize=2)
                         temp = self.nextgeometry(text)
                         self.addItem(temp)
                         temp.editmode()
 
                     elif self.nextgeometry == DrawingPoint:
-                        temp = self.nextgeometry(DrawnPoint(pos.toTuple(),scaling = 1/popupcad.view_scaling))
+                        temp = self.nextgeometry(DrawnPoint(qh.to_tuple(pos),scaling = 1/popupcad.view_scaling))
                         self.addItem(temp)
                         self.setFocusItem(temp)
                         temp.updatescale()

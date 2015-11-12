@@ -4,10 +4,12 @@ Written by Daniel M. Aukes and CONTRIBUTORS
 Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 import popupcad
+
+import qt.qt_hacks as qh
 
 
 class ZoomHandling(object):
@@ -100,7 +102,7 @@ class ZoomHandling(object):
         self.scale(zoom, zoom)
         p3 = self.mapToScene(p1)
 
-        dx = (p3 - p2).toTuple()
+        dx = qh.to_tuple(p3 - p2)
         self.translate(*dx)
         event.accept()
 
@@ -181,9 +183,7 @@ class GraphicsView(ZoomHandling, ImagingSupport, MouseModes, qg.QGraphicsView):
         ZoomHandling.__init__(self, scene)
         ImagingSupport.__init__(self, scene)
         MouseModes.__init__(self, scene)
-        self.setSizePolicy(
-            qg.QSizePolicy.Policy.MinimumExpanding,
-            qg.QSizePolicy.Policy.MinimumExpanding)
+        self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
 
     def sizeHint(self):
         return qc.QSize(400, 300)

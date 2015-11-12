@@ -7,9 +7,8 @@ Please see LICENSE for full license.
 
 import sys
 
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 app = qg.QApplication([sys.argv[0]])
 import popupcad

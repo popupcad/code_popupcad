@@ -6,9 +6,9 @@ Please see LICENSE for full license.
 """
 
 import popupcad
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 
 if __name__ =='__main__':
     import sys

@@ -5,9 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 import popupcad
 
 
@@ -104,8 +104,7 @@ class WidgetCommon(object):
 
             tb.setMenu(submenu)
             tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
-            tb.setToolButtonStyle(
-                qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             toolbar.addWidget(tb)
 
             menu.addMenu(submenu)

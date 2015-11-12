@@ -12,9 +12,9 @@ Email: aaronGokaslan<at>gmail.com.
 Please see LICENSE.txt for full license.
 """
 
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 from popupcad.algorithms.python_syntax_formatter import PythonHighlighter
 
 

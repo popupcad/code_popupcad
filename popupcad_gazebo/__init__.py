@@ -10,7 +10,7 @@ from . import gazebo_controller
 
 #import external modules
 import PIL
-import qt
+
 import array
 import lxml
 import multiprocessing

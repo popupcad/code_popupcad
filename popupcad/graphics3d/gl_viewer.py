@@ -6,9 +6,9 @@ Please see LICENSE for full license.
 """
 
 import popupcad
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 import pyqtgraph as pg
 import pyqtgraph.opengl as gl
 import numpy

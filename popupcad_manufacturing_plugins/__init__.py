@@ -8,7 +8,7 @@ Please see LICENSE for full license.
 from . import manufacturing
 
 #import external modules
-import qt
+
 import numpy
 import shapely
 

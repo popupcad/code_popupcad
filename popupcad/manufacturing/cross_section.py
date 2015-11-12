@@ -5,9 +5,9 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.listmanager import SketchListManager
 from popupcad.widgets.dragndroptree import DraggableTreeWidget

@@ -7,9 +7,9 @@ Please see LICENSE for full license.
 from popupcad.constraints.constraint_system import ConstraintSystem
 import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
-import qt
-qc = qt.QtCore
-qg = qt.QtGui
+
+import qt.QtCore as qc
+import qt.QtGui as qg
 import os
 from popupcad.filetypes.genericshapes import GenericPolyline
 from popupcad.filetypes.genericshapes import GenericPoly
