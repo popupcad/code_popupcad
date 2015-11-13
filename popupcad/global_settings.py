@@ -75,10 +75,7 @@ update_url = 'http://www.popupcad.org/docs/download/'
 windows_uuid = '{875b89db-f819-48bf-9be4-ec93f57f29c2}'
 
 popupcad_dirname = 'popupCAD_files'
-popupcad_home_path = os.path.normpath(
-    os.path.join(
-        user_home_dir,
-        popupcad_dirname))
+popupcad_home_path = os.path.normpath(os.path.join(user_home_dir,popupcad_dirname))
 
 backup_timeout = 1000 * 60 * 5
 #backup_timeout = 1000 * 2
@@ -91,11 +88,6 @@ exportdir = os.path.normpath(os.path.join(popupcad_home_path, 'export'))
 sketchdir = os.path.normpath(os.path.join(popupcad_home_path, 'sketches'))
 shapedir = os.path.normpath(os.path.join(popupcad_home_path, 'shapes'))
 backupdir = os.path.normpath(os.path.join(popupcad_home_path, 'backup'))
-
-local_settings_filename = os.path.normpath(
-    os.path.join(
-        popupcad_home_path,
-        'settings.popupcad'))
 
 user_materials_filename = os.path.normpath(os.path.join(popupcad_home_path,'materials.yaml'))
 internal_materials_filename = os.path.normpath(os.path.join(supportfiledir,'materials.yaml'))

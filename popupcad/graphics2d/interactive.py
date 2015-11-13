@@ -173,8 +173,7 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
         self.changed_trigger = True
         self.moved_trigger = False
         if self.mode == self.modes.mode_edit:
-            add = (
-                event.modifiers() & qc.Qt.KeyboardModifierMask.ControlModifier) != 0
+            add = (event.modifiers() & qc.Qt.KeyboardModifierMask.ControlModifier) != 0
             if add:
                 self.addvertex(event.scenePos())
         self.scene().itemclicked.emit(self.generic)

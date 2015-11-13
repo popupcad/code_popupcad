@@ -16,7 +16,6 @@ import imp
 import popupcad
 
 from popupcad.filetypes.design import Design
-import popupcad.guis.actions
 import popupcad.guis.icons
 #
 
@@ -216,7 +215,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.menu_view = self.addMenu(self.viewactions, name='View')
         self.toolbar_operations, self.menu_operations = self.addToolbarMenu(operationactions, name='Operations')
 
-#        menu_file = popupcad.guis.actions.build(self)
 #        menu_bar = qg.QMenuBar()
 #        menu_bar.addMenu(menu_file)
 #        self.setMenuBar(menu_bar)
@@ -289,8 +287,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         import popupcad.filetypes.material2 as materials
 #        from popupcad.materials.materials import Carbon_0_90_0, Pyralux, Kapton
         design = Design.new()
-        design.define_layers(
-            LayerDef(*materials.default_sublaminate))
+        design.define_layers(LayerDef(*materials.default_sublaminate))
         self.load_design(design)
         self.view_2d.zoomToFit()
 
@@ -444,7 +441,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             event.accept()
         else:
             event.ignore()
-#        popupcad.local_settings.save_yaml(popupcad.local_settings_filename)
 
     def checkSafe(self):
         temp = qg.QMessageBox.warning(
