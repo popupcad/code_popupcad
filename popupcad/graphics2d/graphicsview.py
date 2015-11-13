@@ -15,7 +15,6 @@ import qt.qt_hacks as qh
 class ZoomHandling(object):
 
     def __init__(self, scene):
-        self.setScene(scene)
         self.zoomToFit()
         self.setTransformationAnchor(self.NoAnchor)
 
@@ -109,9 +108,6 @@ class ZoomHandling(object):
 
 class ImagingSupport(object):
 
-    def __init__(self, scene):
-        self.setScene(scene)
-
     def raster(self, dest, filename, filetype='PNG'):
         import os
         e = self.scene().sceneRect()
@@ -135,17 +131,13 @@ class ImagingSupport(object):
 class MouseModes(object):
 
     def __init__(self, scene):
-        self.setScene(scene)
         self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.ContainsItemShape)
 #        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.IntersectsItemShape)
         self.setRenderHints(
             qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)
         self.setDragMode(self.ScrollHandDrag)
         self.rubberband()
-        self.scene().newpolygon.connect(self.restoredrag)
-        self.scene().leavingeditmode.connect(self.restoredrag)
-        self.scene().enteringeditmode.connect(self.turn_off_drag)
-
+        
     def keyPressEvent(self, event):
         qg.QGraphicsView.keyPressEvent(self, event)
         if event.key() == qc.Qt.Key_Escape:
@@ -180,9 +172,12 @@ class GraphicsView(ZoomHandling, ImagingSupport, MouseModes, qg.QGraphicsView):
 
     def __init__(self, scene, *args, **kwargs):
         qg.QGraphicsView.__init__(self, *args, **kwargs)
+        self.setScene(scene)
         ZoomHandling.__init__(self, scene)
-        ImagingSupport.__init__(self, scene)
         MouseModes.__init__(self, scene)
+        
+        scene.connect_mouse_modes(self)
+        
         self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
 
     def sizeHint(self):
@@ -193,6 +188,8 @@ class SimpleGraphicsView(ZoomHandling, ImagingSupport, qg.QGraphicsView):
 
     def __init__(self, scene):
         qg.QGraphicsView.__init__(self)
+        scene.set_view(self)
+        
         ZoomHandling.__init__(self, scene)
         ImagingSupport.__init__(self, scene)
 

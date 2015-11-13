@@ -7,6 +7,7 @@ Created on Wed Nov 11 07:47:02 2015
 
 import sys
 argv = [item.lower() for item in sys.argv]
+import qt
 
 if '--pyqt4' in argv:
     from PyQt4.QtGui import *
@@ -38,5 +39,6 @@ if '--pyqt4' in argv:
     QListWidget.SelectionMode.ExtendedSelection = QListWidget.ExtendedSelection    
 
     QToolButton.ToolButtonPopupMode.InstantPopup = QToolButton.InstantPopup
+    
 else:
     from PySide.QtGui import *

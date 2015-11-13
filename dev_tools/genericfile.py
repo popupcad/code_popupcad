@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
+import qt
 import qt.QtCore as qc
 import qt.QtGui as qg
 
@@ -119,8 +120,10 @@ class GenericFile(object):
     @classmethod
     def open_filename(cls, parent=None, openmethod=None, **openmethodkwargs):
         filterstring, selectedfilter = cls.buildfilters()
-        filename, selectedfilter = qg.QFileDialog.getOpenFileName(
-            parent, 'Open', cls.lastdir(), filter=filterstring, selectedFilter=selectedfilter)
+        if qt.pyside_loaded:
+            filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=filterstring, selectedFilter=selectedfilter)
+        else:
+            filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=filterstring)
         if filename:
             if openmethod is None:
                 object1 = cls.load_yaml(filename)
@@ -167,8 +170,10 @@ class GenericFile(object):
                     basename))
 
         filterstring, selectedfilter = self.buildfilters()
-        filename, selectedfilter = qg.QFileDialog.getSaveFileName(
-            parent, "Save As", tempfilename, filter=filterstring, selectedFilter=selectedfilter)
+        if qt.pyside_loaded:
+            filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=filterstring, selectedFilter=selectedfilter)
+        else:
+            filename = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=filterstring)
         if not filename:
             return False
         else:

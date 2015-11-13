@@ -81,8 +81,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.view_3d_dock.setWindowTitle('3D Visualization')
         self.addDockWidget(qc.Qt.RightDockWidgetArea, self.view_3d_dock)
 
-        self.importscripts()
-
         self.operationeditor.currentRowChanged.connect(
             self.showcurrentoutput_inner)
         self.layerlistwidget.itemSelectionChanged.connect(
@@ -113,14 +111,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
     def autosave(self):
         self.design.backup(popupcad.backupdir,'_autosave_')
-    
-    def importscripts(self):
-        self.scriptclasses = []
-        searchstring = os.path.normpath(os.path.join(popupcad.scriptdir,'*.py'))
-        scripts = glob.glob(searchstring)
-        for script in scripts:
-            module = imp.load_source('module', script)
-            self.scriptclasses.append(module.Script(self))
     
     def createActions(self):
         icons = popupcad.guis.icons.build()

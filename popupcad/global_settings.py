@@ -88,7 +88,6 @@ backup_limit = 10
 designdir = os.path.normpath(os.path.join(popupcad_home_path, 'designs'))
 importdir = os.path.normpath(os.path.join(popupcad_home_path, 'import'))
 exportdir = os.path.normpath(os.path.join(popupcad_home_path, 'export'))
-scriptdir = os.path.normpath(os.path.join(popupcad_home_path, 'scripts'))
 sketchdir = os.path.normpath(os.path.join(popupcad_home_path, 'sketches'))
 shapedir = os.path.normpath(os.path.join(popupcad_home_path, 'shapes'))
 backupdir = os.path.normpath(os.path.join(popupcad_home_path, 'backup'))
@@ -113,10 +112,10 @@ subdirectories = [
     designdir,
     importdir,
     exportdir,
-    scriptdir,
     sketchdir,
     shapedir,
     backupdir]
+    
 for path in subdirectories:
     if not os.path.isdir(path):
         os.mkdir(path)

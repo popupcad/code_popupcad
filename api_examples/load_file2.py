@@ -16,7 +16,6 @@ if __name__=='__main__':
     
     t0 = time.time()
     
-    
     app = qg.QApplication(sys.argv)
 #    directory = 'C:/Users/danaukes/Desktop'
 #    filename = 'slow_file.cad'
@@ -46,4 +45,4 @@ if __name__=='__main__':
     #first_sketch = all_sketches[0]
     #first_shape = first_sketch.operationgeometry[0]
     
-#    sys.exit(app.exec_())
+    sys.exit(app.exec_())

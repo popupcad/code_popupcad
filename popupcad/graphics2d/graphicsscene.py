@@ -5,6 +5,7 @@ Email: danaukes<at>seas.harvard.edu.
 Please see LICENSE for full license.
 """
 
+import qt
 import qt.QtCore as qc
 import qt.QtGui as qg
 
@@ -67,6 +68,11 @@ class SketcherSupport(object):
         self.temp = None
         self.extraobjects = []
         self.nextgeometry = None
+
+    def connect_mouse_modes(self,view):
+        self.newpolygon.connect(view.restoredrag)
+        self.leavingeditmode.connect(view.restoredrag)
+        self.enteringeditmode.connect(view.turn_off_drag)
 
     def get_sketch(self):
         return self._sketch
@@ -231,12 +237,17 @@ class SketcherSupport(object):
                 self.removeItem(item)
 
 
-class GraphicsScene(
-        popupCADObjectSupport,
-        SVGOutputSupport,
-        SketcherSupport,
-        qg.QGraphicsScene):
-
+class GraphicsScene(popupCADObjectSupport,SVGOutputSupport,SketcherSupport,qg.QGraphicsScene):
+    if qt.pyqt_loaded:
+        newpolygon = qc.Signal()
+        itemclicked = qc.Signal(object)
+        enteringeditmode = qc.Signal()
+        leavingeditmode = qc.Signal()
+        savesnapshot = qc.Signal()
+        itemdeleted = qc.Signal()
+        refresh_request = qc.Signal()
+        constraint_update_request = qc.Signal(list)
+    
     def __init__(self):
         qg.QGraphicsScene.__init__(self)
         popupCADObjectSupport.__init__(self)

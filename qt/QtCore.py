@@ -7,6 +7,7 @@ Created on Wed Nov 11 07:42:22 2015
 
 import sys
 argv = [item.lower() for item in sys.argv]
+import qt
 
 if '--pyqt4' in argv:
     from PyQt4.QtCore import *
@@ -37,6 +38,9 @@ if '--pyqt4' in argv:
     Qt.WindowModality.ApplicationModal = Qt.ApplicationModal
     
     Qt.PenStyle.NoPen = Qt.NoPen    
+    
+    Qt.SortOrder.AscendingOrder = Qt.AscendingOrder
+    Qt.KeyboardModifierMask.ControlModifier = Qt.ControlModifier    
     
 else:
     import PySide.QtCore

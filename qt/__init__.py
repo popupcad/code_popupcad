@@ -27,8 +27,12 @@ if '--pyqt4' in argv:
 #    QtGui.QGraphicsView.DragMode.RubberBandDrag = 2
 #    
     loaded = 'PyQt4'
+    pyqt_loaded = True
+    pyside_loaded = False
 else:
 #    import PySide.QtGui as QtGui
 #    import PySide.QtCore as QtCore
 #    import PySide.QtSvg as QtSvg
     loaded = 'PySide'
+    pyqt_loaded = False
+    pyside_loaded = True
