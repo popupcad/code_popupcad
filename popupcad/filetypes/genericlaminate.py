@@ -100,7 +100,7 @@ class GenericLaminate(object):
         gv.zoomToFit(buffer=0)
         import os
         filename_out = os.path.join(destination,filename)
-        gv.scene().renderprocess(filename,1.0,False,0,False,destination)
+        gv.scene().renderprocess(filename,1.0,False,0,destination)
         return filename_out
 
     def save_dxf(self,basename,separate_files=False):
