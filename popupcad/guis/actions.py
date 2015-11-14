@@ -10,7 +10,7 @@ import sys
 import qt.QtCore as qc
 import qt.QtGui as qg
 
-from collections import OrderedDict
+#from collections import OrderedDict
 
 class MenuSystem(object):
     shortcut_interpretation={}
@@ -22,15 +22,25 @@ class MenuSystem(object):
     def __init__(self,action_defs, menu_struct,shortcuts,top_menu_key):
         self.action_defs = action_defs
         self.menu_struct = menu_struct
-        self.shortcuts = shortcuts.copy()
-        for key,value in self.shortcuts.items():
-            if value in self.shortcut_interpretation:
-                self.shortcuts[key] = self.shortcut_interpretation[value]
+        self.shortcuts = shortcuts
+        
         self.top_menu_key = top_menu_key
 
     def build(self,parent=None):
+        for key,value in self.shortcuts.items():
+            self.action_defs[key]['shortcut'] = value
+        
+        shortcuts_translation = dict([(value,value) for value in self.shortcuts.values()])
+        shortcuts_translation.update(self.shortcut_interpretation)
+        
+#        shortcuts_internal = self.shortcuts.copy()
+#        for key,value in self.shortcuts.items():
+#            if value in self.shortcut_interpretation:
+#                shortcuts_internal[key] = self.shortcut_interpretation[value]
+
         icons = popupcad.guis.icons.build()
-        self.actions = dict([(key,self.build_action(key,parent,self.action_defs,self.shortcuts,icons)) for key in self.action_defs])
+        self.actions = dict([(key,self.build_action(key,parent,self.action_defs,shortcuts_translation,icons)) for key in self.action_defs])
+                
         self.menu_dict = dict([(key,qg.QMenu(key)) for key in menu_struct])
         
         self.all_items = {}
@@ -58,7 +68,7 @@ class MenuSystem(object):
                 menu.addSeparator()
 
     @staticmethod
-    def build_action(key,parent,action_defs,shortcuts,icons):
+    def build_action(key,parent,action_defs,shortcuts_translation,icons):
         kwargs = action_defs[key]
 
         if 'kwargs' in kwargs:
@@ -68,11 +78,14 @@ class MenuSystem(object):
         else:
             action_kwargs = {}
 
-        if key in shortcuts:
-            action_kwargs['shortcut']=shortcuts[key]
+        try:
+            action_kwargs['shortcut'] = shortcuts_translation[kwargs['shortcut']]
+        except KeyError:
+            pass
         
         action = qg.QAction(parent,**action_kwargs)
     
+        
         try:
             action.setText(kwargs['text'])
         except KeyError:
@@ -87,6 +100,13 @@ class MenuSystem(object):
             action.setChecked(kwargs['is_checked'])
         except KeyError:
             pass
+
+        try:
+            parent_trigger_method_name = kwargs['triggered']
+            parent_trigger_method = getattr(parent,parent_trigger_method_name)
+            action.triggered.connect(parent_trigger_method)
+        except (KeyError,AttributeError):
+            pass
     
         return action
     
@@ -97,7 +117,7 @@ class MenuSystem(object):
             
 menu_struct = {}
 
-action_setup = OrderedDict()
+action_setup = {}
 action_setup['file_new']= {'text': "&New",'kwargs': {'icon': 'new','statusTip': "Create a new file"}}
 action_setup['file_open']= {'text': "&Open...",'kwargs': {'icon': 'open','statusTip': "Open an existing file"}}
 action_setup['file_save']= {'text': "&Save",'kwargs': {'icon': 'save','statusTip': "Save the document to disk"}}
@@ -225,14 +245,72 @@ a=set(shortcuts.keys())-set(action_setup.keys())
 if len(a)>0:
     raise(Exception('missing definition of'+str(a)))
 
+triggered = {}
+triggered['file_new'] = 'newfile'
+triggered['file_open'] = 'open'
+triggered['file_save'] = 'save'
+triggered['file_saveas'] = 'saveAs'
+triggered['file_upgrade'] = 'upgrade'
+triggered['file_export_stl'] = 'export_stl'
+triggered['file_export_svg'] = 'exportLayerSVG'
+triggered['file_export_dxf'] = 'export_dxf'
+triggered['file_export_layers_dxf'] = 'export_dxf_layers'
+triggered['file_export_dae'] = 'export_dae'
+triggered['file_save_joint_defs'] = 'save_joint_def'
+triggered['file_export_laminate'] = 'export_laminate'
+triggered['file_regen_id'] = 'regen_id'
+triggered['file_render_icons'] = 'gen_icons'
+triggered['file_build_documentation'] = 'build_documentation'
+triggered['file_license'] = 'show_license'
+triggered['file_update'] = 'download_installer'
+
+triggered['project_rebuild'] = 'reprocessoperations_outer'
+#triggered['project_auto_reprocess'] = ''
+triggered['project_layer_order'] = 'editlayers'
+triggered['project_laminate_props'] = 'editlaminate'
+triggered['project_sketches'] = 'sketchlist'
+triggered['project_subdesigns'] = 'subdesigns'
+triggered['project_replace'] = 'replace'
+triggered['project_insert_and_replace'] = 'insert_and_replace'
+triggered['project_hierarchy'] = 'operation_network'
+
+triggered['view_3d'] = 'show_hide_view_3d'
+triggered['view_operations'] = 'show_hide_operationdock'
+triggered['view_layers'] = 'show_hide_layerlistwidgetdock'
+triggered['view_error_log'] = 'show_hide_error_log'
+triggered['view_zoom_fit'] = 'zoomToFit'
+triggered['view_screenshot'] = 'screenShot'
+triggered['view_3dscreenshot'] = 'screenshot_3d'
+
+triggered['operations_cleanup'] = 'new_cleanup2'
+triggered['operations_new_cleanup'] = 'new_cleanup3'
+triggered['operations_simplify'] = 'new_simplify2'
+triggered['operations_joint_op'] = 'new_jointop3'
+triggered['operations_hole_op'] = 'new_holeop'
+triggered['operations_freeze'] = 'new_freezeop'
+triggered['operations_cross_section'] = 'new_cross_section'
+triggered['operations_subop'] = 'new_subop'
+triggered['operations_code_op'] = 'new_codeop'
+
+triggered['operations_transform_internal'] = 'new_transform_internal'
+triggered['operations_transform_external'] = 'new_transform_external'
+triggered['operations_shift_flip'] = 'new_shiftflip'
+triggered['operations_Sketch'] = 'new_sketch_op'
+triggered['operations_Lamiante'] = 'new_laminate_op'
+triggered['operations_Dilate/Erode'] = 'new_buffer_op'
+triggered['operations_Layer'] = 'new_layer_op'
+
+for key,value in triggered.items():
+    action_setup[key]['triggered'] = value
+
 m =MenuSystem(action_setup,menu_struct,shortcuts,'top')
 
 import yaml
+
 with open('editor_menu.yaml','w') as f:
     yaml.dump(m,f)
-    
 
 if __name__=='__main__':
     app = qg.QApplication([sys.argv[0]])
     m.build()
-    sys.exit(app.exec_())
+#    sys.exit(app.exec_())

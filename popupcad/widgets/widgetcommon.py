@@ -40,22 +40,18 @@ class WidgetBasic(object):
         dialog.setLayout(layout)
         dialog.setModal(True)
         return dialog
-        
-class WidgetCommon(WidgetBasic):
 
     def action_uncheck(self, action_to_uncheck):
         action_to_uncheck.setChecked(False)
+        
+class WidgetCommon(WidgetBasic):
+
 
     def showhide2(self, window, action):
         if action.isChecked():
             window.show()
         else:
             window.hide()
-
-
-
-
-
 
     def buildToolbarMenu(self, actions, name):
         toolbar = qg.QToolBar(name)

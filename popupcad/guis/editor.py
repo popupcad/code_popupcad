@@ -91,19 +91,21 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         self.operationedited.connect(self.editedoperationslot)
 
         self.createActions()
+        
+        self.show_hide_view_3d()
+        self.show_hide_operationdock()
+        self.show_hide_layerlistwidgetdock()
+        self.show_hide_error_log()
+        
         self.backuptimer = qc.QTimer()
         self.backuptimer.setInterval(popupcad.backup_timeout)
         self.backuptimer.timeout.connect(self.autosave)
         self.backuptimer.start()
-
-        self.operationdock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_ops)
-        self.layerlistwidgetdock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_layers)
-        self.view_3d_dock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_3d)
-        self.error_log.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_errors)
+        
+        self.view_3d_dock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_3d'])
+        self.operationdock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_operations'])
+        self.layerlistwidgetdock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_layers'])
+        self.error_log.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_error_log'])
 
 #        self.set_nominal_size()
 #        self.move_center()
@@ -112,42 +114,28 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         self.design.backup(popupcad.backupdir,'_autosave_')
         
     def show_hide_view_3d(self):
-        if self.m.actions['view_3d'].isChecked():
+        if self.menu_system.actions['view_3d'].isChecked():
             self.view_3d_dock.show()
         else:
             self.view_3d_dock.hide()
 
     def show_hide_operationdock(self):
-        if self.m.actions['view_operations'].isChecked():
+        if self.menu_system.actions['view_operations'].isChecked():
             self.operationdock.show()
         else:
             self.operationdock.hide()
 
     def show_hide_layerlistwidgetdock(self):
-        if self.m.actions['view_layers'].isChecked():
+        if self.menu_system.actions['view_layers'].isChecked():
             self.layerlistwidgetdock.show()
         else:
             self.layerlistwidgetdock.hide()
 
     def show_hide_error_log(self):
-        if self.m.actions['view_error_log'].isChecked():
+        if self.menu_system.actions['view_error_log'].isChecked():
             self.error_log.show()
         else:
             self.error_log.hide()
-        
-    def createActions(self):
-        import popupcad.guis.actions
-        self.m = popupcad.guis.actions.m
-        self.m.build(self)
-#        self.m.set_parent(self)
-        top_key = self.m.top_menu_key
-        menu_struct =self.m.menu_struct
-        top_keys = menu_struct[top_key]
-        top_items = [self.m.all_items[key] for key in top_keys]
-        
-        menu_bar = qg.QMenuBar()
-        [menu_bar.addMenu(item) for item in top_items]
-        self.setMenuBar(menu_bar)    
         
     def new_cleanup2(self):
         self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)
@@ -163,10 +151,47 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         self.newoperation(popupcad.manufacturing.freeze.Freeze)
     def new_cross_section(self):
         self.newoperation(popupcad.manufacturing.cross_section.CrossSection)
-    def new_subpo(self):
+    def new_subop(self):
         self.newoperation(popupcad.manufacturing.sub_operation2.SubOperation2)
     def new_codeop(self):
         self.newoperation(popupcad.manufacturing.code_exec_op.CodeExecOperation)
+    def new_transform_internal(self):
+        self.newoperation(popupcad.manufacturing.transform_internal.TransformInternal)
+    def new_transform_external(self):
+        self.newoperation(popupcad.manufacturing.transform_external.TransformExternal)
+    def new_shiftflip(self):
+        self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)
+    def new_sketch_op(self):
+        self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)
+    def new_laminate_op(self):
+        self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)
+    def new_buffer_op(self):
+        self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)
+    def new_layer_op(self):
+        self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)
+
+    def createActions(self):
+        import popupcad.guis.actions
+        self.menu_system = popupcad.guis.actions.m
+        self.menu_system.build(self)
+#        self.menu_system.set_parent(self)
+        top_key = self.menu_system.top_menu_key
+        menu_struct =self.menu_system.menu_struct
+        top_keys = menu_struct[top_key]
+        top_items = [self.menu_system.all_items[key] for key in top_keys]
+        
+#        toolbar = qg.QToolBar(name)
+        
+        menu_bar = qg.QMenuBar()
+        [menu_bar.addMenu(item) for item in top_items]
+        self.setMenuBar(menu_bar)    
+
+    def zoomToFit(self):
+        self.view_2d.zoomToFit()
+
+    def screenShot(self):
+        self.scene.screenShot()
+
 #    def new_(self):
 #        self.newoperation()
 #    def new_(self):
@@ -329,11 +354,11 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
     
     def newoperationslot(self, operation):
         self.design.append_operation(operation)
-        if self.act_autoreprocesstoggle.isChecked():
+        if self.menu_system.actions['project_auto_reprocess'].isChecked():
             self.reprocessoperations([operation])
     
     def editedoperationslot(self, operation):
-        if self.act_autoreprocesstoggle.isChecked():
+        if self.menu_system.actions['project_auto_reprocess'].isChecked():
             self.reprocessoperations([operation])
     
     def reprocessoperations_outer(self,operations = None):
@@ -366,7 +391,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
             design = Design.load_yaml(filename)
         if not design is None:
             self.load_design(design)
-            if self.act_autoreprocesstoggle.isChecked():
+            if self.menu_system.actions['project_auto_reprocess'].isChecked():
                 self.reprocessoperations()
             self.view_2d.zoomToFit()
 
@@ -465,7 +490,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
                 geom.setselectable(True)
     
     def show3dgeometry3(self, operationoutput, selectedlayers):
-        if self.act_view_3d.isChecked():
+        if self.menu_system.actions['view_3d'].isChecked():
             layerdef = self.design.return_layer_definition()
             triangles = operationoutput.triangles_by_layer
             self.view_3d.view.update_object(layerdef,triangles,selectedlayers)
@@ -565,7 +590,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         except popupcad.filetypes.design.UpgradeError as ex:
             print(ex)
             raise
-        if self.act_autoreprocesstoggle.isChecked():
+        if self.menu_system.actions['project_auto_reprocess'].isChecked():
             self.reprocessoperations()
         self.view_2d.zoomToFit()
     
