@@ -179,12 +179,18 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         menu_struct =self.menu_system.menu_struct
         top_keys = menu_struct[top_key]
         top_items = [self.menu_system.all_items[key] for key in top_keys]
-        
-#        toolbar = qg.QToolBar(name)
-        
+
         menu_bar = qg.QMenuBar()
         [menu_bar.addMenu(item) for item in top_items]
         self.setMenuBar(menu_bar)    
+
+
+        top_key = self.menu_system.top_menu_key
+        menu_struct =self.menu_system.toolbar_struct
+        top_keys = menu_struct[top_key]
+        top_items = [self.menu_system.toolbar_dict[key] for key in top_keys]
+        [toolbar.setParent(self) for toolbar in top_items]
+        [self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea, toolbar) for toolbar in top_items]
 
     def zoomToFit(self):
         self.view_2d.zoomToFit()

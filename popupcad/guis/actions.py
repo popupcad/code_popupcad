@@ -10,8 +10,6 @@ import sys
 import qt.QtCore as qc
 import qt.QtGui as qg
 
-#from collections import OrderedDict
-
 class MenuSystem(object):
     shortcut_interpretation={}
     shortcut_interpretation['Ctrl+N']=qg.QKeySequence.New
@@ -19,9 +17,11 @@ class MenuSystem(object):
     shortcut_interpretation['Ctrl+S']=qg.QKeySequence.Save
     shortcut_interpretation['Ctrl+Shift+S']=qg.QKeySequence.SaveAs    
     
-    def __init__(self,action_defs, menu_struct,shortcuts,top_menu_key):
+    def __init__(self,action_defs, menu_defs,menu_struct,toolbar_struct,shortcuts,top_menu_key):
         self.action_defs = action_defs
+        self.menu_defs = menu_defs
         self.menu_struct = menu_struct
+        self.toolbar_struct = toolbar_struct
         self.shortcuts = shortcuts
         
         self.top_menu_key = top_menu_key
@@ -33,25 +33,33 @@ class MenuSystem(object):
         shortcuts_translation = dict([(value,value) for value in self.shortcuts.values()])
         shortcuts_translation.update(self.shortcut_interpretation)
         
-#        shortcuts_internal = self.shortcuts.copy()
-#        for key,value in self.shortcuts.items():
-#            if value in self.shortcut_interpretation:
-#                shortcuts_internal[key] = self.shortcut_interpretation[value]
-
         icons = popupcad.guis.icons.build()
         self.actions = dict([(key,self.build_action(key,parent,self.action_defs,shortcuts_translation,icons)) for key in self.action_defs])
                 
-        self.menu_dict = dict([(key,qg.QMenu(key)) for key in menu_struct])
+        self.menu_dict = dict([(key,qg.QMenu(key)) for key in self.menu_struct])
+        self.toolbar_menu_dict = dict([(key,qg.QMenu(key)) for key in self.toolbar_struct])
+        self.toolbar_dict = dict([(key,self.build_toolbar(key)) for key in self.toolbar_struct])
+
+        self.other_items = {}
+        self.other_items['']='separator'
         
         self.all_items = {}
         self.all_items.update(self.actions)
         self.all_items.update(self.menu_dict)
-        self.all_items['']='separator'
+        self.all_items.update(self.other_items)
         
         self.build_menu_r(self.top_menu_key,self.menu_struct,self.all_items)
+        self.build_toolbar_r(self.top_menu_key,self.toolbar_struct,self.toolbar_dict,self.toolbar_menu_dict,self.actions,self.other_items)
         
         self.main_menu = self.menu_dict[self.top_menu_key]
         return self.main_menu
+    
+    @staticmethod
+    def build_toolbar(key):
+        toolbar = qg.QToolBar(key)
+        toolbar.setIconSize(qc.QSize(popupcad.toolbar_icon_size,popupcad.toolbar_icon_size))
+        toolbar.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        return toolbar
         
     @classmethod
     def build_menu_r(cls,element,structure,dictionary):
@@ -66,6 +74,27 @@ class MenuSystem(object):
                 menu.addAction(subelement)
             elif subelement=='separator': #if isinstance(item,type([])):
                 menu.addSeparator()
+
+    @classmethod
+    def build_toolbar_r(cls,element,structure,toolbar_dict,toolbar_menu_dict,action_dict,other_dict):
+        menu = toolbar_dict[element]
+        for item in structure[element]:
+            if item in toolbar_dict:
+#                toolbar = toolbar_dict[item]
+                submenu = toolbar_menu_dict[item]
+                if item in structure:
+                    cls.build_toolbar_r(item,structure,toolbar_dict,toolbar_menu_dict,action_dict,other_dict)
+                tool_button = qg.QToolButton()
+                tool_button.setMenu(submenu)
+                tool_button.setPopupMode(tool_button.ToolButtonPopupMode.InstantPopup)
+                tool_button.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)                
+                menu.addWidget(tool_button)
+            elif item in action_dict:
+                menu.addAction(action_dict[item])
+            elif item in other_dict:
+                subelement = other_dict[item]
+                if subelement=='separator': #if isinstance(item,type([])):
+                    menu.addSeparator()
 
     @staticmethod
     def build_action(key,parent,action_defs,shortcuts_translation,icons):
@@ -303,7 +332,10 @@ triggered['operations_Layer'] = 'new_layer_op'
 for key,value in triggered.items():
     action_setup[key]['triggered'] = value
 
-m =MenuSystem(action_setup,menu_struct,shortcuts,'top')
+menu_setup = {}
+toolbar_struct = menu_struct.copy()
+
+m =MenuSystem(action_setup,menu_setup,menu_struct,toolbar_struct,shortcuts,'top')
 
 import yaml
 
