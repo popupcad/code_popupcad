@@ -361,8 +361,8 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         if self.menu_system.actions['project_auto_reprocess'].isChecked():
             self.reprocessoperations([operation])
     
-    def reprocessoperations_outer(self,operations = None):
-        self.reprocessoperations(operations)
+    def reprocessoperations_outer(self):
+        self.reprocessoperations(None)
         
     def reprocessoperations(self, operations=None):
         try:
@@ -383,12 +383,17 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         design.define_layers(LayerDef(*materials.default_sublaminate))
         self.load_design(design)
         self.view_2d.zoomToFit()
-
-    def open(self, filename=None):
-        if filename is None:
-            design = Design.open(self)
-        else:
-            design = Design.load_yaml(filename)
+    
+    def open_filename(self,filename):
+        design = Design.load_yaml(filename)
+        if not design is None:
+            self.load_design(design)
+            if self.menu_system.actions['project_auto_reprocess'].isChecked():
+                self.reprocessoperations()
+            self.view_2d.zoomToFit()
+        
+    def open(self):
+        design = Design.open(self)
         if not design is None:
             self.load_design(design)
             if self.menu_system.actions['project_auto_reprocess'].isChecked():
@@ -400,7 +405,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         self.update_window_title()
         return value
     
-    def saveAs(self, parent=None):
+    def saveAs(self):
         value = self.design.saveAs(self)
         self.update_window_title()
         return value
