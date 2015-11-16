@@ -14,7 +14,7 @@ import qt.qt_hacks as qh
 
 class ZoomHandling(object):
 
-    def __init__(self, scene):
+    def __init__(self):
         self.zoomToFit()
         self.setTransformationAnchor(self.NoAnchor)
 
@@ -130,7 +130,7 @@ class ImagingSupport(object):
 
 class MouseModes(object):
 
-    def __init__(self, scene):
+    def __init__(self):
         self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.ContainsItemShape)
 #        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.IntersectsItemShape)
         self.setRenderHints(
@@ -173,8 +173,10 @@ class GraphicsView(ZoomHandling, ImagingSupport, MouseModes, qg.QGraphicsView):
     def __init__(self, scene, *args, **kwargs):
         qg.QGraphicsView.__init__(self, *args, **kwargs)
         self.setScene(scene)
-        ZoomHandling.__init__(self, scene)
-        MouseModes.__init__(self, scene)
+        
+        ZoomHandling.__init__(self)
+        MouseModes.__init__(self)
+        ImagingSupport.__init__(self)
         
         scene.connect_mouse_modes(self)
         
@@ -188,10 +190,10 @@ class SimpleGraphicsView(ZoomHandling, ImagingSupport, qg.QGraphicsView):
 
     def __init__(self, scene):
         qg.QGraphicsView.__init__(self)
-        scene.set_view(self)
+        self.setScene(scene)
         
-        ZoomHandling.__init__(self, scene)
-        ImagingSupport.__init__(self, scene)
+        ZoomHandling.__init__(self)
+        ImagingSupport.__init__(self)
 
 if __name__ == '__main__':
     import sys
