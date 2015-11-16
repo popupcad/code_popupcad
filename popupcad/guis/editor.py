@@ -175,23 +175,23 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         self.menu_system = popupcad.guis.actions.m
         self.menu_system.build(self)
 #        self.menu_system.set_parent(self)
-        top_key = self.menu_system.top_menu_key
-        menu_struct =self.menu_system.menu_struct
-        top_keys = menu_struct[top_key]
-        top_items = [self.menu_system.all_items[key] for key in top_keys]
+#        top_key = self.menu_system.top_menu_key
+#        menu_struct =self.menu_system.menu_struct
+#        top_keys = menu_struct[top_key]
+#        top_items = [self.menu_system.all_items[key] for key in top_keys]
 
         menu_bar = qg.QMenuBar()
-        [menu_bar.addMenu(item) for item in top_items]
+        [menu_bar.addMenu(item) for item in self.menu_system.main_menu]
         self.setMenuBar(menu_bar)    
 
 
-        top_key = self.menu_system.top_menu_key
-        menu_struct =self.menu_system.toolbar_struct
-        top_keys = menu_struct[top_key]
-        top_items = [self.menu_system.toolbar_dict[key] for key in top_keys]
-        [toolbar.setParent(self) for toolbar in top_items]
-        [self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea, toolbar) for toolbar in top_items]
-
+#        top_key = self.menu_system.top_menu_key
+#        menu_struct =self.menu_system.toolbar_struct
+#        top_keys = menu_struct[top_key]
+#        top_items = [self.menu_system.toolbar_dict[key] for key in top_keys]
+#        [toolbar.setParent(self) for toolbar in top_items]
+        [self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea, toolbar) for toolbar in self.menu_system.toolbars]
+#
     def zoomToFit(self):
         self.view_2d.zoomToFit()
 

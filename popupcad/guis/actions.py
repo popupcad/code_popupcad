@@ -36,65 +36,84 @@ class MenuSystem(object):
         icons = popupcad.guis.icons.build()
         self.actions = dict([(key,self.build_action(key,parent,self.action_defs,shortcuts_translation,icons)) for key in self.action_defs])
                 
-        self.menu_dict = dict([(key,qg.QMenu(key)) for key in self.menu_struct])
-        self.toolbar_menu_dict = dict([(key,qg.QMenu(key)) for key in self.toolbar_struct])
-        self.toolbar_dict = dict([(key,self.build_toolbar(key)) for key in self.toolbar_struct])
+#        self.menu_dict = dict([(key,qg.QMenu(key)) for key in self.menu_struct])
 
         self.other_items = {}
         self.other_items['']='separator'
         
         self.all_items = {}
         self.all_items.update(self.actions)
-        self.all_items.update(self.menu_dict)
         self.all_items.update(self.other_items)
         
-        self.build_menu_r(self.top_menu_key,self.menu_struct,self.all_items)
-        self.build_toolbar_r(self.top_menu_key,self.toolbar_struct,self.toolbar_dict,self.toolbar_menu_dict,self.actions,self.other_items)
+        self.menu_list = []
+#        self.build_menu_r(self.top_menu_key,self.menu_struct,self.all_items)
+        self.main_menu = [self.build_menu_r2(key,self.menu_struct,self.all_items,self.menu_list) for key in self.menu_struct[self.top_menu_key]]
+        self.toolbars,self.toolbar_menus = self.build_toolbar(self.toolbar_struct,self.top_menu_key,self.all_items)
+#        self.build_toolbar_r(self.top_menu_key,self.toolbar_struct,self.toolbar_dict,self.toolbar_menu_dict,self.actions,self.other_items)`
         
-        self.main_menu = self.menu_dict[self.top_menu_key]
-        return self.main_menu
+#        self.main_menu = self.menu_dict[self.top_menu_key]
+#        return self.main_menu
     
-    @staticmethod
-    def build_toolbar(key):
-        toolbar = qg.QToolBar(key)
-        toolbar.setIconSize(qc.QSize(popupcad.toolbar_icon_size,popupcad.toolbar_icon_size))
-        toolbar.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-        return toolbar
-        
-    @classmethod
-    def build_menu_r(cls,element,structure,dictionary):
-        menu = dictionary[element]
-        for item in structure[element]:
-            subelement = dictionary[item]
-            if isinstance(subelement,qg.QMenu):
-                if item in structure:
-                    cls.build_menu_r(item,structure,dictionary)
-                menu.addMenu(subelement)
-            elif isinstance(subelement,qg.QAction):
-                menu.addAction(subelement)
-            elif subelement=='separator': #if isinstance(item,type([])):
-                menu.addSeparator()
+#    @classmethod
+#    def build_menu_r(cls,element,structure,dictionary):
+#        menu = dictionary[element]
+#        for item in structure[element]:
+#            if item in dictionary:
+#                subelement = dictionary[item]
+#                if isinstance(subelement,qg.QAction):
+#                    menu.addAction(subelement)
+#                elif subelement=='separator': #if isinstance(item,type([])):
+#                    menu.addSeparator()
+#            else:
+#                subelement = qg.QMenu(item)
+#                if item in structure:
+#                    cls.build_menu_r(item,structure,dictionary)
+#                menu.addMenu(subelement)
 
     @classmethod
-    def build_toolbar_r(cls,element,structure,toolbar_dict,toolbar_menu_dict,action_dict,other_dict):
-        menu = toolbar_dict[element]
-        for item in structure[element]:
-            if item in toolbar_dict:
-#                toolbar = toolbar_dict[item]
-                submenu = toolbar_menu_dict[item]
-                if item in structure:
-                    cls.build_toolbar_r(item,structure,toolbar_dict,toolbar_menu_dict,action_dict,other_dict)
-                tool_button = qg.QToolButton()
-                tool_button.setMenu(submenu)
-                tool_button.setPopupMode(tool_button.ToolButtonPopupMode.InstantPopup)
-                tool_button.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)                
-                menu.addWidget(tool_button)
-            elif item in action_dict:
-                menu.addAction(action_dict[item])
-            elif item in other_dict:
-                subelement = other_dict[item]
-                if subelement=='separator': #if isinstance(item,type([])):
-                    menu.addSeparator()
+    def build_menu_r2(cls,element,structure,dictionary,menu_list):
+        menu = qg.QMenu(element)
+        menu_list.append(menu)
+        if element in structure:
+            for item in structure[element]:
+                if item in dictionary:
+                    subelement = dictionary[item]
+                    if isinstance(subelement,qg.QAction):
+                        menu.addAction(subelement)
+                    elif subelement=='separator': #if isinstance(item,type([])):
+                        menu.addSeparator()
+                else:
+                    submenu = cls.build_menu_r2(item,structure,dictionary,menu_list)
+                    menu.addMenu(submenu)
+        return menu
+                
+    @classmethod
+    def build_toolbar(cls,toolbar_structure,top_element,dictionary):
+        toolbars = []
+        toolbar_menus = []
+        for item in toolbar_structure[top_element]:
+            toolbar = qg.QToolBar(key)
+            toolbar.setIconSize(qc.QSize(popupcad.toolbar_icon_size,popupcad.toolbar_icon_size))
+            toolbar.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+
+            if item in dictionary:
+                subelement = dictionary[item]
+                if isinstance(subelement,qg.QAction):
+                    toolbar.addAction(subelement)
+                elif subelement=='separator': #if isinstance(item,type([])):
+                    toolbar.addSeparator()
+            else:
+                submenu = cls.build_menu_r2(item,toolbar_structure,dictionary,toolbar_menus)
+                tb = qg.QToolButton()
+#                tb.setIcon(actiondata['kwargs']['icon'])
+#                tb.setText(actiondata['text'])
+                tb.setMenu(submenu)
+                tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
+                tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+                toolbar.addWidget(tb)
+            toolbars.append(toolbar)
+        return toolbars,toolbar_menus
+
 
     @staticmethod
     def build_action(key,parent,action_defs,shortcuts_translation,icons):
