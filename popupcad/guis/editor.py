@@ -23,7 +23,7 @@ class NoOutput(Exception):
     def __init__(self):
         Exception.__init__(self,'Operation has not been processed due to a previous exception')
 
-class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
+class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
 
     '''
     Editor Class
@@ -167,23 +167,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
     def new_layer_op(self):
         self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)
 
-    def create_menu_system(self):
-        import popupcad.guis.actions
-        filename = popupcad.supportfiledir+'/editor_menu.yaml'
-        import yaml
-        with open(filename) as f:
-            self.menu_system = yaml.load(f)
-        self.setMenuBar(qg.QMenuBar())    
-        self.loaded_menu_systems=[]
-        self.load_menu_system(self.menu_system)
-        
-    def load_menu_system(self,menu_system):
-        self.loaded_menu_systems.append(menu_system)
-        menu_system.build(self)
-        menu_bar = self.menuBar()
-        [menu_bar.addMenu(item) for item in menu_system.main_menu]
-        [self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea, toolbar) for toolbar in menu_system.toolbars]
-#
     def zoomToFit(self):
         self.view_2d.zoomToFit()
 
@@ -422,11 +405,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
             return False
         return True
     
-#    def preferences(self):
-#        import dev_tools.propertyeditor
-#        pe = dev_tools.propertyeditor.PropertyEditor(popupcad.local_settings)
-#        pe.show()
-
     def replace(self):
         d = qg.QDialog()
         operationlist = popupcad.widgets.dragndroptree.DraggableTreeWidget()
@@ -485,12 +463,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
                 time +
                 '.png'))
         self.view_3d.view.grabFrameBuffer().save(filename)
-    
-#    def export_laminate(self):
-#        ii, jj = self.operationeditor.currentIndeces2()[0]
-#        output = self.design.operations[ii].output[jj]
-#        generic = output.csg.to_generic_laminate()
-#        generic.saveAs()
     
     def gen_icons(self):
         self.design.raster()

@@ -44,6 +44,24 @@ class WidgetBasic(object):
     def action_uncheck(self, action_to_uncheck):
         action_to_uncheck.setChecked(False)
         
+class MainGui(WidgetBasic):        
+    def create_menu_system(self):
+        import popupcad.guis.actions
+        filename = popupcad.supportfiledir+'/editor_menu.yaml'
+        import yaml
+        with open(filename) as f:
+            self.menu_system = yaml.load(f)
+        self.setMenuBar(qg.QMenuBar())    
+        self.loaded_menu_systems=[]
+        self.load_menu_system(self.menu_system)
+        
+    def load_menu_system(self,menu_system):
+        self.loaded_menu_systems.append(menu_system)
+        menu_system.build(self)
+        menu_bar = self.menuBar()
+        [menu_bar.addMenu(item) for item in menu_system.main_menu]
+        [self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea, toolbar) for toolbar in menu_system.toolbars]
+        
 class WidgetCommon(WidgetBasic):
 
 
