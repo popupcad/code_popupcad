@@ -19,8 +19,8 @@ class Program(object):
         args = list(args)
 
         self.app = app
-        icons = popupcad.guis.icons.build()
-        self.app.setWindowIcon(icons['printapede'])
+        import popupcad.guis.icons
+        self.app.setWindowIcon(popupcad.guis.icons.icons['printapede'])
         self.editor = popupcad.guis.editor.Editor()
 
         if len(args) > 1 and not '--' in args[-1]:

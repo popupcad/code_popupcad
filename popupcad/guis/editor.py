@@ -16,8 +16,6 @@ import imp
 import popupcad
 
 from popupcad.filetypes.design import Design
-import popupcad.guis.icons
-#
 
 class NoOutput(Exception):
     def __init__(self):
@@ -525,8 +523,6 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
-    icons = popupcad.guis.icons.build()
-    app.setWindowIcon(icons['printapede'])
     mw = Editor()
     mw.show()
     mw.raise_()
