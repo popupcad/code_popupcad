@@ -28,9 +28,10 @@ class Material2(object):
     def __repr__(self):
         return str(self)
     
-    def copy(self):
+    def copy(self,identical = True):
         new = type(self)(self.name,self.color,self.thickness,self.E1,self.E2,self.density,self.poisson,self.is_adhesive,self.is_rigid,self.is_conductive)
-        new.id = self.id
+        if identical:
+            new.id = self.id
         return new
 
     def upgrade(self):
@@ -58,7 +59,7 @@ default_material_types = material_defaults['default_material_types']
 
 #
 default_materials = list(default_material_types.values())
-default_sublaminate = [default_material_types[key].copy() for key in default_sublaminate_keys]
+default_sublaminate = [default_material_types[key].copy(identical=False) for key in default_sublaminate_keys]
 
 #material_defaults = {}
 #material_defaults['default_sublaminate_keys'] = default_sublaminate_keys
