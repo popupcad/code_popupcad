@@ -91,15 +91,7 @@ class GenericFile(object):
     def set_basename(self, basename):
         self._basename = basename
 
-    @classmethod
-    def buildfilters(cls):
-        filters = {}
-        for filetype, name in cls.filetypes.items():
-            filters[filetype] = '{0}(*.{1})'.format(name, filetype)
-        filterstring = ''.join([item + ';;' for item in filters.values()])
-        selectedfilter = filters[cls.defaultfiletype]
-        return filterstring, selectedfilter
-
+#    @classmethod
     def updatefilename(self, filename):
         import os
         try:
@@ -119,11 +111,10 @@ class GenericFile(object):
 
     @classmethod
     def open_filename(cls, parent=None, openmethod=None, **openmethodkwargs):
-        filterstring, selectedfilter = cls.buildfilters()
         if qt.pyside_loaded:
-            filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=filterstring, selectedFilter=selectedfilter)
+            filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter, selectedFilter=cls.selected_filter)
         else:
-            filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=filterstring)
+            filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter)
         if filename:
             if openmethod is None:
                 object1 = cls.load_yaml(filename)
@@ -169,11 +160,10 @@ class GenericFile(object):
                     self.lastdir(),
                     basename))
 
-        filterstring, selectedfilter = self.buildfilters()
         if qt.pyside_loaded:
-            filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=filterstring, selectedFilter=selectedfilter)
+            filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, selectedFilter=self.selected_filter)
         else:
-            filename = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=filterstring)
+            filename = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter)
         if not filename:
             return False
         else:

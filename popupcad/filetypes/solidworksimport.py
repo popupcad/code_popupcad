@@ -31,8 +31,8 @@ class Component(object):
 
 
 class Assembly(popupCADFile):
-    filetypes = {'yaml': 'Yaml File'}
-    defaultfiletype = 'yaml'
+    file_filter = 'Yaml File(*.yaml)'
+    selected_filter = 'Yaml File(*.yaml)'
 
     @classmethod
     def lastdir(cls):

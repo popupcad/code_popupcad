@@ -22,9 +22,9 @@ class RegenFailure(Exception):
         Exception.__init__(self, 'Regen Failure',[str(item) for item in other_exceptions])
 
 class Design(popupCADFile):
-    filetypes = {'cad': 'CAD Design'}
-    defaultfiletype = 'cad'
-
+    file_filter = 'CAD Design(*.cad)'
+    selected_filter = 'CAD Design(*.cad)'
+    
     @classmethod
     def lastdir(cls):
         return popupcad.lastdesigndir

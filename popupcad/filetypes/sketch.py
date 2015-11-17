@@ -8,6 +8,7 @@ from popupcad.constraints.constraint_system import ConstraintSystem
 import popupcad
 from popupcad.filetypes.popupcad_file import popupCADFile
 
+import qt
 import qt.QtCore as qc
 import qt.QtGui as qg
 import os
@@ -16,9 +17,8 @@ from popupcad.filetypes.genericshapes import GenericPoly
 from popupcad.filetypes.genericshapes import GenericLine
 
 class Sketch(popupCADFile):
-    filetypes = {'sketch': 'Sketch File', 'dxf': 'DXF'}
-    defaultfiletype = 'sketch'
-
+    file_filter = 'Sketch File(*.sketch);;DXF(*.dxf)'
+    selected_filter = 'Sketch File(*.sketch)'
     @classmethod
     def lastdir(cls):
         return popupcad.lastsketchdir
@@ -181,14 +181,15 @@ class Sketch(popupCADFile):
 
     @classmethod
     def open_filename(cls, parent=None):
-        filterstring, selectedfilter = cls.buildfilters()
-        filename, selectedfilter = qg.QFileDialog.getOpenFileName(
-            parent, 'Open', cls.lastdir(), filter=filterstring, selectedFilter=selectedfilter)
+        if qt.pyside_loaded:
+            filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter, selectedFilter=cls.selected_filter)
+        else:
+            filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter)
         if filename:
-            if 'sketch' in selectedfilter:
+            if 'sketch' in filename:
                 object1 = cls.load_yaml(filename)
                 return filename, object1
-            elif 'dxf' in selectedfilter:
+            elif 'dxf' in filename:
                 return cls.load_dxf(filename, parent)
         return None, None
 
@@ -210,15 +211,16 @@ class Sketch(popupCADFile):
                     self.lastdir(),
                     basename))
 
-        filterstring, selectedfilter = self.buildfilters()
-        filename, selectedfilter = qg.QFileDialog.getSaveFileName(
-            parent, "Save As", tempfilename, filter=filterstring, selectedFilter=selectedfilter)
+        if qt.pyside_loaded:
+            filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, selectedFilter=self.selected_filter)
+        else:
+            filename = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter)
         if not filename:
             return False
         else:
-            if 'sketch' in selectedfilter:
+            if 'sketch' in filename:
                 return self.save_yaml(filename,identical=False)
-            elif 'dxf' in selectedfilter:
+            elif 'dxf' in filename:
                 return self.save_dxf(filename)
 
     def save_dxf(self,filename,update_filename = True):

@@ -74,10 +74,7 @@ class OutputSelection(qg.QDialog):
             raise Exception
 
     def selectExport(self):
-        directorypath = qg.QFileDialog.getExistingDirectory(
-            self,
-            "Select Directory",
-            self.dirbox.text())
+        directorypath = qg.QFileDialog.getExistingDirectory(self,"Select Directory",self.dirbox.text())
         directorypath = os.path.normpath(directorypath)
         self.dirbox.setText(directorypath)
 

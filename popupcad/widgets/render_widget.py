@@ -8,6 +8,7 @@ Please see LICENSE for full license.
 import os
 import popupcad
 
+import qt
 import qt.QtCore as qc
 import qt.QtGui as qg
 from popupcad.graphics2d.graphicsscene import SimpleGraphicsScene
@@ -56,11 +57,14 @@ class RenderWidget(qg.QWidget):
         self.raster_design(d, directory)
 
     def select_directory(self):
-        path, selected_filter = qg.QFileDialog.getOpenFileName(
-            self, '', dir=self.directory_name.text(), filter='*.cad')
-        print(path)
-        if path != '':
-            self.load_directory(path)
+        if qt.pyside_loaded:
+            filename, selectedfilter = qg.QFileDialog.getOpenFileName(self, '', dir=self.directory_name.text(), filter='*.cad')
+        else:
+            filename = qg.QFileDialog.getOpenFileName(self, '', dir=self.directory_name.text(), filter='*.cad')
+        
+        print(filename)
+        if filename != '':
+            self.load_directory(filename)
 
     def load_directory(self, path):
         self.directory_name.setText(path)

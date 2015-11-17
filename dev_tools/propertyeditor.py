@@ -196,6 +196,8 @@ class ParentItem(object):
         self.removeAllChildren()
         self.generatechildren(self.structureparent)
 
+    def is_editable(self, column):
+        return False
 
 class TreeWidgetItem(qg.QTreeWidgetItem, ParentItem):
     depthlimit = 5

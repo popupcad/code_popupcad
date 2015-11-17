@@ -51,8 +51,7 @@ class UserInputIDE(qg.QDialog):
     def loadFile(self):
         from os.path import expanduser   
         home = expanduser("~")
-        fname, _ = qg.QFileDialog.getOpenFileName(self, 'Open file',
-            home)
+        fname, _ = qg.QFileDialog.getOpenFileName(self, 'Open file',home)
         infile = open(fname, 'r')
         self.te.setPlainText(infile.read())
         infile.close()
@@ -60,8 +59,7 @@ class UserInputIDE(qg.QDialog):
     def saveFile(self):
         from os.path import expanduser
         home = expanduser("~")
-        fname, _ = qg.QFileDialog.getSaveFileName(self, 'Save file',
-            home)
+        fname, _ = qg.QFileDialog.getSaveFileName(self, 'Save file',home)
         infile = open(fname, 'w')
         infile.write(self.te.toPlainText())
         infile.close()
