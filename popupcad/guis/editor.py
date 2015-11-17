@@ -90,7 +90,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         self.operationadded.connect(self.newoperationslot)
         self.operationedited.connect(self.editedoperationslot)
 
-        self.createActions()
+        self.create_menu_system()
         
         self.show_hide_view_3d()
         self.show_hide_operationdock()
@@ -167,16 +167,18 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
     def new_layer_op(self):
         self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)
 
-    def createActions(self):
+    def create_menu_system(self):
         import popupcad.guis.actions
         filename = popupcad.supportfiledir+'/editor_menu.yaml'
         import yaml
         with open(filename) as f:
             self.menu_system = yaml.load(f)
         self.setMenuBar(qg.QMenuBar())    
+        self.loaded_menu_systems=[]
         self.load_menu_system(self.menu_system)
         
     def load_menu_system(self,menu_system):
+        self.loaded_menu_systems.append(menu_system)
         menu_system.build(self)
         menu_bar = self.menuBar()
         [menu_bar.addMenu(item) for item in menu_system.main_menu]
