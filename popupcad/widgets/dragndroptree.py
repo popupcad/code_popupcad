@@ -12,9 +12,6 @@ from popupcad.filetypes.userdata import UserData
 from dev_tools.acyclicdirectedgraph import AcyclicDirectedGraph, Node
 
 
-def debugprint(*args, **kwargs):
-    pass
-
 class NotValid(Exception):
     pass
 
@@ -97,7 +94,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.refreshmaster()
 
     def __init__(self, *args, **kwargs):
-        debugprint('innit')
 
         super(DraggableTreeWidget, self).__init__(*args, **kwargs)
         self.setHeaderHidden(True)
@@ -113,7 +109,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.refreshing = False
 
     def currentOperationOutputIndex(self):
-        debugprint('currentOperationOutputIndex')
         index = self.currentValidIndex(ii=-1)
         if index.parent().isValid():
             return index.row() + 1
@@ -121,7 +116,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
             return 0
 
     def currentValidIndex(self, ii=0):
-        debugprint('currentValidIndex')
         index = self.currentIndex()
         if index.isValid():
             return index
@@ -136,28 +130,23 @@ class DraggableTreeWidget(qg.QTreeWidget):
             return index
 
     def currentIndeces(self, ii=-1):
-        debugprint('currentIndeces')
         ii = self.currentRow(ii=ii)
         jj = self.currentOperationOutputIndex()
         return ii, jj
 
     def myItemChanged(self, current, previous):
         if not (self.refreshing or self.master_refreshing):
-            debugprint('myItemChanged')
             self.currentRowChanged.emit(*self.currentIndeces())
 
     def currentRow(self, ii=-1):
-        debugprint('currentRow')
         index = self.currentValidIndex(ii=ii)
         return self.parent_index(index).row()
 
     def linklist(self, masterlist):
-        debugprint('linklist')
         self.masterlist = masterlist
         self.refresh()
 
     def refresh(self):
-        debugprint('refresh')
         self.refreshing = True
 
 #        index = self.currentValidIndex(-1)
@@ -193,7 +182,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.refreshing = False
 
     def allData(self):
-        debugprint('allData')
         m = self.model()
         num_rows = m.rowCount()
 
@@ -207,34 +195,25 @@ class DraggableTreeWidget(qg.QTreeWidget):
         return items
 
     def refreshmaster(self):
-        debugprint('refreshmaster')
 
         self.master_refreshing = True
         newmasterlist = [item for item in self.allData()]
-        debugprint('new master list')
 
 #        self.clear()
-#        debugprint('cleared')
 
         while len(self.masterlist) > 0:
             self.masterlist.pop()
-        debugprint('clearing old master list')
 
         [self.masterlist.append(item) for item in newmasterlist]
-        debugprint('added new items')
 
 #        items = [ParentItem(None,item) for item in self.masterlist]
-#        debugprint('new parent items')
 #        self.addTopLevelItems(items)
-#        debugprint('new top level items')
 #        self.expandAll()
-#        debugprint('expanded all')
 
 #        return self.masterlist
         self.master_refreshing = False
 
     def keyPressEvent(self, event):
-        debugprint('keyPressEvent')
         if not (self.refreshing or self.master_refreshing):
             if event.key() == qc.Qt.Key_Delete:
                 self.deleteCurrent()
@@ -251,7 +230,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 super(DraggableTreeWidget, self).keyPressEvent(event)
 
     def deleteCurrent(self):
-        debugprint('deleteCurrent')
         if self.enabled:
             if not (self.refreshing or self.master_refreshing):
                 row = self.currentRow(ii=-1)
@@ -259,7 +237,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 self.refreshmaster()
 
     def itemDoubleClicked(self, index):
-        debugprint('itemDoubleClicked')
         if not (self.refreshing or self.master_refreshing):
             userdata = self.model().data(index, qc.Qt.ItemDataRole.UserRole)
             item = self.itemFromIndex(index)
@@ -267,7 +244,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 self.signal_edit.emit(userdata)
 
     def disable(self):
-        debugprint('disable')
         self.enabled = False
         self.setDragEnabled(False)
         self.setDropIndicatorShown(True)
@@ -277,7 +253,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setEditTriggers(edit_trigger)
 
     def enable(self):
-        debugprint('enable')
         self.enabled = True
         self.setDragEnabled(True)
         self.setDropIndicatorShown(True)
@@ -287,16 +262,13 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.setEditTriggers(edit_trigger)
 
 #    def set_tree_generator(self,generator):
-#        debugprint('set_tree_generator')
 #        pass
 
     def myRowsInserted(self, *args, **kwargs):
-        debugprint('myRowsInserted')
         if not (self.refreshing or self.master_refreshing):
             self.refreshmaster()
 
     def currentIndeces2(self):
-        debugprint('currentIndeces2')
         indeces = []
         for item in self.selectedItems():
             ii = self.indexFromItem(item)
@@ -307,7 +279,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
         return indeces
 
     def selectIndeces(self, indeces, clear=True):
-        debugprint('selectIndeces')
         if clear:
             self.clearSelection()
         for ii, jj in indeces:
@@ -323,7 +294,6 @@ class DraggableTreeWidget(qg.QTreeWidget):
                 self.setItemSelected(item, True)
 
     def currentRefs(self):
-        debugprint('currentrefs')
         '''This only works with OperationList, but I haven't made a new subclass'''
         indeces = []
         for item in self.selectedItems():
@@ -348,28 +318,10 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         if isinstance(item, ParentItem):
             #            if index.isValid():
             menu = qg.QMenu()
-            menu.addAction(
-                qg.QAction(
-                    'edit...',
-                    menu,
-                    triggered=lambda: self.signal_edit.emit(
-                        item.userdata)))
-            menu.addAction(
-                qg.QAction(
-                    'rename...',
-                    menu,
-                    triggered=lambda: self.edit(index)))
-            menu.addAction(
-                qg.QAction(
-                    'delete',
-                    menu,
-                    triggered=lambda: self.delete_indeces(
-                        [index])))
-            menu.addAction(
-                qg.QAction(
-                    'parents',
-                    menu,
-                    triggered=lambda: self.show_parents(item)))
+            menu.addAction(qg.QAction('edit...',menu,triggered=lambda: self.signal_edit.emit(item.userdata)))
+            menu.addAction(qg.QAction('rename...',menu,triggered=lambda: self.edit(index)))
+            menu.addAction(qg.QAction('delete',menu,triggered=lambda: self.delete_indeces([index])))
+            menu.addAction(qg.QAction('parents',menu,triggered=lambda: self.show_parents(item)))
             menu.addAction(
                 qg.QAction(
                     'children',
@@ -406,7 +358,6 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
         m.exec_()
 
     def set_tree_generator(self, generator):
-        debugprint('set_tree_generator_p')
         self.tree_generator = generator
 
     def set_get_design(self, get_design):
@@ -414,7 +365,6 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
 
     def myRowsInserted(self, *args, **kwargs):
         if not (self.refreshing or self.master_refreshing):
-            debugprint('myrowsinserted_p')
             tree = self.tree_generator()
             if not tree.sequence_complete_valid(self.allData()):
 #                self.refresh()
@@ -423,7 +373,6 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
                 self.refreshmaster()
 
     def linklist(self, masterlist):
-        debugprint('linklist_p')
 #        tree = self.tree_generator()
 #        if tree.sequence_complete_valid(masterlist):
 #            super(DirectedDraggableTreeWidget,self).linklist(masterlist)
@@ -472,12 +421,10 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
             self.refresh()
 
     def disable(self):
-        debugprint('disable_p')
         super(DirectedDraggableTreeWidget, self).disable()
         self.blockSignals(True)
 
     def enable(self):
-        debugprint('enable_p')
         super(DirectedDraggableTreeWidget, self).enable()
         self.blockSignals(False)
 

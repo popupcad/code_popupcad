@@ -173,7 +173,7 @@ class Interactive(Common, CommonShape, qg.QGraphicsPathItem):
         self.changed_trigger = True
         self.moved_trigger = False
         if self.mode == self.modes.mode_edit:
-            add = (event.modifiers() & qc.Qt.KeyboardModifierMask.ControlModifier) != 0
+            add = int(event.modifiers()) & qc.Qt.KeyboardModifierMask.ControlModifier
             if add:
                 self.addvertex(event.scenePos())
         self.scene().itemclicked.emit(self.generic)
@@ -258,14 +258,14 @@ class InteractiveRect2Point(Interactive):
 
 class InteractivePath(Interactive):
     def querybrush(self):
-        return qc.Qt.NoBrush
+        return qg.QBrush(qc.Qt.NoBrush)
 
     def create_selectable_edges(self):
         self.create_selectable_edge_path()
         
 class InteractiveLine(Interactive):
     def querybrush(self):
-        return qc.Qt.NoBrush
+        return qg.QBrush(qc.Qt.NoBrush)
 
     def create_selectable_edges(self):
         self.create_selectable_edge_path()

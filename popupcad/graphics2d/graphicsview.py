@@ -114,10 +114,7 @@ class ImagingSupport(object):
         f = self.mapFromScene(e.bottomLeft())
         g = self.mapFromScene(e.topRight())
         rect = qc.QRect(f, g)
-        im = qg.QImage(
-            rect.width(),
-            rect.height(),
-            qg.QImage.Format.Format_ARGB32)
+        im = qg.QImage(rect.width(),rect.height(),qg.QImage.Format.Format_ARGB32)
         painter = qg.QPainter(im)
         painter.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
         self.scene().render(painter)

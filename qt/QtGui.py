@@ -5,11 +5,9 @@ Created on Wed Nov 11 07:47:02 2015
 @author: danaukes
 """
 
-import sys
-argv = [item.lower() for item in sys.argv]
 import qt
 
-if '--pyqt4' in argv:
+if qt.pyqt_loaded:
     from PyQt4.QtGui import *
 
     QGraphicsView.DragMode.NoDrag = 0
@@ -39,6 +37,16 @@ if '--pyqt4' in argv:
     QListWidget.SelectionMode.ExtendedSelection = QListWidget.ExtendedSelection    
 
     QToolButton.ToolButtonPopupMode.InstantPopup = QToolButton.InstantPopup
+
+    QGraphicsPathItem.GraphicsItemChange.ItemPositionHasChanged = QGraphicsPathItem.ItemPositionHasChanged
+    QPainterPath.ElementType.MoveToElement = QPainterPath.MoveToElement
+    QPainterPath.ElementType.LineToElement = QPainterPath.LineToElement
+    QPainterPath.ElementType.CurveToElement = QPainterPath.CurveToElement
+    QPainterPath.ElementType.CurveToDataElement = QPainterPath.CurveToDataElement
     
+    QPainter.RenderHint.Antialiasing = QPainter.Antialiasing
+
+    QImage.Format.Format_ARGB32 = QImage.Format_ARGB32
+
 else:
     from PySide.QtGui import *

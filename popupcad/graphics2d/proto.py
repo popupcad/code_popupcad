@@ -20,22 +20,11 @@ class Proto(Common):
     isDeletable = True
     minradius = 20
 
-    basicpen = qg.QPen(
-        qg.QColor.fromRgbF(
-            0,
-            0,
-            0,
-            1),
-        1.0,
-        qc.Qt.SolidLine,
-        qc.Qt.RoundCap,
-        qc.Qt.RoundJoin)
+    basicpen = qg.QPen(qg.QColor.fromRgbF(0,0,0,1),1.0,qc.Qt.SolidLine,qc.Qt.RoundCap,qc.Qt.RoundJoin)
     basicpen.setCosmetic(True)
 
-    basicbrush = qg.QBrush(
-        qg.QColor.fromRgbF(
-            1, 1, 0, .25), qc.Qt.SolidPattern)
-    nobrush = qc.Qt.NoBrush
+    basicbrush = qg.QBrush(qg.QColor.fromRgbF(1, 1, 0, .25), qc.Qt.SolidPattern)
+    nobrush = qg.QBrush(qc.Qt.NoBrush)
 
     def __init__(self, *args, **kwargs):
         super(Proto, self).__init__(*args, **kwargs)

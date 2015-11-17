@@ -42,11 +42,10 @@ class InteractiveVertex(InteractiveVertexBase):
                 super(InteractiveVertex, self).mouseMoveEvent(event)
 
     def mousePressEvent(self, event):
-        remove = (
-            event.modifiers() & (
-                qc.Qt.KeyboardModifierMask.ControlModifier)) != 0 and (
-            event.modifiers() & (
-                qc.Qt.KeyboardModifierMask.ShiftModifier))
+        modifiers = int(event.modifiers())
+        shiftpressed = modifiers & qc.Qt.KeyboardModifierMask.ShiftModifier
+        ctrlpressed = modifiers & qc.Qt.KeyboardModifierMask.ControlModifier
+        remove = ctrlpressed and shiftpressed
         if remove:
             if self.connectedinteractive is not None:
                 self.connectedinteractive.removevertex(self)

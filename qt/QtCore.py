@@ -5,11 +5,9 @@ Created on Wed Nov 11 07:42:22 2015
 @author: danaukes
 """
 
-import sys
-argv = [item.lower() for item in sys.argv]
 import qt
 
-if '--pyqt4' in argv:
+if qt.pyqt_loaded:
     from PyQt4.QtCore import *
     from PyQt4.QtCore import Qt 
     from PyQt4.QtCore import pyqtSignal as Signal 
@@ -41,6 +39,7 @@ if '--pyqt4' in argv:
     
     Qt.SortOrder.AscendingOrder = Qt.AscendingOrder
     Qt.KeyboardModifierMask.ControlModifier = Qt.ControlModifier    
+    Qt.KeyboardModifierMask.ShiftModifier = Qt.ShiftModifier
     
 else:
     import PySide.QtCore

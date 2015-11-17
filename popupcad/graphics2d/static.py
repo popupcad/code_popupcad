@@ -94,11 +94,11 @@ class StaticPath(Static, CommonShape, qg.QGraphicsPathItem):
 
     def __init__(self, *args, **kwargs):
         super(StaticPath, self).__init__(*args, **kwargs)
-        self.setBrush(qc.Qt.NoBrush)
+        self.setBrush(qg.QBrush(qc.Qt.NoBrush))
 
 
 class StaticLine(Static, CommonShape, qg.QGraphicsPathItem):
 
     def __init__(self, *args, **kwargs):
         super(StaticLine, self).__init__(*args, **kwargs)
-        self.setBrush(qc.Qt.NoBrush)
+        self.setBrush(qg.QBrush(qc.Qt.NoBrush))

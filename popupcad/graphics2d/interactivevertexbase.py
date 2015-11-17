@@ -108,28 +108,14 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
 
     def querybrush(self):
         if self.mode == self.modes.mode_render:
-            brush = qg.QBrush(qg.QColor.fromRgbF(0, 0, 0, 0), qc.Qt.NoBrush)
+            brush = qg.QBrush(qc.Qt.NoBrush)
         else:
             if self.state == self.states.state_hover:
-                brush = qg.QBrush(
-                    qg.QColor.fromRgbF(
-                        1, .5, 0, 1), qc.Qt.SolidPattern)
+                brush = qg.QBrush(qg.QColor.fromRgbF(1,.5,0,1), qc.Qt.SolidPattern)
             if self.state == self.states.state_pressed:
-                brush = qg.QBrush(
-                    qg.QColor.fromRgbF(
-                        1,
-                        0,
-                        0,
-                        1),
-                    qc.Qt.SolidPattern)
+                brush = qg.QBrush(qg.QColor.fromRgbF(1,0,0,1),qc.Qt.SolidPattern)
             if self.state == self.states.state_neutral:
-                brush = qg.QBrush(
-                    qg.QColor.fromRgbF(
-                        0,
-                        0,
-                        0,
-                        1),
-                    qc.Qt.SolidPattern)
+                brush = qg.QBrush(qg.QColor.fromRgbF(0,0,0,1),qc.Qt.SolidPattern)
         return brush
 
     def setselectable(self, test):
@@ -178,7 +164,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         self.changed_trigger = False
         if self.moved_trigger:
             self.moved_trigger = False
-            self.scene().constraint_update_request.emit(self.generic)
+            self.scene().constraint_update_request.emit([self.generic])
 
     def setPos(self, pos):
         import numpy
