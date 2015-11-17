@@ -101,11 +101,6 @@ class MenuSystem(object):
     def build_action(key,parent,action_defs,shortcuts_translation,icons):
         kwargs = action_defs[key]
 
-#        if 'kwargs' in kwargs:
-#            action_kwargs = kwargs['kwargs']
-#            if 'icon' in action_kwargs:
-#                action_kwargs['icon']=icons[action_kwargs['icon']]
-#        else:
         action_kwargs = {}
         try:
             action_kwargs['icon']=icons[kwargs['icon']]
