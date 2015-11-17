@@ -69,9 +69,9 @@ menu_struct['line_constraints']=['constraints_angle','constraints_parallel','con
 menu_struct['misc_constraints']=['point_constraints','constraints_point_line_distance','constraints_line_midpoint']
 
 toolbar_defs = {}
-toolbar_defs['distance_constraints'] = {'text':'Distance','icon':''}
-toolbar_defs['line_constraints'] = {'text':'Line','icon':''}
-toolbar_defs['misc_constraints'] = {'text':'Misc','icon':''}
+toolbar_defs['distance_constraints'] = {'text':'Distance','icon':'distance'}
+toolbar_defs['line_constraints'] = {'text':'Line','icon':'parallel'}
+toolbar_defs['misc_constraints'] = {'text':'Misc','icon':'dotdotdot'}
 
 toolbar_struct = {}
 toolbar_struct['top']=['drawing','tools','constraints']

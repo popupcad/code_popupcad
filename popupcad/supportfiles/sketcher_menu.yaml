@@ -73,9 +73,9 @@ shortcuts: {edit_copy: Ctrl+C, edit_cut: Ctrl+X, edit_paste: Ctrl+V, edit_redo: 
   view_rubberband: Ctrl+Shift+S, view_screenshot: Ctrl+R, view_scrollhand: Ctrl+Shift+P,
   view_zoom_to_fit: Ctrl+F}
 toolbar_definitions:
-  distance_constraints: {icon: '', text: Distance}
-  line_constraints: {icon: '', text: Line}
-  misc_constraints: {icon: '', text: Misc}
+  distance_constraints: {icon: distance, text: Distance}
+  line_constraints: {icon: parallel, text: Line}
+  misc_constraints: {icon: dotdotdot, text: Misc}
 toolbar_struct:
   constraints: [constraints_show, distance_constraints, line_constraints, misc_constraints,
     constraints_refresh, constraints_cleanup]
@@ -85,7 +85,7 @@ toolbar_struct:
     drawing_add_rect, drawing_add_circle, drawing_add_poly, drawing_add_text]
   line_constraints: [constraints_angle, constraints_parallel, constraints_perpendicular,
     constraints_equal, constraints_horizontal, constraints_vertical]
-  misc_constraints: [point_constraints, constraints_point_line_distance, constraints_line_midpoint]
+  misc_constraints: [constraints_point_line_distance, constraints_line_midpoint]
   tools: [tools_convex_hull, tools_triangulate, tools_get_joints, tools_flip_dir,
     tools_hollow, tools_fill, tools_set_construction_on, tools_set_construction_off]
   top: [drawing, tools, constraints]
