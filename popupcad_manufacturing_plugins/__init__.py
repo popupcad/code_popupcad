@@ -8,12 +8,10 @@ Please see LICENSE for full license.
 from . import manufacturing
 
 #import external modules
-
 import numpy
 import shapely
 
-def initialize(program):
-
+def build_menu_system(program):
     def new_sheet():
         program.editor.newoperation(manufacturing.outersheet3.OuterSheet3)
     def new_web():
@@ -75,13 +73,12 @@ def initialize(program):
     triggered['identify_bodies'] = new_identify_bodies
 
     for key,value in triggered.items():
-        action_definitions[key]['triggered'] = value
+        action_definitions[key]['triggered'] = value    
 
     from popupcad.guis.actions import MenuSystem
     menu_system = MenuSystem(action_definitions,toolbar_definitions,menu_structure,toolbar_structure,shortcuts,'top')
+    return menu_system
+    
+def initialize(program):
+    menu_system = build_menu_system(program)
     program.editor.load_menu_system(menu_system)
-#    import yaml
-#    with open('manufacturing_menu.yaml','w') as f:
-#        yaml.dump(menu_system,f)
-
-    #    program.editor.toolbar_manufacturing, program.editor.menu_manufacturing = program.editor.addToolbarMenu(manufacturingactions, name='Manufacturing')

@@ -37,7 +37,6 @@ class Program(object):
 
         for plugin in plugins:
             plugin.initialize(self)
-            
 
     def excepthook(self,exctype,value,tb):
         if exctype is not SystemExit:
