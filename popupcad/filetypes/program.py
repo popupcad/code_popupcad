@@ -27,16 +27,18 @@ class Program(object):
             self.editor.open(filename=args[-1])
         self.editor.show()
         self.editor.move_center()
-        self.create_exception_listener()
+
+        logger = logging.Logger('popupCAD',level=logging.DEBUG)
+        handler = logging.FileHandler(filename=popupcad.error_log_filename,mode='w')
+        logger.addHandler(handler)  
+
+        self.excepthook_internal = sys.excepthook
+        sys.excepthook = self.excepthook          
 
         for plugin in plugins:
             plugin.initialize(self)
+            
 
-    def create_exception_listener(self):
-        logging.basicConfig(filename=popupcad.error_log_filename,filemode='w',level=logging.DEBUG)
-        self.excepthook_internal = sys.excepthook
-        sys.excepthook = self.excepthook
-        
     def excepthook(self,exctype,value,tb):
         if exctype is not SystemExit:
             message = '''{}: {}'''.format(str(exctype),str(value))
@@ -45,8 +47,9 @@ class Program(object):
             tbmessage = traceback.format_tb(tb)
             tbmessage = '  '.join(tbmessage)
     
-            logging.error(message)
-            logging.debug('\n'+tbmessage)
+            logger = logging.getLogger('popupCAD')
+            logger.error(message)
+            logger.debug('\n'+tbmessage)
             
             self.editor.error_log.appendText(message+'\n'+tbmessage)
             self.excepthook_internal(exctype,value,tb)

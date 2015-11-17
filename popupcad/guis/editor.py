@@ -105,9 +105,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.error_log.closeEvent = lambda event: self.action_uncheck(
             self.act_view_errors)
 
-#        self.set_nominal_size()
-#        self.move_center()
-
     def autosave(self):
         self.design.backup(popupcad.backupdir,'_autosave_')
     
