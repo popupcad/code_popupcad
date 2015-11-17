@@ -16,7 +16,12 @@ class MenuSystem(object):
     shortcut_interpretation['Ctrl+O']=qg.QKeySequence.Open
     shortcut_interpretation['Ctrl+S']=qg.QKeySequence.Save
     shortcut_interpretation['Ctrl+Shift+S']=qg.QKeySequence.SaveAs    
-    
+    shortcut_interpretation['Ctrl+Z']=qg.QKeySequence.Undo
+    shortcut_interpretation['Ctrl+Y']=qg.QKeySequence.Redo
+    shortcut_interpretation['Ctrl+X']=qg.QKeySequence.Cut
+    shortcut_interpretation['Ctrl+C']=qg.QKeySequence.Copy
+    shortcut_interpretation['Ctrl+V']=qg.QKeySequence.Paste
+
     def __init__(self,action_defs, toolbar_definitions,menu_struct,toolbar_struct,shortcuts,top_menu_key):
         self.action_defs = action_defs.copy()
         self.toolbar_definitions = toolbar_definitions.copy()

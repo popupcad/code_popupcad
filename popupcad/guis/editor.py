@@ -90,7 +90,7 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
         self.operationadded.connect(self.newoperationslot)
         self.operationedited.connect(self.editedoperationslot)
 
-        self.create_menu_system()
+        self.create_menu_system(popupcad.supportfiledir+'/editor_menu.yaml')
         
         self.show_hide_view_3d()
         self.show_hide_operationdock()

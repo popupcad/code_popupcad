@@ -212,6 +212,7 @@ from popupcad.guis.actions import MenuSystem
 m =MenuSystem(action_setup,toolbar_definitions,menu_struct,toolbar_struct,shortcuts,'top')
 
 import yaml
+import popupcad
 
-with open('editor_menu.yaml','w') as f:
+with open(popupcad.supportfiledir+'/editor_menu.yaml','w') as f:
     yaml.dump(m,f)

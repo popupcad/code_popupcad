@@ -45,9 +45,7 @@ class WidgetBasic(object):
         action_to_uncheck.setChecked(False)
         
 class MainGui(WidgetBasic):        
-    def create_menu_system(self):
-        import popupcad.guis.actions
-        filename = popupcad.supportfiledir+'/editor_menu.yaml'
+    def create_menu_system(self,filename):
         import yaml
         with open(filename) as f:
             self.menu_system = yaml.load(f)
