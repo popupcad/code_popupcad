@@ -107,9 +107,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetBasic, qg.QMainWindow):
         self.layerlistwidgetdock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_layers'])
         self.error_log.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_error_log'])
 
-#        self.set_nominal_size()
-#        self.move_center()
-
     def autosave(self):
         self.design.backup(popupcad.backupdir,'_autosave_')
         
