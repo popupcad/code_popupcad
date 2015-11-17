@@ -295,9 +295,10 @@ class Sketcher(MainGui,qg.QMainWindow):
     def solidworksimport(self):
         from popupcad.filetypes.solidworksimport import Assembly
         a = Assembly.open()
-        sketch = a.build_face_sketch()
-        self.loadsketch(sketch)
-        self.undoredo.restartundoqueue()
+        if a is not None:
+            sketch = a.build_face_sketch()
+            self.loadsketch(sketch)
+            self.undoredo.restartundoqueue()
 
     def open(self):
         sketch = popupcad.filetypes.sketch.Sketch.open()
@@ -322,17 +323,17 @@ class Sketcher(MainGui,qg.QMainWindow):
     def addproto(self, proto):
         self.graphicsview.turn_off_drag()
         self.scene.addpolygon(proto)
-    def add_line(self, proto):
+    def add_line(self):
         self.addproto(ProtoLine)
-    def add_path(self, proto):
+    def add_path(self):
         self.addproto(ProtoPath)
-    def add_rect(self, proto):
+    def add_rect(self):
         self.addproto(ProtoRect2Point)
-    def add_circle(self, proto):
+    def add_circle(self):
         self.addproto(ProtoCircle)
-    def add_poly(self, proto):
+    def add_poly(self):
         self.addproto(ProtoPoly)
-    def add_text(self, proto):
+    def add_text(self):
         self.addproto(TextParent)
         
     def convex_hull(self):

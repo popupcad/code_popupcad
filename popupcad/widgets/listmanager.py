@@ -183,9 +183,10 @@ class SketchListManager(ListManager):
     def load_item(self):
         from popupcad.filetypes.sketch import Sketch
         newitem = Sketch.open()
-        self.items[newitem.id] = newitem
-        self.refresh_list(newitem)
-        self.items_updated.emit()
+        if newitem is not None:
+            self.items[newitem.id] = newitem
+            self.refresh_list(newitem)
+            self.items_updated.emit()
 
     def widgets(self):
         actions = []

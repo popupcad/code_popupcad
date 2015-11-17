@@ -28,9 +28,9 @@ class Program(object):
         self.editor.show()
         self.editor.move_center()
 
-        logger = logging.Logger('popupCAD',level=logging.DEBUG)
+        self.logger = logging.Logger('popupCAD',level=logging.DEBUG)
         handler = logging.FileHandler(filename=popupcad.error_log_filename,mode='w')
-        logger.addHandler(handler)  
+        self.logger.addHandler(handler)  
 
         self.excepthook_internal = sys.excepthook
         sys.excepthook = self.excepthook          
@@ -46,9 +46,9 @@ class Program(object):
             tbmessage = traceback.format_tb(tb)
             tbmessage = '  '.join(tbmessage)
     
-            logger = logging.getLogger('popupCAD')
-            logger.error(message)
-            logger.debug('\n'+tbmessage)
+#            logger = logging.getLogger('popupCAD')
+            self.logger.error(message)
+            self.logger.debug('\n'+tbmessage)
             
             self.editor.error_log.appendText(message+'\n'+tbmessage)
             self.excepthook_internal(exctype,value,tb)
