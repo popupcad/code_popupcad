@@ -16,14 +16,12 @@ import imp
 import popupcad
 
 from popupcad.filetypes.design import Design
-import popupcad.guis.icons
-#
 
 class NoOutput(Exception):
     def __init__(self):
         Exception.__init__(self,'Operation has not been processed due to a previous exception')
 
-class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
+class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
 
     '''
     Editor Class
@@ -90,136 +88,88 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.operationadded.connect(self.newoperationslot)
         self.operationedited.connect(self.editedoperationslot)
 
-        self.createActions()
+        self.create_menu_system(popupcad.supportfiledir+'/editor_menu.yaml')
+        
+        self.show_hide_view_3d()
+        self.show_hide_operationdock()
+        self.show_hide_layerlistwidgetdock()
+        self.show_hide_error_log()
+        
         self.backuptimer = qc.QTimer()
         self.backuptimer.setInterval(popupcad.backup_timeout)
         self.backuptimer.timeout.connect(self.autosave)
         self.backuptimer.start()
-
-        self.operationdock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_ops)
-        self.layerlistwidgetdock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_layers)
-        self.view_3d_dock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_3d)
-        self.error_log.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_errors)
+        
+        self.view_3d_dock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_3d'])
+        self.operationdock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_operations'])
+        self.layerlistwidgetdock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_layers'])
+        self.error_log.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_error_log'])
 
     def autosave(self):
         self.design.backup(popupcad.backupdir,'_autosave_')
-    
-    def createActions(self):
-        icons = popupcad.guis.icons.build()
-
-        self.fileactions = []
-        self.fileactions.append({'text': "&New",'kwargs': {'icon': icons['new'],'shortcut': qg.QKeySequence.New,'statusTip': "Create a new file",'triggered': self.newfile}})
-        self.fileactions.append({'text': "&Open...",'kwargs': {'icon': icons['open'],'shortcut': qg.QKeySequence.Open,'statusTip': "Open an existing file",'triggered': self.open}})
-        self.fileactions.append({'text': "&Save",'kwargs': {'icon': icons['save'],'shortcut': qg.QKeySequence.Save,'statusTip': "Save the document to disk",'triggered': self.save}})
-        self.fileactions.append({'text': "Save &As...",'kwargs': {'icon': icons['save'],'shortcut': qg.QKeySequence.SaveAs,'statusTip': "Save the document under a new name",'triggered': self.saveAs}})
-        self.fileactions.append({'text': "Upgrade",'kwargs': {'statusTip': "Upgrade the file",'triggered': self.upgrade}})
-        self.fileactions.append({'text': 'Export to stl', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a stl file",'triggered': self.export_stl}})
-        self.fileactions.append({'text': '&Export to SVG', 'kwargs': {'icon': icons['export'], 'triggered': self.exportLayerSVG}})
-        self.fileactions.append({'text': 'Export to dxf', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dxf file",'triggered': self.export_dxf}})
-        self.fileactions.append({'text': 'Export layers to dxf', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dxf file",'triggered': self.export_dxf_layers}})
-        self.fileactions.append({'text': 'Export to dae', 'kwargs': {'icon': icons['export'],'statusTip': "Exports to a dae file",'triggered': self.export_dae}})
-
-        self.fileactions.append({'text': "Save Joint Defs", 'kwargs': {'triggered': self.save_joint_def}})
-        self.fileactions.append({'text': "Export Laminate", 'kwargs': {'triggered': self.export_laminate}})
-        self.fileactions.append({'text': "Regen ID", 'kwargs': {'triggered': self.regen_id, }})
-#        self.fileactions.append({'text': "Preferences...", 'kwargs': {'triggered': self.preferences}})
-        self.fileactions.append({'text': "Render Icons", 'kwargs': {'triggered': self.gen_icons}})
-        self.fileactions.append({'text': "Build Documentation", 'kwargs': {'triggered': self.build_documentation}})
-        self.fileactions.append({'text': "License", 'kwargs': {'triggered': self.show_license}})
-        self.fileactions.append({'text': "Update...",'kwargs': {'triggered': self.download_installer}})
-
-        self.projectactions = []
-        self.projectactions.append({'text': '&Rebuild','kwargs': {'icon': icons['refresh'],'shortcut': 'Ctrl+Shift+R','triggered': self.reprocessoperations_outer}})
-
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(True)
-            self.act_autoreprocesstoggle = action
-        self.projectactions.append({'text': 'Auto Reprocess', 'kwargs': {}, 'prepmethod': dummy})
         
-        self.projectactions.append(None)
-        self.projectactions.append({'text': 'Layer Order...', 'kwargs': {'triggered': self.editlayers}})
-        self.projectactions.append({'text': 'Laminate Properties...', 'kwargs': {'triggered': self.editlaminate}})
-        self.projectactions.append({'text': 'Sketches...', 'kwargs': {'triggered': self.sketchlist}})
-        self.projectactions.append({'text': 'SubDesigns...', 'kwargs': {'triggered': self.subdesigns}})
-        self.projectactions.append({'text': 'Replace...', 'kwargs': {'triggered': self.replace}})
-        self.projectactions.append({'text': 'Insert Laminate Op and Replace...', 'kwargs': {'triggered': self.insert_and_replace}})
-        self.projectactions.append({'text': 'Hierarchy', 'kwargs': {'triggered': self.operation_network}})
+    def show_hide_view_3d(self):
+        if self.menu_system.actions['view_3d'].isChecked():
+            self.view_3d_dock.show()
+        else:
+            self.view_3d_dock.hide()
 
-        self.viewactions = []
+    def show_hide_operationdock(self):
+        if self.menu_system.actions['view_operations'].isChecked():
+            self.operationdock.show()
+        else:
+            self.operationdock.hide()
 
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(False)
-            self.act_view_3d = action
-        self.viewactions.append({'prepmethod': dummy,'text': '3D View','kwargs': {'icon': icons['printapede'],'triggered': lambda: self.showhide2(self.view_3d_dock,self.act_view_3d)}})
+    def show_hide_layerlistwidgetdock(self):
+        if self.menu_system.actions['view_layers'].isChecked():
+            self.layerlistwidgetdock.show()
+        else:
+            self.layerlistwidgetdock.hide()
 
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(True)
-            self.act_view_ops = action
-        self.viewactions.append({'prepmethod': dummy,'text': 'Operations','kwargs': {'icon': icons['operations'],'triggered': lambda: self.showhide2(self.operationdock,self.act_view_ops)}})
-
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(True)
-            self.act_view_layers = action
-        self.viewactions.append({'prepmethod': dummy,'text': 'Layers','kwargs': {'icon': icons['layers'],'triggered': lambda: self.showhide2(self.layerlistwidgetdock,self.act_view_layers)}})
-
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(False)
-            self.act_view_errors = action
-        self.viewactions.append({'prepmethod': dummy, 'text': 'Error Log', 'kwargs': {'triggered': lambda: self.showhide2(self.error_log, self.act_view_errors)}})
-
-        self.viewactions.append({'text': 'Zoom Fit','kwargs': {'triggered': self.view_2d.zoomToFit,'shortcut': 'Ctrl+F'}})
-        self.viewactions.append({'text': 'Screenshot','kwargs': {'triggered': self.scene.screenShot,'shortcut': 'Ctrl+R'}})
-        self.viewactions.append({'text': '3D Screenshot', 'kwargs': {'triggered': self.screenshot_3d}})
-
-        self.tools1 = []
-        self.tools1.append({'text': 'Cleanup','kwargs': {'icon': icons['cleanup'],'triggered': lambda: self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)}})
-        self.tools1.append({'text': 'New Cleanup','kwargs': {'icon': icons['cleanup'],'triggered': lambda: self.newoperation(popupcad.manufacturing.cleanup3.Cleanup3)}})
-        self.tools1.append({'text': 'Simplify','kwargs': {'icon': icons['simplify'],'triggered': lambda: self.newoperation(popupcad.manufacturing.simplify2.Simplify2)}})
-        self.tools1.append({'text': 'JointOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.joint_operation3.JointOperation3)}})
-        self.tools1.append({'text': 'HoleOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.hole_operation.HoleOperation)}})
-        self.tools1.append({'text': 'Freeze', 'kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.freeze.Freeze)}})
-        self.tools1.append({'text': 'Cross-Section','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.cross_section.CrossSection)}})
-        self.tools1.append({'text': 'SubOp','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.sub_operation2.SubOperation2)}})
-        self.tools1.append({'text': 'Code Exec','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.code_exec_op.CodeExecOperation)}})
-
-        transform = []
-        transform.append({'text': 'Internal Transform','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.transform_internal.TransformInternal)}})
-        transform.append({'text': 'External Transform','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.transform_external.TransformExternal)}})
-#        transform.append({'text': '&PlaceOp','kwargs': {'icon': icons['placeop'],'shortcut': 'Ctrl+Shift+P','triggered': lambda: self.newoperation(popupcad.manufacturing.placeop8.PlaceOperation8)}})
-#        transform.append({'text': 'L&ocateOp','kwargs': {'icon': icons['locate'],'shortcut': 'Ctrl+Shift+O','triggered': lambda: self.newoperation(popupcad.manufacturing.locateoperation3.LocateOperation3)}})
-        transform.append({'text': 'Shift/Flip','kwargs': {'icon': icons['shiftflip'],'triggered': lambda: self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)}})
-#        transform.append({'text': 'Transform','kwargs': {'triggered': lambda: self.newoperation(popupcad.manufacturing.transform.TransformOperation)}})
-
-        operationactions = []
-        operationactions.append({'text': '&SketchOp','kwargs': {'icon': icons['polygons'],'shortcut': 'Ctrl+Shift+S','triggered': lambda: self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)}})
-        operationactions.append({'text': '&LaminateOp','kwargs': {'icon': icons['metaop'],'shortcut': 'Ctrl+Shift+M','triggered': lambda: self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)}})
-        operationactions.append({'text': '&Dilate/Erode','kwargs': {'icon': icons['bufferop'],'shortcut': 'Ctrl+Shift+B','triggered': lambda: self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)}})
-        operationactions.append({'text': 'Transform', 'submenu': transform,'kwargs':{'icon': icons['placeop']}})
-        operationactions.append({'text': '&LayerOp','kwargs': {'icon': icons['layerop'],'shortcut': 'Ctrl+Shift+L','triggered': lambda: self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)}})
-        operationactions.append({'text': 'More...', 'submenu': self.tools1, 'kwargs': {}})
-
-        self.menu_file = self.addMenu(self.fileactions, name='File')
-        self.menu_project = self.addMenu(self.projectactions, name='Project')
-        self.menu_view = self.addMenu(self.viewactions, name='View')
-        self.toolbar_operations, self.menu_operations = self.addToolbarMenu(operationactions, name='Operations')
-
-#        menu_bar = qg.QMenuBar()
-#        menu_bar.addMenu(menu_file)
-#        self.setMenuBar(menu_bar)
+    def show_hide_error_log(self):
+        if self.menu_system.actions['view_error_log'].isChecked():
+            self.error_log.show()
+        else:
+            self.error_log.hide()
         
-        self.showhide2(self.view_3d_dock, self.act_view_3d)
-        self.showhide2(self.operationdock, self.act_view_ops)
-        self.showhide2(self.layerlistwidgetdock, self.act_view_layers)
-        self.showhide2(self.error_log, self.act_view_errors)
+    def new_cleanup2(self):
+        self.newoperation(popupcad.manufacturing.cleanup2.Cleanup2)
+    def new_cleanup3(self):
+        self.newoperation(popupcad.manufacturing.cleanup3.Cleanup3)
+    def new_simplify2(self):
+        self.newoperation(popupcad.manufacturing.simplify2.Simplify2)
+    def new_jointop3(self):
+        self.newoperation(popupcad.manufacturing.joint_operation3.JointOperation3)
+    def new_holeop(self):
+        self.newoperation(popupcad.manufacturing.hole_operation.HoleOperation)
+    def new_freezeop(self):
+        self.newoperation(popupcad.manufacturing.freeze.Freeze)
+    def new_cross_section(self):
+        self.newoperation(popupcad.manufacturing.cross_section.CrossSection)
+    def new_subop(self):
+        self.newoperation(popupcad.manufacturing.sub_operation2.SubOperation2)
+    def new_codeop(self):
+        self.newoperation(popupcad.manufacturing.code_exec_op.CodeExecOperation)
+    def new_transform_internal(self):
+        self.newoperation(popupcad.manufacturing.transform_internal.TransformInternal)
+    def new_transform_external(self):
+        self.newoperation(popupcad.manufacturing.transform_external.TransformExternal)
+    def new_shiftflip(self):
+        self.newoperation(popupcad.manufacturing.shiftflip3.ShiftFlip3)
+    def new_sketch_op(self):
+        self.newoperation(popupcad.manufacturing.simplesketchoperation.SimpleSketchOp)
+    def new_laminate_op(self):
+        self.newoperation(popupcad.manufacturing.laminateoperation2.LaminateOperation2)
+    def new_buffer_op(self):
+        self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)
+    def new_layer_op(self):
+        self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)
+
+    def zoomToFit(self):
+        self.view_2d.zoomToFit()
+
+    def screenShot(self):
+        self.scene.screenShot()
 
     def operation_network(self):
         import popupcad.widgets.operationnetwork
@@ -229,8 +179,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         hierarchy_dock.setAllowedAreas(qc.Qt.AllDockWidgetAreas)
         hierarchy_dock.setWindowTitle('Hierarchy')
         self.addDockWidget(qc.Qt.RightDockWidgetArea, hierarchy_dock)
-
-#        widget.show()
 
     @property
     def design(self):
@@ -258,15 +206,15 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     
     def newoperationslot(self, operation):
         self.design.append_operation(operation)
-        if self.act_autoreprocesstoggle.isChecked():
+        if self.menu_system.actions['project_auto_reprocess'].isChecked():
             self.reprocessoperations([operation])
     
     def editedoperationslot(self, operation):
-        if self.act_autoreprocesstoggle.isChecked():
+        if self.menu_system.actions['project_auto_reprocess'].isChecked():
             self.reprocessoperations([operation])
     
-    def reprocessoperations_outer(self,operations = None):
-        self.reprocessoperations(operations)
+    def reprocessoperations_outer(self):
+        self.reprocessoperations(None)
         
     def reprocessoperations(self, operations=None):
         try:
@@ -287,15 +235,20 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         design.define_layers(LayerDef(*materials.default_sublaminate))
         self.load_design(design)
         self.view_2d.zoomToFit()
-
-    def open(self, filename=None):
-        if filename is None:
-            design = Design.open(self)
-        else:
-            design = Design.load_yaml(filename)
+    
+    def open_filename(self,filename):
+        design = Design.load_yaml(filename)
         if not design is None:
             self.load_design(design)
-            if self.act_autoreprocesstoggle.isChecked():
+            if self.menu_system.actions['project_auto_reprocess'].isChecked():
+                self.reprocessoperations()
+            self.view_2d.zoomToFit()
+        
+    def open(self):
+        design = Design.open(self)
+        if not design is None:
+            self.load_design(design)
+            if self.menu_system.actions['project_auto_reprocess'].isChecked():
                 self.reprocessoperations()
             self.view_2d.zoomToFit()
 
@@ -304,7 +257,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         self.update_window_title()
         return value
     
-    def saveAs(self, parent=None):
+    def saveAs(self):
         value = self.design.saveAs(self)
         self.update_window_title()
         return value
@@ -340,9 +293,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
     
     def editlaminate(self):
         from dev_tools.propertyeditor import PropertyEditor
-        dialog = self.builddialog(
-            PropertyEditor(
-                self.design.return_layer_definition().layers))
+        dialog = self.builddialog(PropertyEditor(self.design.return_layer_definition().layers))
         dialog.exec_()
         del self.design.return_layer_definition().z_values
     
@@ -396,7 +347,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 geom.setselectable(True)
     
     def show3dgeometry3(self, operationoutput, selectedlayers):
-        if self.act_view_3d.isChecked():
+        if self.menu_system.actions['view_3d'].isChecked():
             layerdef = self.design.return_layer_definition()
             triangles = operationoutput.triangles_by_layer
             self.view_3d.view.update_object(layerdef,triangles,selectedlayers)
@@ -452,11 +403,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
             return False
         return True
     
-#    def preferences(self):
-#        import dev_tools.propertyeditor
-#        pe = dev_tools.propertyeditor.PropertyEditor(popupcad.local_settings)
-#        pe.show()
-
     def replace(self):
         d = qg.QDialog()
         operationlist = popupcad.widgets.dragndroptree.DraggableTreeWidget()
@@ -496,7 +442,7 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
         except popupcad.filetypes.design.UpgradeError as ex:
             print(ex)
             raise
-        if self.act_autoreprocesstoggle.isChecked():
+        if self.menu_system.actions['project_auto_reprocess'].isChecked():
             self.reprocessoperations()
         self.view_2d.zoomToFit()
     
@@ -515,12 +461,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
                 time +
                 '.png'))
         self.view_3d.view.grabFrameBuffer().save(filename)
-    
-    def export_laminate(self):
-        ii, jj = self.operationeditor.currentIndeces2()[0]
-        output = self.design.operations[ii].output[jj]
-        generic = output.csg.to_generic_laminate()
-        generic.saveAs()
     
     def gen_icons(self):
         self.design.raster()
@@ -583,8 +523,6 @@ class Editor(popupcad.widgets.widgetcommon.WidgetCommon, qg.QMainWindow):
 
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
-    icons = popupcad.guis.icons.build()
-    app.setWindowIcon(icons['printapede'])
     mw = Editor()
     mw.show()
     mw.raise_()

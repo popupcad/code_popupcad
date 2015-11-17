@@ -1,0 +1,92 @@
+!!python/object:popupcad.guis.actions.MenuSystem
+action_defs:
+  constraints_angle: {icon: angle, text: Angle, triggered: add_constraint_angle}
+  constraints_cleanup: {icon: broom, text: Cleanup, triggered: cleanupconstraints}
+  constraints_coincident: {icon: coincident, text: Coincident, triggered: add_constraint_coincident}
+  constraints_distance: {icon: distance, text: Distance, triggered: add_constraint_distance}
+  constraints_distance_x: {icon: distancex, text: DistanceX, triggered: add_constraint_x_distance}
+  constraints_distance_y: {icon: distancey, text: DistanceY, triggered: add_constraint_y_distance}
+  constraints_equal: {icon: equal, text: Equal, triggered: add_constraint_equal}
+  constraints_fixed: {text: Fixed, triggered: add_constraint_fixed}
+  constraints_horizontal: {icon: horizontal, text: Horizontal, triggered: add_constraint_horizontal}
+  constraints_line_midpoint: {text: Midpoint, triggered: add_constraint_line_midpoint}
+  constraints_parallel: {icon: parallel, text: Parallel, triggered: add_constraint_parallel}
+  constraints_perpendicular: {icon: perpendicular, text: Perpendicular, triggered: add_constraint_perpendicular}
+  constraints_point_line_distance: {icon: pointline, text: PointLine, triggered: add_constraint_point_line_distance}
+  constraints_refresh: {icon: refresh, text: Update, triggered: refreshconstraints}
+  constraints_show: {icon: showconstraints, is_checkable: true, is_checked: false,
+    text: Constraints On, triggered: showvertices}
+  constraints_vertical: {icon: vertical, text: Vertical, triggered: add_constraint_vertical}
+  drawing_add_circle: {icon: circle, text: circle, triggered: add_circle}
+  drawing_add_line: {icon: line, text: line, triggered: add_line}
+  drawing_add_path: {icon: polyline, text: polyline, triggered: add_path}
+  drawing_add_point: {icon: points, text: point, triggered: adddrawingpoint}
+  drawing_add_poly: {icon: polygon, text: poly, triggered: add_poly}
+  drawing_add_rect: {icon: rectangle, text: rect, triggered: add_rect}
+  drawing_add_text: {icon: text, text: text, triggered: add_text}
+  edit_array: {text: Array, triggered: array}
+  edit_copy: {shortcut: Ctrl+C, text: Copy, triggered: copy_to_clipboard}
+  edit_cut: {shortcut: Ctrl+X, text: Cut, triggered: cut_to_clipboard}
+  edit_paste: {shortcut: Ctrl+V, text: Paste, triggered: paste_from_clipboard}
+  edit_redo: {icon: redo, shortcut: Ctrl+Y, text: Redo, triggered: redo}
+  edit_undo: {icon: undo, shortcut: Ctrl+Z, text: Undo, triggered: undo}
+  file_import: {icon: import, text: Import..., triggered: solidworksimport}
+  file_new: {icon: new, shortcut: Ctrl+N, text: '&New', triggered: newfile}
+  file_open: {icon: open, shortcut: Ctrl+O, text: '&Open...', triggered: open}
+  file_regenid: {text: Regen ID, triggered: regen_id}
+  file_save: {icon: save, shortcut: Ctrl+S, text: '&Save', triggered: save}
+  file_saveas: {icon: save, shortcut: Ctrl+Shift+S, text: Save &As..., triggered: saveAs}
+  tools_convex_hull: {icon: convex_hull, text: convex hull, triggered: convex_hull}
+  tools_fill: {text: fill, triggered: fill}
+  tools_flip_dir: {text: flip direction, triggered: flipdirection}
+  tools_get_joints: {icon: getjoints2, text: shared edges, triggered: getjoints}
+  tools_hollow: {text: hollow, triggered: hollow}
+  tools_set_construction_off: {text: Not Construction, triggered: set_construction_off}
+  tools_set_construction_on: {text: Construction, triggered: set_construction_on}
+  tools_triangulate: {icon: triangulate, text: triangulate, triggered: triangulate}
+  view_constraints: {is_checkable: true, is_checked: true, text: Constraints, triggered: show_hide_constraints}
+  view_operations: {is_checkable: true, is_checked: true, text: Operations, triggered: show_hide_op_tree}
+  view_properties: {is_checkable: true, is_checked: true, text: Properties, triggered: show_hide_properties}
+  view_rubberband: {icon: pointer, shortcut: Ctrl+Shift+S, text: select, triggered: rubberband}
+  view_screenshot: {shortcut: Ctrl+R, text: Screenshot, triggered: screenShot}
+  view_scrollhand: {icon: hand, shortcut: Ctrl+Shift+P, text: pan, triggered: scrollhand}
+  view_zoom_to_fit: {shortcut: Ctrl+F, text: Zoom Fit, triggered: zoomToFit}
+menu_struct:
+  constraints: [constraints_show, distance_constraints, line_constraints, misc_constraints,
+    constraints_refresh, constraints_cleanup]
+  distance_constraints: [constraints_coincident, constraints_distance, constraints_distance_y,
+    constraints_fixed]
+  drawing: [drawing_add_point, drawing_add_line, drawing_add_path, drawing_add_rect,
+    drawing_add_rect, drawing_add_circle, drawing_add_poly, drawing_add_text]
+  edit: [edit_undo, edit_redo, edit_cut, edit_copy, edit_paste, edit_array]
+  file: [file_new, file_open, file_import, file_save, file_saveas, file_regenid]
+  line_constraints: [constraints_angle, constraints_parallel, constraints_perpendicular,
+    constraints_equal, constraints_horizontal, constraints_vertical]
+  misc_constraints: [point_constraints, constraints_point_line_distance, constraints_line_midpoint]
+  tools: [tools_convex_hull, tools_triangulate, tools_get_joints, tools_flip_dir,
+    tools_hollow, tools_fill, tools_set_construction_on, tools_set_construction_off]
+  top: [file, edit, view, drawing, tools, constraints]
+  view: [view_operations, view_constraints, view_properties, view_rubberband, view_scrollhand,
+    view_zoom_to_fit, view_screenshot]
+shortcuts: {edit_copy: Ctrl+C, edit_cut: Ctrl+X, edit_paste: Ctrl+V, edit_redo: Ctrl+Y,
+  edit_undo: Ctrl+Z, file_new: Ctrl+N, file_open: Ctrl+O, file_save: Ctrl+S, file_saveas: Ctrl+Shift+S,
+  view_rubberband: Ctrl+Shift+S, view_screenshot: Ctrl+R, view_scrollhand: Ctrl+Shift+P,
+  view_zoom_to_fit: Ctrl+F}
+toolbar_definitions:
+  distance_constraints: {icon: distance, text: Distance}
+  line_constraints: {icon: parallel, text: Line}
+  misc_constraints: {icon: dotdotdot, text: Misc}
+toolbar_struct:
+  constraints: [constraints_show, distance_constraints, line_constraints, misc_constraints,
+    constraints_refresh, constraints_cleanup]
+  distance_constraints: [constraints_coincident, constraints_distance, constraints_distance_y,
+    constraints_fixed]
+  drawing: [drawing_add_point, drawing_add_line, drawing_add_path, drawing_add_rect,
+    drawing_add_rect, drawing_add_circle, drawing_add_poly, drawing_add_text]
+  line_constraints: [constraints_angle, constraints_parallel, constraints_perpendicular,
+    constraints_equal, constraints_horizontal, constraints_vertical]
+  misc_constraints: [constraints_point_line_distance, constraints_line_midpoint]
+  tools: [tools_convex_hull, tools_triangulate, tools_get_joints, tools_flip_dir,
+    tools_hollow, tools_fill, tools_set_construction_on, tools_set_construction_off]
+  top: [drawing, tools, constraints]
+top_menu_key: top

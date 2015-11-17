@@ -7,4 +7,5 @@ Please see LICENSE for full license.
 
 from . import sketcher
 from . import editor
-from . import icons
+#from . import icons don't import automatically because it contains qt code.
+from . import actions

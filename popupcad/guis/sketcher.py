@@ -22,13 +22,13 @@ from popupcad.graphics2d.graphicsscene import GraphicsScene
 from popupcad.graphics2d.graphicsview import GraphicsView
 from popupcad.filetypes.sketch import Sketch
 from popupcad.widgets.listeditor import ListEditor
-from popupcad.widgets.widgetcommon import WidgetCommon
+from popupcad.widgets.widgetcommon import MainGui
 from popupcad.filetypes.undoredo import UndoRedo
 from popupcad.widgets.dragndroptree import DraggableTreeWidget
 from popupcad.manufacturing.nulloperation import NullOp
 from popupcad.graphics2d.text import TextParent
 
-class Sketcher(WidgetCommon, qg.QMainWindow):
+class Sketcher(MainGui,qg.QMainWindow):
     showprop = qc.Signal(object)
 
     def __init__(self,parent,sketch,design=None,accept_method=None,selectops=False):
@@ -51,7 +51,7 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         self.undoredo = UndoRedo(self.get_current_sketch, self.loadsketch)
         self.loadsketch(sketch)
         self.undoredo.restartundoqueue()
-        self.createActions()
+        self.create_menu_system(popupcad.supportfiledir+'/sketcher_menu.yaml')
         self.load_references()
         self.connectSignals()
 
@@ -127,12 +127,9 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
 #        self.set_nominal_size()
 
         if self.selectops:
-            self.optreedock.closeEvent = lambda event: self.action_uncheck(
-                self.act_view_ops)
-        self.constraintdock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_constraints)
-        self.propdock.closeEvent = lambda event: self.action_uncheck(
-            self.act_view_properties)
+            self.optreedock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_operations'])
+        self.constraintdock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_constraints'])
+        self.propdock.closeEvent = lambda event: self.action_uncheck(self.menu_system.actions['view_properties'])
 
 #        self.move_center()
     def regen_id(self):
@@ -143,250 +140,12 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         constraint.edit()
         self.refreshconstraints()
 
-    def createActions(self):
-        icons = popupcad.guis.icons.build()
-        self.fileactions = []
-        self.fileactions.append({'text': "&New",
-                                 'kwargs': {'triggered': self.newfile,
-                                            'shortcut': qg.QKeySequence.New,
-                                            'icon': icons['new']}})
-        self.fileactions.append({'text': "&Open...",
-                                 'kwargs': {'triggered': self.open,
-                                            'shortcut': qg.QKeySequence.Open,
-                                            'icon': icons['open']}})
-        self.fileactions.append({'text': "Import...",
-                                 'kwargs': {'triggered': self.solidworksimport,
-                                            'icon': icons['import']}})
-        self.fileactions.append({'text': "&Save",
-                                 'kwargs': {'triggered': self.save,
-                                            'shortcut': qg.QKeySequence.Save,
-                                            'icon': icons['save']}})
-        self.fileactions.append({'text': "Save &As...",
-                                 'kwargs': {'triggered': self.saveAs,
-                                            'shortcut': qg.QKeySequence.SaveAs,
-                                            'icon': icons['save']}})
-        self.fileactions.append(
-            {'text': "Regen ID", 'kwargs': {'triggered': self.regen_id}})
-
-        self.editactions = []
-        self.editactions.append({'text': 'Undo',
-                                 'kwargs': {'triggered': self.undoredo.undo,
-                                            'shortcut': qg.QKeySequence.Undo,
-                                            'icon': icons['undo']}})
-        self.editactions.append({'text': 'Redo',
-                                 'kwargs': {'triggered': self.undoredo.redo,
-                                            'shortcut': qg.QKeySequence.Redo,
-                                            'icon': icons['redo']}})
-        self.editactions.append(None)
-        self.editactions.append({'text': 'Cut',
-                                 'kwargs': {'triggered': self.cut_to_clipboard,
-                                            'shortcut': qg.QKeySequence.Cut}})
-        self.editactions.append({'text': 'Copy',
-                                 'kwargs': {'triggered': self.copy_to_clipboard,
-                                            'shortcut': qg.QKeySequence.Copy}})
-        self.editactions.append({'text': 'Paste',
-                                 'kwargs': {'triggered': self.paste_from_clipboard,
-                                            'shortcut': qg.QKeySequence.Paste}})
-        self.editactions.append(
-            {'text': 'Array', 'kwargs': {'triggered': self.array}})
-
-        self.viewactions = []
-
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(True)
-            self.act_view_ops = action
-        self.viewactions.append({'prepmethod': dummy, 'text': 'Operations', 'kwargs': {
-                                'triggered': lambda: self.showhide2(self.optreedock, self.act_view_ops)}})
-
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(True)
-            self.act_view_constraints = action
-        self.viewactions.append(
-            {
-                'prepmethod': dummy,
-                'text': 'Constraints',
-                'kwargs': {
-                    'triggered': lambda: self.showhide2(
-                        self.constraintdock,
-                        self.act_view_constraints)}})
-
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(True)
-            self.act_view_properties = action
-        self.viewactions.append({'prepmethod': dummy, 'text': 'Properties', 'kwargs': {
-                                'triggered': lambda: self.showhide2(self.propdock, self.act_view_properties)}})
-        self.viewactions.append({'text': 'select',
-                                 'kwargs': {'triggered': self.graphicsview.rubberband,
-                                            'shortcut': 'Ctrl+Shift+S',
-                                            'icon': icons['pointer']}})
-        self.viewactions.append({'text': 'pan',
-                                 'kwargs': {'triggered': self.graphicsview.scrollhand,
-                                            'shortcut': 'Ctrl+Shift+P',
-                                            'icon': icons['hand']}})
-        self.viewactions.append(None)
-        self.viewactions.append({'text': 'Zoom Fit',
-                                 'kwargs': {'triggered': self.graphicsview.zoomToFit,
-                                            'shortcut': 'Ctrl+F'}})
-        self.viewactions.append({'text': 'Screenshot',
-                                 'kwargs': {'triggered': self.scene.screenShot,
-                                            'shortcut': 'Ctrl+R'}})
-
-        self.drawingactions = []
-        self.drawingactions.append({'text': 'point',
-                                    'kwargs': {'triggered': self.adddrawingpoint,
-                                               'icon': icons['points']}})
-        self.drawingactions.append({'text': 'line', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoLine), 'icon': icons['line']}})
-        self.drawingactions.append({'text': 'polyline', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoPath), 'icon': icons['polyline']}})
-        self.drawingactions.append({'text': 'rect', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoRect2Point), 'icon': icons['rectangle']}})
-        self.drawingactions.append({'text': 'circle', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoCircle), 'icon': icons['circle']}})
-        self.drawingactions.append({'text': 'poly', 'kwargs': {
-                                   'triggered': lambda: self.addproto(ProtoPoly), 'icon': icons['polygon']}})
-        self.drawingactions.append({'text': 'text', 'kwargs': {
-                                   'triggered': lambda: self.addproto(TextParent), 'icon': icons['text']}})
-
-        self.tools = []
-#        self.drawingactions.append(None)
-        self.tools.append({'text': 'convex hull','kwargs': {'triggered': self.convex_hull,'icon': icons['convex_hull']}})
-        self.tools.append({'text': 'triangulate','kwargs': {'triggered': self.triangulate,'icon': icons['triangulate']}})
-        self.tools.append({'text': 'shared edges','kwargs': {'triggered': self.getjoints,'icon': icons['getjoints2']}})
-        self.tools.append({'text': 'flip direction', 'kwargs': {'triggered': self.flipdirection}})
-        self.tools.append({'text': 'hollow', 'kwargs': {'triggered': self.hollow}})
-        self.tools.append({'text': 'fill', 'kwargs': {'triggered': self.fill}})
-        self.tools.append({'text': 'Construction', 'kwargs': {'triggered': lambda: self.set_construction(True)}})
-        self.tools.append({'text': 'Not Construction', 'kwargs': {'triggered': lambda: self.set_construction(False)}})
-
-        distanceactions = []
-        distanceactions.append(
-            {
-                'text': 'Coincident',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.CoincidentConstraint),
-                    'icon': icons['coincident']}})
-        distanceactions.append(
-            {
-                'text': 'Distance',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.DistanceConstraint),
-                    'icon': icons['distance']}})
-        distanceactions.append(
-            {
-                'text': 'DistanceX',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.XDistanceConstraint),
-                    'icon': icons['distancex']}})
-        distanceactions.append(
-            {
-                'text': 'DistanceY',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.YDistanceConstraint),
-                    'icon': icons['distancey']}})
-        distanceactions.append({'text': 'Fixed', 'kwargs': {
-                               'triggered': lambda: self.add_constraint(constraints.FixedConstraint)}})
-
-        twolineactions = []
-        twolineactions.append(
-            {
-                'text': 'Angle',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.AngleConstraint),
-                    'icon': icons['angle']}})
-        twolineactions.append(
-            {
-                'text': 'Parallel',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.ParallelLinesConstraint),
-                    'icon': icons['parallel']}})
-        twolineactions.append(
-            {
-                'text': 'Perpendicular',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.PerpendicularLinesConstraint),
-                    'icon': icons['perpendicular']}})
-        twolineactions.append(
-            {
-                'text': 'Equal',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.EqualLengthLinesConstraint),
-                    'icon': icons['equal']}})
-        twolineactions.append(
-            {
-                'text': 'Horizontal',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.HorizontalConstraint),
-                    'icon': icons['horizontal']}})
-        twolineactions.append(
-            {
-                'text': 'Vertical',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.VerticalConstraint),
-                    'icon': icons['vertical']}})
-
-        self.constraintactions = []
-
-        def dummy(action):
-            action.setCheckable(True)
-            action.setChecked(False)
-            self.act_view_vertices = action
-
-        self.constraintactions.append(
-            {
-                'prepmethod': dummy,
-                'text': 'Constraints On',
-                'kwargs': {
-                    'triggered': self.showvertices,
-                    'icon': icons['showconstraints']}})
-        self.constraintactions.append(None)
-        self.constraintactions.append(
-            {'text': 'Distance', 'submenu': distanceactions, 'kwargs': {'icon': icons['distance']}})
-        self.constraintactions.append(
-            {'text': 'Lines', 'submenu': twolineactions, 'kwargs': {'icon': icons['parallel']}})
-        self.constraintactions.append(
-            {
-                'text': 'PointLine',
-                'kwargs': {
-                    'triggered': lambda: self.add_constraint(
-                        constraints.PointLineDistanceConstraint),
-                    'icon': icons['pointline']}})
-        self.constraintactions.append({'text': 'Midpoint', 'kwargs': {
-                                      'triggered': lambda: self.add_constraint(constraints.LineMidpointConstraint)}})
-        self.constraintactions.append({'text': 'Update', 'kwargs': {
-                                      'triggered': self.refreshconstraints, 'icon': icons['refresh']}})
-        self.constraintactions.append({'text': 'Cleanup', 'kwargs': {
-                                      'triggered': self.cleanupconstraints, 'icon': icons['broom']}})
-
-        self.menu_file = self.addMenu(self.fileactions, name='File')
-        self.menu_edit = self.addMenu(self.editactions, name='Edit')
-        self.toolbar_drawing, self.menu_drawing = self.addToolbarMenu(
-            self.drawingactions, name='Drawing')
-        self.toolbar_tools, self.menu_tools = self.addToolbarMenu(
-            self.tools, name='Drawing')
-        self.toolbar_constraints, self.menu_constraints = self.addToolbarMenu(
-            self.constraintactions, name='Constraints')
-        self.menu_view = self.addMenu(self.viewactions, name='View')
-
     def cut_to_clipboard(self):
         self.undoredo.savesnapshot()
         self.scene.cut_to_clipboard()
 
     def copy_to_clipboard(self):
-        self.undoredo.savesnapshot()
+#        self.undoredo.savesnapshot()
         self.scene.copy_to_clipboard()
 
     def paste_from_clipboard(self):
@@ -507,9 +266,9 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
         
 
     def showvertices(self):
-        if self.act_view_vertices.isChecked():
+        if self.menu_system.actions['constraints_show'].isChecked():
             self.scene.cancelcreate()
-        self.scene.showvertices(self.act_view_vertices.isChecked())
+        self.scene.showvertices(self.menu_system.actions['constraints_show'].isChecked())
         self.scene.updatevertices()
 
     def update_sketch_geometries(self):
@@ -563,7 +322,19 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
     def addproto(self, proto):
         self.graphicsview.turn_off_drag()
         self.scene.addpolygon(proto)
-
+    def add_line(self, proto):
+        self.addproto(ProtoLine)
+    def add_path(self, proto):
+        self.addproto(ProtoPath)
+    def add_rect(self, proto):
+        self.addproto(ProtoRect2Point)
+    def add_circle(self, proto):
+        self.addproto(ProtoCircle)
+    def add_poly(self, proto):
+        self.addproto(ProtoPoly)
+    def add_text(self, proto):
+        self.addproto(TextParent)
+        
     def convex_hull(self):
         from popupcad.graphics2d.interactivevertexbase import InteractiveVertexBase
         from popupcad.graphics2d.interactiveedge import InteractiveEdge
@@ -754,10 +525,62 @@ class Sketcher(WidgetCommon, qg.QMainWindow):
             except AttributeError:
                 pass
 
+    def set_construction_on(self):
+        self.set_construction(True)
+
+    def set_construction_off(self):
+        self.set_construction(False)
+
     def update_window_title(self):
         basename = self.sketch.get_basename()
-        self.setWindowTitle('Editor'+' - '+basename)
-
+        self.setWindowTitle('Sketcher'+' - '+basename)
+    
+    def undo(self):
+        self.undoredo.undo()
+    def redo(self):
+        self.undoredo.redo()
+    def show_hide_op_tree(self):
+        self.showhide2(self.optreedock, self.menu_system.actions['view_operations'])
+    def show_hide_constraints(self):
+        self.showhide2(self.optreedock, self.menu_system.actions['view_constraints'])
+    def show_hide_properties(self):
+        self.showhide2(self.optreedock, self.menu_system.actions['view_properties'])
+    def rubberband(self):
+        self.graphicsview.rubberband()
+    def scrollhand(self):
+        self.graphicsview.scrollhand()
+    def zoomToFit(self):
+        self.graphicsview.zoomToFit()
+    def screenShot(self):
+        self.scene.screenShot()
+    def add_constraint_coincident(self):
+        self.add_constraint(constraints.CoincidentConstraint)
+    def add_constraint_distance(self):
+        self.add_constraint(constraints.DistanceConstraint)
+    def add_constraint_x_distance(self):
+        self.add_constraint(constraints.XDistanceConstraint)
+    def add_constraint_y_distance(self):
+        self.add_constraint(constraints.YDistanceConstraint)
+    def add_constraint_fixed(self):
+        self.add_constraint(constraints.FixedConstraint)
+    def add_constraint_angle(self):
+        self.add_constraint(constraints.AngleConstraint)
+    def add_constraint_parallel(self):
+        self.add_constraint(constraints.ParallelLinesConstraint)
+    def add_constraint_perpendicular(self):
+        self.add_constraint(constraints.PerpendicularLinesConstraint)
+    def add_constraint_equal(self):
+        self.add_constraint(constraints.EqualLengthLinesConstraint)
+    def add_constraint_horizontal(self):
+        self.add_constraint(constraints.HorizontalConstraint)
+    def add_constraint_vertical(self):
+        self.add_constraint(constraints.VerticalConstraint)
+    def add_constraint_point_line_distance(self):
+        self.add_constraint(constraints.PointLineDistanceConstraint)
+    def add_constraint_line_midpoint(self):
+        self.add_constraint(constraints.LineMidpointConstraint)
+        
+        
 if __name__ == "__main__":
     app = qg.QApplication(sys.argv)
     mw = Sketcher(None, Sketch.new())

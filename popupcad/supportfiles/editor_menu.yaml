@@ -1,0 +1,88 @@
+!!python/object:popupcad.guis.actions.MenuSystem
+action_defs:
+  file_build_documentation: {text: Build Documentation, triggered: build_documentation}
+  file_export_dae: {icon: export, statusTip: Exports to a dae file, text: Export to
+      dae, triggered: export_dae}
+  file_export_dxf: {icon: export, statusTip: Exports to a dxf file, text: Export to
+      dxf, triggered: export_dxf}
+  file_export_layers_dxf: {icon: export, statusTip: Exports to a dxf file, text: Export
+      layers to dxf, triggered: export_dxf_layers}
+  file_export_stl: {icon: export, statusTip: Exports to a stl file, text: Export to
+      stl, triggered: export_stl}
+  file_export_svg: {icon: export, text: '&Export to SVG', triggered: exportLayerSVG}
+  file_license: {text: License, triggered: show_license}
+  file_new: {icon: new, statusTip: Create a new file, text: '&New', triggered: newfile}
+  file_open: {icon: open, statusTip: Open an existing file, text: '&Open...', triggered: open}
+  file_regen_id: {text: Regen ID, triggered: regen_id}
+  file_render_icons: {text: Render Icons, triggered: gen_icons}
+  file_save: {icon: save, statusTip: Save the document to disk, text: '&Save', triggered: save}
+  file_save_joint_defs: {text: Save Joint Defs, triggered: save_joint_def}
+  file_saveas: {icon: save, statusTip: Save the document under a new name, text: Save
+      &As..., triggered: saveAs}
+  file_update: {text: Update..., triggered: download_installer}
+  file_upgrade: {statusTip: Upgrade the file, text: Upgrade, triggered: upgrade}
+  operations_Dilate/Erode: {icon: bufferop, text: '&Dilate/Erode', triggered: new_buffer_op}
+  operations_Lamiante: {icon: metaop, text: '&LaminateOp', triggered: new_laminate_op}
+  operations_Layer: {icon: layerop, text: '&LayerOp', triggered: new_layer_op}
+  operations_Sketch: {icon: polygons, text: '&SketchOp', triggered: new_sketch_op}
+  operations_cleanup: {icon: cleanup, text: Cleanup, triggered: new_cleanup2}
+  operations_code_op: {text: Code Exec, triggered: new_codeop}
+  operations_cross_section: {text: Cross-Section, triggered: new_cross_section}
+  operations_freeze: {text: Freeze, triggered: new_freezeop}
+  operations_hole_op: {text: HoleOp, triggered: new_holeop}
+  operations_joint_op: {text: JointOp, triggered: new_jointop3}
+  operations_new_cleanup: {icon: cleanup, text: New Cleanup, triggered: new_cleanup3}
+  operations_shift_flip: {icon: shiftflip, text: Shift/Flip, triggered: new_shiftflip}
+  operations_simplify: {icon: simplify, text: Simplify, triggered: new_simplify2}
+  operations_subop: {text: SubOp, triggered: new_subop}
+  operations_transform_external: {icon: placeop, text: External Transform, triggered: new_transform_external}
+  operations_transform_internal: {icon: placeop, text: Internal Transform, triggered: new_transform_internal}
+  project_auto_reprocess: {is_checkable: true, is_checked: true, text: Auto Reprocess}
+  project_hierarchy: {text: Hierarchy, triggered: operation_network}
+  project_insert_and_replace: {text: Insert Laminate Op and Replace..., triggered: insert_and_replace}
+  project_laminate_props: {text: Laminate Properties..., triggered: editlaminate}
+  project_layer_order: {text: Layer Order..., triggered: editlayers}
+  project_rebuild: {icon: refresh, text: '&Rebuild', triggered: reprocessoperations_outer}
+  project_replace: {text: Replace..., triggered: replace}
+  project_sketches: {text: Sketches..., triggered: sketchlist}
+  project_subdesigns: {text: SubDesigns..., triggered: subdesigns}
+  view_3d: {icon: printapede, is_checkable: true, is_checked: false, text: 3D View,
+    triggered: show_hide_view_3d}
+  view_3dscreenshot: {text: 3D Screenshot, triggered: screenshot_3d}
+  view_error_log: {is_checkable: true, is_checked: false, text: Error Log, triggered: show_hide_error_log}
+  view_layers: {icon: layers, is_checkable: true, is_checked: true, text: Layers,
+    triggered: show_hide_layerlistwidgetdock}
+  view_operations: {icon: operations, is_checkable: true, is_checked: true, text: Operations,
+    triggered: show_hide_operationdock}
+  view_screenshot: {text: Screenshot, triggered: screenShot}
+  view_zoom_fit: {text: Zoom Fit, triggered: zoomToFit}
+menu_struct:
+  File: [file_new, file_open, file_save, file_saveas, file_upgrade, file_export_stl,
+    file_export_svg, file_export_dxf, file_export_layers_dxf, file_export_dae, file_save_joint_defs,
+    file_regen_id, file_render_icons, file_build_documentation, file_license, file_update]
+  Project: [project_rebuild, project_auto_reprocess, project_layer_order, project_laminate_props,
+    project_sketches, project_subdesigns, project_replace, project_insert_and_replace,
+    project_hierarchy]
+  View: [view_3d, view_operations, view_layers, view_error_log, view_zoom_fit, view_screenshot,
+    view_3dscreenshot]
+  more_operations: &id001 [operations_cleanup, operations_new_cleanup, operations_simplify,
+    operations_joint_op, operations_hole_op, operations_freeze, operations_cross_section,
+    operations_subop, operations_code_op]
+  operations: &id002 [operations_Sketch, operations_Lamiante, operations_Dilate/Erode,
+    transform_operations, operations_Layer, more_operations]
+  top: [File, Project, View, operations]
+  transform_operations: &id003 [operations_transform_internal, operations_transform_external,
+    operations_shift_flip]
+shortcuts: {file_new: Ctrl+N, file_open: Ctrl+O, file_save: Ctrl+S, file_saveas: Ctrl+Shift+S,
+  operations_Dilate/Erode: Ctrl+Shift+B, operations_Lamiante: Ctrl+Shift+M, operations_Layer: Ctrl+Shift+L,
+  operations_Sketch: Ctrl+Shift+S, operations_transform_external: Ctrl+Shift+P, project_rebuild: Ctrl+Shift+R,
+  view_screenshot: Ctrl+R, view_zoom_fit: Ctrl+F}
+toolbar_definitions:
+  more_operations: {text: More...}
+  transform_operations: {icon: placeop, text: Transform}
+toolbar_struct:
+  more_operations: *id001
+  operations: *id002
+  top: [operations]
+  transform_operations: *id003
+top_menu_key: top
