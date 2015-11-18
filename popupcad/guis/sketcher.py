@@ -202,6 +202,7 @@ class Sketcher(MainGui,qg.QMainWindow):
         self.refreshconstraints()
 
     def refreshconstraints(self):
+        self.sketch.constraintsystem.cleanup()
         del self.sketch.constraintsystem.generator
         self.sketch.constraintsystem.update()
         self.scene.updateshape()

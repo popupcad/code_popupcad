@@ -26,7 +26,6 @@ packages.append('popupcad_manufacturing_plugins.manufacturing')
 packages.append('pypoly2tri')
 
 package_data = {}
-
 package_data['popupcad'] = ['supportfiles/*','supportfiles/icons/*']
 
 setup(name=popupcad.program_name,
