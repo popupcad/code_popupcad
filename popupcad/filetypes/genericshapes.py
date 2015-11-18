@@ -123,13 +123,9 @@ class GenericPoly(GenericShapeBase):
             path.closeSubpath()
         return path
 
-    def triangles3(self):
+    def triangles_inner(self):
         from pypoly2tri.shapes import Point
         from pypoly2tri.cdt import CDT
-
-#        if you have poly2tri installed
-#        from p2t import Point
-#        from p2t import CDT
 
         new = self.copy(identical = False)
         new._condition(round_vertices=False,
@@ -145,17 +141,16 @@ class GenericPoly(GenericShapeBase):
         cdt = CDT(exterior)
         [cdt.AddHole(interior) for interior in interiors]
 
-#        pypoly2tri code
         cdt.Triangulate()
+        return cdt
+        
+    def triangles3(self):
+        cdt = self.triangles_inner()
         tris = [tri.toList() for tri in cdt.GetTriangles()]
-
-#        poly2tri code
-#        triangles = cdt.triangulate()
-#        tris = [[(tri.a.x, tri.a.y), (tri.b.x, tri.b.y), (tri.c.x, tri.c.y)]
-#                for tri in triangles]
-
         tris = (numpy.array(tris)/popupcad.triangulation_scaling).tolist()
         return tris
+
+     
 
     def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
