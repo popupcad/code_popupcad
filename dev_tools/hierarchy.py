@@ -101,33 +101,43 @@ def create_sorted_connections(list_in, get_children):
 
 if __name__=='__main__':
     num_operations = 10
-            
-    operations = []
-    for item in range(num_operations):
-        operation = Operation('item '+str(item))
-        operations.append(operation)
-
-    connection_list = []        
-    for ii,operation in enumerate(operations[:-1]):
-#        operation.add_branch(operations[ii+1])
-        connection_list.append((operation,operations[ii+1]))
-        
-        
-    num_extra_connections = 10
-    
-    extras = []
-    for ii in range(num_extra_connections):
-        a = random.randint(0,num_operations-2)
-        b = random.randint(a+1,num_operations-1)
-        extras.append((a,b))
-#        operations[a].add_branch(operations[b])
-        connection_list.append((operations[a],operations[b]))
-
-    network = AcyclicDirectedGraph(operations,connection_list)
+#            
+#    operations = []
+#    for item in range(num_operations):
+#        operation = Operation('item '+str(item))
+#        operations.append(operation)
+#
+#    connection_list = []        
+#    for ii,operation in enumerate(operations[:-1]):
+##        operation.add_branch(operations[ii+1])
+#        connection_list.append((operation,operations[ii+1]))
+#        
+#        
+#    num_extra_connections = 10
+#    
+#    extras = []
+#    for ii in range(num_extra_connections):
+#        a = random.randint(0,num_operations-2)
+#        b = random.randint(a+1,num_operations-1)
+#        extras.append((a,b))
+##        operations[a].add_branch(operations[b])
+#        connection_list.append((operations[a],operations[b]))
+#
+#    network = AcyclicDirectedGraph(operations,connection_list)
 
 #    ----------------------------------------------------------
 
-    connections = create_sorted_connections(operations,lambda op:op.children())
+    operations = list(range(num_operations))
+    connections = {}
+    for item in operations:
+        connections[item]=[]
+    connections[0].append(1)
+    connections[0].append(4)
+    connections[0].append(5)
+    connections[2].append(6)
+        
+
+    connections = create_sorted_connections(operations,lambda item:connections[item])
 
     A = [[' ']*num_levels(connections) for ii in range(num_operations)]
     for c in connections:
