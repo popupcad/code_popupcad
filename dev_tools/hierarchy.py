@@ -8,7 +8,7 @@ Created on Fri Nov 20 06:57:37 2015
 #from pynamics.tree_node import TreeNode
 from dev_tools.acyclicdirectedgraph import Node,AcyclicDirectedGraph
 import random
-import numpy
+#import numpy
 #import yaml
 
 
@@ -18,7 +18,11 @@ def overlaps(connections,connection):
     return [connection.overlaps(item) for item in connections]
 def max_overlapping_levels(connections,connection):
     return max([item.level for item in connections if connection.overlaps(item)])
-
+def num_levels(connections):
+    levels = [c.level for c in connections]
+    num_levels = len(set(levels))
+    return num_levels
+    
 class Operation(Node):
     def __init__(self,name,*args,**kwargs):
         super(Operation,self).__init__(*args,**kwargs)
@@ -51,6 +55,7 @@ class Connection(object):
             return self._level
         except AttributeError:
             self._level = -1
+            return self._level
 
     def set_level(self,level):
         self._level = level
@@ -64,16 +69,14 @@ class Connection(object):
         return str(self)
     
     def segments(self):
-        a=numpy.r_[self.ii:self.jj]
-        b=a+1
-        c=numpy.array([a,b])
-        d = c.T.tolist()
-        e = [tuple(item) for item in d]
+        a = range(self.ii,self.jj)
+        b = range(self.ii+1,self.jj+1)
+        e = [tuple(item) for item in zip(a,b)]
         return e
 
     def overlapped_items(self):
-        a=numpy.r_[self.ii+1:self.jj]
-        return a.tolist()
+        a=list(range(self.ii+1,self.jj))
+        return a
 
     def overlapping_segments(self,other):
         my_segments = set(self.segments())
@@ -82,7 +85,19 @@ class Connection(object):
     
     def overlaps(self,other):
         return not not self.overlapping_segments(other)
+    
+def create_sorted_connections(list_in, get_children):
+    connections = []
+    for ii,operation in enumerate(list_in):
+        for child in get_children(operation):
+            connections.append(Connection(list_in,operation,child))
+    connections.sort(key=lambda item:(item.hops,item.ii))
 
+    for connection in connections:
+        connection.set_level(max_overlapping_levels(connections,connection)+1)
+
+    return connections
+        
 
 if __name__=='__main__':
     num_operations = 10
@@ -108,48 +123,22 @@ if __name__=='__main__':
 #        operations[a].add_branch(operations[b])
         connection_list.append((operations[a],operations[b]))
 
-
     network = AcyclicDirectedGraph(operations,connection_list)
-    #
-    #with open('structure.yaml','w') as f:
-    #    yaml.dump(operations,f)
-        
-#    with open('structure.yaml',) as f:
-#        operations = yaml.load(f)
-#    num_operations = len(operations)
-        
-    #A = numpy.zeros((num_operations,num_operations),dtype=int)  
-    #IJ =  numpy.array(numpy.meshgrid(numpy.r_[0:num_operations],numpy.r_[0:num_operations])).T
-    #
-    connections = []
-    for ii,operation in enumerate(operations):
-        for child in operation.children():
-            connections.append(Connection(operations,operation,child))
-    #        jj = operations.index(child)
-    #        A[ii,jj]=1
-    #    print(operation,children)
-    ##print(A)
-        
-    #connections2 = sorted(numpy.array(A.nonzero()).T.tolist(),key=lambda item:(item[1]-item[0],item[0]))
-    
-    connections.sort(key=lambda item:(item.hops,item.ii))
-    level(connections)
-    c = connections[-3]
-    #print(max_overlapping_levels(connections,c))
-    for connection in connections:
-        connection.set_level(max_overlapping_levels(connections,connection)+1)
-    levels = [c.level for c in connections]
-    num_levels = max(levels)+1
-    A = numpy.array([[' ']*num_levels]*num_operations)
+
+#    ----------------------------------------------------------
+
+    connections = create_sorted_connections(operations,lambda op:op.children())
+
+    A = [[' ']*num_levels(connections) for ii in range(num_operations)]
     for c in connections:
-        A[c.ii,c.level]='*'
-        A[c.jj,c.level]='*'
-        
-    #    if not not c.overlapped_items:
-        A[c.overlapped_items(),c.level]='|'
-    #
+        A[c.ii][c.level]='*'
+        A[c.jj][c.level]='*'
+#        
+        for kk in c.overlapped_items():
+            A[kk][c.level]='|'
+#    #
     for item in A:
         string = ''.join(item)
         print(string)
-        
-        
+#        
+#        
