@@ -106,6 +106,10 @@ class GenericText(object):
         generics = self.to_generics()
         [item.output_dxf(model_space,layer) for item in generics]
 
+    def vertices(self):
+        return []
+
+
 class TextParent(qg.QGraphicsPathItem, Common):
     isDeletable = True
 

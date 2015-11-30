@@ -51,14 +51,6 @@ class popupCADObjectSupport(object):
 
 
 class SketcherSupport(object):
-    newpolygon = qc.Signal()
-    itemclicked = qc.Signal(object)
-    enteringeditmode = qc.Signal()
-    leavingeditmode = qc.Signal()
-    savesnapshot = qc.Signal()
-    itemdeleted = qc.Signal()
-    refresh_request = qc.Signal()
-    constraint_update_request = qc.Signal(list)
 
     def __init__(self):
         self.setItemIndexMethod(self.NoIndex)
@@ -238,15 +230,14 @@ class SketcherSupport(object):
 
 
 class GraphicsScene(popupCADObjectSupport,SVGOutputSupport,SketcherSupport,qg.QGraphicsScene):
-    if qt.pyqt_loaded:
-        newpolygon = qc.Signal()
-        itemclicked = qc.Signal(object)
-        enteringeditmode = qc.Signal()
-        leavingeditmode = qc.Signal()
-        savesnapshot = qc.Signal()
-        itemdeleted = qc.Signal()
-        refresh_request = qc.Signal()
-        constraint_update_request = qc.Signal(list)
+    newpolygon = qc.Signal()
+    itemclicked = qc.Signal(object)
+    enteringeditmode = qc.Signal()
+    leavingeditmode = qc.Signal()
+    savesnapshot = qc.Signal()
+    itemdeleted = qc.Signal()
+    refresh_request = qc.Signal()
+    constraint_update_request = qc.Signal(list)
     
     def __init__(self):
         qg.QGraphicsScene.__init__(self)

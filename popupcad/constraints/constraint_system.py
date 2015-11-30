@@ -12,6 +12,7 @@ import numpy
 import scipy.optimize
 import numpy.linalg
 from popupcad.constraints.constraint_support import *     
+from popupcad.constraints.constraint import Constraint
 
 class Generator(object):
     def __init__(self,constraints,vertex_dict,objects):
@@ -233,4 +234,4 @@ class ConstraintSystem(object):
         sketch_objects = self.get_vertices
         for constraint in self.constraints:
             if constraint.cleanup(sketch_objects) == Constraint.CleanupFlags.Deletable:
-                self.constraints.pop(self.constraints.index())
+                self.constraints.pop(self.constraints.index(constraint))

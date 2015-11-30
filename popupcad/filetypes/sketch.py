@@ -19,6 +19,8 @@ from popupcad.filetypes.genericshapes import GenericLine
 class Sketch(popupCADFile):
     file_filter = 'Sketch File(*.sketch);;DXF(*.dxf)'
     selected_filter = 'Sketch File(*.sketch)'
+    defaultfiletype = 'sketch'
+
     @classmethod
     def lastdir(cls):
         return popupcad.lastsketchdir

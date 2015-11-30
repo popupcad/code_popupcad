@@ -24,6 +24,7 @@ class RegenFailure(Exception):
 class Design(popupCADFile):
     file_filter = 'CAD Design(*.cad)'
     selected_filter = 'CAD Design(*.cad)'
+    defaultfiletype = 'cad'
     
     @classmethod
     def lastdir(cls):
