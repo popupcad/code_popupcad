@@ -12,7 +12,7 @@ import qt.QtCore as qc
 import qt.QtGui as qg
 import glob
 import imp
-
+from popupcad.widgets.export_widget import DxfExportWidget
 import popupcad
 
 from popupcad.filetypes.design import Design
@@ -467,6 +467,13 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
     
     def build_documentation(self):
         self.design.build_documentation()
+
+    def export_dxf_outer(self):
+        dialog = DxfExportWidget(self.design.dirname)
+        result = dialog.exec_()
+        if result:
+            accept_data = dialog.accept_data()
+            print(accept_data)
 
     def export_dxf(self):
         ii, jj = self.operationeditor.currentIndeces2()[0]

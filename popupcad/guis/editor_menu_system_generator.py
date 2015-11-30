@@ -17,6 +17,7 @@ if __name__=='__main__':
     action_setup['file_upgrade']= {'text': "Upgrade",'kwargs': {'statusTip': "Upgrade the file"}}
     action_setup['file_export_stl']= {'text': 'Export to stl', 'kwargs': {'icon': 'export','statusTip': "Exports to a stl file"}}
     action_setup['file_export_svg']= {'text': '&Export to SVG', 'kwargs': {'icon': 'export'}}
+    action_setup['file_export_dxf_outer']= {'text': 'Export to dxf...', 'kwargs': {'icon': 'export','statusTip': "Exports to a dxf file"}}
     action_setup['file_export_dxf']= {'text': 'Export to dxf', 'kwargs': {'icon': 'export','statusTip': "Exports to a dxf file"}}
     action_setup['file_export_layers_dxf']= {'text': 'Export layers to dxf', 'kwargs': {'icon': 'export','statusTip': "Exports to a dxf file"}}
     action_setup['file_export_dae']= {'text': 'Export to dae', 'kwargs': {'icon': 'export','statusTip': "Exports to a dae file"}}
@@ -35,6 +36,7 @@ if __name__=='__main__':
                         'file_upgrade',
                         'file_export_stl',
                         'file_export_svg',
+                        'file_export_dxf_outer',
                         'file_export_dxf',
                         'file_export_layers_dxf',
                         'file_export_dae',
@@ -145,6 +147,7 @@ if __name__=='__main__':
     triggered['file_upgrade'] = 'upgrade'
     triggered['file_export_stl'] = 'export_stl'
     triggered['file_export_svg'] = 'exportLayerSVG'
+    triggered['file_export_dxf_outer'] = 'export_dxf_outer'
     triggered['file_export_dxf'] = 'export_dxf'
     triggered['file_export_layers_dxf'] = 'export_dxf_layers'
     triggered['file_export_dae'] = 'export_dae'
