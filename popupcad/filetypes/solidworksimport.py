@@ -14,7 +14,7 @@ import popupcad
 import qt.QtCore as qc
 import qt.QtGui as qg
 from popupcad.filetypes.popupcad_file import popupCADFile
-#import shapely.geometry as sg
+
 class Loop(object):
 
     def __init__(self, loop, geom):

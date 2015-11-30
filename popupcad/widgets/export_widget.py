@@ -47,15 +47,15 @@ class DxfExportWidget(qg.QDialog):
 
     def selectExport(self):
         directorypath = qg.QFileDialog.getExistingDirectory(self,"Select Directory",self.dirbox.text())
-        directorypath = os.path.normpath(directorypath)
-        self.dirbox.setText(directorypath)
+        if directorypath!='':
+            directorypath = os.path.normpath(directorypath)
+            self.dirbox.setText(directorypath)
         
     def accept_data(self):
         data = {}
-        data['folder'] = self.dirbox.text()
+        data['directory'] = self.dirbox.text()
         data['separate_layers'] = self.separate_layers.isChecked()
-        
-        return self.dirbox.text()
+        return data
         
 if __name__ == '__main__':
     import sys

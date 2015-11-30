@@ -8,25 +8,46 @@ Please see LICENSE for full license.
 import qt
 import qt.QtCore as qc
 import qt.QtGui as qg
+import os
 
 class FileMissing(Exception):
 
     def __init__(self, filename):
-        super(
-            FileMissing,
-            self).__init__(
-            'Child File Missing:{filename}'.format(
-                filename=filename))
+        super(FileMissing,self).__init__('Child File Missing:{filename}'.format(filename=filename))
 
-
+class NoFileName(Exception):
+    def __init__(self):
+        super(NoFileName,self).__init__('No Filename')
+    
 class GenericFile(object):
-    filetypes = {'file': 'Generic File'}
     defaultfiletype = 'file'
     _lastdir = '.'
 
     def __init__(self):
         self.id = id(self)
         self.set_basename(self.genbasename())
+    @property
+    def my_filename(self):
+        try:
+            return self._filename
+        except AttributeError:
+            raise NoFileName()
+            
+    @my_filename.setter
+    def my_filename(self,filename):
+        self._filename = os.path.normpath(filename)
+    @property
+    def my_local_name(self):
+        return os.path.split(self.filename)[1]
+    @property
+    def my_directory(self):
+        return os.path.split(self.filename)[0]
+    @property
+    def my_base_name(self):
+        return os.path.splitext(self.my_local_name)[0]
+    @property
+    def my_extension(self):
+        return os.path.splitext(self.my_local_name)[1]
 
     def get_basename(self):
         try:
@@ -94,10 +115,6 @@ class GenericFile(object):
 #    @classmethod
     def updatefilename(self, filename):
         import os
-        try:
-            del self.filename
-        except AttributeError:
-            pass
         self.dirname, self._basename = os.path.split(filename)
         self.setlastdir(self.dirname)
 
@@ -129,31 +146,22 @@ class GenericFile(object):
         filename, object1 = cls.open_filename(*args, **kwargs)
         return object1
 
-    def save(self, parent=None, savemethod=None, **savemethodkwargs):
+    def save(self, parent=None):
         try:
-            if savemethod is None:
-                return self.save_yaml(self.filename())
-            else:
-                return savemethod(self.filename(), **savemethodkwargs)
-        except AttributeError:
+            return self.save_yaml(self.filename())
+        except NoFileName:
             return self.saveAs(parent)
 
     def regen_id(self):
         import random
         self.id = int(random.randint(0, 9999999999))
 
-    def saveAs(self, parent=None, savemethod=None, **savemethodkwargs):
+    def saveAs(self, parent=None):
         import os
         try:
-            tempfilename = os.path.normpath(os.path.join(self.dirname,self.get_basename()))
-        except AttributeError:
-            try:
-                basename = self.get_basename()
-            except AttributeError:
-                basename = self.genbasename()
-
-            tempfilename = os.path.normpath(
-                os.path.join(self.lastdir(),basename))
+            tempfilename = self.filename()
+        except NoFileName:
+            tempfilename = os.path.normpath(os.path.join(self.lastdir(),self.get_basename()))
 
         if qt.pyside_loaded:
             filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, selectedFilter=self.selected_filter)
@@ -163,14 +171,13 @@ class GenericFile(object):
             return False
         else:
             self.regen_id()
-            if savemethod is None:
-                return self.save_yaml(filename,identical=False)
-            else:
-                return savemethod(self.filename(), **savemethodkwargs)
+            return self.save_yaml(filename,identical=False)
 
     def filename(self):
-        import os
-        return os.path.normpath(os.path.join(self.dirname,self.get_basename()))
+        try:
+            return os.path.normpath(os.path.join(self.dirname,self.get_basename()))
+        except AttributeError:
+            raise NoFileName()
 
     def save_yaml(self, filename, identical=True, update_filename=True):
         import yaml

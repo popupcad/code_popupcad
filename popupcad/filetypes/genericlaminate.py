@@ -103,19 +103,22 @@ class GenericLaminate(object):
         gv.scene().renderprocess(filename,1.0,False,0,destination)
         return filename_out
 
-    def save_dxf(self,basename,separate_files=False):
+    def save_dxf(self,basename,separate_files=False,directory = None):
         import ezdxf
         ezdxf.options.template_dir = popupcad.supportfiledir        
         
+        if directory is None:
+            directory = popupcad.exportdir
+        
         if not separate_files:
-            filename = os.path.normpath(os.path.join(popupcad.exportdir,basename+'.dxf'))
+            filename = os.path.normpath(os.path.join(directory,basename+'.dxf'))
             dwg = ezdxf.new('AC1015')
             msp = dwg.modelspace()
 
         for ii,layer in enumerate(self.layerdef.layers):
             layername = '{:03.0f}_'.format(ii)+layer.name
             if separate_files:
-                filename = os.path.normpath(os.path.join(popupcad.exportdir,basename+'_'+layername+'.dxf'))
+                filename = os.path.normpath(os.path.join(directory,basename+'_'+layername+'.dxf'))
                 dwg = ezdxf.new('AC1015')
                 msp = dwg.modelspace()
             dwg.layers.create(name=layername)

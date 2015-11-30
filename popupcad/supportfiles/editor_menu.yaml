@@ -3,12 +3,8 @@ action_defs:
   file_build_documentation: {text: Build Documentation, triggered: build_documentation}
   file_export_dae: {icon: export, statusTip: Exports to a dae file, text: Export to
       dae, triggered: export_dae}
-  file_export_dxf: {icon: export, statusTip: Exports to a dxf file, text: Export to
-      dxf, triggered: export_dxf}
   file_export_dxf_outer: {icon: export, statusTip: Exports to a dxf file, text: Export
       to dxf..., triggered: export_dxf_outer}
-  file_export_layers_dxf: {icon: export, statusTip: Exports to a dxf file, text: Export
-      layers to dxf, triggered: export_dxf_layers}
   file_export_stl: {icon: export, statusTip: Exports to a stl file, text: Export to
       stl, triggered: export_stl}
   file_export_svg: {icon: export, text: '&Export to SVG', triggered: exportLayerSVG}
@@ -60,9 +56,8 @@ action_defs:
   view_zoom_fit: {text: Zoom Fit, triggered: zoomToFit}
 menu_struct:
   File: [file_new, file_open, file_save, file_saveas, file_upgrade, file_export_stl,
-    file_export_svg, file_export_dxf_outer, file_export_dxf, file_export_layers_dxf,
-    file_export_dae, file_save_joint_defs, file_regen_id, file_render_icons, file_build_documentation,
-    file_license, file_update]
+    file_export_svg, file_export_dxf_outer, file_export_dae, file_save_joint_defs,
+    file_regen_id, file_render_icons, file_build_documentation, file_license, file_update]
   Project: [project_rebuild, project_auto_reprocess, project_layer_order, project_laminate_props,
     project_sketches, project_subdesigns, project_replace, project_insert_and_replace,
     project_hierarchy]
