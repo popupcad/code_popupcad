@@ -145,10 +145,7 @@ class GenericFile(object):
     def saveAs(self, parent=None, savemethod=None, **savemethodkwargs):
         import os
         try:
-            tempfilename = os.path.normpath(
-                os.path.join(
-                    self.dirname,
-                    self.get_basename()))
+            tempfilename = os.path.normpath(os.path.join(self.dirname,self.get_basename()))
         except AttributeError:
             try:
                 basename = self.get_basename()
@@ -156,9 +153,7 @@ class GenericFile(object):
                 basename = self.genbasename()
 
             tempfilename = os.path.normpath(
-                os.path.join(
-                    self.lastdir(),
-                    basename))
+                os.path.join(self.lastdir(),basename))
 
         if qt.pyside_loaded:
             filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, selectedFilter=self.selected_filter)
@@ -175,10 +170,7 @@ class GenericFile(object):
 
     def filename(self):
         import os
-        return os.path.normpath(
-            os.path.join(
-                self.dirname,
-                self.get_basename()))
+        return os.path.normpath(os.path.join(self.dirname,self.get_basename()))
 
     def save_yaml(self, filename, identical=True, update_filename=True):
         import yaml
