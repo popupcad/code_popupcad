@@ -12,7 +12,7 @@ import qt.QtCore as qc
 import qt.QtGui as qg
 import glob
 import imp
-
+from popupcad.widgets.export_widget import DxfExportWidget
 import popupcad
 
 from popupcad.filetypes.design import Design
@@ -454,12 +454,7 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
     
     def screenshot_3d(self):
         time = popupcad.basic_functions.return_formatted_time()
-        filename = os.path.normpath(
-            os.path.join(
-                popupcad.exportdir,
-                '3D_screenshot_' +
-                time +
-                '.png'))
+        filename = os.path.normpath(os.path.join(popupcad.exportdir,'3D_screenshot_' + time + '.png'))
         self.view_3d.view.grabFrameBuffer().save(filename)
     
     def gen_icons(self):
@@ -468,19 +463,16 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
     def build_documentation(self):
         self.design.build_documentation()
 
-    def export_dxf(self):
-        ii, jj = self.operationeditor.currentIndeces2()[0]
-        output = self.design.operations[ii].output[jj]
-        generic = output.generic_laminate()
-        basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
-        generic.save_dxf(basename)
-    
-    def export_dxf_layers(self):
-        ii, jj = self.operationeditor.currentIndeces2()[0]
-        output = self.design.operations[ii].output[jj]
-        generic = output.generic_laminate()
-        basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
-        generic.save_dxf(basename,True)
+    def export_dxf_outer(self):
+        dialog = DxfExportWidget(self.design.dirname)
+        result = dialog.exec_()
+        if result:
+            accept_data = dialog.accept_data()
+            ii, jj = self.operationeditor.currentIndeces2()[0]
+            output = self.design.operations[ii].output[jj]
+            generic = output.generic_laminate()
+            basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
+            generic.save_dxf(basename,separate_files=accept_data['separate_layers'],directory = accept_data['directory'])
 
     def export_dae(self):
         ii, jj = self.operationeditor.currentIndeces2()[0]

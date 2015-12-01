@@ -5,5 +5,3 @@ Created on Wed Oct 28 11:06:44 2015
 @author: danaukes
 """
 loaded = 'PySide'
-pyqt_loaded = False
-pyside_loaded = True

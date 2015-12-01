@@ -183,7 +183,7 @@ class Sketch(popupCADFile):
 
     @classmethod
     def open_filename(cls, parent=None):
-        if qt.pyside_loaded:
+        if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter, selectedFilter=cls.selected_filter)
         else:
             filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter)
@@ -213,7 +213,7 @@ class Sketch(popupCADFile):
                     self.lastdir(),
                     basename))
 
-        if qt.pyside_loaded:
+        if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, selectedFilter=self.selected_filter)
         else:
             filename = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter)
