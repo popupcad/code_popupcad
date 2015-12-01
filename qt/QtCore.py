@@ -7,7 +7,7 @@ Created on Wed Nov 11 07:42:22 2015
 
 import qt
 
-if qt.pyqt_loaded:
+if qt.loaded == 'PyQt4':
     from PyQt4.QtCore import *
     from PyQt4.QtCore import Qt 
     from PyQt4.QtCore import pyqtSignal as Signal 
@@ -40,7 +40,10 @@ if qt.pyqt_loaded:
     Qt.SortOrder.AscendingOrder = Qt.AscendingOrder
     Qt.KeyboardModifierMask.ControlModifier = Qt.ControlModifier    
     Qt.KeyboardModifierMask.ShiftModifier = Qt.ShiftModifier
-    
+elif qt.loaded == 'PyQt5':
+    from PyQt5.QtCore import *
+    from PyQt5.QtCore import Qt 
+    from PyQt5.QtCore import pyqtSignal as Signal 
 else:
     import PySide.QtCore
     from PySide.QtCore import * 

@@ -7,7 +7,7 @@ Created on Wed Nov 11 07:47:02 2015
 
 import qt
 
-if qt.pyqt_loaded:
+if qt.loaded == 'PyQt4':
     from PyQt4.QtGui import *
 
     QGraphicsView.DragMode.NoDrag = 0
@@ -47,6 +47,8 @@ if qt.pyqt_loaded:
     QPainter.RenderHint.Antialiasing = QPainter.Antialiasing
 
     QImage.Format.Format_ARGB32 = QImage.Format_ARGB32
-
+elif qt.loaded == 'PyQt5':
+    from PyQt5.QtGui import *
+    from PyQt5.QtWidgets import *
 else:
     from PySide.QtGui import *
