@@ -128,7 +128,7 @@ class GenericFile(object):
 
     @classmethod
     def open_filename(cls, parent=None, openmethod=None, **openmethodkwargs):
-        if qt.pyside_loaded:
+        if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter, selectedFilter=cls.selected_filter)
         else:
             filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter)
@@ -163,7 +163,7 @@ class GenericFile(object):
         except NoFileName:
             tempfilename = os.path.normpath(os.path.join(self.lastdir(),self.get_basename()))
 
-        if qt.pyside_loaded:
+        if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, selectedFilter=self.selected_filter)
         else:
             filename = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter)

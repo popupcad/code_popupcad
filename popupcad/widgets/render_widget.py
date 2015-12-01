@@ -57,7 +57,7 @@ class RenderWidget(qg.QWidget):
         self.raster_design(d, directory)
 
     def select_directory(self):
-        if qt.pyside_loaded:
+        if if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getOpenFileName(self, '', dir=self.directory_name.text(), filter='*.cad')
         else:
             filename = qg.QFileDialog.getOpenFileName(self, '', dir=self.directory_name.text(), filter='*.cad')
