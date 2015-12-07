@@ -54,8 +54,8 @@ action_defs:
 menu_struct:
   constraints: [constraints_show, distance_constraints, line_constraints, misc_constraints,
     constraints_refresh, constraints_cleanup]
-  distance_constraints: [constraints_coincident, constraints_distance, constraints_distance_y,
-    constraints_fixed]
+  distance_constraints: [constraints_coincident, constraints_distance, constraints_distance_x,
+    constraints_distance_y, constraints_fixed]
   drawing: [drawing_add_point, drawing_add_line, drawing_add_path, drawing_add_rect,
     drawing_add_rect, drawing_add_circle, drawing_add_poly, drawing_add_text]
   edit: [edit_undo, edit_redo, edit_cut, edit_copy, edit_paste, edit_array]
@@ -79,8 +79,8 @@ toolbar_definitions:
 toolbar_struct:
   constraints: [constraints_show, distance_constraints, line_constraints, misc_constraints,
     constraints_refresh, constraints_cleanup]
-  distance_constraints: [constraints_coincident, constraints_distance, constraints_distance_y,
-    constraints_fixed]
+  distance_constraints: [constraints_coincident, constraints_distance, constraints_distance_x,
+    constraints_distance_y, constraints_fixed]
   drawing: [drawing_add_point, drawing_add_line, drawing_add_path, drawing_add_rect,
     drawing_add_rect, drawing_add_circle, drawing_add_poly, drawing_add_text]
   line_constraints: [constraints_angle, constraints_parallel, constraints_perpendicular,

@@ -79,6 +79,8 @@ class LayerDef(object):
 
     @z_values.deleter
     def z_values(self):
-        del self._z_values
-
+        try:
+            del self._z_values
+        except AttributeError:
+            pass
             

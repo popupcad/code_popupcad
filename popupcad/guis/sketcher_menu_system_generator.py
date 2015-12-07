@@ -66,7 +66,7 @@ if __name__=='__main__':
     menu_struct['drawing']=['drawing_add_point','drawing_add_line','drawing_add_path','drawing_add_rect','drawing_add_rect','drawing_add_circle','drawing_add_poly','drawing_add_text']
     menu_struct['tools']=['tools_convex_hull','tools_triangulate','tools_get_joints','tools_flip_dir','tools_hollow','tools_fill','tools_set_construction_on','tools_set_construction_off']
     menu_struct['constraints']=['constraints_show','distance_constraints','line_constraints','misc_constraints','constraints_refresh','constraints_cleanup']
-    menu_struct['distance_constraints']=['constraints_coincident','constraints_distance','constraints_distance_y','constraints_fixed']
+    menu_struct['distance_constraints']=['constraints_coincident','constraints_distance','constraints_distance_x','constraints_distance_y','constraints_fixed']
     menu_struct['line_constraints']=['constraints_angle','constraints_parallel','constraints_perpendicular','constraints_equal','constraints_horizontal','constraints_vertical']
     menu_struct['misc_constraints']=['point_constraints','constraints_point_line_distance','constraints_line_midpoint']
     
@@ -80,7 +80,7 @@ if __name__=='__main__':
     toolbar_struct['drawing']=['drawing_add_point','drawing_add_line','drawing_add_path','drawing_add_rect','drawing_add_rect','drawing_add_circle','drawing_add_poly','drawing_add_text']
     toolbar_struct['tools']=['tools_convex_hull','tools_triangulate','tools_get_joints','tools_flip_dir','tools_hollow','tools_fill','tools_set_construction_on','tools_set_construction_off']
     toolbar_struct['constraints']=['constraints_show','distance_constraints','line_constraints','misc_constraints','constraints_refresh','constraints_cleanup']
-    toolbar_struct['distance_constraints']=['constraints_coincident','constraints_distance','constraints_distance_y','constraints_fixed']
+    toolbar_struct['distance_constraints']=['constraints_coincident','constraints_distance','constraints_distance_x','constraints_distance_y','constraints_fixed']
     toolbar_struct['line_constraints']=['constraints_angle','constraints_parallel','constraints_perpendicular','constraints_equal','constraints_horizontal','constraints_vertical']
     toolbar_struct['misc_constraints']=['constraints_point_line_distance','constraints_line_midpoint']
     
