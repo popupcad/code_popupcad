@@ -18,17 +18,9 @@ from popupcad.filetypes.validators import StrictDoubleValidator
 
 class Dialog(qg.QDialog):
 
-    def __init__(
-            self,
-            keepouttypes,
-            valuenames,
-            defaults,
-            operations,
-            selectedop,
-            show,
-            values=None,
-            keepouttype=None,
-            outputref=0):
+    def __init__(self,keepouttypes,valuenames,defaults,operations,selectedop,
+            show,values=None,keepouttype=None,outputref=0):
+
         super(Dialog, self).__init__()
 
         self.operations = operations
@@ -130,27 +122,15 @@ class MultiValueOperation3(Operation2):
 
     @classmethod
     def buildnewdialog(cls, design, currentop):
-        dialog = Dialog(
-            cls.keepout_types,
-            cls.valuenames,
-            cls.defaults,
-            design.operations,
-            currentop,
-            cls.show,
+        dialog = Dialog(cls.keepout_types,cls.valuenames,cls.defaults,
+            design.operations,currentop,cls.show,
             keepouttype=cls.keepout_type_default)
         return dialog
 
     def buildeditdialog(self, design):
         operation_ref, output_index = self.operation_links['parent'][0]
         operation_index = design.operation_index(operation_ref)
-        dialog = Dialog(
-            self.keepout_types,
-            self.valuenames,
-            self.defaults,
-            design.prioroperations(self),
-            operation_index,
-            self.show,
-            self.values,
-            self.keepout_type,
-            output_index)
+        dialog = Dialog(self.keepout_types,self.valuenames,self.defaults,
+            design.prioroperations(self),operation_index,self.show,self.values,
+            self.keepout_type,output_index)
         return dialog

@@ -11,20 +11,20 @@ from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2
 from popupcad.widgets.listmanager import SketchListManager
 import popupcad
+from popupcad.widgets.dragndroptree import DraggableTreeWidget
 
 class Dialog(qg.QDialog):
 
-    def __init__(self, cls, design, sketch=None):
+    def __init__(self, cls, design, selectedop,outputref=0):
         super(Dialog, self).__init__()
+        
         self.design = design
         self.cls = cls
 
-        self.sketchwidget = SketchListManager(self.design)
-        for ii in range(self.sketchwidget.itemlist.count()):
-            item = self.sketchwidget.itemlist.item(ii)
-            if item.value == sketch:
-                item.setSelected(True)
-
+        self.le1 = DraggableTreeWidget()
+        self.le1.linklist(self.operations)
+        self.le1.selectIndeces([(selectedop, outputref)])
+        
         button1 = qg.QPushButton('Ok')
         button2 = qg.QPushButton('Cancel')
         buttonlayout = qg.QHBoxLayout()
@@ -32,49 +32,49 @@ class Dialog(qg.QDialog):
         buttonlayout.addWidget(button2)
 
         layout = qg.QVBoxLayout()
-        layout.addWidget(self.sketchwidget)
+        layout.addWidget(self.le1)
         layout.addLayout(buttonlayout)
         self.setLayout(layout)
 
         button1.clicked.connect(self.accept)
         button2.clicked.connect(self.reject)
 
-    def sketch(self):
-        try:
-            return self.sketchwidget.itemlist.selectedItems()[0].value
-        except IndexError:
-            return None
-
     def acceptdata(self):
-        sketch_links = {'sketch': [self.sketch().id]}
-        return sketch_links,
+        ref, ii = self.le1.currentRefs()[0]
+        operation_links = {}
+        operation_links['parent'] = [(ref, ii)]
+        return operation_links
 
 
-class LocateOperation3(Operation2):
-    name = 'LocateOp'
+class Hollow(Operation2):
+    name = 'Hollow'
 
     def copy(self):
-        new = type(self)(self.sketch_links.copy())
+        new = type(self)(self.operation_links.copy())
         new.id = self.id
         return new
 
     def __init__(self, *args):
-        super(LocateOperation3, self).__init__()
+        super(Hollow, self).__init__()
         self.editdata(*args)
         self.id = id(self)
 
-    def editdata(self, sketch_links):
-        super(LocateOperation3, self).editdata({}, sketch_links, {})
+    def editdata(self, operation_links):
+        super(Hollow, self).editdata(operation_links, {}, {})
 
     @classmethod
     def buildnewdialog(cls, design, currentop):
-        dialog = Dialog(cls, design)
+        dialog = Dialog(cls.keepout_types,cls.valuenames,cls.defaults,
+            design.operations,currentop,cls.show,
+            keepouttype=cls.keepout_type_default)
         return dialog
 
     def buildeditdialog(self, design):
-        sketchid = self.sketch_links['sketch'][0]
-        sketch = design.sketches[sketchid]
-        dialog = Dialog(self, design, sketch)
+        operation_ref, output_index = self.operation_links['parent'][0]
+        operation_index = design.operation_index(operation_ref)
+        dialog = Dialog(self.keepout_types,self.valuenames,self.defaults,
+            design.prioroperations(self),operation_index,self.show,self.values,
+            self.keepout_type,output_index)
         return dialog
 
     def operate(self, design):
