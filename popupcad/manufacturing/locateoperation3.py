@@ -54,7 +54,7 @@ class LocateOperation3(Operation2):
     name = 'LocateOp'
 
     def copy(self):
-        new = type(self)(self.sketch_links)
+        new = type(self)(self.sketch_links.copy())
         new.id = self.id
         return new
 

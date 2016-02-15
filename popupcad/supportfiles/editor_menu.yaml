@@ -26,8 +26,10 @@ action_defs:
   operations_cleanup: {icon: cleanup, text: Cleanup, triggered: new_cleanup2}
   operations_code_op: {text: Code Exec, triggered: new_codeop}
   operations_cross_section: {text: Cross-Section, triggered: new_cross_section}
+  operations_fill: {text: Fill, triggered: new_fill}
   operations_freeze: {text: Freeze, triggered: new_freezeop}
   operations_hole_op: {text: HoleOp, triggered: new_holeop}
+  operations_hollow: {text: Hollow, triggered: new_hollow}
   operations_joint_op: {text: JointOp, triggered: new_jointop3}
   operations_new_cleanup: {icon: cleanup, text: New Cleanup, triggered: new_cleanup3}
   operations_shift_flip: {icon: shiftflip, text: Shift/Flip, triggered: new_shiftflip}
@@ -65,7 +67,7 @@ menu_struct:
     view_3dscreenshot]
   more_operations: &id001 [operations_cleanup, operations_new_cleanup, operations_simplify,
     operations_joint_op, operations_hole_op, operations_freeze, operations_cross_section,
-    operations_subop, operations_code_op]
+    operations_subop, operations_code_op, operations_hollow, operations_fill]
   operations: &id002 [operations_Sketch, operations_Lamiante, operations_Dilate/Erode,
     transform_operations, operations_Layer, more_operations]
   top: [File, Project, View, operations]
