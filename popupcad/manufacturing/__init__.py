@@ -10,8 +10,10 @@ from . import cleanup3
 from . import code_exec_op
 from . import cross_section
 from . import dummy_operation1
+from . import fill
 from . import freeze
 from . import hole_operation
+from . import hollow
 from . import joint_operation2
 from . import joint_operation3
 from . import laminateoperation2

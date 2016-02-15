@@ -356,4 +356,16 @@ class GenericLaminate(object):
         
     def __lt__(self,other):
         return self.all_geoms()[0]<other.all_geoms()[1]
+        
+    def hollow(self):
+        new = self.copy()
+        for layer in new.layers():
+            new.geoms[layer] = [item2 for item in new.geoms[layer] for item2 in item.hollow()]
+        return new
+
+    def fill(self):
+        new = self.copy()
+        for layer in new.layers():
+            new.geoms[layer] = [item2 for item in new.geoms[layer] for item2 in item.fill()]
+        return new
                     

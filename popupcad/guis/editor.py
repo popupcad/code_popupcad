@@ -164,6 +164,10 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
         self.newoperation(popupcad.manufacturing.bufferop3.BufferOperation3)
     def new_layer_op(self):
         self.newoperation(popupcad.manufacturing.layerop2.LayerOp2)
+    def new_hollow(self):
+        self.newoperation(popupcad.manufacturing.hollow.Hollow)
+    def new_fill(self):
+        self.newoperation(popupcad.manufacturing.fill.Fill)
 
     def zoomToFit(self):
         self.view_2d.zoomToFit()

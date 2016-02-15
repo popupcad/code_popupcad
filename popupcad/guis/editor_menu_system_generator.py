@@ -93,6 +93,8 @@ if __name__=='__main__':
     action_setup['operations_cross_section'] = {'text': 'Cross-Section'}
     action_setup['operations_subop'] = {'text': 'SubOp'}
     action_setup['operations_code_op'] = {'text': 'Code Exec'}
+    action_setup['operations_hollow'] = {'text': 'Hollow'}
+    action_setup['operations_fill'] = {'text': 'Fill'}
     
     menu_struct['more_operations']=['operations_cleanup',
                                     'operations_new_cleanup',
@@ -102,7 +104,9 @@ if __name__=='__main__':
                                     'operations_freeze',
                                     'operations_cross_section',
                                     'operations_subop',
-                                    'operations_code_op']
+                                    'operations_code_op',
+                                    'operations_hollow',
+                                    'operations_fill']
     #
     action_setup['operations_transform_internal'] = {'text': 'Internal Transform','kwargs': {'icon': 'placeop'}}
     action_setup['operations_transform_external'] = {'text': 'External Transform','kwargs': {'icon': 'placeop'}}
@@ -186,6 +190,8 @@ if __name__=='__main__':
     triggered['operations_cross_section'] = 'new_cross_section'
     triggered['operations_subop'] = 'new_subop'
     triggered['operations_code_op'] = 'new_codeop'
+    triggered['operations_hollow'] = 'new_hollow'
+    triggered['operations_fill'] = 'new_fill'
     
     triggered['operations_transform_internal'] = 'new_transform_internal'
     triggered['operations_transform_external'] = 'new_transform_external'
