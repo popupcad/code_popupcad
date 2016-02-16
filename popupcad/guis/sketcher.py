@@ -460,6 +460,29 @@ class Sketcher(MainGui,qg.QMainWindow):
         for item in newgenerics:
             self.scene.addItem(item.outputinteractive())
 
+    def extract(self):
+        if self.selectops:
+            selected_indeces = self.optree.currentIndeces2()
+            if len(selected_indeces) > 0:
+                ii, jj = selected_indeces[0]
+#                self.load_references_inner(ii, jj)
+
+                self.scene.removerefgeoms()
+
+                staticgeometries=[]
+                ii -= 1
+                if ii >= 0:
+                    if self.design is not None:
+                        print(ii, jj)
+                        try:
+                            operationgeometries = self.design.operations[ii].output[jj].controlpolygons()
+                            staticgeometries = [item.copy().outputinteractive() for item in operationgeometries]
+        
+                        except (IndexError, AttributeError):
+                            pass
+
+                [self.scene.addItem(item) for item in staticgeometries]
+                
     def array(self):
         dialog = qg.QDialog()
         x_num = qg.QSpinBox()

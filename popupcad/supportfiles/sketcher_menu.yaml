@@ -37,6 +37,7 @@ action_defs:
   file_save: {icon: save, shortcut: Ctrl+S, text: '&Save', triggered: save}
   file_saveas: {icon: save, shortcut: Ctrl+Shift+S, text: Save &As..., triggered: saveAs}
   tools_convex_hull: {icon: convex_hull, text: convex hull, triggered: convex_hull}
+  tools_extract: {text: extract, triggered: extract}
   tools_fill: {text: fill, triggered: fill}
   tools_flip_dir: {text: flip direction, triggered: flipdirection}
   tools_get_joints: {icon: getjoints2, text: shared edges, triggered: getjoints}
@@ -64,7 +65,7 @@ menu_struct:
     constraints_equal, constraints_horizontal, constraints_vertical]
   misc_constraints: [point_constraints, constraints_point_line_distance, constraints_line_midpoint]
   tools: [tools_convex_hull, tools_triangulate, tools_get_joints, tools_flip_dir,
-    tools_hollow, tools_fill, tools_set_construction_on, tools_set_construction_off]
+    tools_hollow, tools_fill, tools_extract, tools_set_construction_on, tools_set_construction_off]
   top: [file, edit, view, drawing, tools, constraints]
   view: [view_operations, view_constraints, view_properties, view_rubberband, view_scrollhand,
     view_zoom_to_fit, view_screenshot]
@@ -87,6 +88,6 @@ toolbar_struct:
     constraints_equal, constraints_horizontal, constraints_vertical]
   misc_constraints: [constraints_point_line_distance, constraints_line_midpoint]
   tools: [tools_convex_hull, tools_triangulate, tools_get_joints, tools_flip_dir,
-    tools_hollow, tools_fill, tools_set_construction_on, tools_set_construction_off]
+    tools_hollow, tools_fill, tools_extract, tools_set_construction_on, tools_set_construction_off]
   top: [drawing, tools, constraints]
 top_menu_key: top

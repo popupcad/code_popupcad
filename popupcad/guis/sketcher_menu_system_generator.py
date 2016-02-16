@@ -39,6 +39,7 @@ if __name__=='__main__':
     action_definitions['tools_flip_dir']={'text': 'flip direction', 'triggered': 'flipdirection'}
     action_definitions['tools_hollow']={'text': 'hollow', 'triggered': 'hollow'}
     action_definitions['tools_fill']={'text': 'fill', 'triggered': 'fill'}
+    action_definitions['tools_extract']={'text': 'extract', 'triggered': 'extract'}
     action_definitions['tools_set_construction_on']={'text': 'Construction', 'triggered': 'set_construction_on'}
     action_definitions['tools_set_construction_off']={'text': 'Not Construction', 'triggered': 'set_construction_off'}
     action_definitions['constraints_coincident']={'text': 'Coincident','triggered': 'add_constraint_coincident','icon': 'coincident'}
@@ -64,7 +65,7 @@ if __name__=='__main__':
     menu_struct['edit']=['edit_undo','edit_redo','edit_cut','edit_copy','edit_paste','edit_array']
     menu_struct['view']=['view_operations','view_constraints','view_properties','view_rubberband','view_scrollhand','view_zoom_to_fit','view_screenshot']
     menu_struct['drawing']=['drawing_add_point','drawing_add_line','drawing_add_path','drawing_add_rect','drawing_add_rect','drawing_add_circle','drawing_add_poly','drawing_add_text']
-    menu_struct['tools']=['tools_convex_hull','tools_triangulate','tools_get_joints','tools_flip_dir','tools_hollow','tools_fill','tools_set_construction_on','tools_set_construction_off']
+    menu_struct['tools']=['tools_convex_hull','tools_triangulate','tools_get_joints','tools_flip_dir','tools_hollow','tools_fill','tools_extract','tools_set_construction_on','tools_set_construction_off']
     menu_struct['constraints']=['constraints_show','distance_constraints','line_constraints','misc_constraints','constraints_refresh','constraints_cleanup']
     menu_struct['distance_constraints']=['constraints_coincident','constraints_distance','constraints_distance_x','constraints_distance_y','constraints_fixed']
     menu_struct['line_constraints']=['constraints_angle','constraints_parallel','constraints_perpendicular','constraints_equal','constraints_horizontal','constraints_vertical']
@@ -78,7 +79,7 @@ if __name__=='__main__':
     toolbar_struct = {}
     toolbar_struct['top']=['drawing','tools','constraints']
     toolbar_struct['drawing']=['drawing_add_point','drawing_add_line','drawing_add_path','drawing_add_rect','drawing_add_rect','drawing_add_circle','drawing_add_poly','drawing_add_text']
-    toolbar_struct['tools']=['tools_convex_hull','tools_triangulate','tools_get_joints','tools_flip_dir','tools_hollow','tools_fill','tools_set_construction_on','tools_set_construction_off']
+    toolbar_struct['tools']=['tools_convex_hull','tools_triangulate','tools_get_joints','tools_flip_dir','tools_hollow','tools_fill','tools_extract','tools_set_construction_on','tools_set_construction_off']
     toolbar_struct['constraints']=['constraints_show','distance_constraints','line_constraints','misc_constraints','constraints_refresh','constraints_cleanup']
     toolbar_struct['distance_constraints']=['constraints_coincident','constraints_distance','constraints_distance_x','constraints_distance_y','constraints_fixed']
     toolbar_struct['line_constraints']=['constraints_angle','constraints_parallel','constraints_perpendicular','constraints_equal','constraints_horizontal','constraints_vertical']
