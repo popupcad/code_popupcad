@@ -173,7 +173,7 @@ class Sketch(popupCADFile):
 #                        print(points)
                     else:
                         print(entity)
-            new = cls()
+            new = cls.new()
             new.addoperationgeometries(generics)
             newfile = os.path.splitext(filename)[0]+'.sketch'
             new.updatefilename(newfile)
