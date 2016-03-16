@@ -46,8 +46,8 @@ class Dialog(qg.QDialog):
 
         else:
             # define defaults
-            self.sheet_opref_tp = design.operations[1].id
-            self.part_opref_tp = design.operations[1].id
+            self.sheet_opref_tp = None
+            self.part_opref_tp = None
             self.sketch_bounding_box_tp = [(0,0),(0,0)]
             self.sc_tp = 1
             self.N_tp = 10
