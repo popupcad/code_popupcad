@@ -53,7 +53,7 @@ class AlignmentLayup(MultiValueOperation3):
         wind_w      = lambda N: max(min((sheet_width - 2*buff_x)/(N + 1.3*N - 1.3), 1),0.01)
 
         # the laminate design
-        layup = popupcad.filetypes.design.Design.new()
+        layup = design # popupcad.filetypes.design.Design.new()
         layup.updatefilename("layup")
         layer_list = design.return_layer_definition().layers
         layup.define_layers(popupcad.filetypes.layerdef.LayerDef(*layer_list))
@@ -186,7 +186,7 @@ class AlignmentLayup(MultiValueOperation3):
         [layup.addoperation(item) for item in other_ops]
         [item.generate(layup) for item in other_ops]
 
-        self.output = [sheet_with_windows]
+        self.output = [OperationOutput(sheet_with_windows.output[0], "OutputLaminate", self)]
         return sheet_with_windows.output[0].csg
 
         # might need valueoperation
