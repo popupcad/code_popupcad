@@ -186,6 +186,7 @@ class AlignmentLayup(MultiValueOperation3):
         [layup.addoperation(item) for item in other_ops]
         [item.generate(layup) for item in other_ops]
 
+        self.output = [sheet_with_windows]
         return sheet_with_windows.output[0].csg
 
         # might need valueoperation
