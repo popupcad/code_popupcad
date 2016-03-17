@@ -30,13 +30,10 @@ class TreeItem(qg.QTreeWidgetItem):
     def setData(self, column, role, value):
         if role == qc.Qt.ItemDataRole.EditRole:
             self.userdata.setcustomname(value)
-            return True
         elif role == qc.Qt.ItemDataRole.UserRole:
             self.userdata = value
-            return True
         else:
-            return False
-
+            return
 
 class ParentItem(TreeItem):
 

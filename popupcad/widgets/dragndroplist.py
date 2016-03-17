@@ -34,12 +34,10 @@ class DraggableItem(qg.QListWidgetItem):
     def setData(self, role, value):
         if role == qc.Qt.ItemDataRole.EditRole:
             self.userdata.setcustomname(value)
-            return True
         elif role == qc.Qt.ItemDataRole.UserRole:
             self.userdata = value
-            return True
         else:
-            return False
+            return
 
     def clone(self, *args, **kwargs):
         #        return type(self)(self.userdata)
