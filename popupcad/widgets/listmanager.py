@@ -29,12 +29,10 @@ class ListItem(qg.QListWidgetItem):
     def setData(self, role, value):
         if role == qc.Qt.ItemDataRole.EditRole:
             self.value.set_basename(value)
-            return True
         elif role == qc.Qt.ItemDataRole.UserRole:
             self.value = value
-            return True
         else:
-            return False
+            return
 
 
 class ListManager(qg.QWidget):
