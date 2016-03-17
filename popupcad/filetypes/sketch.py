@@ -188,10 +188,11 @@ class Sketch(popupCADFile):
         else:
             filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter)
         if filename:
-            if 'sketch' in filename:
+            extension = os.path.splitext(filename)[1].lower()
+            if 'sketch' in extension:
                 object1 = cls.load_yaml(filename)
                 return filename, object1
-            elif 'dxf' in filename:
+            elif 'dxf' in extension:
                 return cls.load_dxf(filename, parent)
         return None, None
 
@@ -220,9 +221,10 @@ class Sketch(popupCADFile):
         if not filename:
             return False
         else:
-            if 'sketch' in filename:
+            extension = os.path.splitext(filename)[1].lower()
+            if 'sketch' in extension:
                 return self.save_yaml(filename,identical=False)
-            elif 'dxf' in filename:
+            elif 'dxf' in extension:
                 return self.save_dxf(filename)
 
     def save_dxf(self,filename,update_filename = True):
