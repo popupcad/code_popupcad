@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes and CONTRIBUTORS
-Email: danaukes<at>seas.harvard.edu.
+Email: danaukes<at>asu.edu.
 Please see LICENSE for full license.
 """
 #from __future__ import absolute_import
@@ -35,7 +35,6 @@ except:
     user_materials = []
 
 
-import yaml
 try:
     with open(custom_settings_filename) as f:
         custom_settings = yaml.load(f)

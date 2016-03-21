@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes and CONTRIBUTORS
-Email: danaukes<at>seas.harvard.edu.
+Email: danaukes<at>asu.edu.
 Please see LICENSE for full license.
 """
 from popupcad.constraints.constraint_system import ConstraintSystem
