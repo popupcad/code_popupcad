@@ -54,10 +54,7 @@ class AlignmentLayup(MultiValueOperation3):
 
         # the laminate design
         layup = design # popupcad.filetypes.design.Design.new()
-        layup.updatefilename("layup")
         layer_list = design.return_layer_definition().layers
-        layup.define_layers(popupcad.filetypes.layerdef.LayerDef(*layer_list))
-
 
         # initiate the sketches
         ############# sheet first
@@ -185,6 +182,7 @@ class AlignmentLayup(MultiValueOperation3):
         other_ops = windows_sketchop + [trian_sketch, holes_sketch, sheet_sketch, cross_sketch, sheet_with_holes, sheet_with_windows]
         [layup.addoperation(item) for item in other_ops]
         [item.generate(layup) for item in other_ops]
+        [layup.remove_operation(item) for item in other_ops]
 
         self.output = [OperationOutput(sheet_with_windows.output[0], "OutputLaminate", self)]
         return sheet_with_windows.output[0].csg
