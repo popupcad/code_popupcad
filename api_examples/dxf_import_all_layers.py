@@ -2,6 +2,14 @@
 """
 Script written by Nick Gravish
 Please see LICENSE for full license.
+
+
+dxf_import_all_layers.py
+
+This script demonstrates how to interact with and load sketches from DFX layers. Calling this script with the
+filename for a DXF as an argument will save a .CAD file to the DXF's directory with sketches generated from
+the DXF layers.
+
 """
 
 import popupcad
