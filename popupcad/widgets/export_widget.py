@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Nov 30 06:12:45 2015
-
-@author: danaukes
+Written by Daniel M. Aukes and CONTRIBUTORS
+Email: danaukes<at>asu.edu.
+Please see LICENSE for full license.
 """
 import qt.QtCore as qc
 import qt.QtGui as qg

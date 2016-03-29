@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Oct 24 13:00:06 2015
-
-@author: danaukes
+Written by Daniel M. Aukes and CONTRIBUTORS
+Email: danaukes<at>asu.edu.
+Please see LICENSE for full license.
 """
 
 from . import constraint_check

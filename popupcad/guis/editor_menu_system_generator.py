@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Nov 16 16:08:15 2015
-
-@author: danaukes
+Written by Daniel M. Aukes and CONTRIBUTORS
+Email: danaukes<at>asu.edu.
+Please see LICENSE for full license.
 """
 
 if __name__=='__main__':
