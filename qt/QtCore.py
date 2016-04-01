@@ -39,3 +39,4 @@ Qt.PenStyle.NoPen = Qt.NoPen
 Qt.SortOrder.AscendingOrder = Qt.AscendingOrder
 Qt.KeyboardModifierMask.ControlModifier = Qt.ControlModifier    
 Qt.KeyboardModifierMask.ShiftModifier = Qt.ShiftModifier
+Qt.ScrollBarPolicy.ScrollBarAlwaysOff = Qt.ScrollBarAlwaysOff

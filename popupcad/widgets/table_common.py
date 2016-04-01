@@ -105,7 +105,7 @@ class Table(CommonTableWidget):
         super(Table,self).row_add(items)
 
     def row_add_empty(self, *args, **kwargs):
-        items = self.data_class.row_add_empty(*args, **kwargs)
+        items = self.data_class.row_add_empty()
         super(Table,self).row_add_empty(items)
     def cell_clicked(self,row,column):
         self.data_class.cell_clicked(row,column,self)
