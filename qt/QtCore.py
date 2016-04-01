@@ -40,6 +40,7 @@ if qt.loaded == 'PyQt4':
     Qt.SortOrder.AscendingOrder = Qt.AscendingOrder
     Qt.KeyboardModifierMask.ControlModifier = Qt.ControlModifier    
     Qt.KeyboardModifierMask.ShiftModifier = Qt.ShiftModifier
+    Qt.ScrollBarPolicy.ScrollBarAlwaysOff = Qt.ScrollBarAlwaysOff
 elif qt.loaded == 'PyQt5':
     from PyQt5.QtCore import *
     from PyQt5.QtCore import Qt 
