@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 """
 Written by Daniel M. Aukes and CONTRIBUTORS
-Email: danaukes<at>seas.harvard.edu.
+Email: danaukes<at>asu.edu.
 Please see LICENSE for full license.
 """
 
@@ -30,13 +30,10 @@ class TreeItem(qg.QTreeWidgetItem):
     def setData(self, column, role, value):
         if role == qc.Qt.ItemDataRole.EditRole:
             self.userdata.setcustomname(value)
-            return True
         elif role == qc.Qt.ItemDataRole.UserRole:
             self.userdata = value
-            return True
         else:
-            return False
-
+            return
 
 class ParentItem(TreeItem):
 
