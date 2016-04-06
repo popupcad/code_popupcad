@@ -35,7 +35,6 @@ except:
     user_materials = []
 
 
-import yaml
 try:
     with open(custom_settings_filename) as f:
         custom_settings = yaml.load(f)
