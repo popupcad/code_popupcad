@@ -114,17 +114,18 @@ class DraggableTreeWidget(qg.QTreeWidget):
 
     def currentValidIndex(self, ii=0):
         index = self.currentIndex()
-        if index.isValid():
-            return index
-        else:
-            m = self.model()
-            n = m.rowCount()
-            if n == 0:
-                jj = 0
-            else:
-                jj = ii % n
-            index = m.createIndex(jj, 0)
-            return index
+        return index
+#        if index.isValid():
+#            return index
+#        else:
+#            m = self.model()
+#            n = m.rowCount()
+#            if n == 0:
+#                jj = 0
+#            else:
+#                jj = ii % n
+#            index = m.createIndex(jj, 0)
+#            return index
 
     def currentIndeces(self, ii=-1):
         ii = self.currentRow(ii=ii)
