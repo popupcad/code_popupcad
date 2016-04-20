@@ -7,9 +7,4 @@ Please see LICENSE for full license.
 
 import sys
 argv = [item.lower() for item in sys.argv]
-if 'qt4' in argv:
-    loaded = 'PyQt4'
-elif 'qt5' in argv:
-    loaded = 'PyQt5'
-else:
-    loaded = 'PySide'
+loaded = 'PyQt4'
