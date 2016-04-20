@@ -14,19 +14,19 @@ if qt.loaded == 'PyQt4':
     QGraphicsView.DragMode.ScrollHandDrag = 1
     QGraphicsView.DragMode.RubberBandDrag = 2
     
-    QSizePolicy.Policy.Expanding = 7
-    QSizePolicy.Policy.Fixed = 0
-    QSizePolicy.Policy.Ignored = 13
-    QSizePolicy.Policy.Maximum = 4
-    QSizePolicy.Policy.Minimum = 1
-    QSizePolicy.Policy.MinimumExpanding = 3
-    QSizePolicy.Policy.Preferred = 5
+    QSizePolicy.Policy.Expanding = QSizePolicy.Expanding 
+    QSizePolicy.Policy.Fixed = QSizePolicy.Fixed 
+    QSizePolicy.Policy.Ignored = QSizePolicy.Ignored 
+    QSizePolicy.Policy.Maximum = QSizePolicy.Maximum 
+    QSizePolicy.Policy.Minimum = QSizePolicy.Minimum 
+    QSizePolicy.Policy.MinimumExpanding = QSizePolicy.MinimumExpanding
+    QSizePolicy.Policy.Preferred = QSizePolicy.Preferred 
     
-    QTreeWidget.DragDropMode.DragDrop = 3
-    QTreeWidget.DragDropMode.DragOnly = 3
-    QTreeWidget.DragDropMode.DropOnly = 2
-    QTreeWidget.DragDropMode.InternalMove = 4
-    QTreeWidget.DragDropMode.NoDragDrop = 0
+    QTreeWidget.DragDropMode.DragDrop = QTreeWidget.DragDrop 
+    QTreeWidget.DragDropMode.DragOnly = QTreeWidget.DragOnly 
+    QTreeWidget.DragDropMode.DropOnly = QTreeWidget.DropOnly 
+    QTreeWidget.DragDropMode.InternalMove = QTreeWidget.InternalMove 
+    QTreeWidget.DragDropMode.NoDragDrop = QTreeWidget.NoDragDrop 
 
     QTreeWidget.EditTrigger.NoEditTriggers = QTreeWidget.NoEditTriggers
     QTreeWidget.EditTrigger.EditKeyPressed = QTreeWidget.EditKeyPressed
