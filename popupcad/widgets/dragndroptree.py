@@ -115,6 +115,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
     def currentValidIndex(self, ii=0):
         index = self.currentIndex()
         return index
+#This was removed because it is causing problems in mac, and it doesn't seem to be necessary        
 #        if index.isValid():
 #            return index
 #        else:
