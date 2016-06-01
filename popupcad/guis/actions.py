@@ -9,6 +9,7 @@ import sys
 
 import qt.QtCore as qc
 import qt.QtGui as qg
+import popupcad.guis.icons
 
 class MenuSystem(object):
     shortcut_interpretation={}
@@ -38,8 +39,8 @@ class MenuSystem(object):
         shortcuts_translation = dict([(value,value) for value in self.shortcuts.values()])
         shortcuts_translation.update(self.shortcut_interpretation)
         
-        import popupcad.guis.icons
-        self.actions = dict([(key,self.build_action(key,parent,self.action_defs,shortcuts_translation,popupcad.guis.icons.icons)) for key in self.action_defs])
+        icons = popupcad.guis.icons.get_icons()
+        self.actions = dict([(key,self.build_action(key,parent,self.action_defs,shortcuts_translation,icons)) for key in self.action_defs])
                 
         self.other_items = {}
         self.other_items['']='separator'
@@ -50,7 +51,7 @@ class MenuSystem(object):
         
         self.menu_list = []
         self.main_menu = [self.build_menu_r2(key,self.menu_struct,self.all_items,self.menu_list) for key in self.menu_struct[self.top_menu_key]]
-        self.toolbars,self.toolbar_menus = self.build_toolbar(self.toolbar_struct,self.top_menu_key,self.all_items,popupcad.guis.icons.icons)
+        self.toolbars,self.toolbar_menus = self.build_toolbar(self.toolbar_struct,self.top_menu_key,self.all_items,icons)
 
     @classmethod
     def build_menu_r2(cls,element,structure,dictionary,menu_list):

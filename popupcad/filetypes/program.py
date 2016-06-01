@@ -11,6 +11,7 @@ import qt.QtGui as qg
 import popupcad
 import logging
 import traceback
+import popupcad.guis.icons
 
 class Program(object):
 
@@ -19,8 +20,7 @@ class Program(object):
         args = list(args)
 
         self.app = app
-        import popupcad.guis.icons
-        self.app.setWindowIcon(popupcad.guis.icons.icons['printapede'])
+        self.app.setWindowIcon(popupcad.guis.icons.get_icons()['printapede'])
         self.editor = popupcad.guis.editor.Editor()
 
         if len(args) > 1 and not '--' in args[-1]:

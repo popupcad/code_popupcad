@@ -12,10 +12,12 @@ import qt.QtCore as qc
 import qt.QtGui as qg
 import popupcad
 
-filenames = glob.glob(os.path.join(popupcad.supportfiledir,'icons','*.png'))
-
-icons = {}
-for filename in filenames:
-    key = os.path.split(filename)[1]
-    key = os.path.splitext(key)[0]
-    icons[key] = qg.QIcon(filename)
+def get_icons():
+    filenames = glob.glob(os.path.join(popupcad.supportfiledir,'icons','*.png'))
+    
+    icons = {}
+    for filename in filenames:
+        key = os.path.split(filename)[1]
+        key = os.path.splitext(key)[0]
+        icons[key] = qg.QIcon(filename)
+    return icons
