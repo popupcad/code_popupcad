@@ -431,3 +431,8 @@ class JointOperation3(Operation2, LayerBasedOperation):
             #Queues up the next batch of children
             child_queue.extend([child for child in children if child not in visited_set])
         return hierarchy_map    
+
+    def save_joint_def(self,filename):
+        import yaml
+        with open(filename, 'w') as f:
+            yaml.dump((self.bodies_generic,self.connections,self.fixed_bodies,self.all_joint_props),f)

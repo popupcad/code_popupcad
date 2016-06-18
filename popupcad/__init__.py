@@ -46,21 +46,17 @@ try:
 except:
     pass
 
-#load external modules
-
-import collada
-import dev_tools
-import ezdxf
-import lxml
-import numpy
-import pypoly2tri
-import pyqtgraph
-import scipy.optimize
-import scipy.spatial
-import shapely
-import stl
-import sympy
-import yaml
+##load external modules
+#
+#import ezdxf
+#import numpy
+#import pypoly2tri
+#import pyqtgraph
+#import scipy.optimize
+#import scipy.spatial
+#import shapely
+#import sympy
+#import yaml
 
 import dev_tools.virtual_structure
 commands = dev_tools.virtual_structure.load_commands(os.path.normpath(os.path.join(supportfiledir,'virtual_structure.yaml')))
