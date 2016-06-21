@@ -326,12 +326,10 @@ class Design(popupCADFile):
             self.sketches.pop(key)
 
     def save_joint_def(self):
+        filename = os.path.normpath(os.path.join(self.filename() + '.joints',))
         for op in self.operations:
             try:
-                filename = os.path.normpath(
-                    os.path.join(self.filename() + '.joints',))
-                with open(filename, 'w') as f:
-                    yaml.dump((op.bodies_generic,op.connections,op.fixed_bodies,op.all_joint_props),f)
+                op.save_joint_def(filename)
             except AttributeError:
                 pass
 

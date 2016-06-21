@@ -5,5 +5,7 @@ Email: danaukes<at>asu.edu.
 Please see LICENSE for full license.
 """
 
-from PySide.QtSvg import * 
-    
+import qt
+
+elif qt.loaded == 'PySide':
+    from PySide.QtSvg import * 

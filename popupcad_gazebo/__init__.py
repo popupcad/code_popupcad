@@ -16,6 +16,8 @@ import lxml
 import multiprocessing
 import pygazebo
 import trollius
+import collada
+import stl
 
 from . import enhanced_grid
 from . import gradient

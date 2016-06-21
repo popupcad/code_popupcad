@@ -14,22 +14,22 @@ class ListItem(qg.QListWidgetItem):
     def __init__(self, value):
         super(ListItem, self).__init__(str(value))
         self.value = value
-        self.setFlags(self.flags() | qc.Qt.ItemFlag.ItemIsEditable)
+        self.setFlags(self.flags() | qc.Qt.ItemIsEditable)
 
     def data(self, role):
-        if role == qc.Qt.ItemDataRole.DisplayRole:
+        if role == qc.Qt.DisplayRole:
             return str(self.value)
-        elif role == qc.Qt.ItemDataRole.EditRole:
+        elif role == qc.Qt.EditRole:
             return self.value.get_basename()
-        elif role == qc.Qt.ItemDataRole.UserRole:
+        elif role == qc.Qt.UserRole:
             return self.value
         else:
             return
 
     def setData(self, role, value):
-        if role == qc.Qt.ItemDataRole.EditRole:
+        if role == qc.Qt.EditRole:
             self.value.set_basename(value)
-        elif role == qc.Qt.ItemDataRole.UserRole:
+        elif role == qc.Qt.UserRole:
             self.value = value
         else:
             return

@@ -5,5 +5,8 @@ Email: danaukes<at>asu.edu.
 Please see LICENSE for full license.
 """
 
-import PySide.QtCore
-from PySide.QtCore import * 
+import qt
+
+elif qt.loaded == 'PySide':
+    import PySide.QtCore
+    from PySide.QtCore import * 

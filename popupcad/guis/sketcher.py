@@ -56,7 +56,7 @@ class Sketcher(MainGui,qg.QMainWindow):
         self.connectSignals()
 
     def connectSignals(self):
-        self.setWindowModality(qc.Qt.WindowModality.ApplicationModal)
+        self.setWindowModality(qc.Qt.ApplicationModal)
         self.setAttribute(qc.Qt.WA_DeleteOnClose)
         self.scene.itemclicked.connect(self.loadpropwindow)
         self.showprop.connect(self.loadpropwindow)

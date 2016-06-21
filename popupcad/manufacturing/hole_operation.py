@@ -124,7 +124,7 @@ class MainWidget(qg.QDialog):
 
         self.table.resizeColumnsToContents()
         self.table.reset_min_width()
-        self.table.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.table.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarAlwaysOff)
 
     def contact_sketch(self):
         try:
@@ -142,14 +142,14 @@ class MainWidget(qg.QDialog):
     def acceptdata(self):
         jointdefs = []
         for ii in range(self.table.rowCount()):
-            sketch = self.table.item(ii, 0).data(qc.Qt.ItemDataRole.UserRole)
+            sketch = self.table.item(ii, 0).data(qc.Qt.UserRole)
             joint_layer = self.table.item(
                 ii, 1).data(
-                qc.Qt.ItemDataRole.UserRole)
+                qc.Qt.UserRole)
             sublaminate_layers = self.table.item(
                 ii, 2).data(
-                qc.Qt.ItemDataRole.UserRole)
-            width = (self.table.item(ii, 3).data(qc.Qt.ItemDataRole.UserRole))
+                qc.Qt.UserRole)
+            width = (self.table.item(ii, 3).data(qc.Qt.UserRole))
             jointdefs.append(JointDef(sketch.id,joint_layer.id,[item.id for item in sublaminate_layers],width))
         operation_links = {}
         operation_links['parent'] = self.operation_list.currentRefs()

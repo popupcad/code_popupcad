@@ -52,7 +52,7 @@ class Dialog(qg.QDialog):
 
         self.unarylayerselector = qg.QListWidget()
         self.unarylayerselector.setSelectionBehavior(
-            qg.QListWidget.SelectionBehavior.SelectRows)
+            qg.QListWidget.SelectRows)
         self.unarylayerselector.setSelectionMode(
             qg.QListWidget.SelectionMode.MultiSelection)
         unaryitems = [
@@ -62,7 +62,7 @@ class Dialog(qg.QDialog):
 
         self.pairlayerselector = qg.QListWidget()
         self.pairlayerselector.setSelectionBehavior(
-            qg.QListWidget.SelectionBehavior.SelectRows)
+            qg.QListWidget.SelectRows)
         self.pairlayerselector.setSelectionMode(
             qg.QListWidget.SelectionMode.MultiSelection)
         pairitems = [
@@ -72,7 +72,7 @@ class Dialog(qg.QDialog):
 
         self.outputlayerselector = qg.QListWidget()
         self.outputlayerselector.setSelectionBehavior(
-            qg.QListWidget.SelectionBehavior.SelectRows)
+            qg.QListWidget.SelectRows)
         self.outputlayerselector.setSelectionMode(
             qg.QListWidget.SelectionMode.MultiSelection)
         outputitems = [

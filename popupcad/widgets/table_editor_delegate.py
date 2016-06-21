@@ -125,11 +125,11 @@ class Element(object):
     def set_data(self, variable):
         item = qg.QTableWidgetItem()
         if variable is not None:
-            item.setData(qc.Qt.ItemDataRole.UserRole, variable)
-            item.setData(qc.Qt.ItemDataRole.DisplayRole, str(variable))
+            item.setData(qc.Qt.UserRole, variable)
+            item.setData(qc.Qt.DisplayRole, str(variable))
         else:
-            item.setData(qc.Qt.ItemDataRole.UserRole, self.ini)
-            item.setData(qc.Qt.ItemDataRole.DisplayRole, str(self.ini))
+            item.setData(qc.Qt.UserRole, self.ini)
+            item.setData(qc.Qt.DisplayRole, str(self.ini))
         return item
 
 
@@ -143,14 +143,14 @@ class SingleItemListElement(Element):
         self.ini = ini
 
     def set_editor_data(self, index, editor):
-        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        d = index.data(qc.Qt.UserRole)
         editor.setData(d)
 
     def set_model_data(self, editor, model, index, delegate):
         try:
             value = editor.selectedItems()[0].customdata
-            model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)
-            model.setData(index, value, qc.Qt.ItemDataRole.UserRole)
+            model.setData(index, str(value), qc.Qt.EditRole)
+            model.setData(index, value, qc.Qt.UserRole)
         except IndexError:
             pass
 
@@ -173,13 +173,13 @@ class MultiItemListElement(Element):
             self.ini = []
 
     def set_editor_data(self, index, editor):
-        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        d = index.data(qc.Qt.UserRole)
         editor.setData(d)
 
     def set_model_data(self, editor, model, index, delegate):
         values = [item.customdata for item in editor.selectedItems()]
-        model.setData(index, str(values), qc.Qt.ItemDataRole.EditRole)
-        model.setData(index, values, qc.Qt.ItemDataRole.UserRole)
+        model.setData(index, str(values), qc.Qt.EditRole)
+        model.setData(index, values, qc.Qt.UserRole)
 
     def build_editor(self, parent, delegate):
         editor = MultiListWidget(self.get_list(), parent)
@@ -200,14 +200,14 @@ class DraggableTreeElement(Element):
             self.ini = []
 
     def set_editor_data(self, index, editor):
-        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        d = index.data(qc.Qt.UserRole)
         editor.selectIndeces(d)
 
     def set_model_data(self, editor, model, index, delegate):
         try:
             value = editor.currentIndeces2()
-            model.setData(index, str(value), qc.Qt.ItemDataRole.EditRole)
-            model.setData(index, value, qc.Qt.ItemDataRole.UserRole)
+            model.setData(index, str(value), qc.Qt.EditRole)
+            model.setData(index, value, qc.Qt.UserRole)
         except IndexError:
             pass
 
@@ -229,13 +229,13 @@ class FloatElement(Element):
         self.decimals = decimals
 
     def set_editor_data(self, index, editor):
-        d = index.data(qc.Qt.ItemDataRole.UserRole)
+        d = index.data(qc.Qt.UserRole)
         editor.setText(str(d))
 
     def set_model_data(self, editor, model, index, delegate):
         value = editor.text()
-        model.setData(index, value, qc.Qt.ItemDataRole.EditRole)
-        model.setData(index, float(value), qc.Qt.ItemDataRole.UserRole)
+        model.setData(index, value, qc.Qt.EditRole)
+        model.setData(index, float(value), qc.Qt.UserRole)
 
     def build_editor(self, parent, delegate):
         editor = qg.QLineEdit(parent)

@@ -12,7 +12,6 @@ import numpy
 from popupcad.graphics2d.graphicsitems import Common
 import popupcad
 import shapely.geometry as sg
-import popupcad.algorithms.painterpath as pp
 import qt.qt_hacks as qh
 
 class GenericText(object):
@@ -44,6 +43,7 @@ class GenericText(object):
         return False
 
     def to_generic_polygons(self,add_shift = True):
+        import popupcad.algorithms.painterpath as pp
         text = self.text
 #        small font scalings actually produce different paths.  use 10pt font as invariant size
         internal_font = 10

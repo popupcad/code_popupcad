@@ -114,10 +114,10 @@ class ImagingSupport(object):
         f = self.mapFromScene(e.bottomLeft())
         g = self.mapFromScene(e.topRight())
         rect = qc.QRect(f, g)
-        im = qg.QImage(rect.width(),rect.height(),qg.QImage.Format.Format_ARGB32)
+        im = qg.QImage(rect.width(),rect.height(),qg.QImage.Format_ARGB32)
         im.fill(0x00000000)
         painter = qg.QPainter(im)
-        painter.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(qg.QPainter.Antialiasing)
         self.scene().render(painter)
         filename = '{0}.{1}'.format(filename, filetype.lower())
         full_path = os.path.normpath(os.path.join(dest, filename))
@@ -129,8 +129,8 @@ class ImagingSupport(object):
 class MouseModes(object):
 
     def __init__(self):
-        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.ContainsItemShape)
-#        self.setRubberBandSelectionMode(qc.Qt.ItemSelectionMode.IntersectsItemShape)
+        self.setRubberBandSelectionMode(qc.Qt.ContainsItemShape)
+#        self.setRubberBandSelectionMode(qc.Qt.IntersectsItemShape)
         self.setRenderHints(
             qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)
         self.setDragMode(self.ScrollHandDrag)
@@ -148,21 +148,21 @@ class MouseModes(object):
 
     def turn_off_drag(self):
         self.lastdrag = self.dragMode()
-        self.setDragMode(qg.QGraphicsView.DragMode.NoDrag)
+        self.setDragMode(qg.QGraphicsView.NoDrag)
 
     def restoredrag(self):
         self.setDragMode(self.lastdrag)
-        if self.lastdrag == qg.QGraphicsView.DragMode.ScrollHandDrag:
+        if self.lastdrag == qg.QGraphicsView.ScrollHandDrag:
             self.scene().setIsEnabled(False)
         else:
             self.scene().setIsEnabled(True)
 
     def scrollhand(self):
-        self.lastdrag = qg.QGraphicsView.DragMode.ScrollHandDrag
+        self.lastdrag = qg.QGraphicsView.ScrollHandDrag
         self.restoredrag()
 
     def rubberband(self):
-        self.lastdrag = qg.QGraphicsView.DragMode.RubberBandDrag
+        self.lastdrag = qg.QGraphicsView.RubberBandDrag
         self.restoredrag()
 
 
@@ -178,7 +178,7 @@ class GraphicsView(ZoomHandling, ImagingSupport, MouseModes, qg.QGraphicsView):
         
         scene.connect_mouse_modes(self)
         
-        self.setSizePolicy(qg.QSizePolicy.Policy.MinimumExpanding,qg.QSizePolicy.Policy.MinimumExpanding)
+        self.setSizePolicy(qg.QSizePolicy.MinimumExpanding,qg.QSizePolicy.MinimumExpanding)
 
     def sizeHint(self):
         return qc.QSize(400, 300)

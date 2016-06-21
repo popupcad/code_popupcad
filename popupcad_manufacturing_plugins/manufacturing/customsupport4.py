@@ -53,7 +53,7 @@ class Dialog(qg.QDialog):
                 item.id for item in design.return_layer_definition().layers]
         self.outputlayerselector = qg.QListWidget()
         self.outputlayerselector.setSelectionBehavior(
-            qg.QListWidget.SelectionBehavior.SelectRows)
+            qg.QListWidget.SelectRows)
         self.outputlayerselector.setSelectionMode(
             qg.QListWidget.SelectionMode.MultiSelection)
         outputitems = [
