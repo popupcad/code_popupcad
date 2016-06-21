@@ -39,18 +39,18 @@ def painterpath_to_generics(p,subdivision):
 
     while not not elements:
         element = elements.pop(0)
-        if element.type == qg.QPainterPath.ElementType.MoveToElement:
+        if element.type == qg.QPainterPath.MoveToElement:
 #            print('moveto',element.x,element.y)
             if len(vertex_list)>0:
                 vertex_lists.append(vertex_list)
                 vertex_list = [(element.x,element.y)]
             lastelement = element
                 
-        elif element.type == qg.QPainterPath.ElementType.LineToElement:
+        elif element.type == qg.QPainterPath.LineToElement:
 #            print('lineto',element.x,element.y)
             vertex_list.append((element.x,element.y))
             lastelement = element
-        elif element.type == qg.QPainterPath.ElementType.CurveToElement:
+        elif element.type == qg.QPainterPath.CurveToElement:
 #            print('curveto',element.x,element.y)
 
             subelements = []
@@ -58,7 +58,7 @@ def painterpath_to_generics(p,subdivision):
             while next_is_data:
                 subelements.append(elements.pop(0))
                 if len(elements)>0:
-                    next_is_data = elements[0].type==qg.QPainterPath.ElementType.CurveToDataElement
+                    next_is_data = elements[0].type==qg.QPainterPath.CurveToDataElement
                 else:
                     next_is_data = False
     

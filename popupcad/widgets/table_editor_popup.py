@@ -19,9 +19,9 @@ class UneditableItem(qg.QTableWidgetItem):
         super(UneditableItem,self).__init__(*args,**kwargs)
         
         flags = self.flags()
-        flags = qc.Qt.ItemFlag.ItemIsEditable ^ flags
+        flags = qc.Qt.ItemIsEditable ^ flags
         self.setFlags(flags)
-#        self.setFlags(qc.Qt.ItemFlag.NoItemFlags & qc.Qt.ItemFlag.ItemIsSelectable & qc.Qt.ItemFlag.ItemIsEnabled)
+#        self.setFlags(qc.Qt.NoItemFlags & qc.Qt.ItemIsSelectable & qc.Qt.ItemIsEnabled)
         
 class Delegate(qg.QStyledItemDelegate):
 
@@ -37,8 +37,8 @@ class Row(object):
         list_widget_items=[]
         for item in args:
             lwi = UneditableItem()
-            lwi.setData(qc.Qt.ItemDataRole.DisplayRole,str(item))
-            lwi.setData(qc.Qt.ItemDataRole.UserRole,item)
+            lwi.setData(qc.Qt.DisplayRole,str(item))
+            lwi.setData(qc.Qt.UserRole,item)
             list_widget_items.append(lwi)
         return list_widget_items
 
@@ -53,7 +53,7 @@ class Row(object):
         index = tablewidget.model().index(row,column)
         item = tablewidget.itemFromIndex(index)
 
-        ini = item.data(qc.Qt.ItemDataRole.UserRole)
+        ini = item.data(qc.Qt.UserRole)
 
         d = self.elements[column].build_editor()
         d.set_data(ini)
@@ -61,8 +61,8 @@ class Row(object):
         result = d.exec_()
         if result:
             results = d.results()
-            item.setData(qc.Qt.ItemDataRole.DisplayRole,str(results))
-            item.setData(qc.Qt.ItemDataRole.UserRole,results)
+            item.setData(qc.Qt.DisplayRole,str(results))
+            item.setData(qc.Qt.UserRole,results)
 
     @property
     def header_labels(self):
@@ -165,15 +165,15 @@ class SingleListDialog(qg.QDialog):
 
         for item in list_in:
             lwi = qg.QListWidgetItem()
-            lwi.setData(qc.Qt.ItemDataRole.DisplayRole,str(item))
-            lwi.setData(qc.Qt.ItemDataRole.UserRole,item)
+            lwi.setData(qc.Qt.DisplayRole,str(item))
+            lwi.setData(qc.Qt.UserRole,item)
             self.listwidget.addItem(lwi)
 
     def set_data(self,ini):
         for ii in range(self.listwidget.count()):
             lwi = self.listwidget.item(ii)
             lwi.setSelected(False)
-            data = lwi.data(qc.Qt.ItemDataRole.UserRole)
+            data = lwi.data(qc.Qt.UserRole)
             if data in ini:
                 lwi.setSelected(True)
                 
@@ -182,7 +182,7 @@ class SingleListDialog(qg.QDialog):
         for ii in range(self.listwidget.count()):
             lwi = self.listwidget.item(ii)
             if lwi.isSelected():
-                data = lwi.data(qc.Qt.ItemDataRole.UserRole)
+                data = lwi.data(qc.Qt.UserRole)
                 results.append(data)
         return results
 
@@ -191,7 +191,7 @@ class SingleListDialog_old(SingleListDialog):
         for ii in range(self.listwidget.count()):
             lwi = self.listwidget.item(ii)
             lwi.setSelected(False)
-            data = lwi.data(qc.Qt.ItemDataRole.UserRole)
+            data = lwi.data(qc.Qt.UserRole)
             if data == ini:
                 lwi.setSelected(True)
                 
@@ -199,7 +199,7 @@ class SingleListDialog_old(SingleListDialog):
         for ii in range(self.listwidget.count()):
             lwi = self.listwidget.item(ii)
             if lwi.isSelected():
-                data = lwi.data(qc.Qt.ItemDataRole.UserRole)
+                data = lwi.data(qc.Qt.UserRole)
                 return data
         return None
         

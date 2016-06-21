@@ -95,7 +95,7 @@ class Table(CommonTableWidget):
 #        self.resizeColumnsToContents()
 #        self.reset_min_width()
 #        self.setHorizontalScrollBarPolicy(
-#            qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+#            qc.Qt.ScrollBarAlwaysOff)
 
         self.setItemDelegate(delegate(self.data_class))
         self.cellClicked.connect(self.cell_clicked)
@@ -115,7 +115,7 @@ class Table(CommonTableWidget):
                 self.item(
                     ii,
                     jj).data(
-                    qc.Qt.ItemDataRole.UserRole) for jj in range(
+                    qc.Qt.UserRole) for jj in range(
                     self.data_class.column_count)] for ii in range(
                         self.rowCount())]
 

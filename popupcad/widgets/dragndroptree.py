@@ -18,19 +18,19 @@ class NotValid(Exception):
 class TreeItem(qg.QTreeWidgetItem):
 
     def data(self, column, role):
-        if role == qc.Qt.ItemDataRole.DisplayRole:
+        if role == qc.Qt.DisplayRole:
             return str(self.userdata)
-        elif role == qc.Qt.ItemDataRole.EditRole:
+        elif role == qc.Qt.EditRole:
             return self.userdata.getcustomname()
-        elif role == qc.Qt.ItemDataRole.UserRole:
+        elif role == qc.Qt.UserRole:
             return self.userdata
         else:
             return
 
     def setData(self, column, role, value):
-        if role == qc.Qt.ItemDataRole.EditRole:
+        if role == qc.Qt.EditRole:
             self.userdata.setcustomname(value)
-        elif role == qc.Qt.ItemDataRole.UserRole:
+        elif role == qc.Qt.UserRole:
             self.userdata = value
         else:
             return
@@ -41,11 +41,11 @@ class ParentItem(TreeItem):
         self.userdata = data
         super(ParentItem, self).__init__(parent, [str(data)])
 
-        flags = qc.Qt.ItemFlag.NoItemFlags
-        flags |= qc.Qt.ItemFlag.ItemIsEnabled
-        flags |= qc.Qt.ItemFlag.ItemIsDragEnabled
-        flags |= qc.Qt.ItemFlag.ItemIsSelectable
-        flags |= qc.Qt.ItemFlag.ItemIsEditable
+        flags = qc.Qt.NoItemFlags
+        flags |= qc.Qt.ItemIsEnabled
+        flags |= qc.Qt.ItemIsDragEnabled
+        flags |= qc.Qt.ItemIsSelectable
+        flags |= qc.Qt.ItemIsEditable
         self.setFlags(flags)
 
         try:
@@ -69,10 +69,10 @@ class ChildItem(TreeItem):
         self.userdata = data
         super(ChildItem, self).__init__(parent, [str(data)])
 
-        flags = qc.Qt.ItemFlag.NoItemFlags
-        flags |= qc.Qt.ItemFlag.ItemIsEnabled
-        flags |= qc.Qt.ItemFlag.ItemIsSelectable
-        flags |= qc.Qt.ItemFlag.ItemIsEditable
+        flags = qc.Qt.NoItemFlags
+        flags |= qc.Qt.ItemIsEnabled
+        flags |= qc.Qt.ItemIsSelectable
+        flags |= qc.Qt.ItemIsEditable
         self.setFlags(flags)
 
 
@@ -157,7 +157,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
             else:
                 selected_ids.append((item.userdata.id, 0))
 #        for item in
-#        selected_id = self.model().data(index,qc.Qt.ItemDataRole.UserRole).id
+#        selected_id = self.model().data(index,qc.Qt.UserRole).id
         new_indeces = []
         new_ids = [item.id for item in self.masterlist]
         for a, b in selected_ids:
@@ -183,7 +183,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
         m = self.model()
         num_rows = m.rowCount()
 
-        role = qc.Qt.ItemDataRole.UserRole
+        role = qc.Qt.UserRole
 
         items = []
         for ii in range(num_rows):
@@ -218,7 +218,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
             if event.key() == qc.Qt.Key_Enter or event.key(
             ) == qc.Qt.Key_Return:
                 index = self.currentValidIndex(ii=-1)
-                userdata = self.model().data(index,qc.Qt.ItemDataRole.UserRole)
+                userdata = self.model().data(index,qc.Qt.UserRole)
                 item = self.itemFromIndex(index)
                 if isinstance(item, ParentItem):
                     self.signal_edit.emit(userdata)
@@ -234,7 +234,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
 
     def itemDoubleClicked(self, index):
         if not (self.refreshing or self.master_refreshing):
-            userdata = self.model().data(index, qc.Qt.ItemDataRole.UserRole)
+            userdata = self.model().data(index, qc.Qt.UserRole)
             item = self.itemFromIndex(index)
             if isinstance(item, ParentItem):
                 self.signal_edit.emit(userdata)

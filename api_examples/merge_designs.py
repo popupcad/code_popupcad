@@ -11,7 +11,7 @@ Please see LICENSE for full license.
 #app = qg.QApplication(sys.argv[0])
 
 import popupcad
-import design_advanced_functions
+import api_examples.design_advanced_functions as design_advanced_functions
 #from popupcad.manufacturing.dummy_operation1 import DummyOp1
 
 from popupcad.filetypes.design import Design

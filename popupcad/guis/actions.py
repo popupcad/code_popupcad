@@ -76,7 +76,7 @@ class MenuSystem(object):
         for topitem in toolbar_structure[top_element]:
             toolbar = qg.QToolBar(topitem)
             toolbar.setIconSize(qc.QSize(popupcad.toolbar_icon_size,popupcad.toolbar_icon_size))
-            toolbar.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            toolbar.setToolButtonStyle(qc.Qt.ToolButtonTextUnderIcon)
             for item in toolbar_structure[topitem]:
                 if item in dictionary:
                     subelement = dictionary[item]
@@ -97,7 +97,7 @@ class MenuSystem(object):
                         pass
                     tb.setMenu(submenu)
                     tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
-                    tb.setToolButtonStyle(qc.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+                    tb.setToolButtonStyle(qc.Qt.ToolButtonTextUnderIcon)
                     toolbar.addWidget(tb)
             toolbars.append(toolbar)
         return toolbars,toolbar_menus

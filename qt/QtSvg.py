@@ -7,4 +7,5 @@ Please see LICENSE for full license.
 
 import qt
 
-from PyQt4.QtSvg import * 
+if qt.loaded == 'PyQt4':
+    from PyQt4.QtSvg import * 
