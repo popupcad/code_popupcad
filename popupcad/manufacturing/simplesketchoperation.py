@@ -39,7 +39,7 @@ class Dialog(qg.QDialog):
 
         self.outputlayerselector = qg.QListWidget()
         self.outputlayerselector.setSelectionBehavior(qg.QListWidget.SelectRows)
-        self.outputlayerselector.setSelectionMode(qg.QListWidget.SelectionMode.MultiSelection)
+        self.outputlayerselector.setSelectionMode(qg.QListWidget.MultiSelection)
 
         outputitems = [
             popupcad.filetypes.listwidgetitem.ListWidgetItem(

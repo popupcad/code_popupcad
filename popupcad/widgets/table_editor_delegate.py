@@ -45,7 +45,7 @@ class MultiListWidget(qg.QListWidget):
     def __init__(self, list1, *args, **kwargs):
         super(MultiListWidget, self).__init__(*args, **kwargs)
         [self.addItem(ListWidgetItem(item)) for item in list1]
-        self.setSelectionMode(self.SelectionMode.MultiSelection)
+        self.setSelectionMode(self.MultiSelection)
 
     def setData(self, data):
         self.clearSelection()

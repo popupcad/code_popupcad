@@ -243,7 +243,7 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.enabled = False
         self.setDragEnabled(False)
         self.setDropIndicatorShown(True)
-        self.setDragDropMode(self.DragDropMode.NoDragDrop)
+        self.setDragDropMode(self.NoDragDrop)
         
         edit_trigger = self.EditTrigger()
         self.setEditTriggers(edit_trigger)
@@ -252,9 +252,9 @@ class DraggableTreeWidget(qg.QTreeWidget):
         self.enabled = True
         self.setDragEnabled(True)
         self.setDropIndicatorShown(True)
-        self.setDragDropMode(self.DragDropMode.InternalMove)
+        self.setDragDropMode(self.InternalMove)
 
-        edit_trigger = self.EditTrigger(self.EditTrigger.EditKeyPressed)
+        edit_trigger = self.EditTrigger(self.EditKeyPressed)
         self.setEditTriggers(edit_trigger)
 
 #    def set_tree_generator(self,generator):
@@ -450,6 +450,6 @@ if __name__ == '__main__':
     tw.linklist(list1)
     tw.signal_edit.connect(edituserdata)
     tw.show()
-    tw.setSelectionMode(tw.SelectionMode.ExtendedSelection)
+    tw.setSelectionMode(tw.ExtendedSelection)
     print(tw.currentIndex())
     sys.exit(app.exec_())

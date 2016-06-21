@@ -62,7 +62,7 @@ class ListManager(qg.QWidget):
 
         for widget in self.widgets():
             self.layout2.addWidget(widget)
-        self.itemlist.setSelectionMode(self.itemlist.SelectionMode.SingleSelection)
+        self.itemlist.setSelectionMode(self.itemlist.SingleSelection)
         self.itemlist.doubleClicked.connect(self.itemDoubleClicked)
         self.layout2.addStretch()
 

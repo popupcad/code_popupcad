@@ -28,8 +28,8 @@ class Dialog(qg.QDialog):
         super(Dialog, self).__init__()
 
         sp = qg.QSizePolicy()
-        sp.setHorizontalPolicy(sp.Policy.Minimum)
-        sp.setVerticalPolicy(sp.Policy.Minimum)
+        sp.setHorizontalPolicy(sp.Minimum)
+        sp.setVerticalPolicy(sp.Minimum)
         if selectedop is None:
             selectedop = len(operations) - 1
         if selectedunary is None:
@@ -54,7 +54,7 @@ class Dialog(qg.QDialog):
         self.unarylayerselector.setSelectionBehavior(
             qg.QListWidget.SelectRows)
         self.unarylayerselector.setSelectionMode(
-            qg.QListWidget.SelectionMode.MultiSelection)
+            qg.QListWidget.MultiSelection)
         unaryitems = [
             ListWidgetItem(
                 item,
@@ -64,7 +64,7 @@ class Dialog(qg.QDialog):
         self.pairlayerselector.setSelectionBehavior(
             qg.QListWidget.SelectRows)
         self.pairlayerselector.setSelectionMode(
-            qg.QListWidget.SelectionMode.MultiSelection)
+            qg.QListWidget.MultiSelection)
         pairitems = [
             ListWidgetItem(
                 item,
@@ -74,7 +74,7 @@ class Dialog(qg.QDialog):
         self.outputlayerselector.setSelectionBehavior(
             qg.QListWidget.SelectRows)
         self.outputlayerselector.setSelectionMode(
-            qg.QListWidget.SelectionMode.MultiSelection)
+            qg.QListWidget.MultiSelection)
         outputitems = [
             ListWidgetItem(
                 item,

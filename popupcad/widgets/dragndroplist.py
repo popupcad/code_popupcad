@@ -59,11 +59,11 @@ class DraggableListWidget(qg.QListWidget):
 
     def __init__(self):
         super(DraggableListWidget, self).__init__()
-        self.setSelectionMode(self.SelectionMode.SingleSelection)
+        self.setSelectionMode(self.SingleSelection)
         self.setDragEnabled(True)
         self.setDropIndicatorShown(True)
-        self.setDragDropMode(self.DragDropMode.InternalMove)
-        self.setEditTriggers(self.EditTrigger.EditKeyPressed)
+        self.setDragDropMode(self.InternalMove)
+        self.setEditTriggers(self.EditKeyPressed)
         self.doubleClicked.connect(self.itemDoubleClicked)
         self.masterlist = []
         self.refresh()

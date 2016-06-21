@@ -132,7 +132,7 @@ class TextParent(qg.QGraphicsPathItem, Common):
 #    def focusInEvent(self,*args,**kwargs):
 #        self.editmode()
     def itemChange(self, change, value):
-        if change == self.GraphicsItemChange.ItemPositionHasChanged:
+        if change == self.ItemPositionHasChanged:
             if self.changed_trigger:
                 self.changed_trigger = False
                 self.scene().savesnapshot.emit()
