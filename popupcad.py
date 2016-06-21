@@ -19,11 +19,17 @@ app = qg.QApplication([sys.argv[0]])
 import popupcad
 plugins = []
 
+#try:
+import popupcad_manufacturing_plugins
+plugins.append(popupcad_manufacturing_plugins)
+#except ImportError:
+#    print('Manufacturing Plugin Not Found')
+
 try:
-    import popupcad_manufacturing_plugins
-    plugins.append(popupcad_manufacturing_plugins)
+    import popupcad_microrobotics
+    plugins.append(popupcad_microrobotics)
 except ImportError:
-    print('Manufacturing Plugin Not Found')
+    print('Microrobotics Plugin Not Found')
 
 try:
     import popupcad_gazebo

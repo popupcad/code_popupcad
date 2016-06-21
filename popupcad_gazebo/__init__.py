@@ -27,5 +27,18 @@ from . import perlin_noise
 def initialize(program):
     projectactions =[]
     projectactions.append({'text': 'Run Simulation', 'kwargs': {'triggered': lambda:gazebo_controller.export(program)}})
+    projectactions.append({'text': 'Export DAE', 'kwargs': {'triggered': lambda:export_dae(program)}})
+    projectactions.append({'text': 'Export STL', 'kwargs': {'triggered': lambda:export_stl(program)}})
     program.editor.addMenu(projectactions, name='Gazebo')
 
+def export_dae(program):
+    editor = program.editor
+    ii, jj = editor.operationeditor.currentIndeces2()[0]
+    output = editor.design.operations[ii].output[jj]
+    output.generic_laminate().toDAE()
+
+def export_stl(program):
+    editor = program.editor
+    ii, jj = editor.operationeditor.currentIndeces2()[0]
+    output = editor.design.operations[ii].output[jj]
+    output.generic_laminate().toSTL()
