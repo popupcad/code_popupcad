@@ -48,6 +48,6 @@ elif qt.loaded == 'PyQt5':
     from PyQt5.QtCore import *
     from PyQt5.QtCore import Qt 
     from PyQt5.QtCore import pyqtSignal as Signal 
-else:
+elif qt.loaded == 'PySide':
     import PySide.QtCore
     from PySide.QtCore import * 

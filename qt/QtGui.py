@@ -54,5 +54,5 @@ elif qt.loaded == 'PyQt5':
     from PyQt5.QtGui import *
     from PyQt5.QtWidgets import *
 
-else:
+elif qt.loaded == 'PySide':
     from PySide.QtGui import *
