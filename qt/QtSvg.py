@@ -9,7 +9,9 @@ import qt
 
 if qt.loaded == 'PyQt4':
     from PyQt4.QtSvg import * 
+
 elif qt.loaded == 'PyQt5':
     from PyQt5.QtSvg import * 
+
 elif qt.loaded == 'PySide':
     from PySide.QtSvg import * 
