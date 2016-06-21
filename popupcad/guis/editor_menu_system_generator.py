@@ -15,7 +15,7 @@ if __name__=='__main__':
     action_setup['file_save']= {'text': "&Save",'kwargs': {'icon': 'save','statusTip': "Save the document to disk"}}
     action_setup['file_saveas']= {'text': "Save &As...",'kwargs': {'icon': 'save','statusTip': "Save the document under a new name"}}
     action_setup['file_upgrade']= {'text': "Upgrade",'kwargs': {'statusTip': "Upgrade the file"}}
-    action_setup['file_export_stl']= {'text': 'Export to stl', 'kwargs': {'icon': 'export','statusTip': "Exports to a stl file"}}
+#    action_setup['file_export_stl']= {'text': 'Export to stl', 'kwargs': {'icon': 'export','statusTip': "Exports to a stl file"}}
     action_setup['file_export_svg']= {'text': '&Export to SVG', 'kwargs': {'icon': 'export'}}
     action_setup['file_export_dxf_outer']= {'text': 'Export to dxf...', 'kwargs': {'icon': 'export','statusTip': "Exports to a dxf file"}}
 #    action_setup['file_export_dxf']= {'text': 'Export to dxf', 'kwargs': {'icon': 'export','statusTip': "Exports to a dxf file"}}
@@ -27,26 +27,27 @@ if __name__=='__main__':
     action_setup['file_render_icons']= {'text': "Render Icons"}
     action_setup['file_build_documentation']= {'text': "Build Documentation"}
     action_setup['file_license']= {'text': "License"}
-    action_setup['file_update']= {'text': "Update..."}
+#    action_setup['file_update']= {'text': "Update..."}
     
     menu_struct['File']=['file_new',
                         'file_open',
                         'file_save',
                         'file_saveas',
                         'file_upgrade',
-                        'file_export_stl',
+#                        'file_export_stl',
                         'file_export_svg',
                         'file_export_dxf_outer',
 #                        'file_export_dxf',
 #                        'file_export_layers_dxf',
-                        'file_export_dae',
+#                        'file_export_dae',
                         'file_save_joint_defs',
     #                    'file_export_laminate',
                         'file_regen_id',
                         'file_render_icons',
                         'file_build_documentation',
                         'file_license',
-                        'file_update']
+#                        'file_update',
+                        ]
     
     action_setup['project_rebuild'] = {'text': '&Rebuild','kwargs': {'icon': 'refresh'}}
     action_setup['project_auto_reprocess'] = {'text': 'Auto Reprocess','is_checkable':True,'is_checked':True}
@@ -149,7 +150,7 @@ if __name__=='__main__':
     triggered['file_save'] = 'save'
     triggered['file_saveas'] = 'saveAs'
     triggered['file_upgrade'] = 'upgrade'
-    triggered['file_export_stl'] = 'export_stl'
+#    triggered['file_export_stl'] = 'export_stl'
     triggered['file_export_svg'] = 'exportLayerSVG'
     triggered['file_export_dxf_outer'] = 'export_dxf_outer'
 #    triggered['file_export_dxf'] = 'export_dxf'
@@ -161,7 +162,7 @@ if __name__=='__main__':
     triggered['file_render_icons'] = 'gen_icons'
     triggered['file_build_documentation'] = 'build_documentation'
     triggered['file_license'] = 'show_license'
-    triggered['file_update'] = 'download_installer'
+#    triggered['file_update'] = 'download_installer'
     
     triggered['project_rebuild'] = 'reprocessoperations_outer'
     #triggered['project_auto_reprocess'] = ''

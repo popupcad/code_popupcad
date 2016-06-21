@@ -450,8 +450,8 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
             self.reprocessoperations()
         self.view_2d.zoomToFit()
     
-    def download_installer(self):
-        qg.QDesktopServices.openUrl(popupcad.update_url)
+#    def download_installer(self):
+#        qg.QDesktopServices.openUrl(popupcad.update_url)
     
     def save_joint_def(self):
         self.design.save_joint_def()
@@ -478,15 +478,6 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
             generic.save_dxf(basename,separate_files=accept_data['separate_layers'],directory = accept_data['directory'])
 
-    def export_dae(self):
-        ii, jj = self.operationeditor.currentIndeces2()[0]
-        output = self.design.operations[ii].output[jj]
-        output.generic_laminate().toDAE()
-
-    def export_stl(self):
-        ii, jj = self.operationeditor.currentIndeces2()[0]
-        output = self.design.operations[ii].output[jj]
-        output.generic_laminate().toSTL()
 
     def show_license(self):
         import sys

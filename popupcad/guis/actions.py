@@ -96,7 +96,7 @@ class MenuSystem(object):
                     except KeyError:
                         pass
                     tb.setMenu(submenu)
-                    tb.setPopupMode(tb.ToolButtonPopupMode.InstantPopup)
+                    tb.setPopupMode(tb.InstantPopup)
                     tb.setToolButtonStyle(qc.Qt.ToolButtonTextUnderIcon)
                     toolbar.addWidget(tb)
             toolbars.append(toolbar)

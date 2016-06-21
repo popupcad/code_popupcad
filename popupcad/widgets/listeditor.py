@@ -16,7 +16,7 @@ class ListBase(qg.QListWidget):
         super(ListBase, self).__init__(*args, **kwargs)
         self.setMinimumWidth(200)
         self.list = []
-        self.setSelectionBehavior(self.SelectionBehavior.SelectRows)
+        self.setSelectionBehavior(self.SelectRows)
 
     def linklist(self, listin):
         self.list = listin

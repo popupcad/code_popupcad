@@ -114,7 +114,7 @@ class Sketch(popupCADFile):
         lw = qg.QListWidget()
         for item in layer_names:
             lw.addItem(qg.QListWidgetItem(item))
-        lw.setSelectionMode(lw.SelectionMode.ExtendedSelection)
+        lw.setSelectionMode(lw.ExtendedSelection)
         button_ok = qg.QPushButton('Ok')
         button_cancel = qg.QPushButton('Cancel')
         button_ok.clicked.connect(dialog.accept)

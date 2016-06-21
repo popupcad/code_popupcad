@@ -15,14 +15,14 @@ class CompositeMakeup(DraggableListWidget):
 
     def __init__(self):
         super(CompositeMakeup, self).__init__()
-        self.setDragDropMode(self.DragDropMode.DropOnly)
+        self.setDragDropMode(self.DropOnly)
 
 
 class AvailableMaterials(DraggableListWidget):
 
     def __init__(self):
         super(AvailableMaterials, self).__init__()
-        self.setDragDropMode(self.DragDropMode.DragOnly)
+        self.setDragDropMode(self.DragOnly)
 
 def get_item_names(widget):
     for ii in range(widget.model().rowCount()):

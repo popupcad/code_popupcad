@@ -132,7 +132,7 @@ class InteractiveVertexBase(qg.QGraphicsEllipseItem, Common):
         self.updatestate(self.states.state_neutral)
 
 #    def itemChange(self,change,value):
-#        if change == self.GraphicsItemChange.ItemPositionHasChanged:
+#        if change == self.ItemPositionHasChanged:
 #            if self.changed_trigger:
 #                self.changed_trigger = False
 #                self.scene().savesnapshot.emit()

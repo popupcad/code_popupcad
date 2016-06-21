@@ -206,7 +206,7 @@ class SingleListDialog_old(SingleListDialog):
 class MultiListDialog(SingleListDialog):
     def __init__(self, *args,**kwargs):
         super(MultiListDialog, self).__init__(*args, **kwargs)
-        self.listwidget.setSelectionMode(self.listwidget.SelectionMode.MultiSelection)
+        self.listwidget.setSelectionMode(self.listwidget.MultiSelection)
 
 class DraggableTreeDialog(qg.QDialog):
     def __init__(self, list_in, *args, **kwargs):
