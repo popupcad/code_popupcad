@@ -162,7 +162,7 @@ class MainWidget(qg.QDialog):
 
         self.table.resizeColumnsToContents()
         self.table.reset_min_width()
-        self.table.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.table.setHorizontalScrollBarPolicy(qc.Qt.ScrollBarAlwaysOff)
 
     def contact_sketch(self):
         try:
@@ -180,26 +180,26 @@ class MainWidget(qg.QDialog):
     def acceptdata(self):
         jointdefs = []
         for ii in range(self.table.rowCount()):
-            sketch = self.table.item(ii, 0).data(qc.Qt.ItemDataRole.UserRole)
+            sketch = self.table.item(ii, 0).data(qc.Qt.UserRole)
             joint_layer = self.table.item(
                 ii, 1).data(
-                qc.Qt.ItemDataRole.UserRole)
+                qc.Qt.UserRole)
             sublaminate_layers = self.table.item(
                 ii, 2).data(
-                qc.Qt.ItemDataRole.UserRole)
-            width = (self.table.item(ii, 3).data(qc.Qt.ItemDataRole.UserRole))
+                qc.Qt.UserRole)
+            width = (self.table.item(ii, 3).data(qc.Qt.UserRole))
             stiffness = (
                 self.table.item(
                     ii, 4).data(
-                    qc.Qt.ItemDataRole.UserRole))
+                    qc.Qt.UserRole))
             damping = (
                 self.table.item(
                     ii,
                     5).data(
-                    qc.Qt.ItemDataRole.UserRole))
-            preload_angle = (self.table.item(ii, 6).data(qc.Qt.ItemDataRole.UserRole))
-            limit_negative = (self.table.item(ii, 7).data(qc.Qt.ItemDataRole.UserRole))
-            limit_positive = (self.table.item(ii, 8).data(qc.Qt.ItemDataRole.UserRole))
+                    qc.Qt.UserRole))
+            preload_angle = (self.table.item(ii, 6).data(qc.Qt.UserRole))
+            limit_negative = (self.table.item(ii, 7).data(qc.Qt.UserRole))
+            limit_positive = (self.table.item(ii, 8).data(qc.Qt.UserRole))
             jointdefs.append(JointDef(sketch.id,
                                       joint_layer.id,
                                       [item.id for item in sublaminate_layers],

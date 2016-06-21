@@ -61,8 +61,8 @@ class GLViewWidget(gl.GLViewWidget):
         self.opts['azimuth'] = -90
 #        self.setMinimumSize(300,300)
         self.setSizePolicy(
-            qg.QSizePolicy.Policy.MinimumExpanding,
-            qg.QSizePolicy.Policy.MinimumExpanding)
+            qg.QSizePolicy.MinimumExpanding,
+            qg.QSizePolicy.MinimumExpanding)
 #        c = pg.mkColor(120,120,200)
         c = pg.mkColor(1, 1, 1)
 #        print(c)

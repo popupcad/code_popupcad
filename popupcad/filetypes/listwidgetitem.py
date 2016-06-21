@@ -13,10 +13,10 @@ class ListWidgetItem(qg.QListWidgetItem):
     def __init__(self, data, *args, **kwargs):
         super(ListWidgetItem, self).__init__(str(data), *args, **kwargs)
         self.customdata = data
-        self.setData(qc.Qt.ItemDataRole.UserRole, data)
+        self.setData(qc.Qt.UserRole, data)
 
     def setCustomData(self, data):
-        self.setData(qc.Qt.ItemDataRole.UserRole, data)
+        self.setData(qc.Qt.UserRole, data)
 
     def readCustomData(self):
-        return self.data(qc.Qt.ItemDataRole.UserRole)
+        return self.data(qc.Qt.UserRole)

@@ -190,7 +190,7 @@ class ParentItem(object):
                             value))
             except AttributeError:
                 pass
-            self.sortChildren(0, qc.Qt.SortOrder.AscendingOrder)
+            self.sortChildren(0, qc.Qt.AscendingOrder)
 
     def refresh(self):
         self.removeAllChildren()
@@ -211,8 +211,8 @@ class TreeWidgetItem(qg.QTreeWidgetItem, ParentItem):
         self.level = level
 
         qg.QTreeWidgetItem.__init__(self, parent, [key, str(value)])
-        self.setFlags(qc.Qt.ItemFlag.ItemIsEditable |
-                      qc.Qt.ItemFlag.ItemIsEnabled | qc.Qt.ItemFlag.ItemIsSelectable)
+        self.setFlags(qc.Qt.ItemIsEditable |
+                      qc.Qt.ItemIsEnabled | qc.Qt.ItemIsSelectable)
 
         if self.level < self.depthlimit:
             self.generatechildren(self)
@@ -255,7 +255,7 @@ class TreeWidgetItem(qg.QTreeWidgetItem, ParentItem):
             return False
 
     def setData(self, column, role, value):
-        if role == qc.Qt.ItemDataRole.EditRole:
+        if role == qc.Qt.EditRole:
             if self.is_editable(column):
                 if column == 1:
                     if self.valuetype == bool:
@@ -279,14 +279,14 @@ class TreeWidgetItem(qg.QTreeWidgetItem, ParentItem):
 
     def data(self, column, role):
         if column == 0:
-            if role == qc.Qt.ItemDataRole.DisplayRole:
+            if role == qc.Qt.DisplayRole:
                 return self.key
-            if role == qc.Qt.ItemDataRole.EditRole:
+            if role == qc.Qt.EditRole:
                 return self.key
         elif column == 1:
-            if role == qc.Qt.ItemDataRole.DisplayRole:
+            if role == qc.Qt.DisplayRole:
                 return str(self.value)
-            if role == qc.Qt.ItemDataRole.EditRole:
+            if role == qc.Qt.EditRole:
                 return str(self.value)
 
 
@@ -306,15 +306,15 @@ class InsertNewWidgetItem(TreeWidgetItem):
         self.level = level
 
         qg.QTreeWidgetItem.__init__(self, parent, [key, str(value)])
-        self.setFlags(qc.Qt.ItemFlag.ItemIsEditable |
-                      qc.Qt.ItemFlag.ItemIsEnabled | qc.Qt.ItemFlag.ItemIsSelectable)
+        self.setFlags(qc.Qt.ItemIsEditable |
+                      qc.Qt.ItemIsEnabled | qc.Qt.ItemIsSelectable)
 
         if self.level < self.depthlimit:
             self.generatechildren(self)
 
     def setData(self, column, role, value):
         if column == 0:
-            if role == qc.Qt.ItemDataRole.EditRole:
+            if role == qc.Qt.EditRole:
                 if isinstance(self.value, list):
                     newvalue = self.value[:]
                 elif isinstance(self.value, tuple):
@@ -336,7 +336,7 @@ class InsertNewWidgetItem(TreeWidgetItem):
                 except AttributeError:
                     pass
                 newtwi.updateparent()
-                self.dataparent.sortChildren(0, qc.Qt.SortOrder.AscendingOrder)
+                self.dataparent.sortChildren(0, qc.Qt.AscendingOrder)
 
 
 class PropertyEditor(qg.QTreeWidget):

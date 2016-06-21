@@ -43,8 +43,8 @@ class InteractiveVertex(InteractiveVertexBase):
 
     def mousePressEvent(self, event):
         modifiers = int(event.modifiers())
-        shiftpressed = modifiers & qc.Qt.KeyboardModifierMask.ShiftModifier
-        ctrlpressed = modifiers & qc.Qt.KeyboardModifierMask.ControlModifier
+        shiftpressed = modifiers & qc.Qt.ShiftModifier
+        ctrlpressed = modifiers & qc.Qt.ControlModifier
         remove = ctrlpressed and shiftpressed
         if remove:
             if self.connectedinteractive is not None:

@@ -11,5 +11,7 @@ if 'qt4' in argv:
     loaded = 'PyQt4'
 elif 'qt5' in argv:
     loaded = 'PyQt5'
+elif 'pyside' in argv:
+    loaded = 'PySide'
 else:
     loaded = 'PySide'

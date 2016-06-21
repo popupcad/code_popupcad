@@ -132,7 +132,7 @@ class Sketch(popupCADFile):
         if result:
             selected_layers = [
                 item.data(
-                    qc.Qt.ItemDataRole.DisplayRole) for item in lw.selectedItems()]
+                    qc.Qt.DisplayRole) for item in lw.selectedItems()]
             entities = [item for item in dxf.modelspace()]
             generics = []
             for entity in entities:

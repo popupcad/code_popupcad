@@ -26,7 +26,7 @@ class EdgeBase(Common):
                 0,
                 0),
             0.0,
-            qc.Qt.PenStyle.NoPen)
+            qc.Qt.NoPen)
 
     def updatemode(self, mode):
         self.mode = mode
@@ -79,7 +79,7 @@ class HighlightedEdge(qg.QGraphicsLineItem, EdgeBase):
                     0,
                     1),
                 0,
-                qc.Qt.PenStyle.NoPen)
+                qc.Qt.NoPen)
         else:
             if self.state == self.states.state_hover:
                 pen = qg.QPen(

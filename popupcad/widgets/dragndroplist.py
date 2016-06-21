@@ -19,22 +19,22 @@ class DraggableItem(qg.QListWidgetItem):
 
         super(DraggableItem, self).__init__(str(data), *args, **kwargs)
         self.userdata = data
-        self.setFlags(self.flags() | qc.Qt.ItemFlag.ItemIsEditable)
+        self.setFlags(self.flags() | qc.Qt.ItemIsEditable)
 
     def data(self, role):
-        if role == qc.Qt.ItemDataRole.DisplayRole:
+        if role == qc.Qt.DisplayRole:
             return str(self.userdata)
-        elif role == qc.Qt.ItemDataRole.EditRole:
+        elif role == qc.Qt.EditRole:
             return self.userdata.getcustomname()
-        elif role == qc.Qt.ItemDataRole.UserRole:
+        elif role == qc.Qt.UserRole:
             return self.userdata
         else:
             return
 
     def setData(self, role, value):
-        if role == qc.Qt.ItemDataRole.EditRole:
+        if role == qc.Qt.EditRole:
             self.userdata.setcustomname(value)
-        elif role == qc.Qt.ItemDataRole.UserRole:
+        elif role == qc.Qt.UserRole:
             self.userdata = value
         else:
             return
@@ -96,7 +96,7 @@ class DraggableListWidget(qg.QListWidget):
         [DraggableDirectedItem(item, self) for item in self.masterlist]
 
     def itemDoubleClicked(self, index):
-        userdata = self.model().data(index, qc.Qt.ItemDataRole.UserRole)
+        userdata = self.model().data(index, qc.Qt.UserRole)
         self.signal_edit.emit(userdata)
 
     def keyPressEvent(self, event):

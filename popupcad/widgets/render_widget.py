@@ -26,9 +26,9 @@ class RenderWidget(qg.QWidget):
 #        gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1, 1, 1, 1)))
 #        self.gv = popupcad.graphics2d.graphicsview.GraphicsView(gs)
         self.gv = SimpleGraphicsView(gs)
-        self.gv.setRenderHint(qg.QPainter.RenderHint.Antialiasing)
-#        self.gv.setRenderHint(qg.QPainter.RenderHint.HighQualityAntialiasing,True)
-#        self.gv.setRenderHint(qg.QPainter.RenderHint.SmoothPixmapTransform,True)
+        self.gv.setRenderHint(qg.QPainter.Antialiasing)
+#        self.gv.setRenderHint(qg.QPainter.HighQualityAntialiasing,True)
+#        self.gv.setRenderHint(qg.QPainter.SmoothPixmapTransform,True)
 #        self.gs.setBackgroundBrush(qg.QBrush(qg.QColor.fromRgbF(1,1,1,0.1)))
 #        self.gs.setBackgroundBrush(qg.QBrush())
 

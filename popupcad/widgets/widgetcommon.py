@@ -58,6 +58,6 @@ class MainGui(WidgetBasic):
         menu_system.build(self)
         menu_bar = self.menuBar()
         [menu_bar.addMenu(item) for item in menu_system.main_menu]
-        [self.addToolBar(qc.Qt.ToolBarArea.TopToolBarArea, toolbar) for toolbar in menu_system.toolbars]
+        [self.addToolBar(qc.Qt.TopToolBarArea, toolbar) for toolbar in menu_system.toolbars]
 
 
