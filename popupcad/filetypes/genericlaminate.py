@@ -198,7 +198,7 @@ class GenericLaminate(object):
         bounds = [value/popupcad.csg_processing_scaling for value in bounds]
         return bounds
 
-    def mass_properties(self,length_scaling = 1):
+    def mass_properties(self):
         zvalues = self.layerdef.z_values2()
         volume_total = 0
         center_of_mass_accumulator = 0
@@ -210,7 +210,7 @@ class GenericLaminate(object):
             z_lower = zvalues[layer]['lower']
             z_upper = zvalues[layer]['upper']
             for geom in self.geoms[layer]:
-                area,centroid,volume,mass,tris = geom.mass_properties(density,z_lower,z_upper,length_scaling)
+                area,centroid,volume,mass,tris = geom.mass_properties(density,z_lower,z_upper)
                 volume_total+=volume
                 layer_volume+=volume
                 center_of_mass_accumulator+=volume*centroid*density

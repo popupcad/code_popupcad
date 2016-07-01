@@ -164,10 +164,10 @@ class GenericPoly(GenericShapeBase):
     def segments(self):
         return self.segments_closed()
         
-    def mass_properties(self,density,z_lower,z_upper,length_scaling = 1):
-        z_lower = z_lower*length_scaling/popupcad.SI_length_scaling
-        z_upper = z_upper*length_scaling/popupcad.SI_length_scaling
-        tris = numpy.array(self.triangles3())*length_scaling/popupcad.SI_length_scaling
+    def mass_properties(self,density,z_lower,z_upper):
+        z_lower = z_lower/popupcad.SI_length_scaling
+        z_upper = z_upper/popupcad.SI_length_scaling
+        tris = numpy.array(self.triangles3())/popupcad.SI_length_scaling
         shape = list(tris.shape)
         shape[2]+=1
         z_center = (z_lower+z_upper)/2
@@ -344,9 +344,8 @@ if __name__=='__main__':
 #`    area,centroid,I= a.mass_props(1,-.1,.1)\
     z_lower = -.1
     z_upper = .1
-    length_scaling = 1
     density = 1
-    area,centroid,volume,mass,tris = a.mass_properties(density,z_lower ,z_upper,length_scaling)
+    area,centroid,volume,mass,tris = a.mass_properties(density,z_lower,z_upper)
     about_point = centroid
     I = a.inertia_tensor(about_point,density,z_lower,z_upper,tris)
     area2 = a.trueArea()

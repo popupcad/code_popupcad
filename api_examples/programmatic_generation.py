@@ -42,7 +42,7 @@ if __name__=='__main__':
     while ii<5:
         points = numpy.random.rand(5,2)*20+[ii*20,0]
         body_polygon = popupcad.algorithms.triangulate.convex_hull(points)
-        area,centroid,volume,mass,tris = body_polygon.mass_properties(1,-1,1,popupcad.SI_length_scaling)
+        area,centroid,volume,mass,tris = body_polygon.mass_properties(1,-1,1)
         centroid = centroid[:2].tolist()
     #    
         points = numpy.array(body_polygon.exteriorpoints()+[centroid])
