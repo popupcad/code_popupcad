@@ -333,20 +333,17 @@ class JointOperation3(Operation2, LayerBasedOperation):
         #buffered_splits = list(buffered_splits)
 
         safe_sections = []
-        for ii in range(len(allgeoms)):
-            unsafe = Laminate.unaryoperation(
-                allgeoms[
-                    :ii] +
-                allgeoms[
-                    ii +
-                    1:],
-                'union')
-            unsafe_buffer = unsafe.buffer(
-                safe_buffer1,
-                resolution=self.resolution)
-            safe_sections.append(allgeoms[ii].difference(unsafe_buffer))
 
-        safe = Laminate.unaryoperation(safe_sections, 'union')
+        if len(allgeoms)>1:
+            for ii in range(len(allgeoms)):
+                unsafe = Laminate.unaryoperation(allgeoms[:ii] +allgeoms[ii + 1:],'union')
+                unsafe_buffer = unsafe.buffer(safe_buffer1,resolution=self.resolution)
+                safe_sections.append(allgeoms[ii].difference(unsafe_buffer))
+            safe = Laminate.unaryoperation(safe_sections, 'union')
+        else:
+            safe_sections.append(allgeoms[0])
+            safe = allgeoms[0]
+
         buffered_splits2 = Laminate.unaryoperation(buffered_splits, 'union')
         safe_buffer = safe.buffer(safe_buffer2, resolution=self.resolution)
         unsafe = Laminate.unaryoperation(
