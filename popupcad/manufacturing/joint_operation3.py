@@ -272,6 +272,8 @@ class JointOperation3(Operation2, LayerBasedOperation):
         sublaminate_layers = [
             layerdef.getlayer(item) for item in joint_def.sublaminate_layers]
         hingelayer = layerdef.getlayer(joint_def.joint_layer)
+        
+        z = layerdef.z_values[hingelayer] + hingelayer.thickness/2
 
         operationgeom = design.sketches[joint_def.sketch].output_csg()
         sketch_result = Laminate(design.return_layer_definition())
@@ -294,7 +296,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
                     hinge_gap,
                     resolution=self.resolution))
 
-        joint_props = [(stiffness, damping, preload_angle, limit_negative, limit_positive)
+        joint_props = [(stiffness, damping, preload_angle, limit_negative, limit_positive,z)
                        for item in hingelines]
         return allgeoms4, buffered_split, hingelines, joint_props
 
