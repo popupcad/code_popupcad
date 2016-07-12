@@ -3,6 +3,6 @@ python:
   - "3.3"
   - "3.4"
 # command to install dependencies
-install: "pip install shapely matplotlib"
+install: "pip install shapely matplotlib pyside ezdxf lxml numpy scipy pypoly2tri pyopengl sympy pyyaml"
 # command to run tests
 script: "python popupcad.py"
