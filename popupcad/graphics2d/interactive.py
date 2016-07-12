@@ -272,8 +272,7 @@ class InteractiveLine(Interactive):
 
     def updateshape(self):
         from math import atan2, pi
-        (x1, y1), (x2, y2) = self.generic.exteriorpoints(
-            scaling=popupcad.view_scaling)
+        (x1, y1), (x2, y2) = self.generic.exteriorpoints(scaling=popupcad.view_scaling)
         dx = x2 - x1
         dy = y2 - y1
         l = ((dx)**2 + (dy)**2)**.5

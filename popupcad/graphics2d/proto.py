@@ -95,8 +95,7 @@ class ProtoMultiPoint(Proto):
             self.generic.addvertex_exterior(handle.get_generic())
             self.temphandle = None
         else:
-            if handle.generic.getpos(scaling=popupcad.view_scaling) != self.generic.get_exterior(
-            )[-1].getpos(scaling=popupcad.view_scaling):
+            if handle.generic.getpos(scaling=popupcad.view_scaling) != self.generic.get_exterior()[-1].getpos(scaling=popupcad.view_scaling):
                 if self.checkdist(handle.generic.getpos(scaling=popupcad.view_scaling),
                                   self.generic.get_exterior()[-1].getpos(scaling=popupcad.view_scaling)):
                     self.generic.addvertex_exterior(handle.get_generic())
@@ -138,8 +137,7 @@ class ProtoTwoPoint(Proto):
             return True
         elif self.generic.len_exterior() == 1:
             if qh.to_tuple(handle.pos()) != self.generic.get_exterior()[-1].getpos():
-                if self.checkdist(handle.generic.getpos(scaling=popupcad.view_scaling),
-                                  self.generic.get_exterior()[-1].getpos(scaling=popupcad.view_scaling)):
+                if self.checkdist(handle.generic.getpos(scaling=popupcad.view_scaling),self.generic.get_exterior()[-1].getpos(scaling=popupcad.view_scaling)):
                     self.generic.addvertex_exterior(handle.get_generic())
                     self.temphandle = None
                     return True
