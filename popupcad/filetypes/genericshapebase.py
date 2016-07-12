@@ -46,7 +46,6 @@ class GenericShapeBase(object):
         self.exterior = self.remove_redundant_points(self.exterior)
         self.interiors = [self.remove_redundant_points(interior) for interior in self.interiors]
 
-
     def is_valid_bool(self):
         try: 
             self.is_valid()
