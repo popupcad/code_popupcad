@@ -68,29 +68,29 @@ def run_commands(commands):
         
 if __name__=='__main__':
     modules_to_make = []
-    modules_to_make.append('popupcad.filetypes.constraints')
+#    modules_to_make.append('popupcad.filetypes.constraints')
     
     modules_to_remap = []
-    modules_to_remap.append(('popupcad.filetypes.design','popupcad.filetypes.design2'))
-    modules_to_remap.append(('popupcad.filetypes.design','ogle'))
+#    modules_to_remap.append(('popupcad.filetypes.design','popupcad.filetypes.design2'))
+#    modules_to_remap.append(('popupcad.filetypes.design','ogle'))
     
     remap_classes = []
-    remap_classes.append(['popupcad.constraints.constraint_system.ConstraintSystem', 'popupcad.filetypes.constraints.ConstraintSystem'])
-    remap_classes.append(['popupcad.constraints.constraints.FixedConstraint', 'popupcad.filetypes.constraints.fixed'])
-    remap_classes.append(['popupcad.constraints.constraints.HorizontalConstraint', 'popupcad.filetypes.constraints.horizontal'])
-    remap_classes.append(['popupcad.constraints.constraints.VerticalConstraint', 'popupcad.filetypes.constraints.vertical'])
-    remap_classes.append(['popupcad.constraints.constraints.DistanceConstraint', 'popupcad.filetypes.constraints.distance'])
-    remap_classes.append(['popupcad.constraints.constraints.CoincidentConstraint', 'popupcad.filetypes.constraints.coincident'])
-    remap_classes.append(['popupcad.constraints.constraints.XDistanceConstraint', 'popupcad.filetypes.constraints.distancex'])
-    remap_classes.append(['popupcad.constraints.constraints.YDistanceConstraint', 'popupcad.filetypes.constraints.distancey'])
-    remap_classes.append(['popupcad.constraints.constraints.AngleConstraint', 'popupcad.filetypes.constraints.angle'])
-    remap_classes.append(['popupcad.constraints.constraints.ParallelLinesConstraint', 'popupcad.filetypes.constraints.parallel'])
-    remap_classes.append(['popupcad.constraints.constraints.EqualLengthLinesConstraint', 'popupcad.filetypes.constraints.equal'])
-    remap_classes.append(['popupcad.constraints.constraints.PerpendicularLinesConstraint', 'popupcad.filetypes.constraints.perpendicular'])
-    remap_classes.append(['popupcad.constraints.constraints.PointLineDistanceConstraint', 'popupcad.filetypes.constraints.PointLine'])
-    remap_classes.append(['popupcad.constraints.constraints.LineMidpointConstraint', 'popupcad.filetypes.constraints.LineMidpoint'])
-    remap_classes.append(['popupcad.constraints.constraint_support.SymbolicLine', 'popupcad.filetypes.constraints.SymbolicLine'])
-    remap_classes.append(['popupcad.constraints.constraint_support.SymbolicVertex', 'popupcad.filetypes.constraints.SymbolicVertex'])
+#    remap_classes.append(['popupcad.constraints.constraint_system.ConstraintSystem', 'popupcad.filetypes.constraints.ConstraintSystem'])
+#    remap_classes.append(['popupcad.constraints.constraints.FixedConstraint', 'popupcad.filetypes.constraints.fixed'])
+#    remap_classes.append(['popupcad.constraints.constraints.HorizontalConstraint', 'popupcad.filetypes.constraints.horizontal'])
+#    remap_classes.append(['popupcad.constraints.constraints.VerticalConstraint', 'popupcad.filetypes.constraints.vertical'])
+#    remap_classes.append(['popupcad.constraints.constraints.DistanceConstraint', 'popupcad.filetypes.constraints.distance'])
+#    remap_classes.append(['popupcad.constraints.constraints.CoincidentConstraint', 'popupcad.filetypes.constraints.coincident'])
+#    remap_classes.append(['popupcad.constraints.constraints.XDistanceConstraint', 'popupcad.filetypes.constraints.distancex'])
+#    remap_classes.append(['popupcad.constraints.constraints.YDistanceConstraint', 'popupcad.filetypes.constraints.distancey'])
+#    remap_classes.append(['popupcad.constraints.constraints.AngleConstraint', 'popupcad.filetypes.constraints.angle'])
+#    remap_classes.append(['popupcad.constraints.constraints.ParallelLinesConstraint', 'popupcad.filetypes.constraints.parallel'])
+#    remap_classes.append(['popupcad.constraints.constraints.EqualLengthLinesConstraint', 'popupcad.filetypes.constraints.equal'])
+#    remap_classes.append(['popupcad.constraints.constraints.PerpendicularLinesConstraint', 'popupcad.filetypes.constraints.perpendicular'])
+#    remap_classes.append(['popupcad.constraints.constraints.PointLineDistanceConstraint', 'popupcad.filetypes.constraints.PointLine'])
+#    remap_classes.append(['popupcad.constraints.constraints.LineMidpointConstraint', 'popupcad.filetypes.constraints.LineMidpoint'])
+#    remap_classes.append(['popupcad.constraints.constraint_support.SymbolicLine', 'popupcad.filetypes.constraints.SymbolicLine'])
+#    remap_classes.append(['popupcad.constraints.constraint_support.SymbolicVertex', 'popupcad.filetypes.constraints.SymbolicVertex'])
     
     commands = []
     for item in modules_to_make:
@@ -101,8 +101,8 @@ if __name__=='__main__':
         commands.append(['remap_class',item])
         
 
-    filename = 'C:/Users/danaukes/Documents/code/popupcad/popupcad/supportfiles/virtual_structure.yaml'
+    filename = 'C:/Users/daukes/code/popupcad/popupcad/supportfiles/virtual_structure.yaml'
     save_commands(commands,filename)
-    commands2 = load_commands()
-    for command,args in commands2:
-        command_mapping[command](*args)
+#    commands2 = load_commands(filename)
+#    for command,args in commands2:
+#        command_mapping[command](*args)
