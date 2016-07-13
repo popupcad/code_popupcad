@@ -10,7 +10,7 @@ import os
 packages_path = os.path.normpath(os.path.abspath('../'))
 sys.path.append(packages_path)
 print(packages_path)
-
+print(os.listdir(packages_path))
 import qt.QtCore as qc
 import qt.QtGui as qg
 
