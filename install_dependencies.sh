@@ -11,7 +11,7 @@ conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION shapely pyyaml
 source activate test-environment
 pip install pypoly2tri ezdxf
 
-echo "export PYTHONPATH=\$PYTHONPATH:~/" >> ~/.bashrc
+echo "export PYTHONPATH=\$PYTHONPATH:\$HOME/" >> ~/.bashrc
 source ~/.bashrc
 
 #python3 setup.py install
