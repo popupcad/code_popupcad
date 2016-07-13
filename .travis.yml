@@ -1,9 +1,16 @@
 language: python
+sudo: required
 python:
+  # We don't actually use the Travis Python, but this keeps it organized.
+#  - "2.6"
+#  - "2.7"
   - "3.3"
   - "3.4"
 # command to install dependencies
-install: "./install_dependencies.sh"
+install: 
+  - chmod +rx install_dependencies.sh
+  - ./install_dependencies.sh
+  
 # command to run tests
-script: "python popupcad.py"
+script: python popupcad.py
 
