@@ -7,6 +7,6 @@ hash -r
 conda config --set always_yes yes --set changeps1 no
 conda update -q conda
 conda info -a
-conda create -q -n popupcad_env python=$TRAVIS_PYTHON_VERSION shapely pyyaml numpy scipy setuptools cython pyqt sympy pyopengl pyqtgraph matplotlib
+conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION shapely pyyaml numpy scipy setuptools cython pyqt sympy pyopengl pyqtgraph matplotlib
+source activate test-environment
 pip install pypoly2tri ezdxf
-source activate popupcad_env
