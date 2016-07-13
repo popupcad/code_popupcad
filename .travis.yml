@@ -13,5 +13,6 @@ install:
   
 # command to run tests
 script: 
+  - source activate test-environment
   - python popupcad_tests/test_gui.py --qt4
 
