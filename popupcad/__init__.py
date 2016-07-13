@@ -31,19 +31,18 @@ import yaml
 try:
     with open(user_materials_filename) as f:
         user_materials = yaml.load(f)
-except:
-    user_materials = []
-
+except FileNotFoundError:
+    pass
 
 try:
     with open(custom_settings_filename) as f:
         custom_settings = yaml.load(f)
-        
+            
     popupcad_module=sys.modules[__name__]
     for key in custom_settings:
         if hasattr(popupcad_module,key):
             setattr(popupcad_module,key,custom_settings[key])
-except:
+except FileNotFoundError:
     pass
 
 ##load external modules

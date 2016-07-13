@@ -12,5 +12,6 @@ install:
   - ./install_dependencies.sh
   
 # command to run tests
-script: python popupcad.py
+script: 
+  - python popupcad_tests/test_gui.py
 

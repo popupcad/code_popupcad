@@ -119,3 +119,6 @@ nominal_height = 720
 text_approximation = 2
 
 custom_settings_filename = os.path.normpath(os.path.join(popupcad_home_path,'settings.yaml'))
+plugins = ['popupcad_manufacturing_plugins','popupcad_gazebo','popupcad_microrobotics']
+user_plugins = []
+user_materials = []

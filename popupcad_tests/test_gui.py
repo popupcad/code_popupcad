@@ -17,5 +17,6 @@ import pyqtgraph
 app = qg.QApplication([sys.argv[0]])
 import popupcad
 program = popupcad.filetypes.program.Program(app, *sys.argv)
-app.exec_()
-sys.exit()
+program.editor.destroy()
+#app.quit()
+#sys.exit()

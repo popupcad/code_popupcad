@@ -10,4 +10,3 @@ conda info -a
 conda create -q -n popupcad_env python=$TRAVIS_PYTHON_VERSION shapely pyyaml numpy scipy setuptools cython pyqt sympy pyopengl pyqtgraph matplotlib
 pip install pypoly2tri ezdxf
 source activate popupcad_env
-python setup.py install
