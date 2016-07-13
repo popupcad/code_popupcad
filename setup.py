@@ -9,6 +9,11 @@ from distutils.core import setup
 import popupcad
 
 packages = []
+
+packages.append('dev_tools')
+
+packages.append('api_examples')
+
 packages.append('popupcad')
 packages.append('popupcad.algorithms')
 packages.append('popupcad.constraints')
@@ -18,12 +23,22 @@ packages.append('popupcad.graphics2d')
 packages.append('popupcad.graphics3d')
 packages.append('popupcad.guis')
 packages.append('popupcad.manufacturing')
+packages.append('popupcad.materials')
 packages.append('popupcad.widgets')
 
-packages.append('dev_tools')
+packages.append('popupcad_deprecated')
+
 packages.append('popupcad_manufacturing_plugins')
 packages.append('popupcad_manufacturing_plugins.manufacturing')
-packages.append('pypoly2tri')
+
+packages.append('popupcad_microrobotics')
+
+packages.append('popupcad_tests')
+
+packages.append('qt')
+
+#packages.append('popupcad_manufacturing_plugins.manufacturing')
+#packages.append('pypoly2tri')
 
 package_data = {}
 package_data['popupcad'] = ['supportfiles/*','supportfiles/icons/*']

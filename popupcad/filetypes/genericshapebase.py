@@ -46,7 +46,6 @@ class GenericShapeBase(object):
         self.exterior = self.remove_redundant_points(self.exterior)
         self.interiors = [self.remove_redundant_points(interior) for interior in self.interiors]
 
-
     def is_valid_bool(self):
         try: 
             self.is_valid()
@@ -70,7 +69,7 @@ class GenericShapeBase(object):
         popupcad.lastshapedir = directory
 
     def isValid(self):
-        notempty = len(self.get_exterior()) > 0
+        notempty = self.len_exterior() > 0
         return notempty
 
     def copy_data(self, new_type, identical=True):
@@ -86,10 +85,8 @@ class GenericShapeBase(object):
         return self.copy_data(type(self), identical)
 
     def upgrade(self, identical=True):
-        exterior = [vertex.upgrade(identical)
-                    for vertex in self.get_exterior()]
-        interiors = [[vertex.upgrade(
-            identical) for vertex in interior] for interior in self.get_interiors()]
+        exterior = [vertex.upgrade(identical) for vertex in self.get_exterior()]
+        interiors = [[vertex.upgrade(identical) for vertex in interior] for interior in self.get_interiors()]
         new = type(self)(exterior, interiors, self.is_construction())
         if identical:
             new.id = self.id
@@ -202,7 +199,6 @@ class GenericShapeBase(object):
                 return
         self.append_exterior_vertex(vertex)
         self.update_handles()
-
 
     def removevertex(self, vertex):
         if vertex in self.exterior:

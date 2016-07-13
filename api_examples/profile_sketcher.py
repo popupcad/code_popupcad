@@ -21,7 +21,7 @@ if __name__=='__main__':
     item2 = popupcad.filetypes.genericshapes.GenericPoly.gen_from_point_lists([(0,0),(1,0),(0,1)],[])
     item2.shift((3,0))
 
-    fixed_vertices =[item1.exterior[0]]
+    fixed_vertices =[item1.get_exterior()[0]]
 
     constraint1 = popupcad.filetypes.constraints.fixed([item.id for item in fixed_vertices],[item.getpos() for item in fixed_vertices])
     constraint_sys = popupcad.filetypes.constraints.ConstraintSystem()

@@ -12,10 +12,11 @@ import popupcad
 import logging
 import traceback
 import popupcad.guis.icons
+import importlib
 
 class Program(object):
 
-    def __init__(self, app,plugins, *args, **kwargs):
+    def __init__(self, app, *args, **kwargs):
 
         args = list(args)
 
@@ -34,9 +35,13 @@ class Program(object):
 
         self.excepthook_internal = sys.excepthook
         sys.excepthook = self.excepthook          
-
-        for plugin in plugins:
-            plugin.initialize(self)
+        
+        for plugin_name in popupcad.plugins+popupcad.user_plugins:
+            try:
+                plugin =importlib.import_module(plugin_name)
+                plugin.initialize(self)
+            except ImportError:
+                print(plugin_name+' Not Found')
 
     def excepthook(self,exctype,value,tb):
         if exctype is not SystemExit:

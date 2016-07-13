@@ -69,12 +69,18 @@ def run_commands(commands):
 if __name__=='__main__':
     modules_to_make = []
     modules_to_make.append('popupcad.filetypes.constraints')
+    modules_to_make.append('popupcad.manufacturing.placeop8')
+#    modules_to_make.append('popupcad.manufacturing.joint_operation2')
+    modules_to_make.append('popupcad.manufacturing.locateoperation3')
+#    modules_to_make.append('popupcad.manufacturing.placeop8')
     
     modules_to_remap = []
-    modules_to_remap.append(('popupcad.filetypes.design','popupcad.filetypes.design2'))
-    modules_to_remap.append(('popupcad.filetypes.design','ogle'))
+#    modules_to_remap.append(('popupcad.filetypes.design','popupcad.filetypes.design2'))
+#    modules_to_remap.append(('popupcad.filetypes.design','ogle'))
     
     remap_classes = []
+    remap_classes.append(['popupcad_deprecated.placeop8.PlaceOperation8', 'popupcad.manufacturing.placeop8.PlaceOperation8'])    
+    remap_classes.append(['popupcad_deprecated.locateoperation3.LocateOperation3', 'popupcad.manufacturing.locateoperation3.LocateOperation3'])    
     remap_classes.append(['popupcad.constraints.constraint_system.ConstraintSystem', 'popupcad.filetypes.constraints.ConstraintSystem'])
     remap_classes.append(['popupcad.constraints.constraints.FixedConstraint', 'popupcad.filetypes.constraints.fixed'])
     remap_classes.append(['popupcad.constraints.constraints.HorizontalConstraint', 'popupcad.filetypes.constraints.horizontal'])
@@ -101,8 +107,8 @@ if __name__=='__main__':
         commands.append(['remap_class',item])
         
 
-    filename = 'C:/Users/danaukes/Documents/code/popupcad/popupcad/supportfiles/virtual_structure.yaml'
+    filename = 'C:/Users/daukes/code/popupcad/popupcad/supportfiles/virtual_structure.yaml'
     save_commands(commands,filename)
-    commands2 = load_commands()
-    for command,args in commands2:
-        command_mapping[command](*args)
+#    commands2 = load_commands(filename)
+#    for command,args in commands2:
+#        command_mapping[command](*args)

@@ -150,8 +150,6 @@ class GenericPoly(GenericShapeBase):
         tris = (numpy.array(tris)/popupcad.triangulation_scaling).tolist()
         return tris
 
-     
-
     def to_shapely(self):
         exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
         interiors_p = self.interiorpoints(scaling = popupcad.csg_processing_scaling)
@@ -201,7 +199,6 @@ class GenericPoly(GenericShapeBase):
             polylines.append(GenericPolyline(newloop,[],self.is_construction()))
         return polylines
             
-   
     def output_dxf(self,model_space,layer = None):
         exterior = self.exteriorpoints()
         dxfattribs = {'closed':True}

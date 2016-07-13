@@ -1,0 +1,20 @@
+language: python
+sudo: required
+branches:
+  only:
+    - pyqt4_only
+python:
+  # We don't actually use the Travis Python, but this keeps it organized.
+#  - "2.6"
+#  - "2.7"
+  - "3.3"
+  - "3.4"
+# command to install dependencies
+install: 
+  - chmod +rx install_dependencies.sh
+  - ./install_dependencies.sh
+  
+# command to run tests
+script: 
+  - source activate test-environment
+  - python popupcad_tests/test_gui.py --qt4
