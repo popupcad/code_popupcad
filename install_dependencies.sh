@@ -10,4 +10,4 @@ conda info -a
 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION shapely pyyaml numpy scipy setuptools cython pyqt sympy pyopengl pyqtgraph matplotlib
 source activate test-environment
 pip install pypoly2tri ezdxf
-python3 setup.py install
+#python3 setup.py install
