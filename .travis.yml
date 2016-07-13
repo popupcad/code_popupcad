@@ -13,5 +13,5 @@ install:
   
 # command to run tests
 script: 
-  - python popupcad_tests/test_gui.py
+  - python popupcad_tests/test_gui.py --qt4
 
