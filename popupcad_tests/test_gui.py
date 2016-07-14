@@ -7,10 +7,12 @@ Please see LICENSE for full license.
 
 import sys
 import os
-packages_path = os.path.normpath(os.path.abspath('../'))
-sys.path.append(packages_path)
+packages_path = ['.']
+packages_path = [os.path.normpath(os.path.abspath(item)) for item in packages_path]
+sys.path.extend(packages_path)
 print(packages_path)
-print(os.listdir(packages_path))
+[print(os.listdir(item)) for item in packages_path]
+
 import qt.QtCore as qc
 import qt.QtGui as qg
 

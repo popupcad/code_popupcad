@@ -1,20 +1,54 @@
 language: python
 sudo: required
-branches:
-  only:
-    - pyqt4_only
+#branches:
+#  only:
+#    - pyqt4_only
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
 #  - "2.6"
 #  - "2.7"
-  - "3.3"
+#  - "3.3"
   - "3.4"
+  - "3.5"
 # command to install dependencies
-install: 
-  - chmod +rx install_dependencies.sh
-  - ./install_dependencies.sh
+#install: 
+#  - chmod +rx install_dependencies.sh
+#  - ./install_dependencies.sh
+#  - source ~/.bashrc
+#  - source activate test-environment
+  
+#before_install:
+#  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+  
+install:
+  - sudo apt-get update
+  #- sudo apt-get -y install xfvb
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+  # Replace dep1 dep2 ... with your dependencies
+  - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION setuptools cython pyyaml shapely numpy scipy sympy pyopengl pyqt pyqtgraph matplotlib
+  - source activate test-environment
+  - pip install pypoly2tri ezdxf
+ # - python setup.py install  
+  - export PYTHONPATH=$PYTHONPATH:$HOME/
+  
+#before_script:
+#  - "export DISPLAY=:99.0"
+#  - export DISPLAY=localhost:1.0
+#  - xvfb-run -a bash .misc/tests.sh
+#  - "sh -e /etc/init.d/xvfb start"
+#  - sleep 3 # give xvfb some time to start
   
 # command to run tests
 script: 
-  - source activate test-environment
-  - python popupcad_tests/test_gui.py --qt4
+#  - python popupcad_tests/test_gui.py --qt4
+  - python popupcad_tests/load_test_files.py

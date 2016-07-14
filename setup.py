@@ -41,7 +41,7 @@ packages.append('qt')
 #packages.append('pypoly2tri')
 
 package_data = {}
-package_data['popupcad'] = ['supportfiles/*','supportfiles/icons/*']
+package_data['popupcad'] = ['supportfiles/*','supportfiles/icons/*','supportfiles/test_files/*']
 
 setup(name=popupcad.program_name,
       version=popupcad.version,

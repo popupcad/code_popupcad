@@ -46,7 +46,6 @@ popupcad/docs/source/popupcad.supportfiles.rst
 popupcad/docs/source/popupcad.widgets.rst
 dist/*
 settings.popupcad
-*.cad
 *~
 log.txt
 popupcad_gazebo/gazebo_plugins/build/*
