@@ -9,7 +9,6 @@ import os
 import popupcad
 import time
 import glob
-import shutil
 import time
 
 if __name__=='__main__':
