@@ -8,10 +8,24 @@ source ~/.bashrc
 
 hash -r
 conda config --set always_yes yes --set changeps1 no
-conda update -q conda
+conda update conda
 conda info -a
-conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION shapely pyyaml numpy scipy setuptools cython pyqt sympy pyopengl pyqtgraph matplotlib
+
+conda create -n test-environment python=$TRAVIS_PYTHON_VERSION 
 source activate test-environment
+
+conda install setuptools 
+conda install cython
+conda install pyyaml
+conda install shapely 
+conda install numpy 
+conda install scipy
+conda install sympy 
+conda install pyopengl 
+conda install pyqt
+conda install pyqtgraph 
+conda install matplotlib
+
 pip install pypoly2tri ezdxf
 
 echo "export PYTHONPATH=\$PYTHONPATH:\$HOME/" >> ~/.bashrc
