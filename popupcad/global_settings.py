@@ -21,6 +21,7 @@ else:
 
 supportfiledir = os.path.normpath(os.path.join(localpath, 'supportfiles'))
 iconfile = os.path.normpath(os.path.join(supportfiledir, 'printapede.ico'))
+test_file_dir = os.path.normpath(os.path.join(supportfiledir, 'test_files'))
 graphics_scene_background_color = (.8,.8,.8,1)
 
 flip_y = True

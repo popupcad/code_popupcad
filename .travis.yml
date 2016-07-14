@@ -1,8 +1,8 @@
 language: python
 sudo: required
-branches:
-  only:
-    - pyqt4_only
+#branches:
+#  only:
+#    - pyqt4_only
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
 #  - "2.6"
@@ -22,7 +22,7 @@ python:
   
 install:
   - sudo apt-get update
-  - sudo apt-get -y install xfvb
+  #- sudo apt-get -y install xfvb
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -38,16 +38,17 @@ install:
   - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION setuptools cython pyyaml shapely numpy scipy sympy pyopengl pyqt pyqtgraph matplotlib
   - source activate test-environment
   - pip install pypoly2tri ezdxf
-  - python setup.py install  
+ # - python setup.py install  
   - export PYTHONPATH=$PYTHONPATH:$HOME/
   
-before_script:
+#before_script:
 #  - "export DISPLAY=:99.0"
-  - export DISPLAY=localhost:1.0
+#  - export DISPLAY=localhost:1.0
 #  - xvfb-run -a bash .misc/tests.sh
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
+#  - "sh -e /etc/init.d/xvfb start"
+#  - sleep 3 # give xvfb some time to start
   
 # command to run tests
 script: 
-  - python popupcad_tests/test_gui.py --qt4
+#  - python popupcad_tests/test_gui.py --qt4
+  - python popupcad_tests/load_test_files.py
