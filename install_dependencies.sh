@@ -2,12 +2,15 @@
 sudo apt-get update
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
 bash miniconda.sh -b -p $HOME/miniconda
-export PATH="$HOME/miniconda/bin:$PATH"
+#export PATH="$HOME/miniconda/bin:$PATH"
+echo "export PATH="\$HOME/miniconda/bin:\$PATH"" >> ~/.bashrc
+source ~/.bashrc
+
 hash -r
 conda config --set always_yes yes --set changeps1 no
 conda update -q conda
 conda info -a
-conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION shapely pyyaml numpy scipy setuptools cython pyqt4 sympy pyopengl pyqtgraph matplotlib
+conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION shapely pyyaml numpy scipy setuptools cython pyqt sympy pyopengl pyqtgraph matplotlib
 source activate test-environment
 pip install pypoly2tri ezdxf
 
