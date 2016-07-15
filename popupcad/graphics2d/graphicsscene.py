@@ -239,8 +239,8 @@ class GraphicsScene(popupCADObjectSupport,SVGOutputSupport,SketcherSupport,qg.QG
     refresh_request = qc.Signal()
     constraint_update_request = qc.Signal(list)
     
-    def __init__(self):
-        qg.QGraphicsScene.__init__(self)
+    def __init__(self, *args, **kwargs):
+        qg.QGraphicsScene.__init__(self,*args,**kwargs)
         popupCADObjectSupport.__init__(self)
         SketcherSupport.__init__(self)
 #        self.update()
@@ -248,6 +248,6 @@ class GraphicsScene(popupCADObjectSupport,SVGOutputSupport,SketcherSupport,qg.QG
 
 class SimpleGraphicsScene(popupCADObjectSupport, SVGOutputSupport, qg.QGraphicsScene):
 
-    def __init__(self):
-        qg.QGraphicsScene.__init__(self)
+    def __init__(self,*args,**kwargs):
+        qg.QGraphicsScene.__init__(self,*args,**kwargs)
         popupCADObjectSupport.__init__(self)

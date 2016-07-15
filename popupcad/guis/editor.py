@@ -46,9 +46,12 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
 
     
     def safe_init(self, parent=None, **kwargs):
-        self.scene = popupcad.graphics2d.graphicsscene.GraphicsScene()
-        self.view_2d = popupcad.graphics2d.graphicsview.GraphicsView(
-            self.scene)
+        self.view_2d = popupcad.graphics2d.graphicsview.GraphicsView()
+        self.scene = popupcad.graphics2d.graphicsscene.GraphicsScene(self.view_2d)
+        self.view_2d.setScene(self.scene)
+        self.view_2d.finish_init()
+        self.scene.connect_mouse_modes(self.view_2d)
+
         self.view_2d.scrollhand()
         self.setCentralWidget(self.view_2d)
 

@@ -89,8 +89,11 @@ class Sketcher(MainGui,qg.QMainWindow):
         sublayout.addWidget(cancel_button)
         sublayout.addStretch(1)
 
-        self.scene = GraphicsScene()
-        self.graphicsview = GraphicsView(self.scene)
+        self.graphicsview = GraphicsView()
+        self.scene = GraphicsScene(self.graphicsview)
+        self.graphicsview.setScene(self.scene)
+        self.view_2d.finish_init()
+        self.scene.connect_mouse_modes(self.graphicsview)
 
         centrallayout = qg.QVBoxLayout()
         centrallayout.addWidget(self.graphicsview)
