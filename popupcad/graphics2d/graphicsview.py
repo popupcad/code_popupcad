@@ -131,8 +131,7 @@ class MouseModes(object):
     def __init__(self):
         self.setRubberBandSelectionMode(qc.Qt.ContainsItemShape)
 #        self.setRubberBandSelectionMode(qc.Qt.IntersectsItemShape)
-        self.setRenderHints(
-            qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)
+        self.setRenderHints(qg.QPainter.Antialiasing | qg.QPainter.SmoothPixmapTransform)
         self.setDragMode(self.ScrollHandDrag)
         self.rubberband()
         
@@ -168,17 +167,15 @@ class MouseModes(object):
 
 class GraphicsView(ZoomHandling, ImagingSupport, MouseModes, qg.QGraphicsView):
 
-    def __init__(self, scene, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         qg.QGraphicsView.__init__(self, *args, **kwargs)
-        self.setScene(scene)
         
+        self.setSizePolicy(qg.QSizePolicy.MinimumExpanding,qg.QSizePolicy.MinimumExpanding)
+
+    def finish_init(self):
         ZoomHandling.__init__(self)
         MouseModes.__init__(self)
         ImagingSupport.__init__(self)
-        
-        scene.connect_mouse_modes(self)
-        
-        self.setSizePolicy(qg.QSizePolicy.MinimumExpanding,qg.QSizePolicy.MinimumExpanding)
 
     def sizeHint(self):
         return qc.QSize(400, 300)
@@ -186,10 +183,10 @@ class GraphicsView(ZoomHandling, ImagingSupport, MouseModes, qg.QGraphicsView):
 
 class SimpleGraphicsView(ZoomHandling, ImagingSupport, qg.QGraphicsView):
 
-    def __init__(self, scene):
+    def __init__(self):
         qg.QGraphicsView.__init__(self)
-        self.setScene(scene)
         
+    def finish_init(self):
         ZoomHandling.__init__(self)
         ImagingSupport.__init__(self)
 
