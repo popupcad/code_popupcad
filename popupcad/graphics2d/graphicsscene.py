@@ -123,7 +123,7 @@ class SketcherSupport(object):
                 if self.temp is None:
                     if self.nextgeometry == TextParent:
                         textpos = ShapeVertex(qh.to_tuple(pos),scaling = 1/popupcad.view_scaling)
-                        text = GenericText('',textpos,font='Courier',fontsize=2)
+                        text = GenericText('',textpos,font='Courier New',fontsize=1)
                         temp = self.nextgeometry(text)
                         self.addItem(temp)
                         temp.editmode()

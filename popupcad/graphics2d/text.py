@@ -43,16 +43,32 @@ class GenericText(object):
         return False
 
     def to_generic_polygons(self,add_shift = True):
-        import popupcad.algorithms.painterpath as pp
+#        import popupcad.algorithms.painterpath as pp
+        import dev_tools.text_to_polygons
+        from matplotlib.font_manager import FontProperties
+        from popupcad.filetypes.genericshapes import GenericPoly
+        
         text = self.text
 #        small font scalings actually produce different paths.  use 10pt font as invariant size
         internal_font = 10
+        fp = FontProperties(family = self.font,size=internal_font)
         if text !='':
-            p = qg.QPainterPath()
-            font = qg.QFont(self.font,pointSize=internal_font)
-            p.addText(qc.QPointF(0,internal_font),font,text)
+#            p = qg.QPainterPath()
+#            font = qg.QFont(self.font,pointSize=internal_font)
+#            p.addText(qc.QPointF(0,internal_font),font,text)
             
-            generic_polygons = pp.painterpath_to_generics(p,popupcad.text_approximation)
+#            generic_polygons = pp.painterpath_to_generics(p,popupcad.text_approximation)
+            
+            polygons = dev_tools.text_to_polygons.text_to_polygons(self.text,fp,popupcad.text_approximation)
+            generic_polygons = []
+            for item in polygons:
+                item = numpy.array(item)
+                if popupcad.flip_y:
+                    item[:,1]=-1*item[:,1]+internal_font
+                item*=1.33
+                item = item.tolist()
+                generic_polygons.append(GenericPoly.gen_from_point_lists(item,[]))
+#            
         else:
             generic_polygons = []
         T = numpy.eye(3)
