@@ -10,12 +10,12 @@ import popupcad
 import time
 import glob
 import time
-import qt.QtCore as qc
-import qt.QtGui as qg
+#import qt.QtCore as qc
+#import qt.QtGui as qg
 
 
 if __name__=='__main__':
-    app = qg.QApplication([sys.argv[0]])
+#    app = qg.QApplication([sys.argv[0]])
     t_0 = time.time()
     top_directory = popupcad.test_file_dir
     filenames = []

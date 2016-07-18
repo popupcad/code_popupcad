@@ -92,7 +92,7 @@ class Sketcher(MainGui,qg.QMainWindow):
         self.graphicsview = GraphicsView()
         self.scene = GraphicsScene(self.graphicsview)
         self.graphicsview.setScene(self.scene)
-        self.view_2d.finish_init()
+        self.graphicsview.finish_init()
         self.scene.connect_mouse_modes(self.graphicsview)
 
         centrallayout = qg.QVBoxLayout()
