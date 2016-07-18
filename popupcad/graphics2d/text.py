@@ -34,6 +34,8 @@ class GenericText(object):
         return new
 
     def upgrade(self, *args, **kwargs):
+        if self.font == 'Courier':
+            self.font='Courier New'
         return self
 
     def isValid(self):
@@ -65,7 +67,7 @@ class GenericText(object):
                 item = numpy.array(item)
                 if popupcad.flip_y:
                     item[:,1]=-1*item[:,1]+internal_font
-                item*=1.33
+                item*=(4/3)
                 item = item.tolist()
                 generic_polygons.append(GenericPoly.gen_from_point_lists(item,[]))
 #            
