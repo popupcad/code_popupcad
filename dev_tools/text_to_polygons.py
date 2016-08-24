@@ -71,7 +71,7 @@ def text_to_polygons(text,prop,subdivision = None):
 if __name__=='__main__':
     import matplotlib.pyplot as plt
     plt.ion()
-    g = text_to_polygons('Hello')
+    g = text_to_polygons('Hello',None)
     for poly in g:
         poly = poly[:]+poly[0:1]
         poly = numpy.array(poly)
