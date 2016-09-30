@@ -20,7 +20,10 @@ def interp_2d(function,points,SUBDIVISION):
     interp = [function(t_i,*points) for t_i in t]
     return interp
     
-def text_to_polygons(text,prop,subdivision = None):
+def fix_poly(poly):
+    return [tuple(item) for item in poly]
+    
+def text_to_polygons(text,prop=None,subdivision = None):
     from matplotlib.textpath import TextPath
 #    from matplotlib.font_manager import FontProperties
 #    prop = FontProperties(family='Times New Roman',size=10)
@@ -36,16 +39,14 @@ def text_to_polygons(text,prop,subdivision = None):
     ii=0
     done = False
     while not done:
-        print(ii)
-        
         if codes[ii] == text_path.MOVETO:
             if len(polygon)>0:
-                polygons.append(polygon)
-            polygon = [tuple(vertices[ii])]
+                polygons.append(fix_poly(polygon))
+            polygon = [vertices[ii]]
             ii+=1
                 
         elif codes[ii] == text_path.LINETO:
-            polygon.append(tuple(vertices[ii]))
+            polygon.append(vertices[ii])
             ii+=1
         elif codes[ii] == text_path.CURVE3:
             curve_points = vertices[(ii-1,ii,ii+1),:]
@@ -56,7 +57,7 @@ def text_to_polygons(text,prop,subdivision = None):
             polygon.extend(interp_2d(cubic,curve_points,subdivision))
             ii+=3
         elif  codes[ii] == text_path.CLOSEPOLY:
-            polygons.append(polygon)
+            polygons.append(fix_poly(polygon))
             polygon = []
             ii+=1
         else:
@@ -64,7 +65,7 @@ def text_to_polygons(text,prop,subdivision = None):
         done = ii>=len(codes)
 
     if len(polygon)>0:
-        polygons.append(polygon)
+        polygons.append(fix_poly(polygon))
     return polygons
 
 
