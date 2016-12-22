@@ -157,7 +157,7 @@ class Sketch(popupCADFile):
                         from popupcad.geometry.vertex import DrawnPoint
                         point = DrawnPoint(numpy.array(entity.get_dxf_attrib('location')[:2]))
                         generics.append(point)
-                    elif isinstance(entity, ezdxf.modern.graphics.Spline):
+                    elif isinstance(entity, ezdxf.modern.spline.Spline):
                         knots = entity.get_knot_values()
                         control_points = entity.get_control_points()
                         weights = entity.get_weights()
