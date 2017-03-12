@@ -138,35 +138,31 @@ def sketch_operation(sketch, layerdef, layers):
 
 
 def find_rigid(generic, layerdef):
-    layer_dict = dict(
-        [(geom.id, layer) for layer, geoms in generic.geoms.items() for geom in geoms])
+    layer_dict = dict([(geom.id, layer) for layer, geoms in generic.geoms.items() for geom in geoms])
     rigid_geoms = []
     connections = []
     source_geoms = [{'id': None, 'csg': sg.Polygon()}]
     for layer in layerdef.layers:
         if layer.is_rigid:
-            rigid_geoms.extend(generic.geoms[layer])
+            new_ridid_geoms = generic.geoms[layer]
+            rigid_geoms.extend(new_ridid_geoms)
             while not not source_geoms:
                 source_geom = source_geoms.pop()
-                new_geoms = [dict(
-                    [('csg', geom.to_shapely()), ('id', geom.id)]) for geom in generic.geoms[layer]]
-                for new_geom in new_geoms:
-                    connection = source_geom[
-                        'csg'].intersection(new_geom['csg'])
+                new_ridid_shapelies = [dict([('csg', geom.to_shapely()), ('id', geom.id)]) for geom in new_ridid_geoms]
+                for new_geom in new_ridid_shapelies:
+                    connection = source_geom['csg'].intersection(new_geom['csg'])
                     if not (connection.is_empty):
                         connections.append((source_geom['id'], new_geom['id']))
-            source_geoms = new_geoms
+            source_geoms = new_ridid_shapelies
         else:
             new_source_geoms = []
             while not not source_geoms:
                 source_geom = source_geoms.pop()
-                layer_geoms = [geom.to_shapely()
-                               for geom in generic.geoms[layer]]
+                layer_geoms = [geom.to_shapely() for geom in generic.geoms[layer]]
                 for layer_geom in layer_geoms:
                     new_geom = source_geom['csg'].intersection(layer_geom)
                     if not (new_geom.is_empty):
-                        new_source_geoms.append(
-                            {'id': source_geom['id'], 'csg': new_geom})
+                        new_source_geoms.append({'id': source_geom['id'], 'csg': new_geom})
             source_geoms = new_source_geoms
 
     ids = [geom.id for geom in rigid_geoms]
@@ -188,6 +184,7 @@ def find_rigid(generic, layerdef):
 
     rigid_bodies = []
     rigid_geoms_set = set(rigid_geoms[:])
+
     while not not rigid_geoms_set:
         geom = list(rigid_geoms_set)[0]
         ii = ids.index(geom.id)
@@ -196,20 +193,54 @@ def find_rigid(generic, layerdef):
         rigid_geoms_set -= b
         rigid_bodies.append(list(b))
 
-    values = [tuple((numpy.array([popupcad.algorithms.body_detection.find_minimum_xy(
-        geom) for geom in body])).min(0)) for body in rigid_bodies]
-    rigid_bodies = popupcad.algorithms.body_detection.sort_lams(
-        rigid_bodies,
-        values)
+    values = [tuple((numpy.array([popupcad.algorithms.body_detection.find_minimum_xy(geom) for geom in body])).min(0)) for body in rigid_bodies]
+    rigid_bodies = popupcad.algorithms.body_detection.sort_lams(rigid_bodies,values)
 
     new_csgs = []
     for rigid_body in rigid_bodies:
         new_csg = Laminate(layerdef)
         for geom in rigid_body:
-            new_csg.insertlayergeoms(
-                layer_dict[
-                    geom.id], [
-                    geom.to_shapely()])
+            new_csg.insertlayergeoms(layer_dict[geom.id], [geom.to_shapely()])
         new_csgs.append(new_csg)
     return new_csgs
+
+
+def find_rigid(generic, layerdef):
+#    csg = generic.to_csg()
+        
     
+    generic_holes_removed = generic.copy()
+    for layer in generic_holes_removed.layers():
+        if layer.is_rigid:
+            for geom in generic_holes_removed.geoms[layer]:
+                geom.interiors = []                
+    generic_holes_removed_csg = generic_holes_removed.to_csg()
+    
+    for ii,layer in enumerate(layerdef.layers):
+        laminate_results = []
+        if layer.is_rigid:
+            rigid_layer_csg = generic_holes_removed_csg.layer_sequence[layer]
+
+            if ii == 0:
+                layers_to_check = [ii+1]
+            elif ii == len(layerdef.layers) - 1:
+                layers_to_check  = [ii-1]
+            else:
+                layers_to_check = [ii-1,ii+1]
+
+            laminate_result = Laminate(layerdef)
+            
+
+            for rigid_item in generic_holes_removed.geoms[layer]:
+                for jj in layers_to_check:
+                    check_layer = layerdef.layers[jj]
+                    if check_layer.is_adhesive:
+                        adhesive_layer_csg = generic_holes_removed_csg.layer_sequence[check_layer]
+                        layer_result = rigid_layer_csg.intersection(adhesive_layer_csg)
+                        laminate_result.replacelayergeoms(check_layer,layer_result)
+                        
+            laminate_results.append(laminate_result)
+                    
+    new_csgs = laminate_results
+    return new_csgs
+        
