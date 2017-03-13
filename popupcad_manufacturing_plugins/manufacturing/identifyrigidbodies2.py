@@ -23,9 +23,5 @@ class IdentifyRigidBodies2(MultiValueOperation3):
         new_csgs = popupcad.algorithms.manufacturing_functions.find_rigid(generic,layerdef)
         self.output = []
         for ii, item in enumerate(new_csgs):
-            self.output.append(
-                OperationOutput(
-                    item,
-                    'Rigid Body {0:d}'.format(ii),
-                    self))
+            self.output.append(OperationOutput(item,'Rigid Body {0:d}'.format(ii),self))
         self.output.insert(0, self.output[0])

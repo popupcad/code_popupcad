@@ -8,7 +8,7 @@ Please see LICENSE for full license.
 class Material2(object):
     editable = ['*']
 
-    def __init__(self,name,color,thickness,E1,E2,density,poisson,is_adhesive,is_rigid,is_conductive):
+    def __init__(self,name,color,thickness,E1,E2,density,poisson,is_adhesive,is_rigid,is_conductive,is_flexible):
         self.name = name
         self.color = color
         self.thickness = thickness
@@ -19,6 +19,7 @@ class Material2(object):
         self.is_adhesive = is_adhesive
         self.is_rigid = is_rigid
         self.is_conductive = is_conductive
+        self.is_flexible = is_flexible
 
         self.id = id(self)
 
@@ -29,12 +30,28 @@ class Material2(object):
         return str(self)
     
     def copy(self,identical = True):
-        new = type(self)(self.name,self.color,self.thickness,self.E1,self.E2,self.density,self.poisson,self.is_adhesive,self.is_rigid,self.is_conductive)
+        try:
+            self.is_flexible
+        except AttributeError:
+            if not (self.is_adhesive or self.is_conductive or self.is_rigid):
+                self.is_flexible = True
+            else:
+                self.is_flexible = False
+            
+        new = type(self)(self.name,self.color,self.thickness,self.E1,self.E2,self.density,self.poisson,self.is_adhesive,self.is_rigid,self.is_conductive,self.is_flexible)
+        
         if identical:
             new.id = self.id
         return new
 
     def upgrade(self):
+        try:
+            self.is_flexible
+        except AttributeError:
+            if not (self.is_adhesive or self.is_conductive or self.is_rigid):
+                self.is_flexible = True
+            else:
+                self.is_flexible = False
         return self
         
 import popupcad

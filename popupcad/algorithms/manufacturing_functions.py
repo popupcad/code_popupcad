@@ -206,20 +206,14 @@ def find_rigid(generic, layerdef):
 
 
 def find_rigid(generic, layerdef):
-#    csg = generic.to_csg()
-        
+#    generic_holes_removed = remove_holes_from_rigid(generic)
     
-    generic_holes_removed = generic.copy()
-    for layer in generic_holes_removed.layers():
-        if layer.is_rigid:
-            for geom in generic_holes_removed.geoms[layer]:
-                geom.interiors = []                
-    generic_holes_removed_csg = generic_holes_removed.to_csg()
-    
+    csg1 = generic.to_csg()
+    laminate_results = []    
+
     for ii,layer in enumerate(layerdef.layers):
-        laminate_results = []
         if layer.is_rigid:
-            rigid_layer_csg = generic_holes_removed_csg.layer_sequence[layer]
+            rigid_layer_csg = csg1.layer_sequence[layer]
 
             if ii == 0:
                 layers_to_check = [ii+1]
@@ -231,16 +225,48 @@ def find_rigid(generic, layerdef):
             laminate_result = Laminate(layerdef)
             
 
-            for rigid_item in generic_holes_removed.geoms[layer]:
+            for jj in layers_to_check:
+                check_layer = layerdef.layers[jj]
+                if check_layer.is_adhesive:
+                    adhesive_layer_csg = csg1.layer_sequence[check_layer]
+                    layer_result = rigid_layer_csg.intersection(adhesive_layer_csg)
+                    laminate_result.replacelayergeoms(check_layer,layer_result.geoms)
+                    
+            laminate_results.append(laminate_result)
+
+    laminate_results2 = []
+
+    for item in laminate_results:
+        for ii,layer in enumerate(layerdef.layers):
+            if layer.is_adhesive:
+                adhesive_layer = item.layer_sequence[layer]
+    
+                if ii == 0:
+                    layers_to_check = [ii+1]
+                elif ii == len(layerdef.layers) - 1:
+                    layers_to_check  = [ii-1]
+                else:
+                    layers_to_check = [ii-1,ii+1]
+    
+                laminate_result = Laminate(layerdef)
+                
                 for jj in layers_to_check:
                     check_layer = layerdef.layers[jj]
-                    if check_layer.is_adhesive:
-                        adhesive_layer_csg = generic_holes_removed_csg.layer_sequence[check_layer]
-                        layer_result = rigid_layer_csg.intersection(adhesive_layer_csg)
-                        laminate_result.replacelayergeoms(check_layer,layer_result)
+                    if check_layer.is_flexible:
+                        flexible_layer = csg1.layer_sequence[check_layer]
+                        layer_result = flexible_layer.intersection(adhesive_layer)
+                        laminate_result.replacelayergeoms(check_layer,layer_result.geoms)
                         
-            laminate_results.append(laminate_result)
+                laminate_results2.append(laminate_result)
                     
-    new_csgs = laminate_results
+    new_csgs = laminate_results2
     return new_csgs
-        
+
+def remove_holes_from_rigid(laminate):
+    generic_holes_removed = laminate.copy()
+    for layer in generic_holes_removed.layers():
+        if layer.is_rigid:
+            for geom in generic_holes_removed.geoms[layer]:
+                geom.interiors = []
+    return generic_holes_removed          
+
