@@ -134,49 +134,49 @@ class GenericLaminate(object):
         
         
     #Returns the thickness of the laminate
-    def getLaminateThickness(self):
-        return self.layerdef.z_values[self.layerdef.layers[-1]]
-
-    def calculateTrueVolume(self):
-        layerdef = self.layerdef
-        volume = 0
-        for layer in layerdef.layers:
-            shapes = self.geoms[layer]
-            zvalue = layer.thickness
-            for shape in shapes:
-                area = shape.trueArea()
-                zvalue = zvalue / popupcad.SI_length_scaling
-                volume += area * zvalue
-        return volume
+#    def getLaminateThickness(self):
+#        return self.layerdef.z_values[self.layerdef.layers[-1]]
+#
+#    def calculateTrueVolume(self):
+#        layerdef = self.layerdef
+#        volume = 0
+#        for layer in layerdef.layers:
+#            shapes = self.geoms[layer]
+#            zvalue = layer.thickness
+#            for shape in shapes:
+#                area = shape.trueArea()
+#                zvalue = zvalue / popupcad.SI_length_scaling
+#                volume += area * zvalue
+#        return volume
     
     #This will calculate the centeroid #REMOVE DEPECRATED CODE
-    def calculateCentroid(self): #TODO reimplement using .get_center method()
-        layerdef = self.layerdef
-        xvalues = []
-        yvalues = []
-        zvalues = []
-        for layer in layerdef.layers:
-            shapes = self.geoms[layer]
-            zvalue = layer.thickness / popupcad.SI_length_scaling            
-            for shape in shapes:
-                tris = shape.triangles3()
-                for tri in tris:
-                    for point in tri:   
-                        #Scales the mesh properly
-                        point = [float(a)/(popupcad.SI_length_scaling) for a in point]
-                        xvalues.append(point[0])
-                        yvalues.append(point[1])
-                        zvalues.append(zvalue)
-        x = sum(xvalues) / len(xvalues)
-        y = sum(yvalues) / len(yvalues)
-        z = sum(zvalues) / len(zvalues)
-        out = (x, y, z)
-        return out#[float(a)/popupcad.SI_length_scaling for a in out]
-        
-    def getDensity(self):
-        total_densities = sum([layer.density for layer in self.layers()])
-        return total_densities / len(self.layers())
-                
+#    def calculateCentroid(self): #TODO reimplement using .get_center method()
+#        layerdef = self.layerdef
+#        xvalues = []
+#        yvalues = []
+#        zvalues = []
+#        for layer in layerdef.layers:
+#            shapes = self.geoms[layer]
+#            zvalue = layer.thickness / popupcad.SI_length_scaling            
+#            for shape in shapes:
+#                tris = shape.triangles3()
+#                for tri in tris:
+#                    for point in tri:   
+#                        #Scales the mesh properly
+#                        point = [float(a)/(popupcad.SI_length_scaling) for a in point]
+#                        xvalues.append(point[0])
+#                        yvalues.append(point[1])
+#                        zvalues.append(zvalue)
+#        x = sum(xvalues) / len(xvalues)
+#        y = sum(yvalues) / len(yvalues)
+#        z = sum(zvalues) / len(zvalues)
+#        out = (x, y, z)
+#        return out#[float(a)/popupcad.SI_length_scaling for a in out]
+#        
+#    def getDensity(self):
+#        total_densities = sum([layer.density for layer in self.layers()])
+#        return total_densities / len(self.layers())
+#                
                 
         
     def getBoundingBox(self):
