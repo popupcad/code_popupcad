@@ -130,6 +130,8 @@ class GenericFile(object):
     def open_filename(cls, parent=None, openmethod=None, **openmethodkwargs):
         if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter, selectedFilter=cls.selected_filter)
+        elif qt.loaded == 'PyQt5':
+            filename, selectedfilter = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter, initialFilter=cls.selected_filter)
         else:
             filename = qg.QFileDialog.getOpenFileName(parent, 'Open', cls.lastdir(), filter=cls.file_filter)
         if filename:
@@ -165,6 +167,8 @@ class GenericFile(object):
 
         if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, selectedFilter=self.selected_filter)
+        elif qt.loaded == 'PyQt5':
+            filename, selectedfilter = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter, initialFilter=self.selected_filter)
         else:
             filename = qg.QFileDialog.getSaveFileName(parent, "Save As", tempfilename, filter=self.file_filter)
         if not filename:

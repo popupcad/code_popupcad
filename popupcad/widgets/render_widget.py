@@ -62,6 +62,8 @@ class RenderWidget(qg.QWidget):
     def select_directory(self):
         if qt.loaded == 'PySide':
             filename, selectedfilter = qg.QFileDialog.getOpenFileName(self, '', dir=self.directory_name.text(), filter='*.cad')
+        elif qt.loaded == 'PyQt5':
+            filename, selectedfilter = qg.QFileDialog.getOpenFileName(self, '', dir=self.directory_name.text(), filter='*.cad')
         else:
             filename = qg.QFileDialog.getOpenFileName(self, '', dir=self.directory_name.text(), filter='*.cad')
         
