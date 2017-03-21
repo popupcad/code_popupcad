@@ -20,14 +20,10 @@ class IdentifyRigidBodies2(MultiValueOperation3):
         generic = design.op_from_ref(
             operation_ref).output[output_index].generic_laminate()
         layerdef = design.return_layer_definition()
-        new_csgs = popupcad.algorithms.manufacturing_functions.find_rigid(
-            generic,
-            layerdef)
+        new_csg = popupcad.algorithms.manufacturing_functions.find_rigid(generic,layerdef)
+        new_generic = new_csg.to_generic_laminate()
+        laminates = popupcad.algorithms.body_detection.find(new_generic)
         self.output = []
-        for ii, item in enumerate(new_csgs):
-            self.output.append(
-                OperationOutput(
-                    item,
-                    'Rigid Body {0:d}'.format(ii),
-                    self))
-        self.output.insert(0, self.output[0])
+        for ii, item in enumerate([new_csg]+laminates):
+            self.output.append(OperationOutput(item,'Rigid Body {0:d}'.format(ii),self))
+

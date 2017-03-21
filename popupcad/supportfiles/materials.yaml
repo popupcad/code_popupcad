@@ -8,6 +8,7 @@ default_material_types:
     is_adhesive: true
     is_conductive: false
     is_rigid: false
+    is_flexible: false
     name: adhesive
     poisson: 0.5
     thickness: 0.025
@@ -20,6 +21,7 @@ default_material_types:
     is_adhesive: false
     is_conductive: false
     is_rigid: false
+    is_flexible: true
     name: flexible
     poisson: 0.5
     thickness: 0.025
@@ -32,6 +34,7 @@ default_material_types:
     is_adhesive: false
     is_conductive: false
     is_rigid: true
+    is_flexible: false
     name: rigid
     poisson: 0.5
     thickness: 0.025

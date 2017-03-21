@@ -136,80 +136,48 @@ def sketch_operation(sketch, layerdef, layers):
     return laminate
 
 
-
 def find_rigid(generic, layerdef):
-    layer_dict = dict(
-        [(geom.id, layer) for layer, geoms in generic.geoms.items() for geom in geoms])
-    rigid_geoms = []
-    connections = []
-    source_geoms = [{'id': None, 'csg': sg.Polygon()}]
-    for layer in layerdef.layers:
-        if layer.is_rigid:
-            rigid_geoms.extend(generic.geoms[layer])
-            while not not source_geoms:
-                source_geom = source_geoms.pop()
-                new_geoms = [dict(
-                    [('csg', geom.to_shapely()), ('id', geom.id)]) for geom in generic.geoms[layer]]
-                for new_geom in new_geoms:
-                    connection = source_geom[
-                        'csg'].intersection(new_geom['csg'])
-                    if not (connection.is_empty):
-                        connections.append((source_geom['id'], new_geom['id']))
-            source_geoms = new_geoms
-        else:
-            new_source_geoms = []
-            while not not source_geoms:
-                source_geom = source_geoms.pop()
-                layer_geoms = [geom.to_shapely()
-                               for geom in generic.geoms[layer]]
-                for layer_geom in layer_geoms:
-                    new_geom = source_geom['csg'].intersection(layer_geom)
-                    if not (new_geom.is_empty):
-                        new_source_geoms.append(
-                            {'id': source_geom['id'], 'csg': new_geom})
-            source_geoms = new_source_geoms
-
-    ids = [geom.id for geom in rigid_geoms]
-    m = len(ids)
-    C = numpy.zeros((m, m), dtype=bool)
-    for id1, id2 in connections:
-        ii = ids.index(id1)
-        jj = ids.index(id2)
-        C[ii, jj] = True
-        C[jj, ii] = True
-
-    done = False
-    D_last = C.copy()
-
-    while not done:
-        D = D_last.dot(C) + C
-        done = (D == D_last).all()
-        D_last = D
-
-    rigid_bodies = []
-    rigid_geoms_set = set(rigid_geoms[:])
-    while not not rigid_geoms_set:
-        geom = list(rigid_geoms_set)[0]
-        ii = ids.index(geom.id)
-        a = list(set((D[ii, :] == True).nonzero()[0].tolist() + [ii]))
-        b = set(numpy.array(rigid_geoms)[a])
-        rigid_geoms_set -= b
-        rigid_bodies.append(list(b))
-
-    values = [tuple((numpy.array([popupcad.algorithms.body_detection.find_minimum_xy(
-        geom) for geom in body])).min(0)) for body in rigid_bodies]
-    rigid_bodies = popupcad.algorithms.body_detection.sort_lams(
-        rigid_bodies,
-        values)
-
-    new_csgs = []
-    for rigid_body in rigid_bodies:
-        new_csg = Laminate(layerdef)
-        for geom in rigid_body:
-            new_csg.insertlayergeoms(
-                layer_dict[
-                    geom.id], [
-                    geom.to_shapely()])
-        new_csgs.append(new_csg)
-    return new_csgs
     
+    csg1 = generic.to_csg()
+    laminate_results = []    
+
+    for ii,layer in enumerate(layerdef.layers):
+        if layer.is_rigid:
+            rigid_layer_csg = csg1.layer_sequence[layer]
+
+            laminate_result = Laminate(layerdef)
+            laminate_result.replacelayergeoms(layer,rigid_layer_csg.geoms)
+
+            lower_layers = layerdef.layers[ii::-1]
+            upper_layers = layerdef.layers[ii:]
+
+
+            for list1 in [lower_layers,upper_layers]:
+                a = list1[:-1]
+                b = list1[1:]
+                c = zip(a,b)
+                for aa,bb in c:
+                    if aa.is_adhesive or bb.is_adhesive:
+                        if bb.is_rigid:
+                            break
+                        csga = laminate_result.layer_sequence[aa]
+                        csgb = csg1.layer_sequence[bb]
+                        layer_result = csga.intersection(csgb)
+                        laminate_result.replacelayergeoms(bb,layer_result.geoms)
+                    else:
+                        break
+                        
+            laminate_results.append(laminate_result)
+
+    laminate_results = [item for item in laminate_results if not item.isEmpty()]
+    result = Laminate.unaryoperation(laminate_results,'union')
+    return result
+
+def remove_holes_from_rigid(laminate):
+    generic_holes_removed = laminate.copy()
+    for layer in generic_holes_removed.layers():
+        if layer.is_rigid:
+            for geom in generic_holes_removed.geoms[layer]:
+                geom.interiors = []
+    return generic_holes_removed          
+
