@@ -10,7 +10,7 @@ import qt.QtGui as qg
 import popupcad
 
 import qt.qt_hacks as qh
-
+import qt
 
 class ZoomHandling(object):
 
@@ -86,7 +86,14 @@ class ZoomHandling(object):
         p1 = event.pos()
         p2 = self.mapToScene(p1)
 
-        if event.delta() < 0:
+
+        if qt.loaded=='PyQt5':
+            delta = event.angleDelta().y()
+        else:
+            delta = event.delta()
+                
+
+        if delta < 0:
             zoom = 1. / popupcad.zoom_scale_factor
         else:
             zoom = popupcad.zoom_scale_factor

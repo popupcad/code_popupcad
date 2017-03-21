@@ -53,6 +53,7 @@ class Laminate(IterableLaminate):
     def copy(self):
         new = type(self)(self.layerdef)
         new.layer_sequence = self.layer_sequence.copy()
+        return new
 
     def upgrade(self, *args, **kwargs):
         return self
