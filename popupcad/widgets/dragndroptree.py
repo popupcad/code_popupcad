@@ -287,7 +287,8 @@ class DraggableTreeWidget(qg.QTreeWidget):
                     item = self.topLevelItem(ii)
                 else:
                     item = self.topLevelItem(ii).child(jj - 1)
-                self.setItemSelected(item, True)
+#                self.setItemSelected(item, True)
+                item.setSelected(True)
 
     def currentRefs(self):
         '''This only works with OperationList, but I haven't made a new subclass'''

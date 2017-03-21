@@ -18,4 +18,4 @@ elif 'pyside' in argv:
     loaded = 'PySide'
 
 else:
-    loaded = 'PyQt4'
+    loaded = 'PyQt5'
