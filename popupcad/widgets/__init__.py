@@ -6,7 +6,7 @@ Please see LICENSE for full license.
 """
 from . import listeditor
 from . import materialselection
-from . import errorlog
+from . import textwindow
 from . import dragndroplist
 from . import dragndroptree
 from . import listmanager

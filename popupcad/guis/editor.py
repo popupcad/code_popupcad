@@ -41,7 +41,7 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
         :raises: nothing
         """
         super(Editor, self).__init__(parent)
-        self.error_log = popupcad.widgets.errorlog.ErrorLog()
+        self.error_log = popupcad.widgets.textwindow.TextWindow()
         self.safe_init(parent, **kwargs)
 
     
