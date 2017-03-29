@@ -222,6 +222,18 @@ class GenericLaminate(object):
             I+=geom.inertia_tensor(center_of_mass,*args)
         return volume_total,mass_total,center_of_mass,I
 
+    def cross_sectional_area(self):
+        import popupcad.algorithms.keepout as ka
+        a = self.to_csg()
+        b = ka.laserkeepout(a)
+        layer0 = b.layerdef.layers[0]
+        area = 0
+        for item in b.layer_sequence[layer0].geoms:
+            area+=item.area
+        area/=(popupcad.csg_processing_scaling**2)
+        area/=(popupcad.SI_length_scaling**2)
+        return area
+
     def all_geoms(self):
         allgeoms = []
         for layer in self.layerdef.layers:

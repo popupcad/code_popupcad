@@ -126,11 +126,7 @@ class Laminate(IterableLaminate):
             lsout.replacelayergeoms(layer, result.geoms)
         return lsout
 
-    def unarylayeroperation(
-            self,
-            functionname,
-            selectedinputlayers,
-            selectedoutputlayers):
+    def unarylayeroperation(self,functionname,selectedinputlayers,selectedoutputlayers):
         selectedinputlayers = selectedinputlayers[:]
         layer1 = self.layer_sequence[selectedinputlayers.pop(0)]
         for layer in selectedinputlayers:

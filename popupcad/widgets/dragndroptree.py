@@ -338,7 +338,8 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
     def get_mass_props(self,output):
         gl = output.generic_laminate()
         volume_total,mass_total,center_of_mass,I = gl.mass_properties()
-        string = 'volume: '+str(volume_total)+'\nmass = '+str(mass_total)+'\ncenter of mass: \n'+str(center_of_mass)+'\nInertia = \n'+str(I)
+        csa = gl.cross_sectional_area()
+        string = 'Volume:\n'+str(volume_total)+'\nMass:\n'+str(mass_total)+'\ncenter of mass: \n'+str(center_of_mass)+'\nInertia : \n'+str(I)+'\nCross-Sectional Area:\n'+str(csa)
         import popupcad.widgets.textwindow as tw
         dialog = qg.QDialog()
         

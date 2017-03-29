@@ -32,8 +32,8 @@ class TextWindow(qg.QWidget):
         current = self.te.toPlainText()
         current += '\n' + text
         self.te.setText(current)
-#    def sizeHint(self):
-#        return qc.QSize(800,600)
+    def sizeHint(self):
+        return qc.QSize(640,480)
 if __name__ == "__main__":
     import sys
     app = qg.QApplication(sys.argv)
