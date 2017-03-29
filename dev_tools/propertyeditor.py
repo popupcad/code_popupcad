@@ -49,7 +49,6 @@ class Parent(object):
         self.dict1 = {'a': 5, 'b': 6.6}
         self.recursiveclass = Depth()
 
-
 class ParentItem(object):
     valuekeys = [int, float, bool, str]
     listkeys = [tuple, list]
@@ -108,25 +107,10 @@ class ParentItem(object):
             pass
         elif (self.valuetype == tuple) or (self.valuetype == list):
             for ii, item in enumerate(self.value):
-                self.addChild(
-                    TreeWidgetItem(
-                        parent,
-                        self,
-                        '[{index:0d}]'.format(
-                            index=ii),
-                        item,
-                        self.level +
-                        1))
+                self.addChild(TreeItem(parent,self,'[{index:0d}]'.format(index=ii),item,self.level + 1))
         elif self.valuetype == dict:
             for key, value in self.value.items():
-                self.addChild(
-                    TreeWidgetItem(
-                        parent,
-                        self,
-                        key,
-                        value,
-                        self.level +
-                        1))
+                self.addChild(TreeItem(parent,self,key,value,self.level + 1))
         else:
             keys = dir(self.value)
 
@@ -154,11 +138,7 @@ class ParentItem(object):
             except AttributeError:
                 pass
 
-            keys = list(set(keys) - set(['hidden',
-                                         'editable',
-                                         'deletable',
-                                         'new_attr',
-                                         'attr_names_editable']))
+            keys = list(set(keys) - set(['hidden','editable','deletable','new_attr','attr_names_editable']))
 
             classkeys = []
             for key in keys:
@@ -167,27 +147,15 @@ class ParentItem(object):
                     pass
                 else:
                     classkeys.append(key)
+
             classkeys.sort()
             for key in classkeys:
                 value = getattr(self.value, key)
-                self.addChild(
-                    TreeWidgetItem(
-                        parent,
-                        self,
-                        key,
-                        value,
-                        self.level +
-                        1))
+                self.addChild(TreeItem(parent,self,key,value,self.level +1))
 
             try:
                 for key, value in self.value.new_attr.items():
-                    self.addChild(
-                        InsertNewWidgetItem(
-                            parent,
-                            self,
-                            self.level + 1,
-                            key,
-                            value))
+                    self.addChild(InsertNewWidgetItem(parent,self,self.level + 1,key,value))
             except AttributeError:
                 pass
             self.sortChildren(0, qc.Qt.AscendingOrder)
@@ -199,7 +167,113 @@ class ParentItem(object):
     def is_editable(self, column):
         return False
 
-class TreeWidgetItem(qg.QTreeWidgetItem, ParentItem):
+class Item(object):
+    valuekeys = [int, float, bool, str]
+    listkeys = [tuple, list]
+
+    def addChild(self, item):
+        self.children.append(item)
+        self.structureparent.addTopLevelItem(item)
+
+    def removeattr(self, key):
+        try:
+            delattr(self.value, key)
+        except AttributeError:
+            pass
+
+    def setchild(self, key, value):
+        if self.valuetype in self.valuekeys:
+            raise Exception
+        elif self.valuetype == list:
+            index = int(key[1:-1])
+            self.value[index] = value
+#            self.updateparent()
+        elif self.valuetype == tuple:
+            index = int(key[1:-1])
+            oldtuple = list(self.value)
+            oldtuple[index] = value
+            self.value = tuple(oldtuple)
+            self.updateparent()
+        elif self.valuetype == dict:
+            self.value[key] = value
+        else:
+            setattr(self.value, key, value)
+
+    def updateparent(self):
+        pass
+
+    def parent(self):
+        return self.structureparent
+
+    def sortChildren(self, *args, **kwargs):
+        self.structureparent.sortItems(*args, **kwargs)
+
+    def generatechildren(self, parent):
+        if self.valuetype in self.valuekeys:
+            pass
+        elif (self.valuetype == tuple) or (self.valuetype == list):
+            for ii, item in enumerate(self.value):
+                self.addChild(TreeItem(parent,self,'[{index:0d}]'.format(index=ii),item,self.level + 1))
+        elif self.valuetype == dict:
+            for key, value in self.value.items():
+                self.addChild(TreeItem(parent,self,key,value,self.level + 1))
+        else:
+            keys = dir(self.value)
+
+            class dummy(object):
+                pass
+            commonkeys = dir(dummy())
+            keys = list(set(keys) - set(commonkeys))
+
+            try:
+                keys = list(set(keys) - set(self.value.hidden))
+            except AttributeError:
+                pass
+
+            keys2 = []
+            for key in keys:
+                try:
+                    if key[0] != '_':
+                        keys2.append(key)
+                except IndexError:
+                    keys2.append(key)
+            keys = keys2
+
+            try:
+                keys = list(set(keys).intersection(self.value.display))
+            except AttributeError:
+                pass
+
+            keys = list(set(keys) - set(['hidden','editable','deletable','new_attr','attr_names_editable']))
+
+            classkeys = []
+            for key in keys:
+                value = getattr(self.value, key)
+                if hasattr(value, '__call__'):
+                    pass
+                else:
+                    classkeys.append(key)
+
+            classkeys.sort()
+            for key in classkeys:
+                value = getattr(self.value, key)
+                self.addChild(TreeItem(parent,self,key,value,self.level +1))
+
+            try:
+                for key, value in self.value.new_attr.items():
+                    self.addChild(InsertNewWidgetItem(parent,self,self.level + 1,key,value))
+            except AttributeError:
+                pass
+            self.sortChildren(0, qc.Qt.AscendingOrder)
+
+    def refresh(self):
+        self.removeAllChildren()
+        self.generatechildren(self.structureparent)
+
+    def is_editable(self, column):
+        return False    
+
+class TreeItem(qg.QTreeWidgetItem, Item):
     depthlimit = 5
 
     def __init__(self, parent, dataparent, key, value, level):
@@ -210,9 +284,8 @@ class TreeWidgetItem(qg.QTreeWidgetItem, ParentItem):
         self.valuetype = type(value)
         self.level = level
 
-        qg.QTreeWidgetItem.__init__(self, parent, [key, str(value)])
-        self.setFlags(qc.Qt.ItemIsEditable |
-                      qc.Qt.ItemIsEnabled | qc.Qt.ItemIsSelectable)
+        qg.QTreeWidgetItem.__init__(self, parent)
+        self.setFlags(qc.Qt.ItemIsEditable | qc.Qt.ItemIsEnabled | qc.Qt.ItemIsSelectable)
 
         if self.level < self.depthlimit:
             self.generatechildren(self)
@@ -290,15 +363,9 @@ class TreeWidgetItem(qg.QTreeWidgetItem, ParentItem):
                 return str(self.value)
 
 
-class InsertNewWidgetItem(TreeWidgetItem):
+class InsertNewWidgetItem(TreeItem):
 
-    def __init__(
-            self,
-            parent,
-            dataparent,
-            level,
-            key='<new string>',
-            value=''):
+    def __init__(self,parent,dataparent,level,key='<new string>',value=''):
         self.dataparent = dataparent
         self.key = key
         self.value = value
@@ -306,8 +373,7 @@ class InsertNewWidgetItem(TreeWidgetItem):
         self.level = level
 
         qg.QTreeWidgetItem.__init__(self, parent, [key, str(value)])
-        self.setFlags(qc.Qt.ItemIsEditable |
-                      qc.Qt.ItemIsEnabled | qc.Qt.ItemIsSelectable)
+        self.setFlags(qc.Qt.ItemIsEditable | qc.Qt.ItemIsEnabled | qc.Qt.ItemIsSelectable)
 
         if self.level < self.depthlimit:
             self.generatechildren(self)
@@ -323,13 +389,7 @@ class InsertNewWidgetItem(TreeWidgetItem):
                     newvalue = self.value
                 else:
                     newvalue = self.value.copy()
-                newtwi = TreeWidgetItem(
-                    self.parent(),
-                    self.dataparent,
-                    value,
-                    newvalue,
-                    self.dataparent.level +
-                    1)
+                newtwi = TreeItem(self.parent(),self.dataparent,value,newvalue,self.dataparent.level +1)
                 self.dataparent.addChild(newtwi)
                 try:
                     self.dataparent.value.editable.append(value)
@@ -338,11 +398,11 @@ class InsertNewWidgetItem(TreeWidgetItem):
                 newtwi.updateparent()
                 self.dataparent.sortChildren(0, qc.Qt.AscendingOrder)
 
-
 class PropertyEditor(qg.QTreeWidget):
 
     def __init__(self, data, *args, **kwargs):
-        super(PropertyEditor, self).__init__(*args, **kwargs)
+        qg.QTreeWidget.__init__(self,*args,**kwargs)
+#        super(PropertyEditor, self).__init__(*args, **kwargs)
         self.setHeaderLabels(['key', 'value'])
         self.parent = ParentItem(data, self)
         self.setAlternatingRowColors(True)
