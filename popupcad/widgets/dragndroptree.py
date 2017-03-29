@@ -319,21 +319,14 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
             menu.addAction(qg.QAction('rename...',menu,triggered=lambda: self.edit(index)))
             menu.addAction(qg.QAction('delete',menu,triggered=lambda: self.delete_indeces([index])))
             menu.addAction(qg.QAction('parents',menu,triggered=lambda: self.show_parents(item)))
-            menu.addAction(
-                qg.QAction(
-                    'children',
-                    menu,
-                    triggered=lambda: self.show_children(item)))
-            menu.addAction(
-                qg.QAction(
-                    'edit description...',
-                    menu,
-                    triggered=item.userdata.edit_description))
-            menu.addAction(
-                qg.QAction(
-                    'set main image',
-                    menu,
-                    triggered=lambda: self.set_main_image(item)))
+            menu.addAction(qg.QAction('children',menu,triggered=lambda: self.show_children(item)))
+            menu.addAction(qg.QAction('edit description...',menu,triggered=item.userdata.edit_description))
+            menu.addAction(qg.QAction('set main image',menu,triggered=lambda: self.set_main_image(item)))
+            menu.addAction(qg.QAction('mass properties...',menu,triggered=lambda: self.get_mass_props(item.userdata.output[0])))
+            menu.exec_(self.mapToGlobal(point))
+        else:
+            menu = qg.QMenu()
+            menu.addAction(qg.QAction('mass properties...',menu,triggered=lambda: self.get_mass_props(item.userdata)))
             menu.exec_(self.mapToGlobal(point))
 
     def set_main_image(self, item):
@@ -341,6 +334,23 @@ class DirectedDraggableTreeWidget(DraggableTreeWidget):
 #        if isinstance(item, ParentItem):
 #            self.design.set_main_operation(self.currentRefs()[0])
         pass
+
+    def get_mass_props(self,output):
+        gl = output.generic_laminate()
+        volume_total,mass_total,center_of_mass,I = gl.mass_properties()
+        string = 'volume: '+str(volume_total)+'\nmass = '+str(mass_total)+'\ncenter of mass: \n'+str(center_of_mass)+'\nInertia = \n'+str(I)
+        import popupcad.widgets.textwindow as tw
+        dialog = qg.QDialog()
+        
+        widget = tw.TextWindow()
+        widget.appendText(string)
+        layout = qg.QVBoxLayout()
+        layout.addWidget(widget)
+        dialog.setLayout(layout)
+        widget.close_button.clicked.connect(dialog.close)
+        dialog.exec_()
+#        widget.show()
+        
 
     def show_parents(self, item):
         self.tree_generator()
