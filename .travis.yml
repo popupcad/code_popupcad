@@ -37,7 +37,7 @@ install:
   # Replace dep1 dep2 ... with your dependencies
   - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION setuptools cython pyyaml shapely numpy scipy sympy pyopengl pyqt pyqtgraph matplotlib
   - source activate test-environment
-  - pip install pypoly2tri ezdxf
+  - pip install pypoly2tri ezdxf idealab_tools
  # - python setup.py install  
   - export PYTHONPATH=$PYTHONPATH:$HOME/
   
@@ -51,4 +51,4 @@ install:
 # command to run tests
 script: 
 #  - python popupcad_tests/test_gui.py --qt4
-  - python popupcad_tests/load_test_files.py
+  - python popupcad_tests/load_test_files.py --qt4
