@@ -105,7 +105,7 @@ class BaseVertex(object):
             self.setpos((self.getpos()[0], value))
 
     def properties(self):
-        from dev_tools.propertyeditor import PropertyEditor
+        from idealab_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
 
     def copy(self, identical=True):

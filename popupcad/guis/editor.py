@@ -299,7 +299,7 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
         self.layerlistwidget.selectAll()
     
     def editlaminate(self):
-        from dev_tools.propertyeditor import PropertyEditor
+        from idealab_tools.propertyeditor import PropertyEditor
         dialog = self.builddialog(PropertyEditor(self.design.return_layer_definition().layers))
         dialog.exec_()
         del self.design.return_layer_definition().z_values

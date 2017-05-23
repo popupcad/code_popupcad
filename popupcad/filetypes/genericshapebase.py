@@ -176,7 +176,7 @@ class GenericShapeBase(object):
         return path
 
     def properties(self):
-        from dev_tools.propertyeditor import PropertyEditor
+        from idealab_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
 
     def addvertex_exterior(self, vertex, special=False):

@@ -198,7 +198,7 @@ class Constraint(object):
         return []
 
     def properties(self):
-        from dev_tools.propertyeditor import PropertyEditor
+        from idealab_tools.propertyeditor import PropertyEditor
         return PropertyEditor(self)
 
     def cleanup(self, objects):
