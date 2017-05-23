@@ -193,7 +193,6 @@ class Design(popupCADFile):
 
     def upgrade_operations2(self,old_layer_def,new_layer_def):
         from popupcad.manufacturing.freeze import Freeze
-        from popupcad.manufacturing.placeop8 import PlaceOperation8
         newoperations = []
         for op0 in self.operations:
             if isinstance(op0,Freeze):
@@ -211,9 +210,6 @@ class Design(popupCADFile):
                 else:
                     raise TypeError()
                 newoperations.append(op0)
-            elif isinstance(op0,PlaceOperation8):
-                op1 = op0.upgrade_special(self)
-                newoperations.append(op1)
             else:
                 newoperations.append(op0)
 
