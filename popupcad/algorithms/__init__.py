@@ -17,9 +17,7 @@ from . import points
 from . import python_syntax_formatter
 from . import removability
 from . import spline_functions
-from . import tetrahedron
 from . import toolclearance
-from . import triangle
 from . import triangulate
 from . import web
 

@@ -185,7 +185,7 @@ class GenericPoly(GenericShapeBase):
     def inertia_tensor(self,about_point,density,z_lower,z_upper,tris):
         z_lower = z_lower/popupcad.SI_length_scaling
         z_upper = z_upper/popupcad.SI_length_scaling
-        import popupcad.algorithms.triangle as triangle
+        import idealab_tools.geometry.triangle as triangle
         tris3 = [triangle.Triangle(*tri) for tri in tris]
         tets = [tet for tri in tris3 for tet in tri.extrude(z_lower,z_upper)]
         Is = numpy.array([tet.I(density,about_point) for tet in tets])
