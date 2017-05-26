@@ -27,7 +27,7 @@ class GenericLaminate(object):
         from popupcad.filetypes.laminate import Laminate
         new = Laminate(self.layerdef)
         for ii, layer in enumerate(self.layerdef.layers):
-            geoms = [item.to_shapely() for item in self.geoms[layer]]
+            geoms = [item.to_shapely(scaling = popupcad.csg_processing_scaling) for item in self.geoms[layer]]
             new.replacelayergeoms(layer, geoms)
         return new
 
@@ -132,6 +132,18 @@ class GenericLaminate(object):
         new = type(self)(self.layerdef, geoms)
         return new
         
+    def scale(self,dxdy):     
+        for key, shapes in self.geoms.items():
+            for shape in shapes:
+                shape.scale(dxdy)
+        return self
+
+    def shift(self,dxdy):     
+        for key, shapes in self.geoms.items():
+            for shape in shapes:
+                shape.shift(dxdy)
+        return self
+
         
     #Returns the thickness of the laminate
 #    def getLaminateThickness(self):
@@ -190,7 +202,7 @@ class GenericLaminate(object):
             if (len(shapes) == 0) : #In case there are no shapes.
                 continue
             all_shapes.extend(shapes)
-        all_shapes = [shape.to_shapely() for shape in shapes]
+        all_shapes = [shape.to_shapely(scaling = popupcad.csg_processing_scaling) for shape in shapes]
         master_shape = all_shapes[0]
         for shape in all_shapes[1:]:
             master_shape = master_shape.union(shape)
@@ -269,5 +281,15 @@ class GenericLaminate(object):
 
     def createDAEFromShape(self, *args,**kwargs):
         import popupcad_gazebo.laminate_adders
-        return popupcad_gazebo.laminate_adders.createDAEFromShape(self, *args,**kwargs)            
+        return popupcad_gazebo.laminate_adders.createDAEFromShape(self, *args,**kwargs)           
+    
+    def to_foldable_robotics(self,scaling = 1):
+        from foldable_robotics.laminate import Laminate
+        from foldable_robotics.layer import Layer
+        layers = []
+        for layer in self.layers():
+            geoms = [item.to_shapely(scaling) for item in self.geoms[layer]]
+            layers.append(Layer(*geoms))
+        lam = Laminate(*layers)
+        return lam
         

@@ -41,8 +41,8 @@ class GenericLine(GenericShapeBase):
         path.addPolygon(self.generateQPolygon(exterior))
         return path
 
-    def to_shapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
+    def to_shapely(self,scaling = 1):
+        exterior_p = self.exteriorpoints(scaling = scaling)
         obj = sg.LineString(exterior_p)
         return obj
 
@@ -76,8 +76,8 @@ class GenericPolyline(GenericShapeBase):
         path.addPolygon(self.generateQPolygon(exterior))
         return path
 
-    def to_shapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
+    def to_shapely(self,scaling = 1):
+        exterior_p = self.exteriorpoints(scaling = scaling)
         try:
             obj = sg.LineString(exterior_p)
             return obj
@@ -150,9 +150,9 @@ class GenericPoly(GenericShapeBase):
         tris = (numpy.array(tris)/popupcad.triangulation_scaling).tolist()
         return tris
 
-    def to_shapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
-        interiors_p = self.interiorpoints(scaling = popupcad.csg_processing_scaling)
+    def to_shapely(self,scaling = 1):
+        exterior_p = self.exteriorpoints(scaling = scaling)
+        interiors_p = self.interiorpoints(scaling = scaling)
         obj = sg.Polygon(exterior_p, interiors_p)
         return obj
 
@@ -289,8 +289,8 @@ class GenericCircle(GenericShapeBase):
         path.addEllipse(rect)
         return path
 
-    def to_shapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
+    def to_shapely(self,scaling = 1):
+        exterior_p = self.exteriorpoints(scaling = scaling)
         exterior = numpy.array(exterior_p)
         center = exterior[0]
         v = exterior[1] - exterior[0]
@@ -323,8 +323,8 @@ class GenericTwoPointRect(GenericShapeBase):
         path.addRect(rect)
         return path
 
-    def to_shapely(self):
-        exterior_p = self.exteriorpoints(scaling = popupcad.csg_processing_scaling)
+    def to_shapely(self,scaling = 1):
+        exterior_p = self.exteriorpoints(scaling = scaling)
         corner1 = exterior_p[0]
         corner2 = (exterior_p[0][0], exterior_p[1][1])
         corner3 = exterior_p[1]

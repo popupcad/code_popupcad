@@ -54,7 +54,7 @@ class GenericShapeBase(object):
             return False
             
     def is_valid(self):
-        shapely = self.to_shapely()
+        shapely = self.to_shapely(scaling = popupcad.csg_processing_scaling)
         if not shapely.is_simple:
             raise(NotSimple)
         if not shapely.is_valid:
@@ -383,7 +383,7 @@ class GenericShapeBase(object):
         self.exterior.append(vertex)
 
     def output_dxf(self,model_space,layer = None):
-        csg = self.to_shapely()
+        csg = self.to_shapely(scaling = popupcad.csg_processing_scaling)
         new = popupcad.algorithms.csg_shapely.to_generic(csg)
         return new.output_dxf(model_space,layer)
 

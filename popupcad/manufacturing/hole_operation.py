@@ -218,7 +218,7 @@ class HoleOperation(Operation2, LayerBasedOperation):
 
         allgeoms4 = []
         for geom in hingelines:
-            geom = geom.to_shapely()
+            geom = geom.to_shapely(scaling = popupcad.csg_processing_scaling)
             laminate = Laminate(layerdef)
             for layer in sublaminate_layers:
                 laminate.replacelayergeoms(layer, [geom])

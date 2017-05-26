@@ -287,7 +287,7 @@ class JointOperation3(Operation2, LayerBasedOperation):
 
         allgeoms4 = []
         for geom in hingelines:
-            geom = geom.to_shapely()
+            geom = geom.to_shapely(scaling = popupcad.csg_processing_scaling)
             laminate = Laminate(layerdef)
             for layer in sublaminate_layers:
                 laminate.replacelayergeoms(layer, [geom])
@@ -396,6 +396,8 @@ class JointOperation3(Operation2, LayerBasedOperation):
         self.output.extend([OperationOutput(item,'Body {0:d}'.format(ii),self) for ii,item in enumerate(bodies)])        
         self.output.extend([OperationOutput(item,'Connection {0:d}'.format(ii),self) for ii,item in enumerate(connections2.values())])        
         self.output.insert(0, self.output[3])
+        
+        self.layer_def = layerdef
 
     def switch_layer_defs(self, layerdef_old, layerdef_new):
         new = self.copy()
@@ -431,7 +433,44 @@ class JointOperation3(Operation2, LayerBasedOperation):
             child_queue.extend([child for child in children if child not in visited_set])
         return hierarchy_map    
 
-    def save_joint_def(self,filename):
+    def save_joint_def_old(self,filename):
         import yaml
         with open(filename, 'w') as f:
             yaml.dump((self.bodies_generic,self.connections,self.fixed_bodies,self.all_joint_props),f)
+
+    def save_joint_def(self,filename):
+        import yaml
+        from foldable_robotics.dynamics_info import DynamicsInfo, JointProps
+        bodies = []
+        scaling = 1/popupcad.SI_length_scaling
+
+        for item in self.bodies_generic:
+            item = item.copy()
+            item = item.scale(scaling)
+            body = item.to_foldable_robotics(1)
+            body.id = item.id
+            bodies.append(body.export_dict())
+
+        connections = []
+        for line,(item1,item2) in self.connections:
+            points = tuple(line.exteriorpoints(scaling))
+            ids = (item1.id,item2.id)
+            connections.append((points,ids))
+            
+        newtonian = [item.id for item in self.fixed_bodies]
+        
+        joint_props = []
+        for stiffness,damping,preload,limit_neg,limit_pos,z_pos in self.all_joint_props:
+            z_pos *= scaling
+            joint_props.append(JointProps(stiffness,damping,preload,limit_neg,limit_pos,z_pos))
+            
+        material_properties = []
+        for prop in self.layer_def.layers:
+            prop = prop.copy()
+            prop.scale_length(scaling)
+            material_properties.append(prop.to_foldable())
+        
+        d = DynamicsInfo(bodies,connections,newtonian,joint_props,material_properties)
+        
+        with open(filename, 'w') as f:
+            yaml.dump(d,f)

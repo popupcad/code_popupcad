@@ -53,6 +53,14 @@ class Material2(object):
             else:
                 self.is_flexible = False
         return self
+
+    def scale_length(self,factor):
+        self.thickness *= factor
+        
+    def to_foldable(self):
+        from foldable_robotics.dynamics_info import MaterialProperty
+        prop = MaterialProperty(self.name,self.color,self.thickness,self.E1,self.E2,self.density,self.poisson,self.is_adhesive,self.is_rigid,self.is_conductive,self.is_flexible)
+        return prop
         
 import popupcad
 import yaml

@@ -8,6 +8,7 @@ Please see LICENSE for full license.
 from popupcad.filetypes.laminate import Laminate
 from popupcad.filetypes.operation2 import Operation2
 
+import popupcad
 
 import qt.QtCore as qc
 import qt.QtGui as qg
@@ -76,7 +77,7 @@ class Freeze(Operation2):
         layerdef = design.return_layer_definition()
         csg = Laminate(layerdef)
         for layer in layerdef.layers:
-            shapelygeoms = [geom.to_shapely() for geom in self.generic.geoms[layer] if geom.is_valid_bool()]
+            shapelygeoms = [geom.to_shapely(scaling = popupcad.csg_processing_scaling) for geom in self.generic.geoms[layer] if geom.is_valid_bool()]
             csg.insertlayergeoms(layer, shapelygeoms)
         return csg
 

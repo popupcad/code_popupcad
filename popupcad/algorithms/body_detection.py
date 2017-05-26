@@ -6,7 +6,7 @@ Please see LICENSE for full license.
 """
 
 import numpy
-
+import popupcad
 
 def find_minimum_xy(geom):
     points = numpy.array(geom.exteriorpoints())
@@ -43,7 +43,7 @@ def find(generic_laminate):
         for item_id in gs:
             geom = geom_dict_whole[item_id]
             if geom.is_valid_bool():
-                laminate.insertlayergeoms(layer_dict[item_id], [geom.to_shapely()])
+                laminate.insertlayergeoms(layer_dict[item_id], [geom.to_shapely(scaling = popupcad.csg_processing_scaling)])
         laminates.append(laminate)
     laminates = sort_lams(laminates, values)
     return laminates
@@ -75,13 +75,13 @@ def findconnectedneighborgeoms(geomid, generic_laminate, geom_dict, layerdef):
     validneighbors = []
     geom = geom_dict[geomid]
     if geom.is_valid_bool():
-        geom = geom.to_shapely()
+        geom = geom.to_shapely(scaling = popupcad.csg_processing_scaling)
         layer = findgeomlayerinstep(geomid, generic_laminate)
         neighbors = layerdef.connected_neighbors(layer)
         for neighbor in neighbors:
             for item in generic_laminate.geoms[neighbor]:
                 if item.is_valid_bool():
-                    shapelygeom = item.to_shapely()
+                    shapelygeom = item.to_shapely(scaling = popupcad.csg_processing_scaling)
                     result = geom.intersection(shapelygeom)
                     if not result.is_empty:
                         validneighbors.append(item.id)

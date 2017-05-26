@@ -75,8 +75,8 @@ class GenericText(object):
                 item.shift(self.pos.getpos())
         return generic_polygons
         
-    def generic_polys_to_shapely(self,generic_polygons):
-        shapelies = [item.to_shapely() for item in generic_polygons]
+    def generic_polys_to_shapely(self,generic_polygons,scaling):
+        shapelies = [item.to_shapely(scaling = scaling) for item in generic_polygons]
         
         if len(shapelies) > 1:
             obj1 = shapelies.pop(0)
@@ -88,19 +88,19 @@ class GenericText(object):
             obj1 = sg.Polygon()
         return obj1
 
-    def to_shapely(self,add_shift = True):
+    def to_shapely(self,add_shift = True,scaling = None):
         generic_polygons = self.to_generic_polygons(add_shift)
-        shapely = self.generic_polys_to_shapely(generic_polygons)
+        shapely = self.generic_polys_to_shapely(generic_polygons,scaling)
         return shapely
         
-    def to_generics(self,add_shift = True):
-        shapely = self.to_shapely(add_shift)
+    def to_generics(self,add_shift = True,scaling = 1):
+        shapely = self.to_shapely(add_shift,scaling=scaling)
         shapelies = popupcad.algorithms.csg_shapely.condition_shapely_entities(shapely)
         generics = [popupcad.algorithms.csg_shapely.to_generic(item) for item in shapelies]
         return generics
 
     def painterpath(self,add_shift = True):
-        generics = self.to_generics(add_shift)
+        generics = self.to_generics(add_shift,scaling = popupcad.csg_processing_scaling)
         p2 = qg.QPainterPath()
         [p2.addPath(item.painterpath()) for item in generics]
         return p2
@@ -114,7 +114,7 @@ class GenericText(object):
         return PropertyEditor(self)
         
     def output_dxf(self,model_space,layer = None):
-        generics = self.to_generics()
+        generics = self.to_generics(scaling = popupcad.csg_processing_scaling)
         [item.output_dxf(model_space,layer) for item in generics]
 
     def vertices(self):

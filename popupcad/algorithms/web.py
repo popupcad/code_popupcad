@@ -24,7 +24,7 @@ def supportsheet(layerdef, lsin, value):
     exterior = [[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy]]
     exterior_scaled = (numpy.array(exterior)/popupcad.csg_processing_scaling).tolist()
     geom = GenericPoly.gen_from_point_lists(exterior_scaled, [])
-    geom = geom.to_shapely()
+    geom = geom.to_shapely(scaling = popupcad.csg_processing_scaling)
     ls = Laminate(layerdef)
     [ls.replacelayergeoms(layer, [geom]) for layer in layerdef.layers]
     return ls, exterior[0]

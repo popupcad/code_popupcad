@@ -56,9 +56,7 @@ class BaseVertex(object):
         return self.constraints_ref().p()
 
     def setpos(self, pos,scaling = 1):
-        pos = numpy.array(pos)*scaling
-#        pos = pos.round(self.roundvalue)
-        self._position = tuple(pos.tolist())
+        self._position = self.scale_tuple(pos,scaling)
 
     def round(self, identical = False, decimal_places = None):
         if decimal_places is None:
@@ -90,9 +88,7 @@ class BaseVertex(object):
     
     @staticmethod
     def scale_tuple(value, scale):
-        if scale != 1:
-            value = tuple([item * scale for item in value])
-        return value
+        return  tuple([item * scale for item in value])
 
     def getpos3D(self):
         return tuple(numpy.r_[self.getpos(),0].tolist())
@@ -248,8 +244,8 @@ class DrawnPoint(BaseVertex):
         iv.updateshape()
         return iv
 
-    def to_shapely(self):
-        p = sg.Point(*self.getpos(scaling = popupcad.csg_processing_scaling))
+    def to_shapely(self,scaling = 1):
+        p = sg.Point(*self.getpos(scaling = scaling))
         return p
 
     def is_construction(self):
@@ -273,6 +269,7 @@ class DrawnPoint(BaseVertex):
         if layer is not None:
             dxfattribs['layer']=layer
         model_space.add_point(self.getpos(),dxfattribs = dxfattribs)    
+        
     @classmethod
     def delistify_0(cls, id, x, y, is_construction):
         new = cls((x/popupcad.deprecated_internal_argument_scaling, y/popupcad.deprecated_internal_argument_scaling))
