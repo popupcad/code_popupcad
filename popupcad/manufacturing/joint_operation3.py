@@ -452,25 +452,24 @@ class JointOperation3(Operation2, LayerBasedOperation):
             bodies.append(body.export_dict())
 
         connections = []
-        for line,(item1,item2) in self.connections:
+        
+        for ii,(line,(item1,item2)) in enumerate(self.connections):
             points = tuple(line.exteriorpoints(scaling))
             ids = (item1.id,item2.id)
-            connections.append((points,ids))
+            stiffness,damping,preload,limit_neg,limit_pos,z_pos = self.all_joint_props[ii]
+            z_pos *= scaling
+            joint_prop = JointProps(stiffness,damping,preload,limit_neg,limit_pos,z_pos)
+            connections.append((points,ids,joint_prop))
             
         newtonian = [item.id for item in self.fixed_bodies]
         
-        joint_props = []
-        for stiffness,damping,preload,limit_neg,limit_pos,z_pos in self.all_joint_props:
-            z_pos *= scaling
-            joint_props.append(JointProps(stiffness,damping,preload,limit_neg,limit_pos,z_pos))
-            
         material_properties = []
         for prop in self.layer_def.layers:
             prop = prop.copy()
             prop.scale_length(scaling)
             material_properties.append(prop.to_foldable())
         
-        d = DynamicsInfo(bodies,connections,newtonian,joint_props,material_properties)
+        d = DynamicsInfo(bodies,connections,newtonian,material_properties)
         
         with open(filename, 'w') as f:
             yaml.dump(d,f)
