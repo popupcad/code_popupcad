@@ -18,7 +18,7 @@ import time
 if __name__=='__main__':
     t_0 = time.time()
     #app = qg.QApplication(sys.argv)
-    top_directory = 'C:/Users/danaukes/Dropbox/zhis sentinal 11 files/source'
+    top_directory = 'C:/Users/danaukes/popupcad_files'
     failures_directory = 'C:/Users/danaukes/Desktop/failures'
     filenames = []
     for directory,subdirectory,files in os.walk(top_directory):
