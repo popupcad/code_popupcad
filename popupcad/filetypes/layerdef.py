@@ -65,6 +65,7 @@ class LayerDef(object):
         z = 0.
         for layer in self.layers:
             zvalues[layer] = {'lower':z}
+            zvalues[layer]['mid']=z+layer.thickness/2
             z += layer.thickness
             zvalues[layer]['upper'] = z
         return zvalues

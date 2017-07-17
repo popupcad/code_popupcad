@@ -100,7 +100,7 @@ class GLViewWidget(gl.GLViewWidget):
         for layer in self.layerdef.layers:
             item = self.meshitems[layer]
             item.resetTransform()
-            z = self.layerdef.z_values[layer] * (1+zoom_act)
+            z = self.layerdef.z_values2()[layer]['mid'] * (1+zoom_act)
             item.translate(0, 0, z)
 
     def update_transparency(self,value):
