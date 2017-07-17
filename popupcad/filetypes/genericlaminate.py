@@ -211,7 +211,7 @@ class GenericLaminate(object):
         return bounds
 
     def mass_properties(self):
-        zvalues = self.layerdef.z_values2()
+        zvalues = self.layerdef.z_values2
         volume_total = 0
         center_of_mass_accumulator = 0
         next_args = []

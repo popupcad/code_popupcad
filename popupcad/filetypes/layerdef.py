@@ -60,6 +60,7 @@ class LayerDef(object):
         connected = [neighbor for neighbor in neighbors if (neighbor.is_adhesive or layer.is_adhesive)]
         return connected
 
+    @property
     def z_values2(self):
         zvalues = {}
         z = 0.
