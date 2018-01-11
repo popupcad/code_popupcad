@@ -193,6 +193,7 @@ class Design(popupCADFile):
 
     def upgrade_operations2(self,old_layer_def,new_layer_def):
         from popupcad.manufacturing.freeze import Freeze
+        from popupcad_deprecated.locateoperation3 import LocateOperation3
         newoperations = []
         for op0 in self.operations:
             if isinstance(op0,Freeze):
@@ -210,6 +211,8 @@ class Design(popupCADFile):
                 else:
                     raise TypeError()
                 newoperations.append(op0)
+            elif isinstance(op0,LocateOperation3):
+                pass
             else:
                 newoperations.append(op0)
 
