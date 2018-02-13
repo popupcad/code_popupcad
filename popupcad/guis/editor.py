@@ -471,7 +471,11 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
         self.design.build_documentation()
 
     def export_dxf_outer(self):
-        dialog = DxfExportWidget(self.design.dirname)
+        try:
+            dirname = self.design.dirname        
+        except AttributeError:
+            dirname = popupcad.exportdir
+        dialog = DxfExportWidget(dirname)
         result = dialog.exec_()
         if result:
             accept_data = dialog.accept_data()

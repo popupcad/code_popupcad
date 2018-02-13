@@ -115,7 +115,7 @@ class GenericLaminate(object):
                 filename = os.path.normpath(os.path.join(directory,basename+'_'+layername+'.dxf'))
                 dwg = ezdxf.new('AC1015')
                 msp = dwg.modelspace()
-            dwg.layers.create(name=layername)
+            dwg.layers.new(name=layername)
             for item in self.geoms[layer]:
                 if not item.is_construction():
                     item.output_dxf(msp,layername)
