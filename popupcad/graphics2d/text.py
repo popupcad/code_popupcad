@@ -52,7 +52,7 @@ class GenericText(object):
         text = self.text
 #        small font scalings actually produce different paths.  use 10pt font as invariant size
         internal_font = 10
-        fp = FontProperties(family = self.font,size=internal_font)
+        fp = {'family':self.font,'size':internal_font}
         if text !='':
             polygons = idealab_tools.text_to_polygons.text_to_polygons(self.text,fp,popupcad.text_approximation)
             generic_polygons = []

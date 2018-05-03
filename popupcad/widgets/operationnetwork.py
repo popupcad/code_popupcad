@@ -10,9 +10,9 @@ import qt.QtGui as qg
 import matplotlib
 import matplotlib.pyplot as plt
 plt.ion()
-matplotlib.rcParams['backend.qt4']=qt.loaded
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+matplotlib.rcParams['backend.qt5']=qt.loaded
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import numpy
 
