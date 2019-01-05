@@ -84,13 +84,7 @@ class Assembly(popupCADFile):
                 bufferval,
                 cleanup)
 
-    def _convert(
-            self,
-            scalefactor,
-            area_ratio,
-            colinear_tol,
-            bufferval,
-            cleanup):
+    def _convert(self,scalefactor,area_ratio,colinear_tol,bufferval,cleanup):
         self.geoms = []
         T1 = numpy.array(self.transform)
         R1 = T1[0:3, 0:3]
@@ -104,14 +98,7 @@ class Assembly(popupCADFile):
                     try:
                         loops = face.loops
 
-                        ints_c = [
-                            self.transform_loop(
-                                interior,
-                                R1,
-                                b1,
-                                R2,
-                                b2,
-                                scalefactor) for interior in loops]
+                        ints_c = [self.transform_loop(interior,R1,b1,R2,b2,scalefactor) for interior in loops]
 
                         a = [
                             GenericPoly.gen_from_point_lists(
