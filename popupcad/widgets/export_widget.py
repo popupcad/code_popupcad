@@ -16,7 +16,7 @@ import os
 
 class DxfExportWidget(qg.QDialog):
 
-    def __init__(self,folder = None):
+    def __init__(self,folder = None,show_separate_layers=True):
         if folder is None:
             folder = popupcad.exportdir
         super(DxfExportWidget, self).__init__()
@@ -37,7 +37,8 @@ class DxfExportWidget(qg.QDialog):
         layout2.addWidget(button_reject)
         layout3 = qg.QVBoxLayout()
         layout3.addLayout(layout0)
-        layout3.addWidget(self.separate_layers)
+        if show_separate_layers:
+            layout3.addWidget(self.separate_layers)
         layout3.addLayout(layout2)
 
         self.dirbutton.clicked.connect(self.selectExport)

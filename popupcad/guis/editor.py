@@ -490,7 +490,7 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
             dirname = self.design.dirname        
         except AttributeError:
             dirname = popupcad.exportdir
-        dialog = DxfExportWidget(dirname)
+        dialog = DxfExportWidget(dirname,False)
         result = dialog.exec_()
         if result:
             accept_data = dialog.accept_data()
