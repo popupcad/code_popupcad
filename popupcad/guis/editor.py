@@ -14,7 +14,7 @@ import glob
 import imp
 from popupcad.widgets.export_widget import DxfExportWidget
 import popupcad
-
+import yaml
 from popupcad.filetypes.design import Design
 
 class NoOutput(Exception):
@@ -485,6 +485,26 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
             generic.save_dxf(basename,separate_files=accept_data['separate_layers'],directory = accept_data['directory'])
 
+    def export_foldable_laminate(self):
+        try:
+            dirname = self.design.dirname        
+        except AttributeError:
+            dirname = popupcad.exportdir
+        dialog = DxfExportWidget(dirname)
+        result = dialog.exec_()
+        if result:
+            accept_data = dialog.accept_data()
+            ii, jj = self.operationeditor.currentIndeces2()[0]
+            output = self.design.operations[ii].output[jj]
+            generic = output.generic_laminate()
+            foldable = generic.to_foldable_robotics()
+#            foldable.plot(new=True)
+            basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
+            dict1 = foldable.export_dict()
+#            print(dict1)
+            filename = os.path.join(accept_data['directory'],basename+'.yaml')
+            with open(filename,'w') as f:
+                yaml.dump(dict1,f)
 
     def show_license(self):
         import sys

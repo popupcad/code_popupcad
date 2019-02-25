@@ -5,6 +5,8 @@ action_defs:
       dae, triggered: export_dae}
   file_export_dxf_outer: {icon: export, statusTip: Exports to a dxf file, text: Export
       to dxf..., triggered: export_dxf_outer}
+  file_export_foldable_laminate: {icon: export, statusTip: Exports to a dxf file,
+    text: Export Foldable Robotics Laminate, triggered: export_foldable_laminate}
   file_export_svg: {icon: export, text: '&Export to SVG', triggered: exportLayerSVG}
   file_license: {text: License, triggered: show_license}
   file_new: {icon: new, statusTip: Create a new file, text: '&New', triggered: newfile}
@@ -55,8 +57,8 @@ action_defs:
   view_zoom_fit: {text: Zoom Fit, triggered: zoomToFit}
 menu_struct:
   File: [file_new, file_open, file_save, file_saveas, file_upgrade, file_export_svg,
-    file_export_dxf_outer, file_save_joint_defs, file_regen_id, file_render_icons,
-    file_build_documentation, file_license]
+    file_export_dxf_outer, file_export_foldable_laminate, file_save_joint_defs, file_regen_id,
+    file_render_icons, file_build_documentation, file_license]
   Project: [project_rebuild, project_auto_reprocess, project_layer_order, project_laminate_props,
     project_sketches, project_subdesigns, project_replace, project_insert_and_replace,
     project_hierarchy]
