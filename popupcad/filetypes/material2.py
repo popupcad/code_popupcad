@@ -64,6 +64,7 @@ class Material2(object):
         
 import popupcad
 import yaml
+
 with open(popupcad.internal_materials_filename) as f:
     material_defaults = yaml.load(f)
 
@@ -95,3 +96,24 @@ default_sublaminate = [default_material_types[key].copy(identical=False) for key
 
 #with open(popupcad.internal_materials_filename,'w') as f:
 #    yaml.dump(material_defaults,f)
+
+def gen_n_colors(l,alpha=None):
+    import matplotlib.cm
+    cm = matplotlib.cm.plasma
+    if l>1:
+        colors = numpy.array([cm(ii/(l-1)) for ii in range(l)])
+    else:
+        colors = numpy.array([cm(1)])
+    if alpha is not None:
+        colors[:,3] = alpha
+    colors = [tuple(item) for item in colors]
+    return colors
+
+def generate_n_materials(n):
+    materials = []
+    colors = gen_n_colors(n)
+    for ii in range(n):
+        name = 'generic_{:02.0f}'.format(ii)
+        material =  Material2(name,colors[ii],1,1,1,1,0,False,False,False,False)
+        materials.append(material)
+    return materials

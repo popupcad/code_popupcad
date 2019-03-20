@@ -485,6 +485,9 @@ class Editor(popupcad.widgets.widgetcommon.MainGui, qg.QMainWindow):
             basename = self.design.get_basename() + '_'+str(self.design.operations[ii])
             generic.save_dxf(basename,separate_files=accept_data['separate_layers'],directory = accept_data['directory'])
 
+    def import_foldable_laminate(self):
+        pass
+    
     def export_foldable_laminate(self):
         try:
             dirname = self.design.dirname        

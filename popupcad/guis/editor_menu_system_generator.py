@@ -22,7 +22,8 @@ if __name__=='__main__':
 #    action_setup['file_export_layers_dxf']= {'text': 'Export layers to dxf', 'kwargs': {'icon': 'export','statusTip': "Exports to a dxf file"}}
     action_setup['file_export_dae']= {'text': 'Export to dae', 'kwargs': {'icon': 'export','statusTip': "Exports to a dae file"}}
     action_setup['file_save_joint_defs']= {'text': "Save Joint Defs"}
-    action_setup['file_export_foldable_laminate']= {'text': "Export Foldable Robotics Laminate",'kwargs': {'icon': 'export','statusTip': "Exports to a dxf file"}}
+    action_setup['file_export_foldable_laminate']= {'text': "Export Foldable Robotics Laminate",'kwargs': {'icon': 'export','statusTip': "Exports to a foldable robotics type"}}
+    action_setup['file_import_foldable_laminate']= {'text': "Import Foldable Robotics Laminate",'kwargs': {'icon': 'import','statusTip': "Exports a foldable robotics type"}}
     #action_setup['file_export_laminate']= {'text': "Export Laminate"}
     action_setup['file_regen_id']= {'text': "Regen ID"}
     action_setup['file_render_icons']= {'text': "Render Icons"}
@@ -38,6 +39,7 @@ if __name__=='__main__':
 #                        'file_export_stl',
                         'file_export_svg',
                         'file_export_dxf_outer',
+                        'file_import_foldable_laminate',
                         'file_export_foldable_laminate',
 #                        'file_export_dxf',
 #                        'file_export_layers_dxf',
@@ -159,6 +161,7 @@ if __name__=='__main__':
 #    triggered['file_export_layers_dxf'] = 'export_dxf_layers'
     triggered['file_export_dae'] = 'export_dae'
     triggered['file_save_joint_defs'] = 'save_joint_def'
+    triggered['file_import_foldable_laminate'] = 'import_foldable_laminate'
     triggered['file_export_foldable_laminate'] = 'export_foldable_laminate'
 #triggered['file_export_laminate'] = 'export_laminate'
     triggered['file_regen_id'] = 'regen_id'
