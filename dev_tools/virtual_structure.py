@@ -59,7 +59,7 @@ def save_commands(commands,filename):
 def load_commands(filename):    
     import yaml
     with open(filename) as f:
-        commands = yaml.load(f)
+        commands = yaml.load(f,Loader=yaml.FullLoader)
     return commands
 
 def run_commands(commands):    

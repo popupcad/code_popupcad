@@ -30,13 +30,13 @@ from . import widgets
 import yaml
 try:
     with open(user_materials_filename) as f:
-        user_materials = yaml.load(f)
+        user_materials = yaml.load(f,Loader=yaml.FullLoader)
 except FileNotFoundError:
     pass
 
 try:
     with open(custom_settings_filename) as f:
-        custom_settings = yaml.load(f)
+        custom_settings = yaml.load(f,Loader=yaml.FullLoader)
             
     popupcad_module=sys.modules[__name__]
     for key in custom_settings:

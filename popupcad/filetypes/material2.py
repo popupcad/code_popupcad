@@ -66,7 +66,7 @@ import popupcad
 import yaml
 
 with open(popupcad.internal_materials_filename) as f:
-    material_defaults = yaml.load(f)
+    material_defaults = yaml.load(f,Loader=yaml.FullLoader)
 
 
 default_sublaminate_keys = material_defaults['default_sublaminate_keys']

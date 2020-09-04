@@ -48,7 +48,7 @@ class MainGui(WidgetBasic):
     def create_menu_system(self,filename):
         import yaml
         with open(filename) as f:
-            self.menu_system = yaml.load(f)
+            self.menu_system = yaml.load(f,Loader=yaml.FullLoader)
         self.setMenuBar(qg.QMenuBar())    
         self.loaded_menu_systems=[]
         self.load_menu_system(self.menu_system)

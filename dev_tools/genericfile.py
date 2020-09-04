@@ -122,7 +122,7 @@ class GenericFile(object):
     def load_yaml(cls, filename):
         import yaml
         with open(filename, 'r') as f:
-            obj1 = yaml.load(f)
+            obj1 = yaml.load(f,Loader=yaml.FullLoader)
         obj1.updatefilename(filename)
         return obj1
 
@@ -202,7 +202,7 @@ class GenericFile(object):
 
     def copy_yaml(self, identical=True):
         import yaml
-        new = yaml.load(yaml.dump(self.copy(identical)))
+        new = yaml.load(yaml.dump(self.copy(identical)),Loader=yaml.FullLoader)
         return new
 
     @staticmethod
