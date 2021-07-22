@@ -5,7 +5,6 @@ Email: danaukes<at>asu.edu.
 Please see LICENSE for full license.
 """
 
-#from pynamics.tree_node import TreeNode
 from dev_tools.acyclicdirectedgraph import Node,AcyclicDirectedGraph
 import random
 #import numpy
